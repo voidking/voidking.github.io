@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=5.1.4">
+
+
+
+
+
+
+  <meta name="keywords" content="linux,ubuntu,shell,pssh,expect," />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="VoidKing" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="前言《Ubuntu系统批量自动安装》一文中，配置好了PXE服务器，也通过它安装了几台机器。每个机器都重新配置好了IP，已经可以远程访问了。现在新的问题来了，每个机器的主机名都相同，需要修改；每个机器的sources.list都有问题，需要替换。以后，肯定也有很多其他需要批量操作的问题，比如批量安装ganglia，总不能上百台机器一个个手动操作吧！ 本文，就研究下linux批量操作的相关方法和工具，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用PSSH批量管理Linux">
+<meta property="og:url" content="https://www.voidking.com/dev-pssh-manage-linux/index.html">
+<meta property="og:site_name" content="VoidKing">
+<meta property="og:description" content="前言《Ubuntu系统批量自动安装》一文中，配置好了PXE服务器，也通过它安装了几台机器。每个机器都重新配置好了IP，已经可以远程访问了。现在新的问题来了，每个机器的主机名都相同，需要修改；每个机器的sources.list都有问题，需要替换。以后，肯定也有很多其他需要批量操作的问题，比如批量安装ganglia，总不能上百台机器一个个手动操作吧！ 本文，就研究下linux批量操作的相关方法和工具，">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-05-18T14:00:00.000Z">
+<meta property="article:modified_time" content="2020-02-07T15:42:50.009Z">
+<meta property="article:author" content="VoidKing">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="ubuntu">
+<meta property="article:tag" content="shell">
+<meta property="article:tag" content="pssh">
+<meta property="article:tag" content="expect">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.voidking.com/dev-pssh-manage-linux/"/>
+
+
+
+
+
+  <title>使用PSSH批量管理Linux | VoidKing</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?b759ac2a7fa45129e3ef060bf68259f0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">VoidKing</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">好好学习，天天向上！</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.voidking.com/dev-pssh-manage-linux/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="VoidKing">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="VoidKing">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">使用PSSH批量管理Linux</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-05-18T14:00:00+00:00">
+                2018-05-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/" itemprop="url" rel="index">
+                    <span itemprop="name">专业</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index">
+                    <span itemprop="name">运维</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E8%BF%90%E7%BB%B4/%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><a href="http://www.voidking.com/dev-ubuntu-auto-install/">《Ubuntu系统批量自动安装》</a>一文中，配置好了PXE服务器，也通过它安装了几台机器。每个机器都重新配置好了IP，已经可以远程访问了。现在新的问题来了，每个机器的主机名都相同，需要修改；每个机器的sources.list都有问题，需要替换。以后，肯定也有很多其他需要批量操作的问题，比如批量安装ganglia，总不能上百台机器一个个手动操作吧！</p>
+<p>本文，就研究下linux批量操作的相关方法和工具，重点研究下pssh。</p>
+<a id="more"></a>
+
+<h1 id="批量操作思路"><a href="#批量操作思路" class="headerlink" title="批量操作思路"></a>批量操作思路</h1><p>首先定义两个概念：管理机和客户机，本文中的管理机是指管理其他服务器的服务器，客户机是指普通服务器。<br>管理机IP为192.168.56.101，客户机IP为192.168.56.102-104，用户名都是test。</p>
+<h2 id="思路一"><a href="#思路一" class="headerlink" title="思路一"></a>思路一</h2><p>说到批量操作，最容易想到的，肯定是在管理机写一个脚本，里面有个循环语句，挨个连接客户机进行操作。<br>而循环语句里面，主要是<code>ssh</code>，然后执行交互命令。参考 <a href="https://www.cnblogs.com/zhenbianshu/p/5867440.html" target="_blank" rel="noopener">shell实现SSH自动登陆</a> 、 <a href="http://www.jb51.net/article/119541.htm" target="_blank" rel="noopener">关于SSH 远程执行命令你要知道的二三事</a> 和 <a href="http://www.jb51.net/article/107635.htm" target="_blank" rel="noopener">shell脚本实现同时多台远程主机执行命令的代码分享</a>。</p>
+<p>但是，这种方式很难并行处理，比较浪费时间。</p>
+<h2 id="思路二"><a href="#思路二" class="headerlink" title="思路二"></a>思路二</h2><p>另一个简单的思路，是在管理机写一个在客户机执行的脚本，然后推送给客户机，再在客户机里执行脚本。主要参考<a href="https://www.cnblogs.com/sparkdev/p/6842805.html" target="_blank" rel="noopener">SSH 远程执行任务</a>。</p>
+<p>这种方式同样很难并行处理，比较浪费时间。如果非要并行处理，那么就只能牺牲反馈信息。</p>
+<h2 id="思路三"><a href="#思路三" class="headerlink" title="思路三"></a>思路三</h2><p>最后一种思路就是借助工具，比如mussh、pdsh、pssh等等。</p>
+<h1 id="pssh"><a href="#pssh" class="headerlink" title="pssh"></a>pssh</h1><h2 id="pssh简介"><a href="#pssh简介" class="headerlink" title="pssh简介"></a>pssh简介</h2><p>pssh是一个python编写可以在多台服务器上执行命令的工具，同时支持拷贝文件，是同类工具中很出色的。类似pdsh，但是相对pdsh更为简便，使用前必须在各个服务器上配置好密钥认证访问。参考<a href="http://man.linuxde.net/pssh" target="_blank" rel="noopener">pssh命令</a>和<a href="http://www.theether.org/pssh/docs/0.2.3/pssh-HOWTO.html" target="_blank" rel="noopener">pssh HOWTO</a>。</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>1、ubuntu安装pssh，<code>sudo apt-get install pssh</code></p>
+<p>2、ubuntu安装完pssh后，输入<code>pssh</code>，也许会提示：No command ‘pssh’ found, did you mean:…</p>
+<p>解决办法参考<a href="https://askubuntu.com/questions/119232/why-pssh-command-is-not-working" target="_blank" rel="noopener">Why pssh command is not working?</a>，一条命令解决：<br><code>echo &quot;alias pssh=parallel-ssh&quot; &gt;&gt; ~/.bashrc &amp;&amp; . ~/.bashrc</code>，其中<code>&amp;&amp; . ~/.bashrc</code>代表立即生效。</p>
+<p>3、设置相关命令<br>安装完pssh后，实际上还安装了pscp、prsync、pnuke和pslurp。和pssh命令无效的问题相同，它们默认也只能使用全名，不能只用简称。需要执行如下命令：</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">echo</span> <span class="string">"alias pscp=parallel-scp"</span> &gt;&gt; ~<span class="string">/.bashrc</span> &amp;&amp; . ~<span class="string">/.bashrc</span></span><br><span class="line"><span class="keyword">echo</span> <span class="string">"alias prsync=parallel-rsync"</span> &gt;&gt; ~<span class="string">/.bashrc</span> &amp;&amp; . ~<span class="string">/.bashrc</span></span><br><span class="line"><span class="keyword">echo</span> <span class="string">"alias pnuke=parallel-nuke"</span> &gt;&gt; ~<span class="string">/.bashrc</span> &amp;&amp; . ~<span class="string">/.bashrc</span></span><br><span class="line"><span class="keyword">echo</span> <span class="string">"alias pslurp=parallel-slurp"</span> &gt;&gt; ~<span class="string">/.bashrc</span> &amp;&amp; . ~<span class="string">/.bashrc</span></span><br></pre></td></tr></table></figure>
+
+<p>其中，pscp把文件并行地复制到多个客户机；prsync使用rsync协议从管理机同步到客户机；pslurp将文件从客户机复制到管理机；pnuke并行地在客户机杀进程。</p>
+<h2 id="命令格式"><a href="#命令格式" class="headerlink" title="命令格式"></a>命令格式</h2><p>命令格式：<code>pssh [OPTIONS] command [...]</code></p>
+<p>选项：</p>
+<figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">-<span class="ruby">-version：查看版本</span></span><br><span class="line"><span class="ruby">--help：查看帮助，即此信息</span></span><br><span class="line"><span class="ruby">-h：主机文件列表，内容格式<span class="string">"[user@]host[:port]"</span></span></span><br><span class="line"><span class="ruby">-H：主机字符串，内容格式<span class="string">"[user@]host[:port]"</span></span></span><br><span class="line"><span class="ruby">-l：登录使用的用户名</span></span><br><span class="line"><span class="ruby">-p：并发的线程数【可选】</span></span><br><span class="line"><span class="ruby">-o：输出的文件目录【可选】</span></span><br><span class="line"><span class="ruby">-e：错误输入文件【可选】</span></span><br><span class="line"><span class="ruby">-t：TIMEOUT 超时时间设置，<span class="number">0</span>无限制【可选】</span></span><br><span class="line"><span class="ruby">-O：SSH的选项</span></span><br><span class="line"><span class="ruby">-v：详细模式</span></span><br><span class="line"><span class="ruby">-A：手动输入密码模式</span></span><br><span class="line"><span class="ruby">-x：额外的命令行参数使用空白符号，引号，反斜线处理</span></span><br><span class="line"><span class="ruby">-X：额外的命令行参数，单个参数模式，同-x</span></span><br><span class="line"><span class="ruby">-i：每个服务器内部处理信息输出</span></span><br><span class="line"><span class="ruby">-P：打印出服务器返回信息</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="实践篇"><a href="#实践篇" class="headerlink" title="实践篇"></a>实践篇</h1><h2 id="添加密钥认证访问"><a href="#添加密钥认证访问" class="headerlink" title="添加密钥认证访问"></a>添加密钥认证访问</h2><p>参考<a href="http://www.cnblogs.com/eeexu123/p/8267531.html" target="_blank" rel="noopener">Linux之SSH密钥认证</a>和<a href="http://www.zsythink.net/archives/2375" target="_blank" rel="noopener">ssh使用密钥进行认证</a>，在管理机上制作密钥对，将公钥添加给客户机，然后通过ssh免密登录。</p>
+<p>1、确认管理机和客户机都安装了ssh。<br><code>ps aux | grep ssh</code></p>
+<p>2、在管理机上创建密钥对<br><code>ssh-keygen</code><br>所有的提示按enter键即可，完成后在home目录执行<code>ll .ssh</code>，即可看到创建好的id_rsa和id_rsa.pub文件。</p>
+<p>3、把公钥拷贝到所有客户机中<br><code>ssh-copy-id -i .ssh/id_rsa.pub -p 22 test@192.168.56.102</code></p>
+<p>4、测试登录<br>上一步拷贝完成后，会提示使用<code>ssh -p &#39;22&#39; &#39;test@192.168.56.102&#39;</code>测试登录。</p>
+<p>在管理机中，使用<code>ssh test@192.168.56.102</code>测试登录，我们发现已经不需要输入密码了。</p>
+<p>5、查看公钥<br>登录102客户机，<code>ll .ssh</code>，我们发现有一个authorized_keys文件，文件的内容和管理机的id_rsa.pub相同。</p>
+<p>5、测试命令<br><code>ssh test@192.168.56.102 &#39;/sbin/ifconfig&#39;</code></p>
+<p>返回了102客户机的ifconfig执行结果，测试成功。</p>
+<p>6、设置sudo命令免密码<br><code>ssh test@192.168.56.102 &#39;sudo iptables --list&#39;</code><br>报错：sudo: no tty present and no askpass program specified</p>
+<p>这个问题，需要在每个客户机下进行sudo免密设置。<br>进入客户机之后，<code>sudo vim /etc/sudoers</code>，添加：</p>
+<figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">test </span>ALL = NOPASSWD: ALL</span><br></pre></td></tr></table></figure>
+
+<p>再次执行<code>ssh test@192.168.56.102 &#39;sudo iptables --list&#39;</code>，成功。</p>
+<h2 id="获取每台机器的uptime"><a href="#获取每台机器的uptime" class="headerlink" title="获取每台机器的uptime"></a>获取每台机器的uptime</h2><p>1、在管理机上新建hosts.txt，内容为：</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">test@</span><span class="number">192.168</span><span class="number">.56</span><span class="number">.102</span></span><br><span class="line"><span class="symbol">test@</span><span class="number">192.168</span><span class="number">.56</span><span class="number">.103</span></span><br><span class="line"><span class="symbol">test@</span><span class="number">192.168</span><span class="number">.56</span><span class="number">.104</span></span><br></pre></td></tr></table></figure>
+
+<p>2、执行uptime<br><code>pssh -h hosts.txt -i uptime</code></p>
+<p>3、保存执行结果<br><code>pssh -h hosts.txt -i -o /tmp/pssh/ uptime</code></p>
+<p><code>ll /tmp/pssh</code></p>
+<p><code>cat /tmp/pssh</code></p>
+<h2 id="批量修改hostname"><a href="#批量修改hostname" class="headerlink" title="批量修改hostname"></a>批量修改hostname</h2><p>参考<a href="https://www.linuxidc.com/Linux/2017-04/142728.htm" target="_blank" rel="noopener">Linux批量修改多台服务器的主机名（hostname）</a>，我们把客户机的主机名改为vk102、vk103和vk104。</p>
+<p>1、新建hosts文件，内容为：</p>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">192.168.56.102</span>    vk102</span><br><span class="line"><span class="number">192.168.56.103</span>    vk103</span><br><span class="line"><span class="number">192.168.56.104</span>    vk104</span><br></pre></td></tr></table></figure>
+
+<p>2、新建hostname.sh文件，内容为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">ip=`ifconfig eth0 | grep <span class="string">'inet'</span> | awk <span class="string">'&#123;print $2&#125;'</span> | tr -d <span class="string">'addr:'</span>`</span><br><span class="line">hostname=`cat /home/<span class="built_in">test</span>/hosts | grep <span class="variable">$ip</span> | awk <span class="string">'&#123;print $2&#125;'</span>`</span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$ip</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$hostname</span></span><br><span class="line">hostnamectl <span class="built_in">set</span>-hostname --static <span class="variable">$hostname</span></span><br><span class="line">hostname <span class="variable">$hostname</span></span><br></pre></td></tr></table></figure>
+
+<p>3、发送到hosts和hostname.sh到客户机/home/test目录下<br><code>pscp -h hosts.txt ./hosts /home/test</code><br><code>pscp -h hosts.txt ./hostname.sh /home/test</code></p>
+<p>4、批量授予hostname.sh可执行权限<br><code>pssh -h hosts.txt -i  &#39;chmod +x /home/test/hostname.sh&#39;</code></p>
+<p>5、批量执行hostname.sh<br><code>pssh -h hosts.txt -i  &#39;sudo sh /home/test/hostname.sh&#39;</code><br>报错：Stderr: hostname: you must be root to change the host name<br>命令修改为：<code>pssh -h hosts.txt -i  &#39;sudo sh /home/test/hostname.sh&#39;</code><br>执行成功。</p>
+<h2 id="批量替换sources-list"><a href="#批量替换sources-list" class="headerlink" title="批量替换sources.list"></a>批量替换sources.list</h2><p>1、新建sources.list，内容为：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">deb http:<span class="regexp">//mi</span>rrors.aliyun.com<span class="regexp">/ubuntu/</span> trusty main restricted universe multiverse  </span><br><span class="line">deb http:<span class="regexp">//mi</span>rrors.aliyun.com<span class="regexp">/ubuntu/</span> trusty-security main restricted universe multiverse  </span><br><span class="line">deb http:<span class="regexp">//mi</span>rrors.aliyun.com<span class="regexp">/ubuntu/</span> trusty-updates main restricted universe multiverse  </span><br><span class="line">deb http:<span class="regexp">//mi</span>rrors.aliyun.com<span class="regexp">/ubuntu/</span> trusty-proposed main restricted universe multiverse  </span><br><span class="line">deb http:<span class="regexp">//mi</span>rrors.aliyun.com<span class="regexp">/ubuntu/</span> trusty-backports main restricted universe multiverse  </span><br><span class="line">deb-src http:<span class="regexp">//mi</span>rrors.aliyun.com<span class="regexp">/ubuntu/</span> trusty main restricted universe multiverse  </span><br><span class="line">deb-src http:<span class="regexp">//mi</span>rrors.aliyun.com<span class="regexp">/ubuntu/</span> trusty-security main restricted universe multiverse  </span><br><span class="line">deb-src http:<span class="regexp">//mi</span>rrors.aliyun.com<span class="regexp">/ubuntu/</span> trusty-updates main restricted universe multiverse  </span><br><span class="line">deb-src http:<span class="regexp">//mi</span>rrors.aliyun.com<span class="regexp">/ubuntu/</span> trusty-proposed main restricted universe multiverse  </span><br><span class="line">deb-src http:<span class="regexp">//mi</span>rrors.aliyun.com<span class="regexp">/ubuntu/</span> trusty-backports main restricted universe multiverse</span><br></pre></td></tr></table></figure>
+
+<p>2、客户机备份原sources.list<br><code>pssh -h hosts.txt -i  &#39;sudo mv /etc/apt/sources.list /etc/apt/sources.list.bak&#39;</code></p>
+<p>3、复制新的sources.list到客户机<br><code>pscp -h hosts.txt sources.list /home/test/</code><br><code>pssh -h hosts.txt &#39;sudo mv /home/test/sources.list /etc/apt/&#39;</code></p>
+<p>4、更新安装源<br><code>pssh -h hosts.txt -i &#39;sudo apt-get update&#39;</code></p>
+<h2 id="批量安装ganglia"><a href="#批量安装ganglia" class="headerlink" title="批量安装ganglia"></a>批量安装ganglia</h2><p>参考<a href="https://www.voidking.com/dev-ubuntu-ganglia/">Ubuntu14.04安装配置Ganglia</a>，假设我们已经配置好了ganglia主节点。</p>
+<p>1、把ganglia主节点的<code>/etc/ganglia/gmond.conf</code>文件拷贝到管理机当前目录。</p>
+<p>2、编写ganglia安装脚本install-gmond.sh（不要照抄，下面有修改版）</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">sudo apt-get -y install ganglia-monitor rrdtool &amp;&amp; \</span><br><span class="line">sudo mv /etc/ganglia/gmond.conf /etc/ganglia/gmond.conf.bak &amp;&amp; \</span><br><span class="line">sudo mv /home/<span class="built_in">test</span>/gmond.conf /etc/ganglia/ &amp;&amp; \</span><br><span class="line">sudo /etc/init.d/ganglia-monitor restart &amp;&amp; \</span><br><span class="line">sudo rm -rf /home/<span class="built_in">test</span>/install-gmond.sh</span><br></pre></td></tr></table></figure>
+
+<p>3、拷贝gmond.conf和install-gmond.sh到客户机<br><code>pscp -h hosts.txt gmond.conf /home/test/</code><br><code>pscp -h hosts.txt install-gmond.sh /home/test/</code></p>
+<p>4、添加执行权限<br><code>pssh -h hosts.txt -i  &#39;chmod +x /home/test/install-gmond.sh&#39;</code></p>
+<p>5、执行安装<br><code>pssh -h hosts.txt -i &#39;sudo apt-get update&#39;</code></p>
+<p><code>pssh -h hosts.txt -i &#39;sudo sh /home/test/install-gmond.sh&#39;</code></p>
+<p>脚本虽然顺利执行了，但是报错：Stderr: debconf: unable to initialize frontend: Dialog<br>解决办法是修改脚本为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="built_in">export</span> DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=<span class="literal">true</span> &amp;&amp; \</span><br><span class="line">sudo apt-get -y -q install ganglia-monitor rrdtool &amp;&amp; \</span><br><span class="line">sudo mv /etc/ganglia/gmond.conf /etc/ganglia/gmond.conf.bak &amp;&amp; \</span><br><span class="line">sudo mv /home/<span class="built_in">test</span>/gmond.conf /etc/ganglia/ &amp;&amp; \</span><br><span class="line">sudo /etc/init.d/ganglia-monitor restart &amp;&amp; \</span><br><span class="line">sudo rm -rf /home/<span class="built_in">test</span>/install-gmond.sh</span><br></pre></td></tr></table></figure>
+
+<p>6、查看运行状态<br><code>pssh -h hosts.txt -i -o /tmp/pssh/ &#39;ps aux | grep ganglia&#39;</code></p>
+<h2 id="批量修改密码"><a href="#批量修改密码" class="headerlink" title="批量修改密码"></a>批量修改密码</h2><p>参考<a href="https://www.cnblogs.com/zhenbianshu/p/5867440.html" target="_blank" rel="noopener">shell实现SSH自动登陆</a> 和 <a href="https://blog.csdn.net/robertsong2004/article/details/38983259" target="_blank" rel="noopener">6个Expect脚本示例</a>，使用expect命令。</p>
+<p>1、管理机上新建chpasswd.sh脚本，内容如下：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/expect </span></span><br><span class="line"><span class="builtin-name">set</span> timeout 3</span><br><span class="line"><span class="builtin-name">set</span><span class="built_in"> user </span>test</span><br><span class="line"><span class="builtin-name">set</span> password 123456</span><br><span class="line"></span><br><span class="line">spawn sudo passwd <span class="variable">$user</span>  </span><br><span class="line">expect <span class="string">"Enter new UNIX password:"</span>  </span><br><span class="line">send <span class="string">"<span class="variable">$&#123;password&#125;</span>\r"</span>  </span><br><span class="line">expect <span class="string">"Retype new UNIX password:"</span>  </span><br><span class="line">send <span class="string">"<span class="variable">$&#123;password&#125;</span>\r"</span>  </span><br><span class="line">expect eof</span><br></pre></td></tr></table></figure>
+
+<p>2、在客户机上安装expect（可以用<code>whereis expect</code>查看是否安装）<br><code>pssh -h hosts.txt -i &#39;sudo apt-get install expect -y&#39;</code></p>
+<p>3、拷贝chpasswd.sh脚本到客户机<br><code>pscp -h hosts.txt chpasswd.sh /home/test</code></p>
+<p>5、添加执行权限<br><code>pssh -h hosts.txt -i &#39;sudo chmod a+x /home/test/chpasswd.sh&#39;</code></p>
+<p>5、执行修改密码<br><code>pssh -h hosts.txt -i &#39;sudo /home/test/chpasswd.sh&#39;</code></p>
+<p>6、删除chpasswd.sh脚本<br><code>pssh -h hosts.txt -i &#39;sudo rm -rf /home/test/chpasswd.sh&#39;</code></p>
+<h2 id="批量杀进程"><a href="#批量杀进程" class="headerlink" title="批量杀进程"></a>批量杀进程</h2><p>假设需要杀死的进程为gmond。<br>方法一：<br><code>pnuke -h hosts.txt gmond</code><br><code>pssh -h hosts.txt -i &#39;ps -ef | grep gmond&#39;</code><br>这种方法虽然显示success，但是查看进程依然存在，看来存在不确定性。猜测对于sudo启动的进程难以杀死。</p>
+<p>方法二：<br><code>pssh -h hosts.txt -i &#39;sudo pkill -9 gmond&#39;</code><br>这种方法杀的很彻底，是个好方法。</p>
+<p>方法三：<br><code>pssh -h hosts.txt &#39;sudo ps -ef | grep gmond | awk &#39;{print $2}&#39; | xargs kill -9&#39;</code><br>这种方法也显示success，但是查看进程依然存在，还是有问题。猜测因为sudo作用在了ps上，所以对于sudo启动的进程难以杀死。</p>
+<p>方法四：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pssh -h hosts<span class="selector-class">.txt</span> -<span class="selector-tag">i</span> <span class="string">'sudo kill -s 9 `pgrep gmond`'</span></span><br></pre></td></tr></table></figure>
+<p>这种方法杀的很彻底，是个好方法。</p>
+<p>PS：启动gmond命令<code>pssh -h hosts.txt -i &#39;sudo /etc/init.d/ganglia-monitor start</code></p>
+<h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p>以上实践，已经包含了pssh的最常见用法。更高级的用法，就在需要时再去学习吧！</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/linux/" rel="tag"># linux</a>
+          
+            <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
+          
+            <a href="/tags/shell/" rel="tag"># shell</a>
+          
+            <a href="/tags/pssh/" rel="tag"># pssh</a>
+          
+            <a href="/tags/expect/" rel="tag"># expect</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/dev-ubuntu-dns-server/" rel="next" title="Ubuntu14.04配置DNS Server">
+                <i class="fa fa-chevron-left"></i> Ubuntu14.04配置DNS Server
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/dev-ubuntu-change-sources/" rel="prev" title="Ubuntu更换源列表">
+                Ubuntu更换源列表 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zODU3Mi8xNTEwMA=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="VoidKing" />
+            
+              <p class="site-author-name" itemprop="name">VoidKing</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">583</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">188</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:voidking@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/voidking" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/voidking" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://twitter.com/voidking_com" target="_blank" title="Twitter">
+                      
+                        <i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#批量操作思路"><span class="nav-number">2.</span> <span class="nav-text">批量操作思路</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#思路一"><span class="nav-number">2.1.</span> <span class="nav-text">思路一</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#思路二"><span class="nav-number">2.2.</span> <span class="nav-text">思路二</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#思路三"><span class="nav-number">2.3.</span> <span class="nav-text">思路三</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#pssh"><span class="nav-number">3.</span> <span class="nav-text">pssh</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#pssh简介"><span class="nav-number">3.1.</span> <span class="nav-text">pssh简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-number">3.2.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#命令格式"><span class="nav-number">3.3.</span> <span class="nav-text">命令格式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实践篇"><span class="nav-number">4.</span> <span class="nav-text">实践篇</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#添加密钥认证访问"><span class="nav-number">4.1.</span> <span class="nav-text">添加密钥认证访问</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#获取每台机器的uptime"><span class="nav-number">4.2.</span> <span class="nav-text">获取每台机器的uptime</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#批量修改hostname"><span class="nav-number">4.3.</span> <span class="nav-text">批量修改hostname</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#批量替换sources-list"><span class="nav-number">4.4.</span> <span class="nav-text">批量替换sources.list</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#批量安装ganglia"><span class="nav-number">4.5.</span> <span class="nav-text">批量安装ganglia</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#批量修改密码"><span class="nav-number">4.6.</span> <span class="nav-text">批量修改密码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#批量杀进程"><span class="nav-number">4.7.</span> <span class="nav-text">批量杀进程</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#后记"><span class="nav-number">5.</span> <span class="nav-text">后记</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2012 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">VoidKing</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <!-- <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script> -->
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+  <div class="footer-beian">
+    <a href="http://www.beian.miit.gov.cn/" target="_blank">苏ICP备14021030号</a>&nbsp;|&nbsp;
+    <!-- <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=32032202000223">苏公网安备 32032202000223号</a> -->
+    <img src="/images/beian.png" alt="">
+    <a target="_blank" href="http://www.beian.gov.cn/">苏公网安备 32032202000223号</a>
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+      <div id="needsharebutton-float">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "box";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+      flOptions = {};
+      
+          flOptions.iconStyle = "box";
+      
+          flOptions.boxForm = "horizontal";
+      
+          flOptions.position = "topRight";
+      
+          flOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-float', flOptions);
+    
+  </script>
+
+  
+
+  
+  
+
+
+  
+
+  
+
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+
+</body>
+</html>

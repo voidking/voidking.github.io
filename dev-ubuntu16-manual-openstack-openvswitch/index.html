@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=5.1.4">
+
+
+
+
+
+
+  <meta name="keywords" content="linux,网络,ubuntu,openstack," />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="VoidKing" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="目标《Ubuntu16手动安装OpenStack——实例访问外网》一文中，已经配置好了实例访问外网。但是仍有不足，因为我们看不到更详细网络信息，排查问题不方便。 本文，我们把linuxbridge-agent更换为openvswitch-agent，主要参考OpenStack Pike : Configure Neutron、Neutron Configuration Options和Open v">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ubuntu16手动安装OpenStack——openvswitch">
+<meta property="og:url" content="https://www.voidking.com/dev-ubuntu16-manual-openstack-openvswitch/index.html">
+<meta property="og:site_name" content="VoidKing">
+<meta property="og:description" content="目标《Ubuntu16手动安装OpenStack——实例访问外网》一文中，已经配置好了实例访问外网。但是仍有不足，因为我们看不到更详细网络信息，排查问题不方便。 本文，我们把linuxbridge-agent更换为openvswitch-agent，主要参考OpenStack Pike : Configure Neutron、Neutron Configuration Options和Open v">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/ubuntu16-manual-openstack-openvswitch/agentlist.jpg?imageView2/0/w/750">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/ubuntu16-manual-openstack-openvswitch/agentlist2.jpg?imageView2/0/w/750">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/ubuntu16-manual-openstack-openvswitch/agentlist3.jpg?imageView2/0/w/750">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/ubuntu16-manual-openstack-openvswitch/agentlist4.jpg?imageView2/0/w/750">
+<meta property="article:published_time" content="2018-07-17T14:00:00.000Z">
+<meta property="article:modified_time" content="2020-02-07T15:42:50.013Z">
+<meta property="article:author" content="VoidKing">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="网络">
+<meta property="article:tag" content="ubuntu">
+<meta property="article:tag" content="openstack">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.voidking.com//imgs/ubuntu16-manual-openstack-openvswitch/agentlist.jpg?imageView2/0/w/750">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.voidking.com/dev-ubuntu16-manual-openstack-openvswitch/"/>
+
+
+
+
+
+  <title>Ubuntu16手动安装OpenStack——openvswitch | VoidKing</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?b759ac2a7fa45129e3ef060bf68259f0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">VoidKing</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">好好学习，天天向上！</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.voidking.com/dev-ubuntu16-manual-openstack-openvswitch/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="VoidKing">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="VoidKing">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Ubuntu16手动安装OpenStack——openvswitch</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-17T14:00:00+00:00">
+                2018-07-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/" itemprop="url" rel="index">
+                    <span itemprop="name">专业</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index">
+                    <span itemprop="name">运维</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E8%BF%90%E7%BB%B4/ubuntu/" itemprop="url" rel="index">
+                    <span itemprop="name">ubuntu</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h1><p><a href="https://www.voidking.com/dev-ubuntu16-manual-openstack-internet/">《Ubuntu16手动安装OpenStack——实例访问外网》</a>一文中，已经配置好了实例访问外网。但是仍有不足，因为我们看不到更详细网络信息，排查问题不方便。</p>
+<p>本文，我们把linuxbridge-agent更换为openvswitch-agent，主要参考<a href="https://www.server-world.info/en/note?os=CentOS_7&p=openstack_pike&f=16" target="_blank" rel="noopener">OpenStack Pike : Configure Neutron</a>、<a href="https://docs.openstack.org/neutron/queens/configuration/index.html" target="_blank" rel="noopener">Neutron Configuration Options</a>和<a href="https://docs.openstack.org/ocata/networking-guide/deploy-ovs-selfservice.html" target="_blank" rel="noopener">Open vSwitch: Self-service networks</a>。</p>
+<a id="more"></a>
+
+<h1 id="openvswitch简介"><a href="#openvswitch简介" class="headerlink" title="openvswitch简介"></a>openvswitch简介</h1><p>以下简介摘自<a href="https://opengers.github.io/openstack/openstack-base-use-openvswitch/" target="_blank" rel="noopener">openstack底层技术-使用openvswitch</a>。</p>
+<p>在过去，数据中心的服务器是直接连在硬件交换机上，后来VMware实现了服务器虚拟化技术，使虚拟服务器(VMs)能够连接在虚拟交换机上。借助这个虚拟交换机，可以为服务器上运行的VMs或容器提供逻辑的虚拟的以太网接口，这些逻辑接口都连接到虚拟交换机上。有三种比较流行的虚拟交换机：VMware virtual switch，Cisco Nexus 1000V和Open vSwitch。</p>
+<p>Open vSwitch(OVS)是运行在虚拟化平台上的虚拟交换机，其支持OpenFlow协议，也支持gre/vxlan/IPsec等隧道技术。在OVS之前，基于Linux的虚拟化平台比如KVM或Xen上，缺少一个功能丰富的虚拟交换机，因此OVS迅速崛起并开始在Xen/KVM中流行起来，并且应用于越来越多的开源项目，比如openstack neutron中的网络解决方案。</p>
+<p>在虚拟交换机的Flow控制器或管理工具方面，一些商业产品都集成有控制器或管理工具，比如Cisco 1000V的Virtual Supervisor Manager(VSM)，VMware的分布式交换机中的vCenter。而OVS则需要借助第三方控制器或管理工具实现复杂的转发策略。例如OVS支持OpenFlow协议，我们就可以使用任何支持OpenFlow协议的控制器来对OVS进行远程管理。OpenStack Neutron中的ML2插件也能够实现对OVS的管理。但这并不意味着OVS必须要有一个控制器才能工作。在不连接外部控制器情况下，OVS自身可以依靠MAC地址学习实现二层数据包转发功能，就像Linux Bridge。</p>
+<p>在基于Linux内核的系统上，应用最广泛的还是系统自带的虚拟交换机Linux Bridge，它是一个单纯的基于MAC地址学习的二层交换机，简单高效，但同时缺乏一些高级特性，比如OpenFlow、VLAN tag、QOS、ACL、Flow等，而且在隧道协议支持上，Linux Bridge只支持vxlan，OVS支持gre/vxlan/IPsec等，这也决定了OVS更适用于实现SDN技术。</p>
+<h1 id="控制节点"><a href="#控制节点" class="headerlink" title="控制节点"></a>控制节点</h1><h2 id="root用户"><a href="#root用户" class="headerlink" title="root用户"></a>root用户</h2><p>为了避免权限问题，建议切换到root用户进行操作（否则要加很多sudo）。<br><code>sudo -i</code></p>
+<h2 id="卸载linuxbridge"><a href="#卸载linuxbridge" class="headerlink" title="卸载linuxbridge"></a>卸载linuxbridge</h2><p>在安装OVS之前，我们先删除实例和网络，卸载掉linuxbridge。</p>
+<p>1、使admin环境生效<br><code>. admin-openrc</code></p>
+<p>2、查看当前网络组件<br><code>openstack network agent list</code><br><img src="http://cdn.voidking.com//imgs/ubuntu16-manual-openstack-openvswitch/agentlist.jpg?imageView2/0/w/750" alt=""></p>
+<p>3、在dashboard使用admin账户登录，依次删除实例、路由和网络。</p>
+<p>4、卸载linuxbridge</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">systemctl <span class="builtin-name">disable</span> neutron-linuxbridge-agent</span><br><span class="line">systemctl stop    neutron-linuxbridge-agent</span><br><span class="line">apt <span class="builtin-name">remove</span> -y neutron-plugin-linuxbridge-agent</span><br></pre></td></tr></table></figure>
+
+<p>5、查看当前网络组件<br><code>openstack network agent list</code><br><img src="http://cdn.voidking.com//imgs/ubuntu16-manual-openstack-openvswitch/agentlist2.jpg?imageView2/0/w/750" alt=""><br>此时，controller节点上的Linux bridge agent已经从笑脸变成了XXX。</p>
+<p>6、从数据库删除Linux bridge agent</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Bridge</span>=`openstack<span class="built_in"> network </span>agent list | grep <span class="string">'Linux bridge agent'</span>|awk <span class="string">'&#123;print $2&#125;'</span>`</span><br><span class="line">echo <span class="variable">$Bridge</span></span><br><span class="line">neutron agent-delete <span class="variable">$Bridge</span></span><br><span class="line">openstack<span class="built_in"> network </span>agent list</span><br></pre></td></tr></table></figure>
+
+<p>7、重新创建neutron数据库<br><code>mysql -uroot -p</code>，密码为openstack。</p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">drop</span> <span class="keyword">database</span> neutron;</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">database</span> neutron;</span><br></pre></td></tr></table></figure>
+
+<p>8、参考<a href="https://www.voidking.com/dev-ubuntu16-manual-openstack-neutron/">Ubuntu16手动安装OpenStack——neutron篇</a>，创建好证书和服务端点。</p>
+<h2 id="安装配置"><a href="#安装配置" class="headerlink" title="安装配置"></a>安装配置</h2><p>1、安装相关组件</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get -y <span class="keyword">install</span> neutron-<span class="keyword">server</span> neutron-metadata-<span class="keyword">agent</span> neutron-<span class="keyword">plugin</span>-ml2 python-neutronclient</span><br></pre></td></tr></table></figure>
+
+<p>2、备份neutron.conf<br><code>mv /etc/neutron/neutron.conf /etc/neutron/neutron.conf.bak</code></p>
+<p>3、<code>vim /etc/neutron/neutron.conf</code>，新建neutron.conf内容为：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[DEFAULT]</span></span><br><span class="line"><span class="attr">core_plugin</span> = ml2</span><br><span class="line"><span class="attr">service_plugins</span> = router</span><br><span class="line"><span class="attr">auth_strategy</span> = keystone</span><br><span class="line"><span class="attr">state_path</span> = /var/lib/neutron</span><br><span class="line"><span class="attr">dhcp_agent_notification</span> = <span class="literal">True</span></span><br><span class="line"><span class="attr">allow_overlapping_ips</span> = <span class="literal">True</span></span><br><span class="line"><span class="attr">notify_nova_on_port_status_changes</span> = <span class="literal">True</span></span><br><span class="line"><span class="attr">notify_nova_on_port_data_changes</span> = <span class="literal">True</span></span><br><span class="line"><span class="comment"># RabbitMQ connection info</span></span><br><span class="line"><span class="attr">transport_url</span> = rabbit://openstack:openstack@controller</span><br><span class="line"></span><br><span class="line"><span class="section">[agent]</span></span><br><span class="line"><span class="attr">root_helper</span> = sudo /usr/bin/neutron-rootwrap /etc/neutron/rootwrap.conf</span><br><span class="line"></span><br><span class="line"><span class="comment"># Keystone auth info</span></span><br><span class="line"><span class="section">[keystone_authtoken]</span></span><br><span class="line"><span class="attr">www_authenticate_uri</span> = http://controller:<span class="number">5000</span></span><br><span class="line"><span class="attr">auth_url</span> = http://controller:<span class="number">5000</span></span><br><span class="line"><span class="attr">memcached_servers</span> = controller:<span class="number">11211</span></span><br><span class="line"><span class="attr">auth_type</span> = password</span><br><span class="line"><span class="attr">project_domain_name</span> = default</span><br><span class="line"><span class="attr">user_domain_name</span> = default</span><br><span class="line"><span class="attr">project_name</span> = service</span><br><span class="line"><span class="attr">username</span> = neutron</span><br><span class="line"><span class="attr">password</span> = openstack</span><br><span class="line"></span><br><span class="line"><span class="comment"># MariaDB connection info</span></span><br><span class="line"><span class="section">[database]</span></span><br><span class="line"><span class="attr">connection</span> = mysql+pymysql://neutron:openstack@controller/neutron</span><br><span class="line"></span><br><span class="line"><span class="comment"># Nova connection info</span></span><br><span class="line"><span class="section">[nova]</span></span><br><span class="line"><span class="attr">auth_url</span> = http://controller:<span class="number">5000</span></span><br><span class="line"><span class="attr">auth_type</span> = password</span><br><span class="line"><span class="attr">project_domain_name</span> = default</span><br><span class="line"><span class="attr">user_domain_name</span> = default</span><br><span class="line"><span class="attr">region_name</span> = RegionOne</span><br><span class="line"><span class="attr">project_name</span> = service</span><br><span class="line"><span class="attr">username</span> = nova</span><br><span class="line"><span class="attr">password</span> = openstack</span><br><span class="line"></span><br><span class="line"><span class="section">[oslo_concurrency]</span></span><br><span class="line"><span class="attr">lock_path</span> = <span class="variable">$state_path</span>/tmp</span><br></pre></td></tr></table></figure>
+
+<p>4、更改权限<br><code>chmod 640 /etc/neutron/neutron.conf</code></p>
+<p><code>chgrp neutron /etc/neutron/neutron.conf</code></p>
+<p>5、<code>vi /etc/neutron/metadata_agent.ini</code>，如下修改：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># line 22: uncomment and specify Nova API server</span></span><br><span class="line"><span class="attr">nova_metadata_host</span> = controller</span><br><span class="line"><span class="comment"># line 34: uncomment and specify any secret key you like</span></span><br><span class="line"><span class="attr">metadata_proxy_shared_secret</span> = openstack</span><br><span class="line"><span class="comment"># line 260: uncomment and specify Memcache Server</span></span><br><span class="line"><span class="attr">memcache_servers</span> = controller:<span class="number">11211</span></span><br></pre></td></tr></table></figure>
+
+<p>6、<code>vi /etc/neutron/plugins/ml2/ml2_conf.ini</code>，如下修改：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># line 129: add ( it's OK with no value for "tenant_network_types" (set later if need) )</span></span><br><span class="line"><span class="section">[ml2]</span></span><br><span class="line"><span class="attr">type_drivers</span> = flat,vlan,gre,vxlan</span><br><span class="line"><span class="attr">tenant_network_types</span> =</span><br><span class="line"><span class="attr">mechanism_drivers</span> = openvswitch,l2population</span><br><span class="line"><span class="attr">extension_drivers</span> = port_security</span><br><span class="line"><span class="comment"># line 262: uncomment and add</span></span><br><span class="line"><span class="attr">enable_security_group</span> = <span class="literal">True</span></span><br><span class="line"><span class="attr">firewall_driver</span> = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver</span><br><span class="line"><span class="comment"># end line: uncomment</span></span><br><span class="line"><span class="attr">enable_ipset</span> = <span class="literal">True</span></span><br></pre></td></tr></table></figure>
+
+<p>7、<code>vi /etc/nova/nova.conf</code>，如下修改：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># add follows into [DEFAULT] section</span></span><br><span class="line"><span class="attr">use_neutron</span> = <span class="literal">True</span></span><br><span class="line"><span class="attr">linuxnet_interface_driver</span> = nova.network.linux_net.LinuxOVSInterfaceDriver</span><br><span class="line"><span class="attr">firewall_driver</span> = nova.virt.firewall.NoopFirewallDriver</span><br><span class="line"><span class="attr">vif_plugging_is_fatal</span> = <span class="literal">True</span></span><br><span class="line"><span class="attr">vif_plugging_timeout</span> = <span class="number">300</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># add follows to the end : Neutron auth info</span></span><br><span class="line"><span class="comment"># the value of metadata_proxy_shared_secret is the same with the one in metadata_agent.ini</span></span><br><span class="line"><span class="section">[neutron]</span></span><br><span class="line"><span class="attr">auth_url</span> = http://controller:<span class="number">5000</span></span><br><span class="line"><span class="attr">auth_type</span> = password</span><br><span class="line"><span class="attr">project_domain_name</span> = default</span><br><span class="line"><span class="attr">user_domain_name</span> = default</span><br><span class="line"><span class="attr">region_name</span> = RegionOne</span><br><span class="line"><span class="attr">project_name</span> = service</span><br><span class="line"><span class="attr">username</span> = neutron</span><br><span class="line"><span class="attr">password</span> = openstack</span><br><span class="line"><span class="attr">service_metadata_proxy</span> = <span class="literal">True</span></span><br><span class="line"><span class="attr">metadata_proxy_shared_secret</span> = openstack</span><br></pre></td></tr></table></figure>
+
+<p>8、创建链接<br><code>ln -s /etc/neutron/plugins/ml2/ml2_conf.ini /etc/neutron/plugin.ini</code></p>
+<p>9、生成数据库数据</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">su</span> -s /<span class="keyword">bin/bash </span>neutron -c <span class="string">"neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugin.ini upgrade head"</span></span><br></pre></td></tr></table></figure>
+
+<p>10、重启neutron服务并设置开机启动</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl <span class="keyword">start</span> neutron-<span class="keyword">server</span> neutron-metadata-<span class="keyword">agent</span> </span><br><span class="line">systemctl <span class="keyword">enable</span> neutron-<span class="keyword">server</span> neutron-metadata-<span class="keyword">agent</span></span><br></pre></td></tr></table></figure>
+
+<p>11、重启nova-api<br><code>systemctl restart nova-api</code></p>
+<h1 id="网络节点"><a href="#网络节点" class="headerlink" title="网络节点"></a>网络节点</h1><p>本文中，控制节点和网络节点是同一个节点。</p>
+<p>1、安装相关组件</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get -y <span class="keyword">install</span> neutron-<span class="keyword">plugin</span>-ml2 neutron-<span class="keyword">plugin</span>-openvswitch-<span class="keyword">agent</span> neutron-l3-<span class="keyword">agent</span> neutron-dhcp-<span class="keyword">agent</span> neutron-metadata-<span class="keyword">agent</span> python-neutronclient</span><br></pre></td></tr></table></figure>
+
+<p>2、备份neutron.conf<br><code>mv /etc/neutron/neutron.conf /etc/neutron/neutron.conf.bak</code></p>
+<p>3、<code>vim /etc/neutron/neutron.conf</code>，新建neutron.conf如下：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[DEFAULT]</span></span><br><span class="line"><span class="attr">core_plugin</span> = ml2</span><br><span class="line"><span class="attr">service_plugins</span> = router</span><br><span class="line"><span class="attr">auth_strategy</span> = keystone</span><br><span class="line"><span class="attr">state_path</span> = /var/lib/neutron</span><br><span class="line"><span class="attr">allow_overlapping_ips</span> = <span class="literal">True</span></span><br><span class="line"><span class="comment"># RabbitMQ connection info</span></span><br><span class="line"><span class="attr">transport_url</span> = rabbit://openstack:openstack@controller</span><br><span class="line"></span><br><span class="line"><span class="section">[agent]</span></span><br><span class="line"><span class="attr">root_helper</span> = sudo /usr/bin/neutron-rootwrap /etc/neutron/rootwrap.conf</span><br><span class="line"></span><br><span class="line"><span class="comment"># Keystone auth info</span></span><br><span class="line"><span class="section">[keystone_authtoken]</span></span><br><span class="line"><span class="attr">www_authenticate_uri</span> = http://controller:<span class="number">5000</span></span><br><span class="line"><span class="attr">auth_url</span> = http://controller:<span class="number">5000</span></span><br><span class="line"><span class="attr">memcached_servers</span> = controller:<span class="number">11211</span></span><br><span class="line"><span class="attr">auth_type</span> = password</span><br><span class="line"><span class="attr">project_domain_name</span> = default</span><br><span class="line"><span class="attr">user_domain_name</span> = default</span><br><span class="line"><span class="attr">project_name</span> = service</span><br><span class="line"><span class="attr">username</span> = neutron</span><br><span class="line"><span class="attr">password</span> = openstack</span><br><span class="line"></span><br><span class="line"><span class="section">[oslo_concurrency]</span></span><br><span class="line"><span class="attr">lock_path</span> = <span class="variable">$state_path</span>/lock</span><br></pre></td></tr></table></figure>
+
+<p>4、修改权限<br><code>chmod 640 /etc/neutron/neutron.conf</code></p>
+<p><code>chgrp neutron /etc/neutron/neutron.conf</code></p>
+<p>5、<code>vi /etc/neutron/l3_agent.ini</code>，如下修改：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># line 17: add</span></span><br><span class="line"><span class="attr">interface_driver</span> = neutron.agent.linux.interface.OVSInterfaceDriver</span><br><span class="line"><span class="comment"># line 100: uncomment and change</span></span><br><span class="line"><span class="attr">external_network_bridge</span> = br-eth2</span><br></pre></td></tr></table></figure>
+
+<p>6、<code>vi /etc/neutron/dhcp_agent.ini</code>，如下修改：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># line 17: add</span></span><br><span class="line"><span class="attr">interface_driver</span> = neutron.agent.linux.interface.OVSInterfaceDriver</span><br><span class="line"><span class="comment"># line 28: uncomment</span></span><br><span class="line"><span class="attr">dhcp_driver</span> = neutron.agent.linux.dhcp.Dnsmasq</span><br><span class="line"><span class="comment"># line 37: uncomment and change</span></span><br><span class="line"><span class="attr">enable_isolated_metadata</span> = <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<p>7、<code>vi /etc/neutron/metadata_agent.ini</code>，如下修改：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># line 22: uncomment and specify Nova API server</span></span><br><span class="line"><span class="attr">nova_metadata_host</span> = controller</span><br><span class="line"><span class="comment"># line 34: uncomment and specify any secret key you like</span></span><br><span class="line"><span class="attr">metadata_proxy_shared_secret</span> = openstack</span><br><span class="line"><span class="comment"># line 260: uncomment and specify Memcache Server</span></span><br><span class="line"><span class="attr">memcache_servers</span> = controller:<span class="number">11211</span></span><br></pre></td></tr></table></figure>
+
+<p>8、<code>vi /etc/neutron/plugins/ml2/ml2_conf.ini</code>，如下修改：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># line 129: add ( it's OK with no value for "tenant_network_types" (set later if need) )</span></span><br><span class="line"><span class="section">[ml2]</span></span><br><span class="line"><span class="attr">type_drivers</span> = flat,vlan,gre,vxlan</span><br><span class="line"><span class="attr">tenant_network_types</span> =</span><br><span class="line"><span class="attr">mechanism_drivers</span> = openvswitch,l2population</span><br><span class="line"><span class="attr">extension_drivers</span> = port_security</span><br><span class="line"><span class="comment"># line 262: uncomment and add</span></span><br><span class="line"><span class="attr">enable_security_group</span> = <span class="literal">True</span></span><br><span class="line"><span class="attr">firewall_driver</span> = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver</span><br><span class="line"><span class="comment"># end line: uncomment</span></span><br><span class="line"><span class="attr">enable_ipset</span> = <span class="literal">True</span></span><br></pre></td></tr></table></figure>
+
+<p>9、创建链接<br><code>ln -s /etc/neutron/plugins/ml2/ml2_conf.ini /etc/neutron/plugin.ini</code></p>
+<p>10、重启openvswitch并设置开机启动</p>
+<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart openvswitch-<span class="keyword">switch</span> </span><br><span class="line">systemctl enable openvswitch-<span class="keyword">switch</span></span><br></pre></td></tr></table></figure>
+
+<p>11、创建网桥br-int<br><code>ovs-vsctl add-br br-int</code></p>
+<p>12、重启相关服务并设置开机启动</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span><span class="built_in"> service </span><span class="keyword">in</span> dhcp-agent l3-agent metadata-agent openvswitch-agent; <span class="keyword">do</span></span><br><span class="line">systemctl start neutron-<span class="variable">$service</span></span><br><span class="line">systemctl <span class="builtin-name">enable</span> neutron-<span class="variable">$service</span></span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+
+<p>13、在控制节点查看neutron服务</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">. admin-openrc</span><br><span class="line">openstack<span class="built_in"> network </span>agent list</span><br></pre></td></tr></table></figure>
+<p><img src="http://cdn.voidking.com//imgs/ubuntu16-manual-openstack-openvswitch/agentlist3.jpg?imageView2/0/w/750" alt=""></p>
+<h1 id="计算节点"><a href="#计算节点" class="headerlink" title="计算节点"></a>计算节点</h1><h2 id="root用户-1"><a href="#root用户-1" class="headerlink" title="root用户"></a>root用户</h2><p>为了避免权限问题，建议切换到root用户进行操作（否则要加很多sudo）。<br><code>sudo -i</code></p>
+<h2 id="卸载linuxbridge-1"><a href="#卸载linuxbridge-1" class="headerlink" title="卸载linuxbridge"></a>卸载linuxbridge</h2><p>1、卸载linuxbridge</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">systemctl <span class="builtin-name">disable</span> neutron-linuxbridge-agent</span><br><span class="line">systemctl stop    neutron-linuxbridge-agent</span><br><span class="line">apt <span class="builtin-name">remove</span> -y neutron-plugin-linuxbridge-agent</span><br></pre></td></tr></table></figure>
+
+<p>2、控制节点查看当前网络组件<br><code>openstack network agent list</code></p>
+<p>3、从数据库删除Linux bridge agent</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Bridge</span>=`openstack<span class="built_in"> network </span>agent list | grep <span class="string">'Linux bridge agent'</span>|awk <span class="string">'&#123;print $2&#125;'</span>`</span><br><span class="line">echo <span class="variable">$Bridge</span></span><br><span class="line">neutron agent-delete <span class="variable">$Bridge</span></span><br><span class="line">openstack<span class="built_in"> network </span>agent list</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装配置-1"><a href="#安装配置-1" class="headerlink" title="安装配置"></a>安装配置</h2><p>1、安装相关组件</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get -y <span class="keyword">install</span> neutron-common neutron-<span class="keyword">plugin</span>-ml2 neutron-<span class="keyword">plugin</span>-openvswitch-<span class="keyword">agent</span></span><br></pre></td></tr></table></figure>
+
+<p>2、备份neutron.conf<br><code>mv /etc/neutron/neutron.conf /etc/neutron/neutron.conf.bak</code></p>
+<p>3、<code>vim /etc/neutron/neutron.conf</code>，新建neutron.conf如下：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[DEFAULT]</span></span><br><span class="line"><span class="attr">core_plugin</span> = ml2</span><br><span class="line"><span class="attr">service_plugins</span> = router</span><br><span class="line"><span class="attr">auth_strategy</span> = keystone</span><br><span class="line"><span class="attr">state_path</span> = /var/lib/neutron</span><br><span class="line"><span class="attr">allow_overlapping_ips</span> = <span class="literal">True</span></span><br><span class="line"><span class="comment"># RabbitMQ connection info</span></span><br><span class="line"><span class="attr">transport_url</span> = rabbit://openstack:openstack@controller</span><br><span class="line"></span><br><span class="line"><span class="section">[agent]</span></span><br><span class="line"><span class="attr">root_helper</span> = sudo /usr/bin/neutron-rootwrap /etc/neutron/rootwrap.conf</span><br><span class="line"></span><br><span class="line"><span class="comment"># Keystone auth info</span></span><br><span class="line"><span class="section">[keystone_authtoken]</span></span><br><span class="line"><span class="attr">www_authenticate_uri</span> = http://controller:<span class="number">5000</span></span><br><span class="line"><span class="attr">auth_url</span> = http://controller:<span class="number">5000</span></span><br><span class="line"><span class="attr">memcached_servers</span> = controller:<span class="number">11211</span></span><br><span class="line"><span class="attr">auth_type</span> = password</span><br><span class="line"><span class="attr">project_domain_name</span> = default</span><br><span class="line"><span class="attr">user_domain_name</span> = default</span><br><span class="line"><span class="attr">project_name</span> = service</span><br><span class="line"><span class="attr">username</span> = neutron</span><br><span class="line"><span class="attr">password</span> = openstack</span><br><span class="line"></span><br><span class="line"><span class="section">[oslo_concurrency]</span></span><br><span class="line"><span class="attr">lock_path</span> = <span class="variable">$state_path</span>/lock</span><br></pre></td></tr></table></figure>
+
+<p>4、修改权限<br><code>chmod 640 /etc/neutron/neutron.conf</code></p>
+<p><code>chgrp neutron /etc/neutron/neutron.conf</code></p>
+<p>5、<code>vi /etc/neutron/plugins/ml2/ml2_conf.ini</code>，如下修改：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># line 129: add ( it's OK with no value for "tenant_network_types" (set later if need) )</span></span><br><span class="line"><span class="section">[ml2]</span></span><br><span class="line"><span class="attr">type_drivers</span> = flat,vlan,gre,vxlan</span><br><span class="line"><span class="attr">tenant_network_types</span> =</span><br><span class="line"><span class="attr">mechanism_drivers</span> = openvswitch,l2population</span><br><span class="line"><span class="attr">extension_drivers</span> = port_security</span><br><span class="line"><span class="comment"># line 262: uncomment and add</span></span><br><span class="line"><span class="attr">enable_security_group</span> = <span class="literal">True</span></span><br><span class="line"><span class="attr">firewall_driver</span> = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver</span><br><span class="line"><span class="comment"># end line: uncomment</span></span><br><span class="line"><span class="attr">enable_ipset</span> = <span class="literal">True</span></span><br></pre></td></tr></table></figure>
+
+<p>6、<code>vi /etc/nova/nova.conf</code>，如下修改：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># add follows into [DEFAULT] section</span></span><br><span class="line"><span class="attr">use_neutron</span> = <span class="literal">True</span></span><br><span class="line"><span class="attr">linuxnet_interface_driver</span> = nova.network.linux_net.LinuxOVSInterfaceDriver</span><br><span class="line"><span class="attr">firewall_driver</span> = nova.virt.firewall.NoopFirewallDriver</span><br><span class="line"><span class="attr">vif_plugging_is_fatal</span> = <span class="literal">True</span></span><br><span class="line"><span class="attr">vif_plugging_timeout</span> = <span class="number">300</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># add follows to the end : Neutron auth info</span></span><br><span class="line"><span class="comment"># the value of metadata_proxy_shared_secret is the same with the one in metadata_agent.ini</span></span><br><span class="line"><span class="section">[neutron]</span></span><br><span class="line"><span class="attr">auth_url</span> = http://controller:<span class="number">5000</span></span><br><span class="line"><span class="attr">auth_type</span> = password</span><br><span class="line"><span class="attr">project_domain_name</span> = default</span><br><span class="line"><span class="attr">user_domain_name</span> = default</span><br><span class="line"><span class="attr">region_name</span> = RegionOne</span><br><span class="line"><span class="attr">project_name</span> = service</span><br><span class="line"><span class="attr">username</span> = neutron</span><br><span class="line"><span class="attr">password</span> = openstack</span><br><span class="line"><span class="attr">service_metadata_proxy</span> = <span class="literal">True</span></span><br><span class="line"><span class="attr">metadata_proxy_shared_secret</span> = openstack</span><br></pre></td></tr></table></figure>
+
+<p>7、创建链接<br><code>ln -s /etc/neutron/plugins/ml2/ml2_conf.ini /etc/neutron/plugin.ini</code></p>
+<p>8、重启openvswitch并设置开机启动</p>
+<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart openvswitch-<span class="keyword">switch</span> </span><br><span class="line">systemctl enable openvswitch-<span class="keyword">switch</span></span><br></pre></td></tr></table></figure>
+
+<p>9、创建网桥br-int<br><code>ovs-vsctl add-br br-int</code></p>
+<p>10、重启nova-compute服务<br><code>systemctl restart nova-compute</code></p>
+<p>11、重启neutron-openvswitch-agent并设置开机启动</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl <span class="keyword">restart</span> neutron-openvswitch-agent </span><br><span class="line">systemctl <span class="keyword">enable</span> neutron-openvswitch-agent</span><br></pre></td></tr></table></figure>
+
+<p>13、在控制节点查看neutron服务</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">. admin-openrc</span><br><span class="line">openstack<span class="built_in"> network </span>agent list</span><br></pre></td></tr></table></figure>
+<p><img src="http://cdn.voidking.com//imgs/ubuntu16-manual-openstack-openvswitch/agentlist4.jpg?imageView2/0/w/750" alt=""><br>可以看到，新添加了compute节点的Open vSwitch agent。</p>
+<p>至此，openvswitch安装配置完成。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/linux/" rel="tag"># linux</a>
+          
+            <a href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag"># 网络</a>
+          
+            <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
+          
+            <a href="/tags/openstack/" rel="tag"># openstack</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/dev-ubuntu16-manual-openstack-internet/" rel="next" title="Ubuntu16手动安装OpenStack——实例访问外网">
+                <i class="fa fa-chevron-left"></i> Ubuntu16手动安装OpenStack——实例访问外网
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/dev-ubuntu16-manual-openstack-vxlan-advance/" rel="prev" title="Ubuntu16手动安装OpenStack——vxlan网络进阶">
+                Ubuntu16手动安装OpenStack——vxlan网络进阶 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zODU3Mi8xNTEwMA=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="VoidKing" />
+            
+              <p class="site-author-name" itemprop="name">VoidKing</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">583</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">188</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:voidking@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/voidking" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/voidking" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://twitter.com/voidking_com" target="_blank" title="Twitter">
+                      
+                        <i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#目标"><span class="nav-number">1.</span> <span class="nav-text">目标</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#openvswitch简介"><span class="nav-number">2.</span> <span class="nav-text">openvswitch简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#控制节点"><span class="nav-number">3.</span> <span class="nav-text">控制节点</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#root用户"><span class="nav-number">3.1.</span> <span class="nav-text">root用户</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#卸载linuxbridge"><span class="nav-number">3.2.</span> <span class="nav-text">卸载linuxbridge</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装配置"><span class="nav-number">3.3.</span> <span class="nav-text">安装配置</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#网络节点"><span class="nav-number">4.</span> <span class="nav-text">网络节点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#计算节点"><span class="nav-number">5.</span> <span class="nav-text">计算节点</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#root用户-1"><span class="nav-number">5.1.</span> <span class="nav-text">root用户</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#卸载linuxbridge-1"><span class="nav-number">5.2.</span> <span class="nav-text">卸载linuxbridge</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装配置-1"><span class="nav-number">5.3.</span> <span class="nav-text">安装配置</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2012 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">VoidKing</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <!-- <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script> -->
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+  <div class="footer-beian">
+    <a href="http://www.beian.miit.gov.cn/" target="_blank">苏ICP备14021030号</a>&nbsp;|&nbsp;
+    <!-- <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=32032202000223">苏公网安备 32032202000223号</a> -->
+    <img src="/images/beian.png" alt="">
+    <a target="_blank" href="http://www.beian.gov.cn/">苏公网安备 32032202000223号</a>
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+      <div id="needsharebutton-float">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "box";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+      flOptions = {};
+      
+          flOptions.iconStyle = "box";
+      
+          flOptions.boxForm = "horizontal";
+      
+          flOptions.position = "topRight";
+      
+          flOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-float', flOptions);
+    
+  </script>
+
+  
+
+  
+  
+
+
+  
+
+  
+
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=5.1.4">
+
+
+
+
+
+
+  <meta name="keywords" content="docker,apache,linux,ubuntu,openstack," />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="VoidKing" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="前言《虚拟机在线迁移实验》一文中，进行了一些虚拟机迁移实验，并且记录了迁移过程中的指标数据。但是，实验环境是搭建在VirtualBox虚拟机中的，最终的实验结果不理想，会出现停机时间过长，迁移后实例卡住等问题。而且受限于虚拟机的大小，无法创建m1.xlarge这样的大型实例。 最近参照《Ubuntu16使用Kolla安装OpenStack》和《Kolla安装OpenStack多节点》，在物理机环境">
+<meta property="og:type" content="article">
+<meta property="og:title" content="虚拟机在线迁移实验V2——上">
+<meta property="og:url" content="https://www.voidking.com/dev-openstack-vm-live-migration-experiment-v2-0/index.html">
+<meta property="og:site_name" content="VoidKing">
+<meta property="og:description" content="前言《虚拟机在线迁移实验》一文中，进行了一些虚拟机迁移实验，并且记录了迁移过程中的指标数据。但是，实验环境是搭建在VirtualBox虚拟机中的，最终的实验结果不理想，会出现停机时间过长，迁移后实例卡住等问题。而且受限于虚拟机的大小，无法创建m1.xlarge这样的大型实例。 最近参照《Ubuntu16使用Kolla安装OpenStack》和《Kolla安装OpenStack多节点》，在物理机环境">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/openstack-vm-live-migration-experiment-v2/flavor.jpg?imageView2/0/w/600">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/openstack-vm-live-migration-experiment-v2/flavor.png?imageView2/0/w/600">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/openstack-vm-live-migration-experiment-v2/apachectl.jpg?imageView2/0/w/600">
+<meta property="article:published_time" content="2019-02-22T09:30:00.000Z">
+<meta property="article:modified_time" content="2020-02-07T15:42:50.009Z">
+<meta property="article:author" content="VoidKing">
+<meta property="article:tag" content="docker">
+<meta property="article:tag" content="apache">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="ubuntu">
+<meta property="article:tag" content="openstack">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.voidking.com//imgs/openstack-vm-live-migration-experiment-v2/flavor.jpg?imageView2/0/w/600">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.voidking.com/dev-openstack-vm-live-migration-experiment-v2-0/"/>
+
+
+
+
+
+  <title>虚拟机在线迁移实验V2——上 | VoidKing</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?b759ac2a7fa45129e3ef060bf68259f0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">VoidKing</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">好好学习，天天向上！</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.voidking.com/dev-openstack-vm-live-migration-experiment-v2-0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="VoidKing">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="VoidKing">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">虚拟机在线迁移实验V2——上</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-02-22T09:30:00+00:00">
+                2019-02-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/" itemprop="url" rel="index">
+                    <span itemprop="name">专业</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index">
+                    <span itemprop="name">运维</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E8%BF%90%E7%BB%B4/ubuntu/" itemprop="url" rel="index">
+                    <span itemprop="name">ubuntu</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><a href="https://www.voidking.com/dev-openstack-vm-live-migration-experiment/">《虚拟机在线迁移实验》</a>一文中，进行了一些虚拟机迁移实验，并且记录了迁移过程中的指标数据。但是，实验环境是搭建在VirtualBox虚拟机中的，最终的实验结果不理想，会出现停机时间过长，迁移后实例卡住等问题。而且受限于虚拟机的大小，无法创建m1.xlarge这样的大型实例。</p>
+<p>最近参照<a href="https://www.voidking.com/dev-ubuntu16-kolla-openstack-all-in-one/">《Ubuntu16使用Kolla安装OpenStack》</a>和<a href="https://www.voidking.com/dev-ubuntu16-kolla-openstack-multinode/">《Kolla安装OpenStack多节点》</a>，在物理机环境中重新搭建了OpenStack集群，三个节点分别为controller（network）、compute1、compute2。接下来我们在物理机中重新进行迁移实验，本文记录一下实验的步骤和结果。</p>
+<a id="more"></a>
+
+<h1 id="实例准备"><a href="#实例准备" class="headerlink" title="实例准备"></a>实例准备</h1><p>1、在horizon控制台，项目，计算，镜像。使用xenial-server-cloudimg-amd64-disk1.img镜像创建ubuntu16的镜像模板。</p>
+<p>2、创建实例类型m1.tiny2，CPU个数为1，内存为512M，磁盘为5GB。</p>
+<p>3、使用ubuntu16的镜像模板创建实例ubuntu0、ubuntu1、ubuntu2、ubuntu3、ubuntu4，实例类型分别选择m1.tiny2、m1.small、m1.medium、m1.large、m1.xlarge。之所以不使用默认的m1.tiny，是因为m1.tiny的磁盘太小，只有1G，无法安装ubuntu16。</p>
+<p><img src="http://cdn.voidking.com//imgs/openstack-vm-live-migration-experiment-v2/flavor.jpg?imageView2/0/w/600" alt=""></p>
+<p>4、创建成功后，分别分配浮动IP。</p>
+<p>PS：在进行迁移实验时，关闭其他实例，防止资源占用产生干扰。</p>
+<h1 id="脚本和软件准备"><a href="#脚本和软件准备" class="headerlink" title="脚本和软件准备"></a>脚本和软件准备</h1><h2 id="总迁移时间"><a href="#总迁移时间" class="headerlink" title="总迁移时间"></a>总迁移时间</h2><p>在两个计算节点，新建total-time.sh脚本：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">time1=`grep nova.virt.libvirt.migration /var/lib/docker/volumes/kolla_logs/_data/nova/nova-compute.log | tail -n 1 |awk <span class="string">'&#123;print $2&#125;'</span>`;</span><br><span class="line">time2=`grep <span class="string">'VM Stopped'</span> /var/lib/docker/volumes/kolla_logs/_data/nova/nova-compute.log | tail -n 1 | awk <span class="string">'&#123;print $2&#125;'</span>`;</span><br><span class="line"><span class="comment"># 计算时间差</span></span><br><span class="line">time=$(($(date +%s -d <span class="variable">$time2</span>) - $(date +%s -d <span class="variable">$time1</span>)));</span><br><span class="line"><span class="built_in">echo</span> <span class="string">"<span class="variable">$time</span> s"</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="停机时间"><a href="#停机时间" class="headerlink" title="停机时间"></a>停机时间</h2><p>在控制节点，新建downtime.sh脚本：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">transmitted=`grep <span class="string">'packets transmitted'</span> ping.log | tail -n 1 | awk <span class="string">'&#123;print $1&#125;'</span>`</span><br><span class="line">received=`grep <span class="string">'packets transmitted'</span> ping.log | tail -n 1 | awk <span class="string">'&#123;print $4&#125;'</span>`</span><br><span class="line">lost=`expr <span class="variable">$transmitted</span> - <span class="variable">$received</span>`</span><br><span class="line"><span class="built_in">echo</span> <span class="string">"downtime is <span class="variable">$lost</span> ms"</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="迁移数据量"><a href="#迁移数据量" class="headerlink" title="迁移数据量"></a>迁移数据量</h2><p>在两个计算节点，安装iptraf-ng。<br><code>apt install iptraf-ng</code></p>
+<h2 id="apache"><a href="#apache" class="headerlink" title="apache"></a>apache</h2><p>在ubuntu0等实例中安装apache：<br><code>apt install apache2</code><br>安装的默认版本为Apache/2.4.18 (Ubuntu)。</p>
+<h2 id="apachebench"><a href="#apachebench" class="headerlink" title="apachebench"></a>apachebench</h2><p>在控制节点，安装apachebench：<br><code>apt install apache2-utils</code></p>
+<p>在控制节点，新建format.sh脚本：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/bin/bash</span></span><br><span class="line"><span class="attribute">filename</span>=<span class="variable">$1</span></span><br><span class="line"><span class="attribute">start_time</span>=`awk <span class="string">'&#123;print $6&#125;'</span> <span class="variable">$filename</span> | grep -v <span class="string">'wait'</span> | sort | uniq -c|head -1|awk <span class="string">'&#123;print $2&#125;'</span>`</span><br><span class="line">awk <span class="string">'&#123;print $6&#125;'</span> <span class="variable">$filename</span> | grep -v <span class="string">'wait'</span> | sort | uniq -c|awk -v <span class="attribute">t</span>=<span class="variable">$start_time</span> <span class="string">'&#123;print $2-t,$1&#125;'</span> &gt; f-<span class="variable">$filename</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 填充0</span></span><br><span class="line"><span class="attribute">array_str</span>=`cat f-<span class="variable">$filename</span> | awk <span class="string">'&#123;print $1&#125;'</span>`</span><br><span class="line"><span class="attribute">array_str2</span>=`cat f-<span class="variable">$filename</span> | awk <span class="string">'&#123;print $2&#125;'</span>`</span><br><span class="line"><span class="attribute">IPS</span>=<span class="string">' '</span></span><br><span class="line">array=(<span class="variable">$array_str</span>)</span><br><span class="line">array2=(<span class="variable">$array_str2</span>)</span><br><span class="line"></span><br><span class="line"><span class="attribute">index</span>=0</span><br><span class="line"><span class="attribute">count</span>=0</span><br><span class="line"><span class="attribute">max</span>=101</span><br><span class="line">echo <span class="string">"#Throutput-<span class="variable">$filename</span>"</span> &gt; ff-<span class="variable">$filename</span></span><br><span class="line"><span class="keyword">while</span> ( [ <span class="variable">$index</span> -lt <span class="variable">$max</span> ] &amp;&amp; [ <span class="variable">$count</span> -lt <span class="variable">$max</span> ] )</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">    <span class="keyword">if</span> [[ <span class="variable">$&#123;array[index]&#125;</span> == <span class="variable">$count</span> ]]</span><br><span class="line">    then</span><br><span class="line">        echo <span class="string">"<span class="variable">$count</span> <span class="variable">$&#123;array2[index]&#125;</span>"</span> &gt;&gt; ff-<span class="variable">$filename</span></span><br><span class="line">        <span class="attribute">index</span>=`expr <span class="variable">$index</span> + 1`</span><br><span class="line">        <span class="attribute">count</span>=`expr <span class="variable">$count</span> + 1`</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        echo <span class="string">"<span class="variable">$count</span> 0"</span>  &gt;&gt; ff-<span class="variable">$filename</span></span><br><span class="line">        <span class="attribute">count</span>=`expr <span class="variable">$count</span> + 1`</span><br><span class="line">    fi</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+
+<h2 id="xshell"><a href="#xshell" class="headerlink" title="xshell"></a>xshell</h2><p>使用xshell，打开3个controller节点的shell，一个用来ping实例，一个用来运行apachebench，一个用来执行迁移命令。打开2个compute1节点的shell，一个用来运行iptraf-ng，一个用来执行total-time.sh脚本。打开2个compute2节点的shell，一个用来运行iptraf-ng，一个用来执行total-time.sh脚本。</p>
+<h1 id="实验流程"><a href="#实验流程" class="headerlink" title="实验流程"></a>实验流程</h1><p>假设当前只启动了ubuntu0实例，<code>nova show ubuntu0</code>位于compute1节点。</p>
+<p>1、在实例中启动压力测试软件，或者在两个compute节点中启动网络故障模拟软件。（flavor实验中不需要）</p>
+<p>2、在两个compute节点启动iptraf-ng，配置参考<a href="https://www.voidking.com/dev-openstack-vm-live-migration-performance/">《虚拟机在线迁移的性能统计》</a>。</p>
+<p>3、在三个controller的shell中分别输入好一条命令：</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo ping <span class="number">172.16</span><span class="number">.0</span><span class="number">.19</span> -i <span class="number">0.001</span> &gt;&gt; ping.log</span><br><span class="line">ab -g t0.dat -t <span class="number">100</span> -n <span class="number">1000000</span> http:<span class="comment">//172.16.0.19/</span></span><br><span class="line">nova live-migration ubuntu0 compute2</span><br></pre></td></tr></table></figure>
+<p>然后，依次回车执行这些命令。</p>
+<p>4、观察compute节点的iptraf-ng，等到流量不再增加，Ctrl+C结束ping命令。</p>
+<p>5、在controller节点执行downtime.sh得到停机时间，在compute1节点执行total-time.sh得到迁移时间，在两个计算节点观察iptraf-ng得到迁移数据量。</p>
+<p>6、等到ab命令结束，执行<code>./format.sh t0.dat</code>，得到吞吐量数据ff-t0.dat。</p>
+<p>以上流程，适用于接下来的所有实验。</p>
+<h1 id="flavor实验"><a href="#flavor实验" class="headerlink" title="flavor实验"></a>flavor实验</h1><p>1、按照实验流程，分别使用五个flavor，进行五次迁移实验，记录实验结果。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#Flavor    迁移时间s    停机时间ms    迁出数据量MB   迁入数据量MB</span></span><br><span class="line"><span class="string">tiny</span>    <span class="number">19</span>  <span class="number">483</span>    <span class="number">456</span>  <span class="number">459</span></span><br><span class="line"><span class="string">small</span>   <span class="number">20</span>  <span class="number">533</span>    <span class="number">443</span>  <span class="number">446</span></span><br><span class="line"><span class="string">medium</span>  <span class="number">21</span>  <span class="number">509</span>    <span class="number">491</span>  <span class="number">494</span></span><br><span class="line"><span class="string">large</span>   <span class="number">22</span>  <span class="number">455</span>    <span class="number">592</span>  <span class="number">596</span></span><br><span class="line"><span class="string">xlarge</span>  <span class="number">24</span>  <span class="number">531</span>    <span class="number">829</span>  <span class="number">834</span></span><br></pre></td></tr></table></figure>
+
+<p>2、同时得到五个吞吐量数据文件，ff-t0.dat到ff-t4.dat。</p>
+<h1 id="吞吐量问题"><a href="#吞吐量问题" class="headerlink" title="吞吐量问题"></a>吞吐量问题</h1><p>实验结果绘图，发现五种flavor的吞吐量基本没有差别！都是800上下。<br><img src="http://cdn.voidking.com//imgs/openstack-vm-live-migration-experiment-v2/flavor.png?imageView2/0/w/600" alt=""><br>为了解决apache吞吐量问题，必须得研究一下。</p>
+<h2 id="修改apache配置"><a href="#修改apache配置" class="headerlink" title="修改apache配置"></a>修改apache配置</h2><p>思路一：提高apache的最大连接数。参考<a href="https://www.cnblogs.com/CheeseZH/p/5169184.html" target="_blank" rel="noopener">如何设置Apache中的最大连接数</a>、<a href="https://www.cnblogs.com/CheeseZH/p/5169184.html" target="_blank" rel="noopener">如何设置Apache中的最大连接数</a>。</p>
+<p>1、查看apache module<br><code>apachectl -V</code><br><img src="http://cdn.voidking.com//imgs/openstack-vm-live-migration-experiment-v2/apachectl.jpg?imageView2/0/w/600" alt=""><br>可以看到Server MPM为event。如果要换成其他MPM，可以参考<a href="https://blog.csdn.net/hursing/article/details/18663047" target="_blank" rel="noopener">Ubuntu配置apache2.4的限速功能</a>进行设置，比如换成prefork，这里我们不进行更换。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">cd /etc/apache2/mods-enabled</span><br><span class="line">sudo ln -s <span class="built_in">..</span>/mods-available/mpm_prefork.load .</span><br><span class="line">sudo ln -s <span class="built_in">..</span>/mods-available/mpm_prefork.conf .</span><br><span class="line">sudo rm mods_event.load</span><br><span class="line">sudo rm mods_event.conf</span><br><span class="line">sudo<span class="built_in"> service </span>apache2 restart</span><br></pre></td></tr></table></figure>
+
+<p>2、备份配置</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">cd</span> <span class="string">/etc/apache2/mods-available/</span></span><br><span class="line">sudo cp mpm_event.conf&#123;,<span class="string">.bak</span>&#125;</span><br><span class="line">sudo cp mpm_event.load&#123;,<span class="string">.bak</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<p>3、修改配置<br>编辑<code>/etc/apache2/mods-available/mpm_event.conf</code>，原文件为：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># event MPM</span></span><br><span class="line"><span class="comment"># StartServers: initial number of server processes to start</span></span><br><span class="line"><span class="comment"># MinSpareThreads: minimum number of worker threads which are kept spare</span></span><br><span class="line"><span class="comment"># MaxSpareThreads: maximum number of worker threads which are kept spare</span></span><br><span class="line"><span class="comment"># ThreadsPerChild: constant number of worker threads in each server process</span></span><br><span class="line"><span class="comment"># MaxRequestWorkers: maximum number of worker threads</span></span><br><span class="line"><span class="comment"># MaxConnectionsPerChild: maximum number of requests a server process serves</span></span><br><span class="line"><span class="meta">&lt;IfModule</span> <span class="string">mpm_event_module&gt;</span></span><br><span class="line">        <span class="attr">StartServers</span>             <span class="string">2</span></span><br><span class="line">        <span class="attr">MinSpareThreads</span>          <span class="string">25</span></span><br><span class="line">        <span class="attr">MaxSpareThreads</span>          <span class="string">75</span></span><br><span class="line">        <span class="attr">ThreadLimit</span>              <span class="string">64</span></span><br><span class="line">        <span class="attr">ThreadsPerChild</span>          <span class="string">25</span></span><br><span class="line">        <span class="attr">MaxRequestWorkers</span>        <span class="string">150</span></span><br><span class="line">        <span class="attr">MaxConnectionsPerChild</span>   <span class="string">0</span></span><br><span class="line"><span class="attr">&lt;/IfModule&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># vim: syntax=apache ts=4 sw=4 sts=4 sr noet</span></span><br></pre></td></tr></table></figure>
+
+<p>参考<a href="https://blog.csdn.net/yanggd1987/article/details/45578395" target="_blank" rel="noopener">关于apache的mpm-event的参数无法调整问题</a>，修改为：</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;IfModule mpm_event_module&gt;</span><br><span class="line">    ServerLimit              <span class="number">100</span></span><br><span class="line">    StartServers             <span class="number">20</span></span><br><span class="line">    MinSpareThreads          <span class="number">25</span></span><br><span class="line">    MaxSpareThreads          <span class="number">1200</span></span><br><span class="line">#   ThreadLimit              <span class="number">64</span></span><br><span class="line">    ThreadsPerChild          <span class="number">50</span></span><br><span class="line">    MaxRequestWorkers        <span class="number">5000</span></span><br><span class="line">    MaxConnectionsPerChild   <span class="number">10000</span></span><br><span class="line">&lt;/IfModule&gt;</span><br></pre></td></tr></table></figure>
+<p>MaxSpareThreads的参数设置，需要根据<code>StartServers*ThreadsPerChild=1000</code>，因此MaxSpareThreads必须大于1000，在此为1200，否则会有<code>StartServers-MaxSpareThreads/ThreadsPerChild</code>个进程被杀掉。</p>
+<p>MaxRequestWorkers的参数设置，需要根据<code>ServerLimit*ThreadsPerChild=5000</code>，否则启动会有警告。</p>
+<p>4、重启apache2<br><code>sudo service apache2 restart</code></p>
+<p>然而，并没有用，吞吐量并没有发生什么变化，依然是800左右，不过波动幅度变大了。MPM更换为prefork，吞吐量降到了700左右。</p>
+<h2 id="修改ab命令"><a href="#修改ab命令" class="headerlink" title="修改ab命令"></a>修改ab命令</h2><p>思路二：apachebench的命令有问题。<br>修改ab命令为：<br><code>ab -g t0.dat -c 1000 -t 100 -n 10000000 http://172.16.0.19/</code></p>
+<p>这次，吞吐量果然上去了，变成8000左右。但是，所有实例的吞吐量都上去了！</p>
+<h2 id="更换测试工具"><a href="#更换测试工具" class="headerlink" title="更换测试工具"></a>更换测试工具</h2><p>思路三：测试工具换成webbench。<br>1、安装webbench</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">wget</span> <span class="string">http://soft.vpser.net/test/webbench/webbench-1.5.tar.gz</span></span><br><span class="line"><span class="attr">tar</span> <span class="string">zxvf webbench-1.5.tar.gz</span></span><br><span class="line"><span class="attr">cd</span> <span class="string">webbench-1.5</span></span><br><span class="line"><span class="attr">sudo</span> <span class="string">make &amp;&amp; sudo make install</span></span><br></pre></td></tr></table></figure>
+
+<p>2、测试<br><code>webbench -c 10000 -t 10 http://172.16.0.19/</code><br>10s成功了80000左右的请求，说明ab测出的吞吐量是真实的。这样看来，问题还是出在apache上，吞吐量固定在8000左右。</p>
+<h2 id="更换为nginx"><a href="#更换为nginx" class="headerlink" title="更换为nginx"></a>更换为nginx</h2><p>思路四：apache更换为nginx。<br>1、修改apache的端口<br><code>sudo vim /etc/apache2/ports.conf</code>，端口改为8080。</p>
+<p>2、安装nginx</p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install -y nginx</span><br><span class="line">sudo apt <span class="keyword">update</span> --fix-<span class="literal">missing</span></span><br><span class="line">sudo apt install -y nginx</span><br></pre></td></tr></table></figure>
+
+<p>3、再次测试<br><code>ab -g t0.dat -c 1000 -t 100 -n 10000000 http://172.16.0.19/</code><br>吞吐量有所上升，9000左右，但是最坑的地方在于，所有实例都上升了，都是9000左右！</p>
+<h2 id="提高ulimit"><a href="#提高ulimit" class="headerlink" title="提高ulimit"></a>提高ulimit</h2><p>思路五：在实例中提高ulimit。</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">sudo</span> <span class="string">-i</span></span><br><span class="line"><span class="attr">ulimit</span> <span class="string">-a</span></span><br><span class="line"><span class="attr">ulimit</span> <span class="string">-i 257178</span></span><br><span class="line"><span class="attr">ulimit</span> <span class="string">-u 257178</span></span><br></pre></td></tr></table></figure>
+<p>然而，吞吐量并没有变化。</p>
+<h2 id="网络问题"><a href="#网络问题" class="headerlink" title="网络问题"></a>网络问题</h2><p>莫非，是因为计算机网络问题？于是，在实例ubuntu0、ubuntu2、ubuntu4内部中进行ab测试，吞吐量结果为：</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">app ubuntu0 ubuntu2 ubuntu4</span><br><span class="line">apache <span class="number">5298</span> <span class="number">11290</span> <span class="number">17706</span></span><br><span class="line">nginx  <span class="number">9380</span> <span class="number">19745</span> <span class="number">23124</span></span><br></pre></td></tr></table></figure>
+<p>看到这个结果，总算感觉合理了。问题也可以定位了，网络瓶颈。那么新的问题来了，不能在实例内部进行测试的情况下，怎样测试出准确的吞吐量？</p>
+<h2 id="安装应用"><a href="#安装应用" class="headerlink" title="安装应用"></a>安装应用</h2><p>如果能够把真实吞吐量降到8000以下，是不是就可以通过内网测出真实吞吐量了？很有可能。那么，就安装一个标准测试应用，来试试效果。找到了两款应用，mediawiki和tpcw，这里我们选择mediawiki，参考<a href="https://www.voidking.com/dev-mediawiki-install-and-config/">《MediaWiki安装与配置》</a>。</p>
+<p>安装好mediawiki后进行ab测试：</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ab -g t0.dat -c <span class="number">10</span> -t <span class="number">100</span> -n <span class="number">1000000</span> http:<span class="comment">//172.16.0.19/mediawiki/index.php/Main_Page</span></span><br></pre></td></tr></table></figure>
+<p>ubuntu0吞吐量为30左右，ubuntu2的吞吐量为60左右。</p>
+<h1 id="实验流程2"><a href="#实验流程2" class="headerlink" title="实验流程2"></a>实验流程2</h1><p>假设当前只启动了ubuntu0实例，<code>nova show ubuntu0</code>位于compute1节点。</p>
+<p>1、在实例中启动压力测试软件，或者在两个compute节点中启动网络故障模拟软件。（flavor实验中不需要）</p>
+<p>2、在两个compute节点启动iptraf-ng，配置参考<a href="https://www.voidking.com/dev-openstack-vm-live-migration-performance/">《虚拟机在线迁移的性能统计》</a>。</p>
+<p>3、在三个controller的shell中分别输入好一条命令：</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo ping <span class="number">172.16</span><span class="number">.0</span><span class="number">.19</span> -i <span class="number">0.001</span> &gt;&gt; ping.log</span><br><span class="line">ab -g t0.dat -c <span class="number">10</span> -t <span class="number">100</span> -n <span class="number">1000000</span> http:<span class="comment">//172.16.0.19/mediawiki/index.php/Main_Page</span></span><br><span class="line">nova live-migration ubuntu0 compute2</span><br></pre></td></tr></table></figure>
+<p>然后，依次回车执行这些命令。</p>
+<p>4、观察compute节点的iptraf-ng，等到流量不再增加，Ctrl+C结束ping命令。</p>
+<p>5、在controller节点执行downtime.sh得到停机时间，在compute1节点执行total-time.sh得到迁移时间，在两个计算节点观察iptraf-ng得到迁移数据量。</p>
+<p>6、等到ab命令结束，执行<code>./format.sh t0.dat</code>，得到吞吐量数据ff-t0.dat。</p>
+<p>以上流程，适用于接下来的所有实验。</p>
+<h1 id="flavor实验2"><a href="#flavor实验2" class="headerlink" title="flavor实验2"></a>flavor实验2</h1><p>1、按照实验流程，分别使用安装了mediawiki的五个flavor，进行五次迁移实验，记录实验结果。<br>然而，新的问题出现了，安装了mediawiki的flavor，迁移时间特别久，迁移数据量特别大，等到ab命令结束，迁移才会停止。修改ab命令为：</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ab -g t0.dat -t <span class="number">100</span> -n <span class="number">1000000</span> http:<span class="comment">//172.16.0.19/mediawiki/index.php/Main_Page</span></span><br></pre></td></tr></table></figure>
+<p>可以成功迁移，但是另一个问题出现了，所有实例的吞吐量都下降为10左右，这日子没发过了！</p>
+<p>是mediawiki的问题吗？创建一个index.php文件来测试一下，内容为：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"><span class="php">    phpinfo();</span></span><br><span class="line"><span class="php"><span class="meta">?&gt;</span></span></span><br></pre></td></tr></table></figure>
+<p>使用ab命令测试：<br><code>ab -g t0.dat -c 1000 -t 100 -n 1000000 http://172.16.0.19/index.php</code><br>ubuntu0吞吐量在800左右，ubuntu2的吞吐量在1200左右，挺不错的结果。然而，如果在ab测试时进行迁移，迁移时间依然会特别久，迁移数据量依然会特别大。ab命令停止，迁移成功停止；ab命令不停止，迁移直到失败。和mediawiki存在同样的问题。</p>
+<h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p>实验遇到瓶颈，找叶老师商量后，决定不再适用Apache这种web服务，而是换成系统服务，比如计算任务。在实例内部运行服务记录结果，就不存在网络的影响了。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/docker/" rel="tag"># docker</a>
+          
+            <a href="/tags/apache/" rel="tag"># apache</a>
+          
+            <a href="/tags/linux/" rel="tag"># linux</a>
+          
+            <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
+          
+            <a href="/tags/openstack/" rel="tag"># openstack</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/dev-vm-live-migration-gnuplot/" rel="next" title="虚拟机在线迁移实验结果绘图">
+                <i class="fa fa-chevron-left"></i> 虚拟机在线迁移实验结果绘图
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/dev-mediawiki-install-and-config/" rel="prev" title="MediaWiki安装与配置">
+                MediaWiki安装与配置 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zODU3Mi8xNTEwMA=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="VoidKing" />
+            
+              <p class="site-author-name" itemprop="name">VoidKing</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">583</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">188</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:voidking@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/voidking" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/voidking" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://twitter.com/voidking_com" target="_blank" title="Twitter">
+                      
+                        <i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实例准备"><span class="nav-number">2.</span> <span class="nav-text">实例准备</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#脚本和软件准备"><span class="nav-number">3.</span> <span class="nav-text">脚本和软件准备</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#总迁移时间"><span class="nav-number">3.1.</span> <span class="nav-text">总迁移时间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#停机时间"><span class="nav-number">3.2.</span> <span class="nav-text">停机时间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#迁移数据量"><span class="nav-number">3.3.</span> <span class="nav-text">迁移数据量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#apache"><span class="nav-number">3.4.</span> <span class="nav-text">apache</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#apachebench"><span class="nav-number">3.5.</span> <span class="nav-text">apachebench</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xshell"><span class="nav-number">3.6.</span> <span class="nav-text">xshell</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实验流程"><span class="nav-number">4.</span> <span class="nav-text">实验流程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#flavor实验"><span class="nav-number">5.</span> <span class="nav-text">flavor实验</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#吞吐量问题"><span class="nav-number">6.</span> <span class="nav-text">吞吐量问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#修改apache配置"><span class="nav-number">6.1.</span> <span class="nav-text">修改apache配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修改ab命令"><span class="nav-number">6.2.</span> <span class="nav-text">修改ab命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#更换测试工具"><span class="nav-number">6.3.</span> <span class="nav-text">更换测试工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#更换为nginx"><span class="nav-number">6.4.</span> <span class="nav-text">更换为nginx</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#提高ulimit"><span class="nav-number">6.5.</span> <span class="nav-text">提高ulimit</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#网络问题"><span class="nav-number">6.6.</span> <span class="nav-text">网络问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装应用"><span class="nav-number">6.7.</span> <span class="nav-text">安装应用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实验流程2"><span class="nav-number">7.</span> <span class="nav-text">实验流程2</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#flavor实验2"><span class="nav-number">8.</span> <span class="nav-text">flavor实验2</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#后记"><span class="nav-number">9.</span> <span class="nav-text">后记</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2012 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">VoidKing</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <!-- <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script> -->
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+  <div class="footer-beian">
+    <a href="http://www.beian.miit.gov.cn/" target="_blank">苏ICP备14021030号</a>&nbsp;|&nbsp;
+    <!-- <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=32032202000223">苏公网安备 32032202000223号</a> -->
+    <img src="/images/beian.png" alt="">
+    <a target="_blank" href="http://www.beian.gov.cn/">苏公网安备 32032202000223号</a>
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+      <div id="needsharebutton-float">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "box";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+      flOptions = {};
+      
+          flOptions.iconStyle = "box";
+      
+          flOptions.boxForm = "horizontal";
+      
+          flOptions.position = "topRight";
+      
+          flOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-float', flOptions);
+    
+  </script>
+
+  
+
+  
+  
+
+
+  
+
+  
+
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=5.1.4">
+
+
+
+
+
+
+  <meta name="keywords" content="linux,ubuntu," />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="VoidKing" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="下载内核查看当前内核版本uname -a可以看到，当前内核版本为3.16.0。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ubuntu Kylin编译内核和添加系统调用">
+<meta property="og:url" content="https://www.voidking.com/dev-ubuntu-kylin-compile-kernel-and-add-systemcall/index.html">
+<meta property="og:site_name" content="VoidKing">
+<meta property="og:description" content="下载内核查看当前内核版本uname -a可以看到，当前内核版本为3.16.0。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.voidking.com/imgs/linux/compile/kernalversion.jpg">
+<meta property="og:image" content="http://cdn.voidking.com/imgs/linux/compile/sys.jpg">
+<meta property="og:image" content="http://cdn.voidking.com/imgs/linux/compile/syscall_32.jpg">
+<meta property="og:image" content="http://cdn.voidking.com/imgs/linux/compile/syscalls.jpg">
+<meta property="og:image" content="http://cdn.voidking.com/imgs/linux/compile/makemenuconfig.jpg">
+<meta property="og:image" content="http://cdn.voidking.com/imgs/linux/compile/load.jpg">
+<meta property="og:image" content="http://cdn.voidking.com/imgs/linux/compile/save.jpg">
+<meta property="og:image" content="http://cdn.voidking.com/imgs/linux/compile/kernelcompile.jpg">
+<meta property="og:image" content="http://cdn.voidking.com/imgs/linux/compile/modulesinstallerror.jpg">
+<meta property="og:image" content="http://cdn.voidking.com/imgs/linux/compile/modulesbuildsuccess.jpg">
+<meta property="og:image" content="http://cdn.voidking.com/imgs/linux/compile/modulesinstallsuccess.jpg">
+<meta property="og:image" content="http://cdn.voidking.com/imgs/linux/compile/initrd-mylinux.img.jpg">
+<meta property="og:image" content="http://cdn.voidking.com/imgs/linux/compile/kernelinstallsuccess.jpg">
+<meta property="og:image" content="http://cdn.voidking.com/imgs/linux/compile/update-grub.jpg">
+<meta property="article:published_time" content="2015-06-29T11:01:47.000Z">
+<meta property="article:modified_time" content="2020-02-07T15:42:50.013Z">
+<meta property="article:author" content="VoidKing">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="ubuntu">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.voidking.com/imgs/linux/compile/kernalversion.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.voidking.com/dev-ubuntu-kylin-compile-kernel-and-add-systemcall/"/>
+
+
+
+
+
+  <title>Ubuntu Kylin编译内核和添加系统调用 | VoidKing</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?b759ac2a7fa45129e3ef060bf68259f0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">VoidKing</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">好好学习，天天向上！</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.voidking.com/dev-ubuntu-kylin-compile-kernel-and-add-systemcall/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="VoidKing">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="VoidKing">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Ubuntu Kylin编译内核和添加系统调用</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2015-06-29T11:01:47+00:00">
+                2015-06-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/" itemprop="url" rel="index">
+                    <span itemprop="name">专业</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index">
+                    <span itemprop="name">运维</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E8%BF%90%E7%BB%B4/ubuntu/" itemprop="url" rel="index">
+                    <span itemprop="name">ubuntu</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="下载内核"><a href="#下载内核" class="headerlink" title="下载内核"></a>下载内核</h1><h2 id="查看当前内核版本"><a href="#查看当前内核版本" class="headerlink" title="查看当前内核版本"></a>查看当前内核版本</h2><p><code>uname -a</code><br><img src="http://cdn.voidking.com/imgs/linux/compile/kernalversion.jpg" alt=""><br>可以看到，当前内核版本为3.16.0。</p>
+<a id="more"></a>
+
+<h2 id="获取当前版本内核源码"><a href="#获取当前版本内核源码" class="headerlink" title="获取当前版本内核源码"></a>获取当前版本内核源码</h2><p><code>sudo apt-get install linux-source</code><br>内核源码默认下载到/usr/src文件夹下，这里，我们就使用这套源码。</p>
+<h2 id="官方下载地址"><a href="#官方下载地址" class="headerlink" title="官方下载地址"></a>官方下载地址</h2><p><a href="https://www.kernel.org/" target="_blank" rel="noopener">https://www.kernel.org/</a><br>这个网站，你可以找到最新的内核版本，如果要想要给内核升级，可以来这里下载。</p>
+<h1 id="解压内核"><a href="#解压内核" class="headerlink" title="解压内核"></a>解压内核</h1><p><code>cd /usr/src/</code><br><code>tar -jvf linux-source-3.16.0.tar.bz2</code><br>解压失败：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tar: You must specify one of the <span class="string">'-Acdtrux'</span>, <span class="string">'--delete'</span> or <span class="string">'--test-label'</span> <span class="keyword">options</span></span><br><span class="line"><span class="keyword">Try</span> <span class="string">'tar --help'</span> or <span class="string">'tar --usage'</span> <span class="keyword">for</span> more information.</span><br></pre></td></tr></table></figure>
+
+<p>添加一个参数x：<br><code>tar -xjvf linux-source-3.16.0.tar.bz2</code><br>再次失败，各种Permission denied。</p>
+<p><code>su</code><br><code>tar -xjvf linux-source-3.16.0.tar.bz2</code><br>虽然速度很慢（3分钟左右），但是好歹解压成功了。</p>
+<h1 id="添加系统调用"><a href="#添加系统调用" class="headerlink" title="添加系统调用"></a>添加系统调用</h1><h2 id="修改sys-c"><a href="#修改sys-c" class="headerlink" title="修改sys.c"></a>修改sys.c</h2><p><code>cd linux-source-3.16.0/kernel/</code><br><code>gedit sys.c</code><br>添加如下代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> *new systemcall added by voidking</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function">asmlinkage <span class="keyword">int</span> <span class="title">sys_callvoidking</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	printk(<span class="string">"You are handsome,VoidKing!"</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="http://cdn.voidking.com/imgs/linux/compile/sys.jpg" alt=""></p>
+<h2 id="修改syscall-32-tbl"><a href="#修改syscall-32-tbl" class="headerlink" title="修改syscall_32.tbl"></a>修改syscall_32.tbl</h2><p><code>cd /usr/src/linux-source-3.16.0/arch/x86/syscalls</code><br><code>gedit syscall_32.tbl</code><br>在最后一行插入</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">355</span>	i386	callvoidking		sys_callvoidking</span><br></pre></td></tr></table></figure>
+<p><img src="http://cdn.voidking.com/imgs/linux/compile/syscall_32.jpg" alt=""></p>
+<h2 id="修改syscalls-h"><a href="#修改syscalls-h" class="headerlink" title="修改syscalls.h"></a>修改syscalls.h</h2><p><code>cd /usr/src/linux-source-3.16.0/include/linux/</code><br><code>gedit syscalls.h</code><br>在<code>#endif</code>前添加：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">asmlinkage <span class="keyword">int</span> <span class="title">sys_callvoidking</span><span class="params">(<span class="keyword">void</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+<p><img src="http://cdn.voidking.com/imgs/linux/compile/syscalls.jpg" alt=""></p>
+<h1 id="编译准备"><a href="#编译准备" class="headerlink" title="编译准备"></a>编译准备</h1><h2 id="libncurses5-dev"><a href="#libncurses5-dev" class="headerlink" title="libncurses5-dev"></a>libncurses5-dev</h2><p>安装nucurses库，为了make menuconfig调用。<br><code>apt-get install libncurses5-dev</code></p>
+<h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><p>把原先系统的配置文件拷贝到当前源码目录。<br><code>cp /boot/config-\</code>uname -r` .config`</p>
+<h2 id="加载配置文件"><a href="#加载配置文件" class="headerlink" title="加载配置文件"></a>加载配置文件</h2><p><code>make menuconfig</code>，打开编译配置界面，load，ok，save，exit。<br><img src="http://cdn.voidking.com/imgs/linux/compile/makemenuconfig.jpg" alt=""><br><img src="http://cdn.voidking.com/imgs/linux/compile/load.jpg" alt=""><br><img src="http://cdn.voidking.com/imgs/linux/compile/save.jpg" alt=""></p>
+<h1 id="编译命令"><a href="#编译命令" class="headerlink" title="编译命令"></a>编译命令</h1><h2 id="编译内核"><a href="#编译内核" class="headerlink" title="编译内核"></a>编译内核</h2><p><code>make -j8</code>或者<code>make bzImage</code>，前者更快一点。<br><img src="http://cdn.voidking.com/imgs/linux/compile/kernelcompile.jpg" alt=""></p>
+<p>有些同学要两个小时才能编译完成，小编使用VirtualBox，只用了20分钟，电脑配置之牛逼可见一斑！哇哈哈哈！</p>
+<h2 id="编译模块"><a href="#编译模块" class="headerlink" title="编译模块"></a>编译模块</h2><p><code>make modules</code>，编译模块时，小编自己添加的系统调用出现了警告，不过不影响接下来的编译。<br>一个小时之后。。。噗！要吐血了，之前分给虚拟机8G存储空间，没想到编译过程中，空间不足了，没法继续编译。。。</p>
+<h2 id="扩展Ubuntu空间"><a href="#扩展Ubuntu空间" class="headerlink" title="扩展Ubuntu空间"></a>扩展Ubuntu空间</h2><p>1、首先关闭虚拟机，在设置中给Ubuntu再添加一块虚拟硬盘。<br>2、打开虚拟机，<code>cd /dev</code><br>3、<code>fdisk sdb</code><br>4、命令p：查看当前新盘状态。<br>5、命令n：创建一个新的分区。<br>6、两个选项e（扩展分区）和p（主分区），选择p。<br>7、连续两次回车，使用默认的起始和结束sector。<br>8、创建了一个sdb1，大小为整块虚拟硬盘。<br>9、命令w：保存退出。<br>10、<code>mkfs -t ext4 sdb1</code>，格式化。<br>11、<code>cd /mnt</code>，<code>mkdir sdb1</code>，<code>mount /dev/sdb1 sdb1</code><br>12、<code>cd sdb1</code>，<code>cp -rv /usr/src/linux-source-3.16.0 .</code><br>13、<code>umount sdb1</code>，<code>mount /dev/sdb1 /usr/src</code></p>
+<h2 id="重新编译模块"><a href="#重新编译模块" class="headerlink" title="重新编译模块"></a>重新编译模块</h2><p><code>cd /usr/src/linux-source-3.16.0</code>，<code>make modules</code><br>等。。。再等。。。继续等。。。四个小时之后，提示空间不足。。。我靠，你丫到底需要多大空间？8G的空间不够你编译程序用的！！！哭了。。。</p>
+<h2 id="加速编译"><a href="#加速编译" class="headerlink" title="加速编译"></a>加速编译</h2><p>寻找加速编译内核的办法，发现，似乎<code>make -j8</code>等于<code>make bzImage</code>加<code>make modules</code>。<br>去掉编译模块这个步骤试试：<br><code>make mrproper</code>，<code>make clean</code>，<code>make -j8</code>，然后<code>make modules_install</code>。报错：</p>
+<figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">  INSTALL arch/<span class="keyword">x</span><span class="number">86</span>/crypto/aes-<span class="keyword">x</span><span class="number">86</span>_<span class="number">64</span>.ko</span><br><span class="line">cp: cannot stat ‘arch/<span class="keyword">x</span><span class="number">86</span>/crypto/aes-<span class="keyword">x</span><span class="number">86</span>_<span class="number">64</span>.ko’: No such file <span class="keyword">or</span> directory</span><br><span class="line">Can't read <span class="keyword">private</span> key</span><br><span class="line">scripts/Makefile.modinst:<span class="number">30</span>: recipe for <span class="keyword">target</span> 'arch/<span class="keyword">x</span><span class="number">86</span>/crypto/aes-<span class="keyword">x</span><span class="number">86</span>_<span class="number">64</span>.ko' failed</span><br><span class="line">make[<span class="number">1</span>]: *** [arch/<span class="keyword">x</span><span class="number">86</span>/crypto/aes-<span class="keyword">x</span><span class="number">86</span>_<span class="number">64</span>.ko] Error <span class="number">2</span></span><br><span class="line">Makefile:<span class="number">1089</span>: recipe for <span class="keyword">target</span> '_modinst_' failed</span><br><span class="line">make: *** [_modinst_] Error <span class="number">2</span></span><br></pre></td></tr></table></figure>
+<p><img src="http://cdn.voidking.com/imgs/linux/compile/modulesinstallerror.jpg" alt=""><br>猜测是配置文件.config文件有问题，换成/usr/src/linux-headers-3.16.0-23-generic目录下的.config文件。重新编译，安装，还是报同样错误。那就再加上编译模块这个步骤吧！</p>
+<h2 id="第三次编译模块"><a href="#第三次编译模块" class="headerlink" title="第三次编译模块"></a>第三次编译模块</h2><p><code>make -j8 modules</code>，大概四个小时之后，终于编译完成。<br><img src="http://cdn.voidking.com/imgs/linux/compile/modulesbuildsuccess.jpg" alt=""><br>安装模块报错，和<code>make -j8</code>编译后直接安装模块报错相同。给跪了，能不能愉快地玩耍了！</p>
+<h2 id="找到错误"><a href="#找到错误" class="headerlink" title="找到错误"></a>找到错误</h2><p>后来，仔细检查了前面的步骤。发现修改syscalls.h的时候，声明类型写错了，本该是int，却写成了long类型。修改成int，一路顺利。实践证明，<code>make -j8</code>等于<code>make bzImage</code>加<code>make modules</code>。</p>
+<h2 id="安装模块"><a href="#安装模块" class="headerlink" title="安装模块"></a>安装模块</h2><p><code>make modules_install</code><br><img src="http://cdn.voidking.com/imgs/linux/compile/modulesinstallsuccess.jpg" alt=""></p>
+<h2 id="建立映像文件"><a href="#建立映像文件" class="headerlink" title="建立映像文件"></a>建立映像文件</h2><p>建立要载入ramdisk的映像文件<br><code>mkinitramfs -o /boot/initrd-mylinux.img</code><br><code>cd /boot</code>，<code>ll</code><br><img src="http://cdn.voidking.com/imgs/linux/compile/initrd-mylinux.img.jpg" alt=""></p>
+<h2 id="安装内核"><a href="#安装内核" class="headerlink" title="安装内核"></a>安装内核</h2><p><code>make install</code><br><img src="http://cdn.voidking.com/imgs/linux/compile/kernelinstallsuccess.jpg" alt=""></p>
+<h1 id="更新grub引导"><a href="#更新grub引导" class="headerlink" title="更新grub引导"></a>更新grub引导</h1><p><code>update-grub</code><br><img src="http://cdn.voidking.com/imgs/linux/compile/update-grub.jpg" alt=""></p>
+<h1 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h1><h2 id="选择新内核"><a href="#选择新内核" class="headerlink" title="选择新内核"></a>选择新内核</h2><p>开机时，选择新内核引导系统。</p>
+<h2 id="voidking-c"><a href="#voidking-c" class="headerlink" title="voidking.c"></a>voidking.c</h2><p>新建文件voidking.c，内容如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> callvoidking 355</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	syscall(callvoidking);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="编译执行"><a href="#编译执行" class="headerlink" title="编译执行"></a>编译执行</h2><p><code>gcc -o voidking voidking.c</code><br><code>./voidking</code><br>最终什么都没有显示出来，不知道错在哪里。。。也许是sys.c中的函数没有写好，不重做了，整个流程耗时太久，领会精神就够了。</p>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>为Linux添加新的系统调用，主要包括有4个步骤：编写系统调用服务例程；添加系统调用号；修改系统调用表；重新编译内核并测试新添加的系统调用。</p>
+<p>虽然这次实验最终失败了，但是，我掌握了添加系统调用和编译内核的流程，培养了耐心以及分析解决问题的能力。也算是收获颇丰，吼吼！</p>
+<h1 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h1><p>Ubuntu 14.04 TLS 内核升级和添加系统调用<br><a href="http://yunpan.cn/cQtsTfkbeTPvG" target="_blank" rel="noopener">http://yunpan.cn/cQtsTfkbeTPvG</a>  访问密码 adce</p>
+<hr>
+<p>如何实现一个新的系统调用<br><a href="http://book.51cto.com/art/201007/213651.htm" target="_blank" rel="noopener">http://book.51cto.com/art/201007/213651.htm</a></p>
+<hr>
+<p>ubuntu下重新编译内核<br><a href="http://m.blog.csdn.net/blog/chen_jianjian/42168449" target="_blank" rel="noopener">http://m.blog.csdn.net/blog/chen_jianjian/42168449</a></p>
+<hr>
+<p>Ubuntu Linux内核编译步骤<br><a href="http://www.linuxidc.com/Linux/2012-03/57303.htm" target="_blank" rel="noopener">http://www.linuxidc.com/Linux/2012-03/57303.htm</a></p>
+<hr>
+<p>Add a system call to the linux kernel in Ubuntu<br><a href="http://www.franksthinktank.com/howto/addsyscall/" target="_blank" rel="noopener">http://www.franksthinktank.com/howto/addsyscall/</a></p>
+<hr>
+<p>Ubuntu添加系统调用<br><a href="http://gnodsy.blog.163.com/blog/static/17754713320112135352447/" target="_blank" rel="noopener">http://gnodsy.blog.163.com/blog/static/17754713320112135352447/</a></p>
+<hr>
+<p>Ubuntu内核的重新编译安装<br><a href="http://www.linuxidc.com/Linux/2009-12/23721.htm" target="_blank" rel="noopener">http://www.linuxidc.com/Linux/2009-12/23721.htm</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/linux/" rel="tag"># linux</a>
+          
+            <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/essay-choice-kaoyan-or-work/" rel="next" title="考研还是工作">
+                <i class="fa fa-chevron-left"></i> 考研还是工作
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/dev-linux-review/" rel="prev" title="Linux复习整理">
+                Linux复习整理 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zODU3Mi8xNTEwMA=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="VoidKing" />
+            
+              <p class="site-author-name" itemprop="name">VoidKing</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">583</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">188</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:voidking@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/voidking" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/voidking" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://twitter.com/voidking_com" target="_blank" title="Twitter">
+                      
+                        <i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#下载内核"><span class="nav-number">1.</span> <span class="nav-text">下载内核</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#查看当前内核版本"><span class="nav-number">1.1.</span> <span class="nav-text">查看当前内核版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#获取当前版本内核源码"><span class="nav-number">1.2.</span> <span class="nav-text">获取当前版本内核源码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#官方下载地址"><span class="nav-number">1.3.</span> <span class="nav-text">官方下载地址</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解压内核"><span class="nav-number">2.</span> <span class="nav-text">解压内核</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#添加系统调用"><span class="nav-number">3.</span> <span class="nav-text">添加系统调用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#修改sys-c"><span class="nav-number">3.1.</span> <span class="nav-text">修改sys.c</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修改syscall-32-tbl"><span class="nav-number">3.2.</span> <span class="nav-text">修改syscall_32.tbl</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修改syscalls-h"><span class="nav-number">3.3.</span> <span class="nav-text">修改syscalls.h</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#编译准备"><span class="nav-number">4.</span> <span class="nav-text">编译准备</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#libncurses5-dev"><span class="nav-number">4.1.</span> <span class="nav-text">libncurses5-dev</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置文件"><span class="nav-number">4.2.</span> <span class="nav-text">配置文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#加载配置文件"><span class="nav-number">4.3.</span> <span class="nav-text">加载配置文件</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#编译命令"><span class="nav-number">5.</span> <span class="nav-text">编译命令</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#编译内核"><span class="nav-number">5.1.</span> <span class="nav-text">编译内核</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编译模块"><span class="nav-number">5.2.</span> <span class="nav-text">编译模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#扩展Ubuntu空间"><span class="nav-number">5.3.</span> <span class="nav-text">扩展Ubuntu空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重新编译模块"><span class="nav-number">5.4.</span> <span class="nav-text">重新编译模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#加速编译"><span class="nav-number">5.5.</span> <span class="nav-text">加速编译</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第三次编译模块"><span class="nav-number">5.6.</span> <span class="nav-text">第三次编译模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#找到错误"><span class="nav-number">5.7.</span> <span class="nav-text">找到错误</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装模块"><span class="nav-number">5.8.</span> <span class="nav-text">安装模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#建立映像文件"><span class="nav-number">5.9.</span> <span class="nav-text">建立映像文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装内核"><span class="nav-number">5.10.</span> <span class="nav-text">安装内核</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#更新grub引导"><span class="nav-number">6.</span> <span class="nav-text">更新grub引导</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#测试"><span class="nav-number">7.</span> <span class="nav-text">测试</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#选择新内核"><span class="nav-number">7.1.</span> <span class="nav-text">选择新内核</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#voidking-c"><span class="nav-number">7.2.</span> <span class="nav-text">voidking.c</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编译执行"><span class="nav-number">7.3.</span> <span class="nav-text">编译执行</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小结"><span class="nav-number">8.</span> <span class="nav-text">小结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考文档"><span class="nav-number">9.</span> <span class="nav-text">参考文档</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2012 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">VoidKing</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <!-- <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script> -->
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+  <div class="footer-beian">
+    <a href="http://www.beian.miit.gov.cn/" target="_blank">苏ICP备14021030号</a>&nbsp;|&nbsp;
+    <!-- <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=32032202000223">苏公网安备 32032202000223号</a> -->
+    <img src="/images/beian.png" alt="">
+    <a target="_blank" href="http://www.beian.gov.cn/">苏公网安备 32032202000223号</a>
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+      <div id="needsharebutton-float">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "box";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+      flOptions = {};
+      
+          flOptions.iconStyle = "box";
+      
+          flOptions.boxForm = "horizontal";
+      
+          flOptions.position = "topRight";
+      
+          flOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-float', flOptions);
+    
+  </script>
+
+  
+
+  
+  
+
+
+  
+
+  
+
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+
+</body>
+</html>

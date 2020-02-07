@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=5.1.4">
+
+
+
+
+
+
+  <meta name="keywords" content="linux,aiops," />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="VoidKing" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="AIOps是什么？运维的发展，经历了手工运维、自动化运维、DevOps、AIOps。 Gartner公司2013提出ITOA（IT Operations Analytics），2016年将ITOA概念升级为AIOps（Algorithmic IT Operations），2017年发现AI越来越火，于是把AIOps重新定义为Artificial Intelligence for IT Operat">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AIOps概览">
+<meta property="og:url" content="https://www.voidking.com/dev-aiops-summary/index.html">
+<meta property="og:site_name" content="VoidKing">
+<meta property="og:description" content="AIOps是什么？运维的发展，经历了手工运维、自动化运维、DevOps、AIOps。 Gartner公司2013提出ITOA（IT Operations Analytics），2016年将ITOA概念升级为AIOps（Algorithmic IT Operations），2017年发现AI越来越火，于是把AIOps重新定义为Artificial Intelligence for IT Operat">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/aiops-summary/knowledge.jpg?imageView2/0/w/700">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/aiops-summary/team.jpg?imageView2/0/w/700">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/aiops-summary/direction.jpg?imageView2/0/w/700">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/aiops-summary/direction2.jpg?imageView2/0/w/700">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/aiops-summary/level.jpg?imageView2/0/w/700">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/aiops-summary/framework.jpg?imageView2/0/w/700">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/aiops-summary/model.jpg?imageView2/0/w/700">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/aiops-summary/key.jpg?imageView2/0/w/700">
+<meta property="article:published_time" content="2018-11-02T09:00:00.000Z">
+<meta property="article:modified_time" content="2020-02-07T15:42:49.989Z">
+<meta property="article:author" content="VoidKing">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="aiops">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.voidking.com//imgs/aiops-summary/knowledge.jpg?imageView2/0/w/700">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.voidking.com/dev-aiops-summary/"/>
+
+
+
+
+
+  <title>AIOps概览 | VoidKing</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?b759ac2a7fa45129e3ef060bf68259f0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">VoidKing</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">好好学习，天天向上！</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.voidking.com/dev-aiops-summary/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="VoidKing">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="VoidKing">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">AIOps概览</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-11-02T09:00:00+00:00">
+                2018-11-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/" itemprop="url" rel="index">
+                    <span itemprop="name">专业</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index">
+                    <span itemprop="name">运维</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E8%BF%90%E7%BB%B4/aiops/" itemprop="url" rel="index">
+                    <span itemprop="name">aiops</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="AIOps是什么？"><a href="#AIOps是什么？" class="headerlink" title="AIOps是什么？"></a>AIOps是什么？</h1><p>运维的发展，经历了手工运维、自动化运维、DevOps、AIOps。</p>
+<p>Gartner公司2013提出ITOA（IT Operations Analytics），2016年将ITOA概念升级为AIOps（Algorithmic IT Operations），2017年发现AI越来越火，于是把AIOps重新定义为Artificial Intelligence for IT Operations，也就是智能运维。<br>AIOps将人工智能应用于运维领域，基于已有的运维数据（日志、监控信息、应用信息等），通过机器学习的方式来进一步解决自动化运维没办法解决的问题。</p>
+<p>AIOps的目标是，利用大数据、机器学习和其他分析技术，通过预防预测、个性化和动态分析，直接和间接增强IT业务的相关技术能力，实现所维护产品或服务的更高质量、合理成本及高效支撑。</p>
+<a id="more"></a>
+
+<h1 id="AIOps做什么？"><a href="#AIOps做什么？" class="headerlink" title="AIOps做什么？"></a>AIOps做什么？</h1><h2 id="知识领域"><a href="#知识领域" class="headerlink" title="知识领域"></a>知识领域</h2><p>AIOps涉及到行业领域知识、运维场景领域知识和机器学习领域知识，如下图：<br><img src="http://cdn.voidking.com//imgs/aiops-summary/knowledge.jpg?imageView2/0/w/700" alt=""></p>
+<h2 id="团队构成"><a href="#团队构成" class="headerlink" title="团队构成"></a>团队构成</h2><p>一个AIOps团队，要有运维工程师、运维开发工程师、运维AI工程师，如下图：<br><img src="http://cdn.voidking.com//imgs/aiops-summary/team.jpg?imageView2/0/w/700" alt=""></p>
+<h2 id="研究方向"><a href="#研究方向" class="headerlink" title="研究方向"></a>研究方向</h2><p>研究方向按照时间来分，可以分为针对历史事件、针对当前事件、针对未来事件，如下图：<br><img src="http://cdn.voidking.com//imgs/aiops-summary/direction.jpg?imageView2/0/w/700" alt=""></p>
+<p>研究方向按照应用场景来分，可以分为效率提升、质量保障、成本管理，如下图：<br><img src="http://cdn.voidking.com//imgs/aiops-summary/direction2.jpg?imageView2/0/w/700" alt=""></p>
+<h1 id="AIOps平台"><a href="#AIOps平台" class="headerlink" title="AIOps平台"></a>AIOps平台</h1><h2 id="能力分级"><a href="#能力分级" class="headerlink" title="能力分级"></a>能力分级</h2><p>AIOps 的建设可以先由无到局部单点探索、再到单点能力完善，形成解决某个局部问题的运维AI“学件” ，再由多个具有 AI 能力的单运维能力点组合成一个智能运维流程。AIOps 能力分级可具体可᧿述为5级，如下图：<br><img src="http://cdn.voidking.com//imgs/aiops-summary/level.jpg?imageView2/0/w/700" alt=""></p>
+<p>1) 开始尝试应用AI能力，还无较成熟单点应用<br>2) 具备单场景的AI运维能力，可以初步形成供内部使用的学件<br>3) 有由多个单场景AI运维模块串联起来的流程化AI运维能力，可以对外提供可靠的运维AI学件<br>4) 主要运维场景均已实现流程化免干预AI运维能力，可以对外提供可靠的AIOps服务。<br>5) 有核心中枢AI，可以在成本、质量、效率间从容调整，达到业务不同生命周期对三个方面不同的指标要求，可实现多目标下的最优或按需最优。</p>
+<p>“学件”（Learnware）一词由南京大学周志华老师原创，学件=模型+规约。</p>
+<p>学件，亦称AI运维组件，类似程序中的API或公共库，但API及公共库不含具体业务数据，只是某种算法，而 AI 运维组件（或称学件），则是在类似API的基础上，兼具对某个运维场景智能化解决的“记忆”能力，将处理这个场景的智能规则保存在了这个组件中。</p>
+<p>这个智能规则是在一定量的数据下学习而来的，且具有“可重用” 、“可演进”、“可了解”的特性，既可共享由专家利用数据训练的算法，又可保护数据和隐私。</p>
+<h2 id="能力框架"><a href="#能力框架" class="headerlink" title="能力框架"></a>能力框架</h2><p>基于上述 AIOps 能力分级， 对应的 AIOps 能力框架如下。<br><img src="http://cdn.voidking.com//imgs/aiops-summary/framework.jpg?imageView2/0/w/700" alt=""></p>
+<h2 id="能力体系"><a href="#能力体系" class="headerlink" title="能力体系"></a>能力体系</h2><p>AIOps工作平台能力体系主要功能是为AIOps的实际场景建设落地而提供功能的工具或者产<br>品平台，其主要目的是降低AIOps的开发人员成本，提升开发效率，规范工作交付质量。 AIOps平台功能与一般的机器学习(或者数据挖掘)平台极为类似，此类产品国外的比如Google的<a href="https://cloud.google.com/automl/" target="_blank" rel="noopener">AutoML</a>。<br><img src="http://cdn.voidking.com//imgs/aiops-summary/model.jpg?imageView2/0/w/700" alt=""></p>
+<h2 id="平台要素"><a href="#平台要素" class="headerlink" title="平台要素"></a>平台要素</h2><p>AIOps平台从底层到上层应该包含如下要素：<br><img src="http://cdn.voidking.com//imgs/aiops-summary/key.jpg?imageView2/0/w/700" alt=""></p>
+<p>1) 数据源：大量并且种类繁多的 IT 基础设施<br>2) 大数据平台：用于处理历史和实时的数据<br>3) 计算与分析：通过已有的 IT 数据产生新的数据，例如数据清洗、去除噪声等<br>4) 算法：用于计算和分析，以产生 IT 运维场景所需要的结果<br>5) 机器学习：这里一般指无监督学习，可根据基于算法的分析结果来产生新的算法</p>
+<h1 id="AIOps关键技术"><a href="#AIOps关键技术" class="headerlink" title="AIOps关键技术"></a>AIOps关键技术</h1><h2 id="数据采集"><a href="#数据采集" class="headerlink" title="数据采集"></a>数据采集</h2><p>数据采集负责将智能运维所需要的数据接入至AIOps平台，所接入的运维数据类型一般包括（但不限于）日志数据，性能指标数据，网络抓包数据，用户行为数据，告警数据，配置管理数据，运维流程类数据等。</p>
+<p>数据采集方式可分为无代理采集以及有代理采集两种。其中无代理采集为服务端采集，支持SNMP、数据库JDBC、TCP/UDP监听、SYSLOG、Web Service，消息队列采集等主流采集方式。有代理采集则用于本地文件或目录采集，容器编排环境采集，以及脚本采集等。</p>
+<h2 id="数据处理"><a href="#数据处理" class="headerlink" title="数据处理"></a>数据处理</h2><p>1) 数据字段提取：通过正则解析，KV解析，分隔符解析等解析方式提取字段<br>2) 规范化数据格式：对字段值类型重定义和格式转换<br>3) 数据字段内容替换：基于业务规则替换数据字段内容，比如必要的数据脱敏过程，同时可实现无效数据、缺失数据的替换处理<br>4) 时间规范化：对各类运维数据中的时间字段进行格式统一转换<br>5) 预聚合计算：对数值型字段或指标类数据基于滑动时间窗口进行聚合统计计算，如取1分钟CPU平均值</p>
+<h2 id="数据存储"><a href="#数据存储" class="headerlink" title="数据存储"></a>数据存储</h2><p>1) 数据需要进行实时全文检索，分词搜索。可选用主流的 ElasticSearch 引擎<br>2) 时间序列数据（性能指标），主要以时间维度进行查询分析的数据，可选用主流的rrdtool、graphite、influxdb等时序数据库<br>3) 关系类数据，以及会聚集在基于关系进行递归查询的数据可选择图数据库<br>4) 数据的长期存储和离线挖掘以及数据仓库构建，可选用主流的 Hadoop、Spark 等大数据平台</p>
+<h2 id="离线和在线计算"><a href="#离线和在线计算" class="headerlink" title="离线和在线计算"></a>离线和在线计算</h2><p>离线计算：针对存储的历史数据进行挖掘和批量计算的分析场景，用于大数据量的离线模型训练和计算，如挖掘告警关联关系，趋势预测/容量预测模型计算，错误词频分析等场景。</p>
+<p>在线计算：对流处理中的实时数据进行在线计算，包括但不限于数据的查询、预处理和统计分析，数据的实时异常检测，以及部分支持实时更新模型的机器学习算法运用等。主流的流处理框架包括：Spark Streaming、Kafka Streaming、Flink、Storm等。</p>
+<h2 id="算法技术"><a href="#算法技术" class="headerlink" title="算法技术"></a>算法技术</h2><p>运维场景通常无法直接基于通用的机器学习算法以黑盒的方式解决，因此需要一些面向AIOps 的算法技术，作为解决具体运维场景的基础。</p>
+<p>1) 指标趋势预测：通过分析指标历史数据，判断未来一段时间指标趋势及预测值，常见有Holt-Winters、时序数据分解、ARIMA等算法。该算法技术可用于异常检测、容量预测、容量规划等场景。<br>2) 指标聚类: 根据曲线的相似度把多个 KPI 聚成多个类别。该算法技术可以应用于大规模的指标异常检测：在同一指标类别里采用同样的异常检测算法及参数，大幅降低训练和检测开销。常见的算法有DBSCAN、K-medoids、CLARANS等，应用的挑战是数据量大，曲线模式复杂。<br>3) 多指标联动关联挖掘: 多指标联动分析判断多个指标是否经常一起波动或增长。该算法技术可用于构建故障传播关系，从而应用于故障诊断。常见的算法有Pearson correlation、Spearman correlation、Kendall correlation等，应用的挑战为KPI种类繁多，关联关系复杂。<br>4) 指标与事件关联挖掘: 自动挖掘文本数据中的事件与指标之间的关联关系（ 比如在程序 A 每次启动的时候 CPU 利用率就上一个台阶）。该算法技术可用于构建故障传播关系，从而应用于故障诊断。常见的算法有 Pearson correlation、J-measure、Two-sample test等，应用的挑战为事件和KPI种类繁多，KPI测量时间粒度过粗会导致判断相关、先后、单调关系困难。<br>5) 事件与事件关联挖掘: 分析异常事件之间的关联关系，把历史上经常一起发生的事件关联在一起。该算法技术可用于构建故障传播关系，从而应用于故障诊断。常见的算法有 FP-Growth、Apriori、随机森林等，但前提是异常检测需要准确可靠。<br>6) 故障传播关系挖掘：融合文本数据与指标数据，基于上述多指标联动关联挖掘、指标与事件关联挖掘、事件与事件关联挖掘等技术、由 tracing 推导出的模块调用关系图、辅以服务器与网络拓扑，构建组件之间的故障传播关系。该算法技术可以应用于故障诊断，其有效性主要取决于其基于的其它技术。</p>
+<h1 id="顶会推荐"><a href="#顶会推荐" class="headerlink" title="顶会推荐"></a>顶会推荐</h1><p>ACM SIGCOMM<br>ACM IMC<br>ACM/USENIX NSDI<br>ACM MobiSys<br>ACM CoNEXT<br>ACM MobiCom<br>ACM SIGMETRICS<br>IEEE INFOCOM<br>ACM KDD<br>USENIX Security<br>IEEE Security &amp; Privacy<br>ACM CCS<br>NDSS</p>
+<h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p>总而言之，AIOps就是利用机器学习来做一些运维工作。涉及到行业知识、运维知识、机器学习知识，是一个很大的研究方向，可以细分为很多小的研究方向。</p>
+<p>AIOps围绕质量保障、成本管理和效率提升的基本运维场景，逐步构建智能化运维场景。在质量保障方面，保障现网稳定运行细分为异常检测、故障诊断、故障预测、故障自愈等基本场景；在成本管理方面，细分为指标监控，异常检测，资源优化，容量规划，性能优化等基本场景；在效率方面，分为智能预测，智能变更、智能问答，智能决策等基本场景（注：三者之间不是完全独立的，是相互影响的，场景的划分侧重于主影响维度）。</p>
+<p>每一个小方向，都是一个研究点，最终成果是一个学件。通过学件的组合，就构成了AIOps平台。</p>
+<p>更多内容请参考书签中给出的链接。</p>
+<h1 id="书签"><a href="#书签" class="headerlink" title="书签"></a>书签</h1><p><a href="https://netman.aiops.org/wp-content/uploads/2018/04/peidan.pdf" target="_blank" rel="noopener">基于机器学习的智能运维</a><br><a href="https://wenku.baidu.com/view/96de31f8866fb84ae55c8d9e.html" target="_blank" rel="noopener">基于机器学习的智能运维-ppt</a><br><a href="http://www.8n8k.com/gops.pdf" target="_blank" rel="noopener">《企业级 AIOps 实施建议》白皮书-V0.6 版本</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/linux/" rel="tag"># linux</a>
+          
+            <a href="/tags/aiops/" rel="tag"># aiops</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/love-win10-wifi/" rel="next" title="Win10开热点">
+                <i class="fa fa-chevron-left"></i> Win10开热点
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/dev-kolla-openstack-add-new-node/" rel="prev" title="Kolla安装OpenStack添加新节点">
+                Kolla安装OpenStack添加新节点 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zODU3Mi8xNTEwMA=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="VoidKing" />
+            
+              <p class="site-author-name" itemprop="name">VoidKing</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">583</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">188</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:voidking@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/voidking" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/voidking" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://twitter.com/voidking_com" target="_blank" title="Twitter">
+                      
+                        <i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#AIOps是什么？"><span class="nav-number">1.</span> <span class="nav-text">AIOps是什么？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#AIOps做什么？"><span class="nav-number">2.</span> <span class="nav-text">AIOps做什么？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#知识领域"><span class="nav-number">2.1.</span> <span class="nav-text">知识领域</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#团队构成"><span class="nav-number">2.2.</span> <span class="nav-text">团队构成</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#研究方向"><span class="nav-number">2.3.</span> <span class="nav-text">研究方向</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#AIOps平台"><span class="nav-number">3.</span> <span class="nav-text">AIOps平台</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#能力分级"><span class="nav-number">3.1.</span> <span class="nav-text">能力分级</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#能力框架"><span class="nav-number">3.2.</span> <span class="nav-text">能力框架</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#能力体系"><span class="nav-number">3.3.</span> <span class="nav-text">能力体系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#平台要素"><span class="nav-number">3.4.</span> <span class="nav-text">平台要素</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#AIOps关键技术"><span class="nav-number">4.</span> <span class="nav-text">AIOps关键技术</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据采集"><span class="nav-number">4.1.</span> <span class="nav-text">数据采集</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据处理"><span class="nav-number">4.2.</span> <span class="nav-text">数据处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据存储"><span class="nav-number">4.3.</span> <span class="nav-text">数据存储</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#离线和在线计算"><span class="nav-number">4.4.</span> <span class="nav-text">离线和在线计算</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#算法技术"><span class="nav-number">4.5.</span> <span class="nav-text">算法技术</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#顶会推荐"><span class="nav-number">5.</span> <span class="nav-text">顶会推荐</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#后记"><span class="nav-number">6.</span> <span class="nav-text">后记</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#书签"><span class="nav-number">7.</span> <span class="nav-text">书签</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2012 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">VoidKing</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <!-- <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script> -->
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+  <div class="footer-beian">
+    <a href="http://www.beian.miit.gov.cn/" target="_blank">苏ICP备14021030号</a>&nbsp;|&nbsp;
+    <!-- <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=32032202000223">苏公网安备 32032202000223号</a> -->
+    <img src="/images/beian.png" alt="">
+    <a target="_blank" href="http://www.beian.gov.cn/">苏公网安备 32032202000223号</a>
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+      <div id="needsharebutton-float">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "box";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+      flOptions = {};
+      
+          flOptions.iconStyle = "box";
+      
+          flOptions.boxForm = "horizontal";
+      
+          flOptions.position = "topRight";
+      
+          flOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-float', flOptions);
+    
+  </script>
+
+  
+
+  
+  
+
+
+  
+
+  
+
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=5.1.4">
+
+
+
+
+
+
+  <meta name="keywords" content="linux,ubuntu,openstack," />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="VoidKing" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="目标紧接着《Ubuntu16手动安装OpenStack——环境篇》，本文我们来安装keystone，主要参考Keystone Installation Tutorial for Ubuntu。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ubuntu16手动安装OpenStack——keystone篇">
+<meta property="og:url" content="https://www.voidking.com/dev-ubuntu16-manual-openstack-keystone/index.html">
+<meta property="og:site_name" content="VoidKing">
+<meta property="og:description" content="目标紧接着《Ubuntu16手动安装OpenStack——环境篇》，本文我们来安装keystone，主要参考Keystone Installation Tutorial for Ubuntu。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/ubuntu16-manual-openstack-keystone/token1.jpg?imageView2/0/w/700">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/ubuntu16-manual-openstack-keystone/token2.jpg?imageView2/0/w/700">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/ubuntu16-manual-openstack-keystone/token3.jpg?imageView2/0/w/700">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/ubuntu16-manual-openstack-keystone/token4.jpg?imageView2/0/w/700">
+<meta property="article:published_time" content="2018-06-30T10:30:00.000Z">
+<meta property="article:modified_time" content="2020-02-07T15:42:50.013Z">
+<meta property="article:author" content="VoidKing">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="ubuntu">
+<meta property="article:tag" content="openstack">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.voidking.com//imgs/ubuntu16-manual-openstack-keystone/token1.jpg?imageView2/0/w/700">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.voidking.com/dev-ubuntu16-manual-openstack-keystone/"/>
+
+
+
+
+
+  <title>Ubuntu16手动安装OpenStack——keystone篇 | VoidKing</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?b759ac2a7fa45129e3ef060bf68259f0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">VoidKing</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">好好学习，天天向上！</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.voidking.com/dev-ubuntu16-manual-openstack-keystone/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="VoidKing">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="VoidKing">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Ubuntu16手动安装OpenStack——keystone篇</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-30T10:30:00+00:00">
+                2018-06-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/" itemprop="url" rel="index">
+                    <span itemprop="name">专业</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index">
+                    <span itemprop="name">运维</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E8%BF%90%E7%BB%B4/ubuntu/" itemprop="url" rel="index">
+                    <span itemprop="name">ubuntu</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h1><p>紧接着<a href="http://www.voidking.com/dev-ubuntu16-manual-openstack-env/">《Ubuntu16手动安装OpenStack——环境篇》</a>，本文我们来安装keystone，主要参考<a href="https://docs.openstack.org/keystone/queens/install/index-ubuntu.html" target="_blank" rel="noopener">Keystone Installation Tutorial for Ubuntu</a>。</p>
+<a id="more"></a>
+
+<h1 id="keystone简介"><a href="#keystone简介" class="headerlink" title="keystone简介"></a>keystone简介</h1><p>OpenStack身份识别服务集成了身份验证，授权和服务目录。</p>
+<p>身份服务通常是用户与之交互的第一个服务。一旦通过身份验证，终端用户就可以使用他们的身份访问其他OpenStack服务。同样，其他OpenStack服务利用身份服务来确保用户是他们所说的人，并发现其他服务的位置。身份识别服务还可以与一些外部用户管理系统（如LDAP）集成。</p>
+<p>用户和服务可以通过使用由身份服务管理的服务目录来定位其他服务。顾名思义，服务目录是OpenStack部署中可用服务的集合。每个服务可以有一个或多个端点，每个端点可以是以下三种类型之一：admin，internal或public。在生产环境中，出于安全原因，不同类型的终端类型可能会驻留在暴露给不同类型用户的单独网络中。例如，公共API网络可能从互联网上可见，因此客户可以管理他们的云。管理API网络可能仅限于管理云基础架构的组织中的运营商。内部API网络可能仅限于包含OpenStack服务的主机。另外，OpenStack支持多个区域的可伸缩性。为简单起见，本指南针对所有端点类型和默认的RegionOne区域使用管理网络。在身份服务中创建的区域，服务和端点一起构成部署的服务目录。部署中的每个OpenStack服务都需要一个服务条目，并在Identity服务中存储相应的端点。这可以在Identity Service安装和配置完成后完成。</p>
+<p>身份服务包含以下组件：<br><strong>服务器</strong><br>集中式服务器使用RESTful接口提供认证和授权服务。</p>
+<p><strong>驱动程序</strong><br>驱动程序或服务后端集成到中央服务器。它们用于访问OpenStack外部存储库中的身份信息，并且可能已存在于部署OpenStack的基础架构中（例如，SQL数据库或LDAP服务器）。</p>
+<p><strong>模块</strong><br>中间件模块运行在使用Identity服务的OpenStack组件的地址空间中。这些模块拦截服务请求，提取用户凭据并将其发送到中央服务器进行授权。中间件模块和OpenStack组件之间的集成使用Python Web服务器网关接口。</p>
+<h1 id="安装记录"><a href="#安装记录" class="headerlink" title="安装记录"></a>安装记录</h1><p>本节记录如何在控制节点上安装和配置代号为keystone的OpenStack Identity服务。出于可伸缩性的目的，此配置会部署Fernet令牌和Apache HTTP服务器来处理请求。</p>
+<h2 id="root用户"><a href="#root用户" class="headerlink" title="root用户"></a>root用户</h2><p>为了避免权限问题，建议切换到root用户进行操作（否则要加很多sudo）。<br><code>sudo -i</code></p>
+<h2 id="数据库配置"><a href="#数据库配置" class="headerlink" title="数据库配置"></a>数据库配置</h2><p>1、登录mariadb<br><code>mysql -uroot -p</code>，密码为openstack。</p>
+<p>2、创建keystone数据库<br><code>CREATE DATABASE keystone;</code></p>
+<p>3、创建keystone用户，密码为openstack，并授权访问keystone数据库<br><code>GRANT ALL PRIVILEGES ON keystone.* TO &#39;keystone&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;openstack&#39;;</code></p>
+<p><code>GRANT ALL PRIVILEGES ON keystone.* TO &#39;keystone&#39;@&#39;%&#39; IDENTIFIED BY &#39;openstack&#39;;</code></p>
+<p>4、退出<br><code>exit;</code></p>
+<p>5、测试登录</p>
+<p><code>mysql -h localhost -ukeystone -p</code></p>
+<p><code>mysql -h controller -ukeystone -p</code></p>
+<h2 id="安装组件"><a href="#安装组件" class="headerlink" title="安装组件"></a>安装组件</h2><p>1、安装keystone、apache2和libapache2-mod-wsgi<br><code>apt -y install keystone  apache2 libapache2-mod-wsgi</code></p>
+<p>2、<code>vim /etc/keystone/keystone.conf</code><br>编辑配置：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># line 606: uncomment and specify Memcache Server</span></span><br><span class="line"><span class="attr">memcache_servers</span> = controller:<span class="number">11211</span></span><br><span class="line"><span class="comment"># line 740: change ( MariaDB connection info )</span></span><br><span class="line"><span class="attr">connection</span> = mysql+pymysql://keystone:openstack@controller/keystone</span><br><span class="line"><span class="comment"># line 2891: add</span></span><br><span class="line"><span class="section">[token]</span></span><br><span class="line"><span class="attr">provider</span> = fernet</span><br></pre></td></tr></table></figure>
+
+<p>3、生成keystone数据库的数据</p>
+<p><code>su -s /bin/bash keystone -c &quot;keystone-manage db_sync&quot;</code></p>
+<p>（非root用户执行<code>sudo keystone-manage db_sync</code>）</p>
+<p>查看日志：<code>tail /var/log/keystone/keystone-manage.log</code>，看到done说明执行成功。</p>
+<p>不放心的话，可以登录mariadb查看keystone数据库的数据，有数据的话说明执行成功。</p>
+<p>如果在日志中看到报错：</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2018</span><span class="number">-06</span><span class="number">-30</span> <span class="number">18</span>:<span class="number">37</span>:<span class="number">40.845</span> <span class="number">4964</span> WARNING oslo_db.sqlalchemy.engines [-] SQL connection failed. <span class="number">6</span> attempts left.: DBConnectionError: (pymysql.err.OperationalError) (<span class="number">2003</span>, <span class="string">"Can't connect to MySQL server on 'controller' ([Errno 111] Connection refused)"</span>) (Background on <span class="keyword">this</span> error at: http:<span class="comment">//sqlalche.me/e/e3q8)</span></span><br></pre></td></tr></table></figure>
+
+<p>这是因为，mysql可能绑定了IP。<br>执行<code>netstat -an | grep 3306</code>查看，如果只看到127.0.0.1，那么说明确实绑定了IP。</p>
+<p>解决办法是编辑50-server.cnf，把<code>bind-address = 127.0.0.1</code>注释掉，然后重启mariadb，重新执行命令。</p>
+<p>4、初始化Fernet密钥存储库<br><code>keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone</code></p>
+<p><code>keystone-manage credential_setup --keystone-user keystone --keystone-group keystone</code></p>
+<p>5、引导身份服务，管理密码为openstack</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">keystone</span>-manage <span class="keyword">bootstrap </span>--<span class="keyword">bootstrap-password </span>openstack \</span><br><span class="line">  --<span class="keyword">bootstrap-admin-url </span>http://controller:<span class="number">5000</span>/<span class="built_in">v3</span>/ \</span><br><span class="line">  --<span class="keyword">bootstrap-internal-url </span>http://controller:<span class="number">5000</span>/<span class="built_in">v3</span>/ \</span><br><span class="line">  --<span class="keyword">bootstrap-public-url </span>http://controller:<span class="number">5000</span>/<span class="built_in">v3</span>/ \</span><br><span class="line">  --<span class="keyword">bootstrap-region-id </span>RegionOne</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="配置apache"><a href="#配置apache" class="headerlink" title="配置apache"></a>配置apache</h2><p>1、<code>vim /etc/apache2/apache2.conf</code>，添加：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># <span class="type">line</span> <span class="number">70</span>: specify <span class="keyword">server</span> <span class="type">name</span></span><br><span class="line">ServerName controller</span><br></pre></td></tr></table></figure>
+
+<p>2、重启apache<br><code>service apache2 restart</code></p>
+<p>3、新建环境变量配置keystonerc</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="builtin-name">export</span> <span class="attribute">OS_USERNAME</span>=admin</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">OS_PASSWORD</span>=openstack</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">OS_PROJECT_NAME</span>=admin</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">OS_USER_DOMAIN_NAME</span>=Default</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">OS_PROJECT_DOMAIN_NAME</span>=Default</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">OS_AUTH_URL</span>=http://controller:5000/v3</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">OS_IDENTITY_API_VERSION</span>=3</span><br></pre></td></tr></table></figure>
+
+<p>4、使环境变量生效<br><code>source keystonerc</code></p>
+<p>5、测试<br><code>echo $OS_USERNAME</code></p>
+<h1 id="使用记录"><a href="#使用记录" class="headerlink" title="使用记录"></a>使用记录</h1><h2 id="创建域"><a href="#创建域" class="headerlink" title="创建域"></a>创建域</h2><p>Identity服务为每个OpenStack服务提供身份验证服务。身份验证服务使用域，项目，用户和角色的组合。</p>
+<p>1、引导身份服务步骤中已存在“默认”域，但创建新域的正式方法是：<br><code>openstack domain create --description &quot;An Example Domain&quot; example</code></p>
+<p>虚拟机中执行成功，但是实体机报错：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Failed <span class="keyword">to</span> discover available <span class="keyword">identity</span> versions <span class="keyword">when</span> contacting http://controller:<span class="number">5000</span>/v3. Attempting <span class="keyword">to</span> parse <span class="keyword">version</span> <span class="keyword">from</span> URL.</span><br><span class="line"><span class="type">Internal</span> <span class="keyword">Server</span> Error (HTTP <span class="number">500</span>)</span><br></pre></td></tr></table></figure>
+
+<p><code>netstat -an | grep 5000</code>，发现5000端口服务已经启动。</p>
+<p>查看keystone日志，没有新的内容，说明根本没有连接成功。</p>
+<p>尝试了重新导入数据，重新安装数据库，都失败了。</p>
+<p>如果看到同样的错误，那么极有可能之前安装devstack遗留的问题，最终重装系统后再次安装，执行成功。</p>
+<p>2、在default域下创建service项目：<br><code>openstack project create --domain default --description &quot;Service Project&quot; service</code></p>
+<p>3、常规（非管理员）任务应使用非特权项目和用户。创建demo项目：<br><code>openstack project create --domain default --description &quot;Demo Project&quot; demo</code></p>
+<p>4、创建demo用户：<br><code>openstack user create --domain default --password-prompt demo</code></p>
+<p>按照提示设置密码为openstack。</p>
+<p>5、创建user角色：<br><code>openstack role create user</code></p>
+<p>6、将user角色添加到demo项目和demo用户<br><code>openstack role add --project demo --user demo user</code></p>
+<p>7、查看域、项目、角色、用户</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">openstack domain list</span><br><span class="line">openstack project list</span><br><span class="line">openstack role list</span><br><span class="line">openstack<span class="built_in"> user </span>list</span><br></pre></td></tr></table></figure>
+
+<h1 id="验证操作"><a href="#验证操作" class="headerlink" title="验证操作"></a>验证操作</h1><p>在安装其他服务之前验证Identity服务的操作。</p>
+<p>1、取消设置临时OS_AUTH_URL和OS_PASSWORD环境变量：<br><code>unset OS_AUTH_URL OS_PASSWORD</code></p>
+<p>2、作为admin用户，请求身份验证令牌：</p>
+<figure class="highlight sqf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">openstack --os-auth-url http:<span class="comment">//controller:5000/v3 \</span></span><br><span class="line">  --os-project-domain-<span class="built_in">name</span> <span class="keyword">Default</span> --os-user-domain-<span class="built_in">name</span> <span class="keyword">Default</span> \</span><br><span class="line">  --os-project-<span class="built_in">name</span> <span class="built_in">admin</span> --os-username <span class="built_in">admin</span> token issue</span><br></pre></td></tr></table></figure>
+
+<p>按照提示输入密码openstack。<br><img src="http://cdn.voidking.com//imgs/ubuntu16-manual-openstack-keystone/token1.jpg?imageView2/0/w/700" alt=""></p>
+<p>3、作为demo用户，请求身份验证令牌：</p>
+<figure class="highlight delphi"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">openstack --os-auth-url http:<span class="comment">//controller:5000/v3 \</span></span><br><span class="line">  --os-project-domain-<span class="keyword">name</span> <span class="keyword">Default</span> --os-user-domain-<span class="keyword">name</span> <span class="keyword">Default</span> \</span><br><span class="line">  --os-project-<span class="keyword">name</span> demo --os-username demo token issue</span><br></pre></td></tr></table></figure>
+
+<p>按照提示输入密码openstack。<br><img src="http://cdn.voidking.com//imgs/ubuntu16-manual-openstack-keystone/token2.jpg?imageView2/0/w/700" alt=""></p>
+<h1 id="创建OpenStack客户端环境脚本"><a href="#创建OpenStack客户端环境脚本" class="headerlink" title="创建OpenStack客户端环境脚本"></a>创建OpenStack客户端环境脚本</h1><p>前面几节使用了环境变量和命令选项的组合，通过openstack客户端与Identity服务进行交互。为了提高客户端操作的效率，OpenStack支持简单的客户端环境脚本，也称为OpenRC文件。这些脚本通常包含所有客户端的常用选项，但也支持独特的选项。</p>
+<h2 id="创建脚本"><a href="#创建脚本" class="headerlink" title="创建脚本"></a>创建脚本</h2><p>为admin和demo项目和用户创建客户端环境脚本。接下来引用这些脚本来加载客户端操作的适当凭据。这些脚本在控制节点和计算节点都适用。</p>
+<p>1、创建并编辑admin-openrc文件并添加以下内容：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="builtin-name">export</span> <span class="attribute">OS_PROJECT_DOMAIN_NAME</span>=Default</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">OS_USER_DOMAIN_NAME</span>=Default</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">OS_PROJECT_NAME</span>=admin</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">OS_USERNAME</span>=admin</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">OS_PASSWORD</span>=openstack</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">OS_AUTH_URL</span>=http://controller:5000/v3</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">OS_IDENTITY_API_VERSION</span>=3</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">OS_IMAGE_API_VERSION</span>=2</span><br></pre></td></tr></table></figure>
+
+<p>2、创建并编辑demo-openrc文件并添加以下内容：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="builtin-name">export</span> <span class="attribute">OS_PROJECT_DOMAIN_NAME</span>=Default</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">OS_USER_DOMAIN_NAME</span>=Default</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">OS_PROJECT_NAME</span>=demo</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">OS_USERNAME</span>=demo</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">OS_PASSWORD</span>=openstack</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">OS_AUTH_URL</span>=http://controller:5000/v3</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">OS_IDENTITY_API_VERSION</span>=3</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">OS_IMAGE_API_VERSION</span>=2</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用脚本"><a href="#使用脚本" class="headerlink" title="使用脚本"></a>使用脚本</h2><p>要将客户端作为特定项目和用户运行，只需在运行它们之前加载关联的客户端环境脚本即可。例如：</p>
+<p>1、加载admin-openrc文件以使用Identity服务的位置以及管理项目和用户凭据填充环境变量：<br><code>. admin-openrc</code>或者<code>source admin-openrc</code></p>
+<p>2、请求身份验证令牌：<br><code>openstack token issue</code></p>
+<p><img src="http://cdn.voidking.com//imgs/ubuntu16-manual-openstack-keystone/token3.jpg?imageView2/0/w/700" alt=""></p>
+<p><img src="http://cdn.voidking.com//imgs/ubuntu16-manual-openstack-keystone/token4.jpg?imageView2/0/w/700" alt=""></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/linux/" rel="tag"># linux</a>
+          
+            <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
+          
+            <a href="/tags/openstack/" rel="tag"># openstack</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/dev-ubuntu16-manual-openstack-env/" rel="next" title="Ubuntu16手动安装OpenStack——环境篇">
+                <i class="fa fa-chevron-left"></i> Ubuntu16手动安装OpenStack——环境篇
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/dev-ubuntu16-manual-openstack-glance/" rel="prev" title="Ubuntu16手动安装OpenStack——glance篇">
+                Ubuntu16手动安装OpenStack——glance篇 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zODU3Mi8xNTEwMA=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="VoidKing" />
+            
+              <p class="site-author-name" itemprop="name">VoidKing</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">583</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">188</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:voidking@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/voidking" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/voidking" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://twitter.com/voidking_com" target="_blank" title="Twitter">
+                      
+                        <i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#目标"><span class="nav-number">1.</span> <span class="nav-text">目标</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#keystone简介"><span class="nav-number">2.</span> <span class="nav-text">keystone简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装记录"><span class="nav-number">3.</span> <span class="nav-text">安装记录</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#root用户"><span class="nav-number">3.1.</span> <span class="nav-text">root用户</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库配置"><span class="nav-number">3.2.</span> <span class="nav-text">数据库配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装组件"><span class="nav-number">3.3.</span> <span class="nav-text">安装组件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置apache"><span class="nav-number">3.4.</span> <span class="nav-text">配置apache</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用记录"><span class="nav-number">4.</span> <span class="nav-text">使用记录</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建域"><span class="nav-number">4.1.</span> <span class="nav-text">创建域</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#验证操作"><span class="nav-number">5.</span> <span class="nav-text">验证操作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#创建OpenStack客户端环境脚本"><span class="nav-number">6.</span> <span class="nav-text">创建OpenStack客户端环境脚本</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建脚本"><span class="nav-number">6.1.</span> <span class="nav-text">创建脚本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用脚本"><span class="nav-number">6.2.</span> <span class="nav-text">使用脚本</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2012 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">VoidKing</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <!-- <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script> -->
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+  <div class="footer-beian">
+    <a href="http://www.beian.miit.gov.cn/" target="_blank">苏ICP备14021030号</a>&nbsp;|&nbsp;
+    <!-- <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=32032202000223">苏公网安备 32032202000223号</a> -->
+    <img src="/images/beian.png" alt="">
+    <a target="_blank" href="http://www.beian.gov.cn/">苏公网安备 32032202000223号</a>
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+      <div id="needsharebutton-float">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "box";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+      flOptions = {};
+      
+          flOptions.iconStyle = "box";
+      
+          flOptions.boxForm = "horizontal";
+      
+          flOptions.position = "topRight";
+      
+          flOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-float', flOptions);
+    
+  </script>
+
+  
+
+  
+  
+
+
+  
+
+  
+
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+
+</body>
+</html>

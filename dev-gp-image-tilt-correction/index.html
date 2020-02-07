@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=5.1.4">
+
+
+
+
+
+
+  <meta name="keywords" content="python,毕设,opencv," />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="VoidKing" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="理论没有找到关于图像倾斜矫正的综述性文献，那就自己整理一下吧。 图像倾斜可以分为两种情况，一种是平面倾斜，这种情况下拍照设备与试卷平行，拍出来的图像只需要进行旋转即可完成矫正；另一种是Z轴倾斜，这种情况下拍照设备与试卷存在一定的角度，拍出来的图像要先进行透视变换，然后再进行旋转等操作才可以完成矫正。 图像倾斜矫正关键在于根据图像特征自动检测出图像倾斜方向和倾斜角度。 对于平面倾斜，先利用边缘（轮廓">
+<meta property="og:type" content="article">
+<meta property="og:title" content="图像倾斜矫正">
+<meta property="og:url" content="https://www.voidking.com/dev-gp-image-tilt-correction/index.html">
+<meta property="og:site_name" content="VoidKing">
+<meta property="og:description" content="理论没有找到关于图像倾斜矫正的综述性文献，那就自己整理一下吧。 图像倾斜可以分为两种情况，一种是平面倾斜，这种情况下拍照设备与试卷平行，拍出来的图像只需要进行旋转即可完成矫正；另一种是Z轴倾斜，这种情况下拍照设备与试卷存在一定的角度，拍出来的图像要先进行透视变换，然后再进行旋转等操作才可以完成矫正。 图像倾斜矫正关键在于根据图像特征自动检测出图像倾斜方向和倾斜角度。 对于平面倾斜，先利用边缘（轮廓">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/gp-image-tilt-correction/gray.jpg?imageView2/0/w/700">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/gp-image-tilt-correction/canny.jpg?imageView2/0/w/700">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/gp-image-tilt-correction/edge.jpg?imageView2/0/w/700">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/gp-image-tilt-correction/right.jpg?imageView2/0/w/700">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/gp-image-tilt-correction/init.jpg?imageView2/0/h/700">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/gp-image-tilt-correction/perspective.jpg?imageView2/0/h/700">
+<meta property="article:published_time" content="2019-01-07T09:00:00.000Z">
+<meta property="article:modified_time" content="2020-02-07T15:42:49.997Z">
+<meta property="article:author" content="VoidKing">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="毕设">
+<meta property="article:tag" content="opencv">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.voidking.com//imgs/gp-image-tilt-correction/gray.jpg?imageView2/0/w/700">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.voidking.com/dev-gp-image-tilt-correction/"/>
+
+
+
+
+
+  <title>图像倾斜矫正 | VoidKing</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?b759ac2a7fa45129e3ef060bf68259f0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">VoidKing</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">好好学习，天天向上！</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.voidking.com/dev-gp-image-tilt-correction/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="VoidKing">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="VoidKing">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">图像倾斜矫正</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-07T09:00:00+00:00">
+                2019-01-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/" itemprop="url" rel="index">
+                    <span itemprop="name">专业</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E5%90%8E%E7%AB%AF/" itemprop="url" rel="index">
+                    <span itemprop="name">后端</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E5%90%8E%E7%AB%AF/python/" itemprop="url" rel="index">
+                    <span itemprop="name">python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="理论"><a href="#理论" class="headerlink" title="理论"></a>理论</h1><p>没有找到关于图像倾斜矫正的综述性文献，那就自己整理一下吧。</p>
+<p>图像倾斜可以分为两种情况，一种是平面倾斜，这种情况下拍照设备与试卷平行，拍出来的图像只需要进行旋转即可完成矫正；另一种是Z轴倾斜，这种情况下拍照设备与试卷存在一定的角度，拍出来的图像要先进行透视变换，然后再进行旋转等操作才可以完成矫正。</p>
+<p>图像倾斜矫正关键在于根据图像特征自动检测出图像倾斜方向和倾斜角度。</p>
+<p>对于平面倾斜，先利用边缘（轮廓）检测算法算法找到图像的边界，然后利用<a href="https://blog.csdn.net/corilei/article/details/80560608" target="_blank" rel="noopener">Radon变换法（基于投影的方法）</a>、<a href="https://blog.csdn.net/feilong_csdn/article/details/81586322" target="_blank" rel="noopener">Hough变换法</a>、线性回归法等找到倾斜角度，然后再利用<a href="http://www.opencv.org.cn/opencvdoc/2.3.2/html/doc/tutorials/imgproc/imgtrans/warp_affine/warp_affine.html" target="_blank" rel="noopener">仿射变换</a>进行旋转。</p>
+<p>对于Z轴倾斜，先利用边缘（轮廓）检测算法找到图像的边界，然后利用<a href="https://blog.csdn.net/xiaowei_cqu/article/details/26471527" target="_blank" rel="noopener">透视变换</a>把视平面上的点投影到现实平面，然后再利用仿射变换进行旋转。</p>
+<a id="more"></a>
+
+<h1 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h1><h2 id="边缘检测"><a href="#边缘检测" class="headerlink" title="边缘检测"></a>边缘检测</h2><figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"></span><br><span class="line">import numpy as np</span><br><span class="line">import cv2</span><br><span class="line"></span><br><span class="line">img = cv2.imread('../image/tilt.jpg')</span><br><span class="line">GrayImage = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)</span><br><span class="line"></span><br><span class="line">CannyImage = cv2.Canny(GrayImage,50, 150, apertureSize=3)</span><br><span class="line"></span><br><span class="line">cv2.imshow('gray',GrayImage)</span><br><span class="line">cv2.imshow('canny',CannyImage)</span><br><span class="line">cv2.waitKey(0)</span><br></pre></td></tr></table></figure>
+<p><img src="http://cdn.voidking.com//imgs/gp-image-tilt-correction/gray.jpg?imageView2/0/w/700" alt=""><br><img src="http://cdn.voidking.com//imgs/gp-image-tilt-correction/canny.jpg?imageView2/0/w/700" alt=""></p>
+<p><code>edges=cv.Canny(image, threshold1, threshold2[, edges[, apertureSize[, L2gradient]]])</code>参数说明：</p>
+<ul>
+<li>image：输入图像。</li>
+<li>threshold1：最小阈值。</li>
+<li>threshold2：最大阈值。</li>
+<li>apertureSize：Sobel算子的孔径大小。</li>
+</ul>
+<p>更多内容参考：</p>
+<ul>
+<li><a href="https://docs.opencv.org/master/dd/d1a/group__imgproc__feature.html#ga04723e007ed888ddf11d9ba04e2232de" target="_blank" rel="noopener">OpenCV Canny</a></li>
+<li><a href="https://blog.csdn.net/sunny2038/article/details/9202641" target="_blank" rel="noopener">Canny边缘检测</a></li>
+<li><a href="https://blog.csdn.net/mingtian715/article/details/53343680" target="_blank" rel="noopener">基于Sobel和Canny边缘检测</a></li>
+<li><a href="http://python.jobbole.com/85253/" target="_blank" rel="noopener">Python-OpenCV 处理图像（五）：图像中边界和轮廓检测</a></li>
+</ul>
+<p>以上代码，调用了OpenCV中的canny方法找到了边缘，但是，文字的边缘也被显示出来了。那么，怎么去掉文字边缘，只要长方形框的边缘呢？OpenCV也提供了方法，使用findContours来查找轮廓，使用drawContours来绘制轮廓。</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"># -*- coding: utf<span class="number">-8</span> -*-</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> numpy as np</span><br><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"></span><br><span class="line">img = cv2.imread(<span class="string">'../image/tilt.jpg'</span>)</span><br><span class="line">GrayImage = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)</span><br><span class="line">CannyImage = cv2.Canny(GrayImage,<span class="number">50</span>, <span class="number">150</span>, apertureSize=<span class="number">3</span>)</span><br><span class="line">ret,BinImage=cv2.threshold(CannyImage,<span class="number">127</span>,<span class="number">255</span>,cv2.THRESH_BINARY)</span><br><span class="line"></span><br><span class="line">_, contours, _= cv2.findContours(BinImage, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)</span><br><span class="line"></span><br><span class="line">cv2.imshow(<span class="string">'bin'</span>,BinImage)</span><br><span class="line">cv2.drawContours(img, contours, <span class="number">-1</span>, (<span class="number">0</span>,<span class="number">255</span>, <span class="number">0</span>), <span class="number">1</span>)</span><br><span class="line">cv2.imshow(<span class="string">'edge'</span>,img)</span><br><span class="line">cv2.waitKey(<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://cdn.voidking.com//imgs/gp-image-tilt-correction/edge.jpg?imageView2/0/w/700" alt=""></p>
+<p><code>contours, hierarchy = cv.findContours(image, mode, method[, contours[, hierarchy[, offset]]])</code>参数说明：</p>
+<ul>
+<li>image：输入图像，二值化图像。</li>
+<li>mode：轮廓检索模式，请参阅<a href="https://docs.opencv.org/3.4/d3/dc0/group__imgproc__shape.html#ga819779b9857cc2f8601e6526a3a5bc71" target="_blank" rel="noopener">RetrievalModes</a>。</li>
+<li>method：轮廓近似方法，请参见<a href="https://docs.opencv.org/3.4/d3/dc0/group__imgproc__shape.html#ga4303f45752694956374734a03c54d5ff" target="_blank" rel="noopener">ContourApproximationModes</a>。</li>
+</ul>
+<p>如果按照<a href="https://docs.opencv.org/master/d3/dc0/group__imgproc__shape.html#gadf1ad6a0b82947fa1fe3c3d497f260e0" target="_blank" rel="noopener">官方文档</a>调用，会报错，参考<a href="https://stackoverflow.com/questions/25504964/opencv-python-valueerror-too-many-values-to-unpack" target="_blank" rel="noopener">ValueError: too many values to unpack</a>解决。实际上，这是因为opencv3之后该函数的返回值有三个，而官方文档有多个版本，比如<a href="https://docs.opencv.org/3.4/d3/dc0/group__imgproc__shape.html#ga17ed9f5d79ae97bd4c7cf18403e1689a" target="_blank" rel="noopener">这一版</a>中就说明了有三个参数。</p>
+<h2 id="计算倾斜角"><a href="#计算倾斜角" class="headerlink" title="计算倾斜角"></a>计算倾斜角</h2><p>以上，已经找到了图片的边缘，接下来计算倾斜角度。</p>
+<figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">import</span> numpy as np</span><br><span class="line"><span class="built_in">import</span> cv2</span><br><span class="line"></span><br><span class="line"><span class="attr">img</span> = cv2.imread('../image/tilt.jpg')</span><br><span class="line"><span class="attr">GrayImage</span> = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)</span><br><span class="line"><span class="attr">CannyImage</span> = cv2.Canny(GrayImage,<span class="number">50</span>, <span class="number">150</span>, <span class="attr">apertureSize=3)</span></span><br><span class="line">ret,<span class="attr">BinImage=cv2.threshold(CannyImage,127,255,cv2.THRESH_BINARY)</span></span><br><span class="line"></span><br><span class="line"><span class="attr">lines</span> = cv2.HoughLinesP(BinImage, <span class="number">1</span>, np.pi / <span class="number">180</span>, <span class="number">160</span>, <span class="attr">minLineLength=200,</span> <span class="attr">maxLineGap=180)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 寻找长度最长的线</span></span><br><span class="line"><span class="attr">distance</span> = []</span><br><span class="line">for line <span class="keyword">in</span> lines:</span><br><span class="line">    x1, y1, x2, <span class="attr">y2</span> = line[<span class="number">0</span>]</span><br><span class="line">    <span class="attr">dis</span> = np.sqrt(pow((x2 - x1), <span class="number">2</span>) + pow((y2 - y1), <span class="number">2</span>))</span><br><span class="line">    distance.append(dis)</span><br><span class="line"><span class="attr">max_dis_index</span> = distance.index(max(distance))</span><br><span class="line"><span class="attr">max_line</span> = lines[max_dis_index]</span><br><span class="line">x1, y1, x2, <span class="attr">y2</span> = max_line[<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取旋转角度</span></span><br><span class="line"><span class="attr">angle</span> = cv2.fastAtan2((y2 - y1), (x2 - x1))</span><br><span class="line">print(angle)</span><br></pre></td></tr></table></figure>
+
+<p>以上代码，很尴尬，并不是利用findContours的结果进行计算的，而是一个新的思路。为什么没有使用contours？因为不会写代码。。。如果要继续findContours思路，那么可以参考<a href="https://www.cnblogs.com/skyfsm/p/6902524.html" target="_blank" rel="noopener">图像矫正技术深入探讨</a>进行改写。</p>
+<h2 id="仿射变换"><a href="#仿射变换" class="headerlink" title="仿射变换"></a>仿射变换</h2><p>求出倾斜角度之后，利用仿射变换进行旋转。</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 计算图片中心</span><br><span class="line">centerpoint = (img.shape[<span class="number">1</span>]/<span class="number">2</span>,img.shape[<span class="number">0</span>]/<span class="number">2</span>)</span><br><span class="line"># 获取旋转矩阵</span><br><span class="line">rotate_mat = cv2.getRotationMatrix2D(centerpoint,angle,<span class="number">1.0</span>)</span><br><span class="line">correct_image = cv2.warpAffine(img,rotate_mat,(img.shape[<span class="number">1</span>],img.shape[<span class="number">0</span>]),borderValue =(<span class="number">255</span>,<span class="number">255</span>,<span class="number">255</span>) )</span><br><span class="line"></span><br><span class="line">cv2.imshow(<span class="string">'right'</span>,correct_image)</span><br><span class="line">cv2.waitKey(<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://cdn.voidking.com//imgs/gp-image-tilt-correction/right.jpg?imageView2/0/w/700" alt=""></p>
+<h2 id="Z轴倾斜"><a href="#Z轴倾斜" class="headerlink" title="Z轴倾斜"></a>Z轴倾斜</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">gray_and_bin</span><span class="params">(init_img)</span>:</span></span><br><span class="line">    gray_img = cv2.cvtColor(init_img, cv2.COLOR_BGR2GRAY)</span><br><span class="line">    blur_img = cv2.GaussianBlur(gray_img, (<span class="number">3</span>, <span class="number">3</span>), <span class="number">0</span>)                     <span class="comment"># 高斯模糊去噪（设定卷积核大小影响效果）</span></span><br><span class="line">    canny_img = cv2.Canny(blur_img, <span class="number">35</span>, <span class="number">189</span>, apertureSize=<span class="number">3</span>)</span><br><span class="line">    _, bin_img = cv2.threshold(canny_img, <span class="number">127</span>, <span class="number">255</span>, cv2.THRESH_BINARY)  <span class="comment"># 设定阈值165（阈值影响开闭运算效果）</span></span><br><span class="line">    <span class="keyword">return</span> gray_img, bin_img</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">points_and_box</span><span class="params">(init_img, bin_img)</span>:</span></span><br><span class="line">    image, contours, hierarchy = cv2.findContours(bin_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)</span><br><span class="line">    c = sorted(contours, key=cv2.contourArea, reverse=<span class="literal">True</span>)[<span class="number">0</span>]   <span class="comment"># 计算最大轮廓的旋转包围盒</span></span><br><span class="line">    rect = cv2.minAreaRect(c)                                    <span class="comment"># 获取包围盒（中心点，宽高，旋转角度）</span></span><br><span class="line">    box = np.int0(cv2.boxPoints(rect))                           <span class="comment"># box</span></span><br><span class="line">    <span class="comment"># box_img = cv2.drawContours(init_img.copy(), [box], -1, (0, 0, 255), 2)</span></span><br><span class="line">    <span class="comment"># cv2.imshow('box',box_img)</span></span><br><span class="line"></span><br><span class="line">    empty_img = np.zeros(init_img.shape, np.uint8) <span class="comment"># 创建空白图像</span></span><br><span class="line">    empty_img[...] = <span class="number">255</span> <span class="comment"># 设置白底</span></span><br><span class="line">    <span class="comment"># cv2.imshow('test',empty_img)</span></span><br><span class="line">    cv2.drawContours(empty_img, contours, <span class="number">-1</span>, (<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>), <span class="number">1</span>) <span class="comment"># 在空白图像上绘制试卷轮廓</span></span><br><span class="line">    <span class="comment"># cv2.imshow('edge', empty_img)</span></span><br><span class="line">    _, bin_img2 = gray_and_bin(empty_img)</span><br><span class="line">    <span class="comment"># cv2.imshow('bin',bin_img2)</span></span><br><span class="line">    lines = cv2.HoughLinesP(bin_img2, <span class="number">1</span>, np.pi / <span class="number">180</span>, <span class="number">100</span>, minLineLength=<span class="number">200</span>, maxLineGap=<span class="number">10</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(int(np.size(lines) / <span class="number">4</span>)):</span><br><span class="line">        <span class="keyword">for</span> x1, y1, x2, y2 <span class="keyword">in</span> lines[i]:</span><br><span class="line">            cv2.line(empty_img, (x1, y1), (x2, y2), (<span class="number">255</span>, <span class="number">255</span>, <span class="number">0</span>), <span class="number">1</span>)</span><br><span class="line">    <span class="comment"># cv2.imshow('line',empty_img)</span></span><br><span class="line"></span><br><span class="line">    points = <span class="literal">None</span></span><br><span class="line">    <span class="keyword">if</span> len(contours) &gt; <span class="number">0</span>:</span><br><span class="line">        contours = sorted(contours, key=cv2.contourArea, reverse=<span class="literal">True</span>)</span><br><span class="line">        <span class="keyword">for</span> c <span class="keyword">in</span> contours:</span><br><span class="line">            peri = cv2.arcLength(c, <span class="literal">True</span>)  <span class="comment"># 轮廓按大小降序排序</span></span><br><span class="line">            approx = cv2.approxPolyDP(c, <span class="number">0.02</span> * peri, <span class="literal">True</span>)  <span class="comment"># 获取近似的轮廓</span></span><br><span class="line">            <span class="keyword">if</span> len(approx) == <span class="number">4</span>:  <span class="comment"># 近似轮廓有四个顶点</span></span><br><span class="line">                points = approx</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">    print(<span class="string">'piont[0]'</span>, points[<span class="number">0</span>]) <span class="comment"># 左下</span></span><br><span class="line">    print(<span class="string">'piont[1]'</span>, points[<span class="number">1</span>]) <span class="comment"># 左上</span></span><br><span class="line">    print(<span class="string">'piont[2]'</span>, points[<span class="number">2</span>]) <span class="comment"># 右上</span></span><br><span class="line">    print(<span class="string">'piont[3]'</span>, points[<span class="number">3</span>]) <span class="comment"># 右下</span></span><br><span class="line"></span><br><span class="line">    print(<span class="string">'box[0]:'</span>, box[<span class="number">0</span>]) <span class="comment"># 右下</span></span><br><span class="line">    print(<span class="string">'box[1]:'</span>, box[<span class="number">1</span>]) <span class="comment"># 右上</span></span><br><span class="line">    print(<span class="string">'box[2]:'</span>, box[<span class="number">2</span>]) <span class="comment"># 左上</span></span><br><span class="line">    print(<span class="string">'box[3]:'</span>, box[<span class="number">3</span>]) <span class="comment"># 左下</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> points,box</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">perspective_transform</span><span class="params">(box,points,init_img)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 原图中试卷的四个顶点</span></span><br><span class="line">    pts1 = np.float32([points[<span class="number">0</span>], points[<span class="number">1</span>], points[<span class="number">2</span>], points[<span class="number">3</span>]])</span><br><span class="line">    <span class="comment"># box中的四个顶点</span></span><br><span class="line">    pts2 = np.float32([box[<span class="number">3</span>], box[<span class="number">2</span>], box[<span class="number">1</span>], box[<span class="number">0</span>]])</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 生成透视变换矩阵；进行透视变换</span></span><br><span class="line">    M = cv2.getPerspectiveTransform(pts1,pts2)</span><br><span class="line">    result_img = cv2.warpPerspective(init_img, M, (<span class="number">1200</span>, <span class="number">1300</span>))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> result_img</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__==<span class="string">'__main__'</span>:</span><br><span class="line">    init_img = cv2.imread(<span class="string">'../image/init.jpg'</span>)</span><br><span class="line">    gray_img, bin_img = gray_and_bin(init_img)</span><br><span class="line">    points, box = points_and_box(init_img,bin_img)</span><br><span class="line">    result_img = perspective_transform(box,points,init_img)</span><br><span class="line">    <span class="comment"># cv2.imshow('init',init_img)</span></span><br><span class="line">    cv2.namedWindow(<span class="string">'result'</span>, <span class="number">0</span>)</span><br><span class="line">    cv2.resizeWindow(<span class="string">'result'</span>, <span class="number">640</span>, <span class="number">1200</span>)</span><br><span class="line">    cv2.imshow(<span class="string">'result'</span>, result_img)</span><br><span class="line">    <span class="comment"># cv2.imwrite('result.jpg',result_img)</span></span><br><span class="line">    cv2.waitKey(<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="http://cdn.voidking.com//imgs/gp-image-tilt-correction/init.jpg?imageView2/0/h/700" alt=""></p>
+<p><img src="http://cdn.voidking.com//imgs/gp-image-tilt-correction/perspective.jpg?imageView2/0/h/700" alt=""><br>以上结果，并不是很理想。透视矫正完成了，但是存在黑边白边，试卷长宽比例也有问题，也没有进行平面倾斜矫正。就先这样吧，作为一个小白，做成这样已经很不容易了。</p>
+<p>更多内容参考<a href="https://github.com/joece/Image-Correction" target="_blank" rel="noopener">利用opencv库，实现校正图片中的A4纸</a>、<a href="https://blog.csdn.net/qq_40855366/article/details/81177176" target="_blank" rel="noopener">用numpy+OpenCV快速实现矫正图像的功能</a>、<a href="https://www.codetd.com/article/3777795" target="_blank" rel="noopener">OpenCV—python图像矫正</a>和<a href="https://blog.csdn.net/MrCharles/article/details/73739693" target="_blank" rel="noopener">对倾斜的图像进行修正——基于opencv透视变换</a>。</p>
+<h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p>图像倾斜矫正这部分，是图像预处理中的一个难点。以上，虽然实现了基本的图像倾斜矫正算法，但是算法原理还需要进一步学习。而且，上面的代码中使用的图片都是理想的，干扰很小，而实际拍摄的图片，除了目标物体（试卷），还会出现其他物体，比如签字笔文具盒等等。所以，后续还需要考虑其他物体的干扰。</p>
+<p>另外，发现OpenCV成为了开发过程中的瓶颈，想要实现一些功能，每次都要求助于百度谷歌。因此，必须找时间系统学习一下OpenCV。</p>
+<h1 id="书签"><a href="#书签" class="headerlink" title="书签"></a>书签</h1><p><a href="http://www.cnblogs.com/polly333/p/7238197.html" target="_blank" rel="noopener">图像矫正原理说明</a></p>
+<p><a href="https://www.cnblogs.com/polly333/p/7240475.html" target="_blank" rel="noopener">图像矫正-基于opencv实现</a></p>
+<p><a href="http://jeffpu.github.io/2017/06/25/%E5%88%A9%E7%94%A8%E5%8C%85%E5%9B%B4%E8%BD%AE%E5%BB%93%E5%92%8C%E4%BB%BF%E5%B0%84%E5%8F%98%E6%8D%A2%E8%BF%9B%E8%A1%8C%E5%9B%BE%E5%83%8F%E5%80%BE%E6%96%9C%E6%A0%A1%E6%AD%A3/" target="_blank" rel="noopener">利用包围轮廓和仿射变换进行图像倾斜校正</a></p>
+<p><a href="http://jeffpu.github.io/2017/07/02/%E5%AF%B9Z%E8%BD%B4%E5%80%BE%E6%96%9C%E7%9A%84%E5%9B%BE%E5%83%8F%E8%BF%9B%E8%A1%8C%E6%A0%A1%E6%AD%A3-%E5%9F%BA%E4%BA%8EOpenCV%E9%80%8F%E8%A7%86%E5%8F%98%E6%8D%A2/" target="_blank" rel="noopener">对Z轴倾斜的图像进行校正–基于OpenCV透视变换</a></p>
+<p><a href="http://johnhany.net/2013/11/dft-based-text-rotation-correction/" target="_blank" rel="noopener">OpenCV实现基于傅里叶变换的旋转文本校正</a></p>
+<p><a href="https://blog.csdn.net/qq_36387683/article/details/80539635" target="_blank" rel="noopener">Python+OpenCV实现旋转文本校正</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/%E6%AF%95%E8%AE%BE/" rel="tag"># 毕设</a>
+          
+            <a href="/tags/opencv/" rel="tag"># opencv</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/dev-gp-image-denoise/" rel="next" title="图像去噪">
+                <i class="fa fa-chevron-left"></i> 图像去噪
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/dev-hexo-baidustatistic/" rel="prev" title="Hexo添加百度统计">
+                Hexo添加百度统计 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zODU3Mi8xNTEwMA=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="VoidKing" />
+            
+              <p class="site-author-name" itemprop="name">VoidKing</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">583</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">188</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:voidking@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/voidking" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/voidking" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://twitter.com/voidking_com" target="_blank" title="Twitter">
+                      
+                        <i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#理论"><span class="nav-number">1.</span> <span class="nav-text">理论</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实践"><span class="nav-number">2.</span> <span class="nav-text">实践</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#边缘检测"><span class="nav-number">2.1.</span> <span class="nav-text">边缘检测</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#计算倾斜角"><span class="nav-number">2.2.</span> <span class="nav-text">计算倾斜角</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#仿射变换"><span class="nav-number">2.3.</span> <span class="nav-text">仿射变换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Z轴倾斜"><span class="nav-number">2.4.</span> <span class="nav-text">Z轴倾斜</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#后记"><span class="nav-number">3.</span> <span class="nav-text">后记</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#书签"><span class="nav-number">4.</span> <span class="nav-text">书签</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2012 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">VoidKing</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <!-- <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script> -->
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+  <div class="footer-beian">
+    <a href="http://www.beian.miit.gov.cn/" target="_blank">苏ICP备14021030号</a>&nbsp;|&nbsp;
+    <!-- <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=32032202000223">苏公网安备 32032202000223号</a> -->
+    <img src="/images/beian.png" alt="">
+    <a target="_blank" href="http://www.beian.gov.cn/">苏公网安备 32032202000223号</a>
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+      <div id="needsharebutton-float">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "box";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+      flOptions = {};
+      
+          flOptions.iconStyle = "box";
+      
+          flOptions.boxForm = "horizontal";
+      
+          flOptions.position = "topRight";
+      
+          flOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-float', flOptions);
+    
+  </script>
+
+  
+
+  
+  
+
+
+  
+
+  
+
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+
+</body>
+</html>

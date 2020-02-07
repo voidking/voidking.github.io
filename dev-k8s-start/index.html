@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=5.1.4">
+
+
+
+
+
+
+  <meta name="keywords" content="docker,k8s,virtualbox," />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="VoidKing" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="K8S简介之前浅薄地研究过Docker容器相关技术，我们知道Docker最开始是一个管理容器的工具，后来发展成为容器云。容器云以容器为资源分割和调度的基本单位，封装整个软件运行时环境，为开发者和系统管理员提供用于构建、发布和运行分布式应用的平台。当容器云专注于资源共享与隔离、容器编排与部署时，它更接近传统的IaaS；当容器云渗透到应用支撑与运行时环境时，它是一种PaaS。 但是，如果想要将Dock">
+<meta property="og:type" content="article">
+<meta property="og:title" content="K8S入门篇">
+<meta property="og:url" content="https://www.voidking.com/dev-k8s-start/index.html">
+<meta property="og:site_name" content="VoidKing">
+<meta property="og:description" content="K8S简介之前浅薄地研究过Docker容器相关技术，我们知道Docker最开始是一个管理容器的工具，后来发展成为容器云。容器云以容器为资源分割和调度的基本单位，封装整个软件运行时环境，为开发者和系统管理员提供用于构建、发布和运行分布式应用的平台。当容器云专注于资源共享与隔离、容器编排与部署时，它更接近传统的IaaS；当容器云渗透到应用支撑与运行时环境时，它是一种PaaS。 但是，如果想要将Dock">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/k8s-start/borg.png?imageView2/0/w/800">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/k8s-start/architecture.png?imageView2/0/w/800">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/k8s-start/minikubestart.jpg?imageView2/0/w/600">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/k8s-start/minikubestatus.jpg?imageView2/0/w/600">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/k8s-start/dashboard.jpg?imageView2/0/w/800">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/k8s-start/describepod.jpg?imageView2/0/w/600">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/k8s-start/services.jpg?imageView2/0/w/600">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/k8s-start/podservice.jpg?imageView2/0/w/600">
+<meta property="article:published_time" content="2019-09-12T20:00:00.000Z">
+<meta property="article:modified_time" content="2020-02-07T15:42:50.001Z">
+<meta property="article:author" content="VoidKing">
+<meta property="article:tag" content="docker">
+<meta property="article:tag" content="k8s">
+<meta property="article:tag" content="virtualbox">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.voidking.com/@/imgs/k8s-start/borg.png?imageView2/0/w/800">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.voidking.com/dev-k8s-start/"/>
+
+
+
+
+
+  <title>K8S入门篇 | VoidKing</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?b759ac2a7fa45129e3ef060bf68259f0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">VoidKing</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">好好学习，天天向上！</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.voidking.com/dev-k8s-start/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="VoidKing">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="VoidKing">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">K8S入门篇</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-09-12T20:00:00+00:00">
+                2019-09-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/" itemprop="url" rel="index">
+                    <span itemprop="name">专业</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index">
+                    <span itemprop="name">运维</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E8%BF%90%E7%BB%B4/k8s/" itemprop="url" rel="index">
+                    <span itemprop="name">k8s</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="K8S简介"><a href="#K8S简介" class="headerlink" title="K8S简介"></a>K8S简介</h1><p>之前浅薄地研究过Docker容器相关技术，我们知道Docker最开始是一个管理容器的工具，后来发展成为容器云。容器云以容器为资源分割和调度的基本单位，封装整个软件运行时环境，为开发者和系统管理员提供用于构建、发布和运行分布式应用的平台。当容器云专注于资源共享与隔离、容器编排与部署时，它更接近传统的IaaS；当容器云渗透到应用支撑与运行时环境时，它是一种PaaS。</p>
+<p>但是，如果想要将Docker应用于具体的业务实现，是存在困难的——编排、管理和调度等各个方面，都不容易。于是，人们迫切需要一套管理系统，对Docker及容器进行更高级更灵活的管理。于是，Kubernetes出现了，缩写为K8S，8代表“ubernete”这8个字符。</p>
+<p>更多内容，参考<a href="https://my.oschina.net/jamesview/blog/2994112" target="_blank" rel="noopener">10分钟看懂Docker和K8S</a>和浙大SEL实验室的《Docker 容器与容器云》。</p>
+<a id="more"></a>
+
+<h1 id="K8S架构"><a href="#K8S架构" class="headerlink" title="K8S架构"></a>K8S架构</h1><p>K8S起源于Borg，Borg是谷歌内部的大规模集群管理系统，负责对谷歌内部很多核心服务的调度和管理。Borg 的目的是让用户能够不必操心资源管理的问题，让他们专注于自己的核心业务，并且做到跨多个数据中心的资源利用率最大化。<br><img src="http://cdn.voidking.com/@/imgs/k8s-start/borg.png?imageView2/0/w/800" alt=""><br>Borg 主要由 BorgMaster、Borglet、borgcfg 和 Scheduler 组成。</p>
+<ul>
+<li>BorgMaster 是整个集群的大脑，负责维护整个集群的状态，并将数据持久化到 Paxos 存储中；</li>
+<li>Scheduer 负责任务的调度，根据应用的特点将其调度到具体的机器上去；</li>
+<li>Borglet 负责真正运行任务（在容器中）；</li>
+<li>borgcfg 是 Borg 的命令行工具，用于跟 Borg 系统交互，一般通过一个配置文件来提交任务。</li>
+</ul>
+<p>K8S借鉴了Borg的设计理念，整体架构跟 Borg 非常像，一个K8S系统，通常称为一个K8S集群（Cluster）。这个集群主要包括两个部分：一个Master节点（主节点）和一群Node节点（计算节点）。Master节点主要还是负责管理和控制。Node节点是工作负载节点，里面是具体的容器。<br><img src="http://cdn.voidking.com/@/imgs/k8s-start/architecture.png?imageView2/0/w/800" alt=""></p>
+<p>Master节点包括API Server、Scheduler、Controller manager、Etcd等。</p>
+<ul>
+<li>API Server提供了资源操作的唯一入口，并提供认证、授权、访问控制、API 注册和发现等机制；</li>
+<li>Scheduler负责资源的调度，按照预定的调度策略将 Pod 调度到相应的机器上；</li>
+<li>Controller manager负责维护集群的状态，比如故障检测、自动扩展、滚动更新等；</li>
+<li>Etcd保存了整个集群的状态。</li>
+</ul>
+<p>Node节点包括Docker、Kubelet、Proxy、Pod等。</p>
+<ul>
+<li>Docker负责管理容器。</li>
+<li>Kubelet负责维护容器的生命周期，同时也负责 Volume（CVI）和网络（CNI）的管理；</li>
+<li>Proxy负责为Pod对象提供代理。</li>
+<li>Pod是Kubernetes最基本的操作单元。一个Pod代表着集群中运行的一个进程，它内部封装了一个或多个紧密相关的容器。除了Pod之外，K8S还有一个Service的概念，一个Service可以看作一组提供相同服务的Pod的对外访问接口。</li>
+</ul>
+<p>除了核心组件，还有一些推荐的 Add-ons：</p>
+<ul>
+<li>kube-dns 负责为整个集群提供 DNS 服务</li>
+<li>Ingress Controller 为服务提供外网入口</li>
+<li>Heapster 提供资源监控</li>
+<li>Dashboard 提供 GUI</li>
+<li>Federation 提供跨可用区的集群</li>
+<li>Fluentd-elasticsearch 提供集群日志采集、存储与查询</li>
+</ul>
+<p>更多内容，参考<a href="https://feisky.gitbooks.io/kubernetes/architecture/architecture.html" target="_blank" rel="noopener">Kubernetes 架构原理</a>。</p>
+<h1 id="Minikube安装"><a href="#Minikube安装" class="headerlink" title="Minikube安装"></a>Minikube安装</h1><p>Minikube是在个人计算机上的虚拟机中运行单节点Kubernetes集群的工具。因为minikube要启动virtualbox虚拟机，在虚拟机中运行k8s集群。所以这里有两个安装思路：<br>思路一、在centos7虚拟机中安装virtualbox，以及minikube。<br>思路二、在本机win10中安装virtualbox，以及minikube。</p>
+<p>对于思路一，经过尝试（详见扩展学习），发现virtualbox不支持Intel处理器的嵌套虚拟化，因此minikube无法在centos7虚拟机中再启动虚拟机，该思路不可行。</p>
+<p>本文接下来使用思路二进行安装，默认virtualbox已经安装完成。安装方法主要参考<a href="http://www.studytrails.com/devops/install-minikube-and-docker-with-virtualbox-on-windows-10-home/" target="_blank" rel="noopener">Install Minikube and Docker with VirtualBox on Windows 10 Home</a>和<a href="https://ehlxr.me/2018/01/12/kubernetes-minikube-installation/" target="_blank" rel="noopener">Kubernetes 学习笔记之 MiniKube 安装</a>。</p>
+<h2 id="安装Docker-Toolbox"><a href="#安装Docker-Toolbox" class="headerlink" title="安装Docker Toolbox"></a>安装Docker Toolbox</h2><p>1、下载<a href="https://docs.docker.com/toolbox/toolbox_install_windows/" target="_blank" rel="noopener">Docker Toolbox</a>，双击安装。</p>
+<p>2、启动Docker Toolbox<br>打开Docker quickstart terminal，Docker会进行初始化。</p>
+<h2 id="镜像加速器"><a href="#镜像加速器" class="headerlink" title="镜像加速器"></a>镜像加速器</h2><p>参考<a href="https://www.voidking.com/dev-docker-start/">Docker入门</a>中的镜像加速器一节，本文中使用阿里云的镜像加速器。</p>
+<p>1、访问阿里云<a href="https://cr.console.aliyun.com/cn-beijing/instances/mirrors" target="_blank" rel="noopener">镜像加速器</a>，得到一个专属的加速地址。</p>
+<p>2、对于Docker Toolbox用户，首先进入default虚拟机<br><code>docker-machine ssh default</code></p>
+<p>3、设置加速地址</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo sed -i <span class="string">"s|EXTRA_ARGS='|EXTRA_ARGS='--registry-mirror=https://wrqtu3hz.mirror.aliyuncs.com |g"</span> <span class="regexp">/var/</span>lib<span class="regexp">/boot2docker/</span>profile</span><br><span class="line"><span class="keyword">exit</span></span><br></pre></td></tr></table></figure>
+
+<p>4、验证配置</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker-machine restart default</span><br><span class="line">docker info</span><br></pre></td></tr></table></figure>
+<p>如果出现Registry Mirrors和加速地址，则表明设置成功。</p>
+<p>常用命令：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 重启电脑后，需要手动启动default虚拟机</span></span><br><span class="line">docker-machine start default</span><br><span class="line"><span class="comment"># default虚拟机IP发生变动时，需要重新生成配置</span></span><br><span class="line">docker-machine regenerate-certs default</span><br><span class="line">docker-machine env</span><br><span class="line">eval $(<span class="string">"C:\Program Files\Docker Toolbox\docker-machine.exe"</span> env)</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装Minikube"><a href="#安装Minikube" class="headerlink" title="安装Minikube"></a>安装Minikube</h2><p>1、下载<a href="http://kubernetes.oss-cn-hangzhou.aliyuncs.com/minikube/releases/v1.2.0/minikube-windows-amd64.exe" target="_blank" rel="noopener">阿里云版minikube v1.2.0</a>，放入k8s目录，重命名为minikube.exe，并加入环境变量。其他版本修改下载的url即可，版本号可以在<a href="https://github.com/AliyunContainerService/minikube/releases" target="_blank" rel="noopener">github aliyun minikube</a>中找到。</p>
+<p>之所以使用阿里云版minikube，是因为<a href="https://github.com/kubernetes/minikube/releases/latest/download/minikube-installer.exe" target="_blank" rel="noopener">原版的minikube</a>在国内启动失败，无法下载Minikube ISO镜像。</p>
+<p>2、验证安装<br>右键+Shift打开Powershell，输入<code>minikube version</code></p>
+<p>3、启动minikube</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">minikube start</span><br><span class="line"><span class="comment"># or</span></span><br><span class="line">minikube start <span class="attribute">--vm-driver</span>=virtualbox <span class="attribute">--registry-mirror</span>=https://registry.docker-cn.com</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://cdn.voidking.com/@/imgs/k8s-start/minikubestart.jpg?imageView2/0/w/600" alt=""></p>
+<p>4、验证启动<br><code>minikube status</code><br><img src="http://cdn.voidking.com/@/imgs/k8s-start/minikubestatus.jpg?imageView2/0/w/600" alt=""></p>
+<p>5、启动minikube dashboard<br><code>minikube dashboard</code></p>
+<p><img src="http://cdn.voidking.com/@/imgs/k8s-start/dashboard.jpg?imageView2/0/w/800" alt=""></p>
+<p>其他安装方式参考<a href="https://kubernetes.io/docs/tasks/tools/install-minikube/" target="_blank" rel="noopener">Install Minikube</a>。</p>
+<h2 id="安装kubectl"><a href="#安装kubectl" class="headerlink" title="安装kubectl"></a>安装kubectl</h2><p>1、下载<a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/" target="_blank" rel="noopener">kubectl</a>，同样放到k8s目录。</p>
+<p>2、验证安装<br><code>kubectl version</code></p>
+<h1 id="Hello-Minikube"><a href="#Hello-Minikube" class="headerlink" title="Hello Minikube"></a>Hello Minikube</h1><p>参考<a href="https://kubernetes.io/docs/tutorials/hello-minikube/" target="_blank" rel="noopener">Hello Minikube</a>，目标：</p>
+<ul>
+<li>将部署hello world应用程序部署到Minikube。</li>
+<li>运行应用程序。</li>
+<li>查看应用日志。</li>
+</ul>
+<p>1、使用git bash启动minikube<br><code>minikube start</code></p>
+<p>2、准备镜像</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 准备文件</span></span><br><span class="line">docker pull <span class="keyword">node</span><span class="title">:6</span>.<span class="number">14.2</span></span><br><span class="line">vi server.js</span><br><span class="line">vi Dockerfile</span><br><span class="line"><span class="comment"># 创建镜像</span></span><br><span class="line">docker build -t voidking/hello-<span class="keyword">node</span> <span class="title">.</span></span><br><span class="line"><span class="title"># 登录上传</span></span><br><span class="line"><span class="title"># docker</span> login</span><br><span class="line">winpty docker login</span><br><span class="line">docker push voidking/hello-<span class="keyword">node</span><span class="title"></span></span><br></pre></td></tr></table></figure>
+
+<p>其中server.js写入内容为：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> http = <span class="built_in">require</span>(<span class="string">'http'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> handleRequest = <span class="function"><span class="keyword">function</span>(<span class="params">request, response</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'Received request for URL: '</span> + request.url);</span><br><span class="line">  response.writeHead(<span class="number">200</span>);</span><br><span class="line">  response.end(<span class="string">'Hello World!'</span>);</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> www = http.createServer(handleRequest);</span><br><span class="line">www.listen(<span class="number">8080</span>);</span><br></pre></td></tr></table></figure>
+
+<p>Dockerfile写入内容为：</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">FROM <span class="keyword">node</span><span class="title">:6</span>.<span class="number">14.2</span></span><br><span class="line">EXPOSE <span class="number">8080</span></span><br><span class="line">COPY server.js .</span><br><span class="line">CMD <span class="keyword">node</span> <span class="title">server</span>.js</span><br></pre></td></tr></table></figure>
+
+<p>3、创建管理Pod的Deployment，Pod根据提供的Docker镜像运行容器。</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl create deployment hello-<span class="keyword">node</span> <span class="title">--image</span>=voidking/hello-<span class="keyword">node</span><span class="title"></span></span><br></pre></td></tr></table></figure>
+
+<p>4、查看Deployments和Pods</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kubectl <span class="builtin-name">get</span> deployments</span><br><span class="line">kubectl <span class="builtin-name">get</span> pods</span><br><span class="line">kubectl describe pod hello-node</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://cdn.voidking.com/@/imgs/k8s-start/describepod.jpg?imageView2/0/w/600" alt=""><br>由上图可以看出，创建pod的过程中，花费时间最长的是下载镜像的步骤，大约10分钟。这里有个疑问，为什么没有使用本地的镜像？</p>
+<p>5、创建服务，将Pod公开到公共Internet</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kubectl expose deployment hello-node <span class="attribute">--type</span>=LoadBalancer <span class="attribute">--port</span>=8080</span><br><span class="line">kubectl <span class="builtin-name">get</span> services</span><br><span class="line">minikube<span class="built_in"> service </span>hello-node</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://cdn.voidking.com/@/imgs/k8s-start/services.jpg?imageView2/0/w/600" alt=""><br>在支持负载均衡器的云提供商上，将配置外部IP地址以访问服务。在Minikube上，LoadBalancer类型通过<code>minikube service</code>命令使服务可访问。<br>打开浏览器，访问：<a href="http://192.168.99.103:30378/" target="_blank" rel="noopener">http://192.168.99.103:30378/</a> ，可以看到 Hello World!</p>
+<p>6、查看Pod和Service<br><code>kubectl get pod,svc -n kube-system</code></p>
+<p><img src="http://cdn.voidking.com/@/imgs/k8s-start/podservice.jpg?imageView2/0/w/600" alt=""></p>
+<p>7、删除service和deployment（可选）</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubectl delete<span class="built_in"> service </span>hello-node</span><br><span class="line">kubectl delete deployment hello-node</span><br></pre></td></tr></table></figure>
+
+<p>8、关闭集群，删除集群（可选）</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">minikube <span class="built_in">stop</span></span><br><span class="line">minikube <span class="keyword">delete</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="minikube常用命令"><a href="#minikube常用命令" class="headerlink" title="minikube常用命令"></a>minikube常用命令</h1><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 进入节点服务器</span></span><br><span class="line">minikube ssh</span><br><span class="line"></span><br><span class="line"><span class="comment"># 执行节点服务器命令，例如查看节点 docker info</span></span><br><span class="line">minikube ssh -- docker info</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看插件，启用插件</span></span><br><span class="line">minikube addons list</span><br><span class="line">minikube addons <span class="builtin-name">enable</span> heapster</span><br><span class="line">minikube addons <span class="builtin-name">disable</span> heapster</span><br></pre></td></tr></table></figure>
+
+<h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p>至此，跑通了Minikube的第一个Deployment。k8s的万里长征开始了第一步，接下来继续深入学习，定下的目标就是拿到k8s管理员证书<a href="https://www.cncf.io/certification/cka/" target="_blank" rel="noopener">Certified Kubernetes Administrator (CKA) Program</a>，具体要求参考<a href="https://github.com/cncf/curriculum" target="_blank" rel="noopener">curriculum</a>。</p>
+<h1 id="扩展学习"><a href="#扩展学习" class="headerlink" title="扩展学习"></a>扩展学习</h1><h2 id="CentOS7中安装VBox"><a href="#CentOS7中安装VBox" class="headerlink" title="CentOS7中安装VBox"></a>CentOS7中安装VBox</h2><p>在centos7中安装virtualbox，如下流程：</p>
+<p>1、添加安装源</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">yum <span class="keyword">install</span> epel-<span class="keyword">release</span></span><br><span class="line">wget -P /etc/yum.repos.d/ <span class="keyword">http</span>://download.virtualbox.org/virtualbox/rpm/rhel/virtualbox.repo</span><br><span class="line">yum makecache <span class="keyword">fast</span></span><br><span class="line">yum <span class="keyword">list</span> | grep virtualbox</span><br></pre></td></tr></table></figure>
+
+<p>2、安装virtualbox<br><code>yum install VirtualBox-5.2</code></p>
+<p>3、验证安装<br><code>vboxmanage -V</code><br>报错：</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">WARNING: The vboxdrv kernel <span class="built_in">module</span> <span class="keyword">is</span> <span class="keyword">not</span> loaded. Either there <span class="keyword">is</span> <span class="literal">no</span> <span class="built_in">module</span></span><br><span class="line">         available <span class="keyword">for</span> the current kernel (<span class="number">3.10</span>.<span class="number">0</span>-<span class="number">957.el</span>7.x86_64) <span class="keyword">or</span> <span class="literal">it</span> failed <span class="keyword">to</span></span><br><span class="line">         load. Please recompile the kernel <span class="built_in">module</span> <span class="keyword">and</span> install <span class="literal">it</span> <span class="keyword">by</span></span><br><span class="line"></span><br><span class="line">           sudo /sbin/vboxconfig</span><br><span class="line"></span><br><span class="line">         You will <span class="keyword">not</span> be able <span class="keyword">to</span> start VMs <span class="keyword">until</span> <span class="keyword">this</span> problem <span class="keyword">is</span> fixed.</span><br><span class="line"><span class="number">5.2</span>.<span class="number">32r</span>132073</span><br></pre></td></tr></table></figure>
+
+<p>4、修复<br>（1）安装gcc等<br><code>yum install gcc perl make</code></p>
+<p>（2）安装kernel header<br><code>yum install kernel-devel</code></p>
+<p>（3）安装rcvboxdrv<br><code>rcvboxdrv setup</code><br>如果依然缺少依赖，那么按照提示继续安装，比如<br><code>yum install kernel-devel-3.10.0-957.el7.x86_64</code></p>
+<p>（4）再次验证安装<br><code>vboxmanage -V</code></p>
+<h2 id="centos7安装minikube"><a href="#centos7安装minikube" class="headerlink" title="centos7安装minikube"></a>centos7安装minikube</h2><p>1、安装kubectl<br>（1）下载最新版kubectl</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -LO https:<span class="regexp">//</span>storage.googleapis.com<span class="regexp">/kubernetes-release/</span>release<span class="regexp">/`curl -s https:/</span><span class="regexp">/storage.googleapis.com/</span>kubernetes-release<span class="regexp">/release/</span>stable.txt`<span class="regexp">/bin/</span>linux<span class="regexp">/amd64/</span>kubectl</span><br></pre></td></tr></table></figure>
+<p>或者下载指定版本kubectl</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -LO https:<span class="regexp">//</span>storage.googleapis.com<span class="regexp">/kubernetes-release/</span>release<span class="regexp">/v1.15.0/</span>bin<span class="regexp">/linux/</span>amd64<span class="regexp">/kubectl</span></span><br></pre></td></tr></table></figure>
+
+<p>（2）添加执行权限<br><code>chmod +x ./kubectl</code></p>
+<p>（3）移动kubectl到bin目录<br><code>mv ./kubectl /usr/local/bin/kubectl</code></p>
+<p>（4）验证安装<br><code>kubectl version</code></p>
+<p>2、安装minikube<br>（1）下载minikube</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -Lo minikube https:<span class="regexp">//</span>storage.googleapis.com<span class="regexp">/minikube/</span>releases<span class="regexp">/latest/mi</span>nikube-linux-amd64 \</span><br><span class="line">  &amp;&amp; chmod +x minikube</span><br></pre></td></tr></table></figure>
+
+<p>（2）移动minikub到bin目录<br><code>install minikube /usr/local/bin</code></p>
+<p>（3）验证安装<br><code>minikube version</code></p>
+<p>（4）启动minikube<br><code>minikube start</code><br>如果报错machine does not exist，那么需要清空本地状态：<code>minikube delete</code></p>
+<h1 id="书签"><a href="#书签" class="headerlink" title="书签"></a>书签</h1><p><a href="https://kubernetes.io/docs/tutorials/kubernetes-basics/" target="_blank" rel="noopener">Learn Kubernetes Basics</a></p>
+<p><a href="https://kubernetes.io/docs/tutorials/kubernetes-basics/create-cluster/cluster-interactive/" target="_blank" rel="noopener">Interactive Tutorial - Creating a Cluster</a></p>
+<p><a href="https://kubernetes.io/docs/setup/learning-environment/minikube/" target="_blank" rel="noopener">Installing Kubernetes with Minikube</a></p>
+<p><a href="https://www.infoq.cn/article/9DTX*1i1Z8hsxkdrPmhk" target="_blank" rel="noopener">Kubernetes 学习路径</a></p>
+<p><a href="https://www.infoq.cn/article/3yijOyajjpq-Fg809NIj" target="_blank" rel="noopener">学习 Kubernetes 和容器技术体系的最佳方法</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/docker/" rel="tag"># docker</a>
+          
+            <a href="/tags/k8s/" rel="tag"># k8s</a>
+          
+            <a href="/tags/virtualbox/" rel="tag"># virtualbox</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/dev-beego-start-2/" rel="next" title="beego入门篇——下">
+                <i class="fa fa-chevron-left"></i> beego入门篇——下
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/dev-kubectl/" rel="prev" title="kubectl常用命令">
+                kubectl常用命令 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zODU3Mi8xNTEwMA=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="VoidKing" />
+            
+              <p class="site-author-name" itemprop="name">VoidKing</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">583</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">188</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:voidking@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/voidking" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/voidking" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://twitter.com/voidking_com" target="_blank" title="Twitter">
+                      
+                        <i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#K8S简介"><span class="nav-number">1.</span> <span class="nav-text">K8S简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#K8S架构"><span class="nav-number">2.</span> <span class="nav-text">K8S架构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Minikube安装"><span class="nav-number">3.</span> <span class="nav-text">Minikube安装</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装Docker-Toolbox"><span class="nav-number">3.1.</span> <span class="nav-text">安装Docker Toolbox</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#镜像加速器"><span class="nav-number">3.2.</span> <span class="nav-text">镜像加速器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装Minikube"><span class="nav-number">3.3.</span> <span class="nav-text">安装Minikube</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装kubectl"><span class="nav-number">3.4.</span> <span class="nav-text">安装kubectl</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Hello-Minikube"><span class="nav-number">4.</span> <span class="nav-text">Hello Minikube</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#minikube常用命令"><span class="nav-number">5.</span> <span class="nav-text">minikube常用命令</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#后记"><span class="nav-number">6.</span> <span class="nav-text">后记</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#扩展学习"><span class="nav-number">7.</span> <span class="nav-text">扩展学习</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#CentOS7中安装VBox"><span class="nav-number">7.1.</span> <span class="nav-text">CentOS7中安装VBox</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#centos7安装minikube"><span class="nav-number">7.2.</span> <span class="nav-text">centos7安装minikube</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#书签"><span class="nav-number">8.</span> <span class="nav-text">书签</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2012 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">VoidKing</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <!-- <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script> -->
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+  <div class="footer-beian">
+    <a href="http://www.beian.miit.gov.cn/" target="_blank">苏ICP备14021030号</a>&nbsp;|&nbsp;
+    <!-- <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=32032202000223">苏公网安备 32032202000223号</a> -->
+    <img src="/images/beian.png" alt="">
+    <a target="_blank" href="http://www.beian.gov.cn/">苏公网安备 32032202000223号</a>
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+      <div id="needsharebutton-float">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "box";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+      flOptions = {};
+      
+          flOptions.iconStyle = "box";
+      
+          flOptions.boxForm = "horizontal";
+      
+          flOptions.position = "topRight";
+      
+          flOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-float', flOptions);
+    
+  </script>
+
+  
+
+  
+  
+
+
+  
+
+  
+
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+
+</body>
+</html>

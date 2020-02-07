@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=5.1.4">
+
+
+
+
+
+
+  <meta name="keywords" content="linux,mysql,ubuntu," />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="VoidKing" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="sysbench简介sysbench是一个基于LuaJIT的可编写脚本的多线程基准测试工具。它最常用于数据库基准测试，但也可用于创建不涉及数据库服务器的任意复杂工作负载。 本文来研究一下sysbench的安装使用方法，以及测试结果的绘图方法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="sysbench的基本用法和结果绘图">
+<meta property="og:url" content="https://www.voidking.com/dev-sysbench-usage-and-plot/index.html">
+<meta property="og:site_name" content="VoidKing">
+<meta property="og:description" content="sysbench简介sysbench是一个基于LuaJIT的可编写脚本的多线程基准测试工具。它最常用于数据库基准测试，但也可用于创建不涉及数据库服务器的任意复杂工作负载。 本文来研究一下sysbench的安装使用方法，以及测试结果的绘图方法。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-02-27T14:00:00.000Z">
+<meta property="article:modified_time" content="2020-02-07T15:42:50.013Z">
+<meta property="article:author" content="VoidKing">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="mysql">
+<meta property="article:tag" content="ubuntu">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.voidking.com/dev-sysbench-usage-and-plot/"/>
+
+
+
+
+
+  <title>sysbench的基本用法和结果绘图 | VoidKing</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?b759ac2a7fa45129e3ef060bf68259f0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">VoidKing</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">好好学习，天天向上！</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.voidking.com/dev-sysbench-usage-and-plot/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="VoidKing">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="VoidKing">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">sysbench的基本用法和结果绘图</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-02-27T14:00:00+00:00">
+                2019-02-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/" itemprop="url" rel="index">
+                    <span itemprop="name">专业</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index">
+                    <span itemprop="name">运维</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E8%BF%90%E7%BB%B4/ubuntu/" itemprop="url" rel="index">
+                    <span itemprop="name">ubuntu</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="sysbench简介"><a href="#sysbench简介" class="headerlink" title="sysbench简介"></a>sysbench简介</h1><p><a href="https://github.com/akopytov/sysbench" target="_blank" rel="noopener">sysbench</a>是一个基于LuaJIT的可编写脚本的多线程基准测试工具。它最常用于数据库基准测试，但也可用于创建不涉及数据库服务器的任意复杂工作负载。</p>
+<p>本文来研究一下sysbench的安装使用方法，以及测试结果的绘图方法。</p>
+<a id="more"></a>
+
+<h1 id="安装部署"><a href="#安装部署" class="headerlink" title="安装部署"></a>安装部署</h1><p>参考<a href="http://liujunming.top/2017/11/27/Sysbench%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" target="_blank" rel="noopener">Sysbench环境搭建</a>和<a href="https://github.com/akopytov/sysbench" target="_blank" rel="noopener">sysbench项目</a>，进行sysbench的安装部署。</p>
+<h2 id="安装mysql"><a href="#安装mysql" class="headerlink" title="安装mysql"></a>安装mysql</h2><p>1、安装mysql数据库。<br><code>sudo apt-get install mysql-server mysql-client</code></p>
+<p>接下来三步是可选操作。</p>
+<p>2、<code>sudo vim /etc/mysql/mysql.conf.d/mysqld.cnf</code>，修改绑定IP</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bind-address            = <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span></span><br></pre></td></tr></table></figure>
+
+<p>3、重启mysql<br><code>sudo service mysql restart</code></p>
+<p>4、测试登录<br><code>mysql -u root -h &lt;hostip&gt; -p</code></p>
+<h2 id="安装sysbench"><a href="#安装sysbench" class="headerlink" title="安装sysbench"></a>安装sysbench</h2><p>1、安装sysbench</p>
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -s <span class="symbol">https:</span>/<span class="regexp">/packagecloud.io/install</span><span class="regexp">/repositories/akopytov</span><span class="regexp">/sysbench/script</span>.deb.sh | sudo bash</span><br><span class="line">sudo apt -y install sysbench</span><br></pre></td></tr></table></figure>
+<p>务必先下载脚本并执行，否则直接apt install安装的sysbench版本太低，不支持report-interval参数。</p>
+<p>2、<code>mysql -u root -p</code>，创建数据库</p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">database</span> sbtest;</span><br></pre></td></tr></table></figure>
+
+<p>3、验证安装<br><code>sysbench --version</code></p>
+<h1 id="sysbench指令"><a href="#sysbench指令" class="headerlink" title="sysbench指令"></a>sysbench指令</h1><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line">Usage:</span><br><span class="line">  sysbench [options]<span class="built_in">..</span>. [testname] [command]</span><br><span class="line"></span><br><span class="line">Commands implemented by most tests: prepare <span class="builtin-name">run</span> cleanup help</span><br><span class="line"></span><br><span class="line">General options:</span><br><span class="line">  <span class="attribute">--threads</span>=N                     number of threads <span class="keyword">to</span> use [1]</span><br><span class="line">  <span class="attribute">--events</span>=N                      limit <span class="keyword">for</span> total number of events [0]</span><br><span class="line">  <span class="attribute">--time</span>=N                        limit <span class="keyword">for</span> total execution time <span class="keyword">in</span> seconds [10]</span><br><span class="line">  <span class="attribute">--forced-shutdown</span>=STRING        number of seconds <span class="keyword">to</span> wait after the --time limit before forcing shutdown, <span class="keyword">or</span> <span class="string">'off'</span> <span class="keyword">to</span> <span class="builtin-name">disable</span> [off]</span><br><span class="line">  <span class="attribute">--thread-stack-size</span>=SIZE        size of stack per thread [64K]</span><br><span class="line">  <span class="attribute">--rate</span>=N                        average transactions rate. 0 <span class="keyword">for</span> unlimited rate [0]</span><br><span class="line">  <span class="attribute">--report-interval</span>=N             periodically report intermediate statistics with a specified interval <span class="keyword">in</span> seconds. 0 disables intermediate reports [0]</span><br><span class="line">  --report-checkpoints=[LIST,<span class="built_in">..</span>.] dump full statistics <span class="keyword">and</span> reset all counters at specified points <span class="keyword">in</span> time. The argument is a list of comma-separated values representing the amount of time <span class="keyword">in</span> seconds elapsed <span class="keyword">from</span> start of test when report checkpoint(s) must be performed. Report checkpoints are off by default. []</span><br><span class="line">  --<span class="builtin-name">debug</span>[=on|off]                <span class="builtin-name">print</span> more debugging <span class="builtin-name">info</span> [off]</span><br><span class="line">  --validate[=on|off]             perform validation checks where possible [off]</span><br><span class="line">  --help[=on|off]                 <span class="builtin-name">print</span> help <span class="keyword">and</span> exit [off]</span><br><span class="line">  --version[=on|off]              <span class="builtin-name">print</span> version <span class="keyword">and</span> exit [off]</span><br><span class="line">  <span class="attribute">--config-file</span>=FILENAME          File containing command line options</span><br><span class="line">  <span class="attribute">--tx-rate</span>=N                     deprecated alias <span class="keyword">for</span> --rate [0]</span><br><span class="line">  <span class="attribute">--max-requests</span>=N                deprecated alias <span class="keyword">for</span> --events [0]</span><br><span class="line">  <span class="attribute">--max-time</span>=N                    deprecated alias <span class="keyword">for</span> --time [0]</span><br><span class="line">  <span class="attribute">--num-threads</span>=N                 deprecated alias <span class="keyword">for</span> --threads [1]</span><br><span class="line"></span><br><span class="line">Pseudo-Random Numbers Generator options:</span><br><span class="line">  <span class="attribute">--rand-type</span>=STRING random numbers distribution &#123;uniform,gaussian,special,pareto&#125; [special]</span><br><span class="line">  <span class="attribute">--rand-spec-iter</span>=N number of iterations used <span class="keyword">for</span> numbers generation [12]</span><br><span class="line">  <span class="attribute">--rand-spec-pct</span>=N  percentage of values <span class="keyword">to</span> be treated as <span class="string">'special'</span> (<span class="keyword">for</span> special distribution) [1]</span><br><span class="line">  <span class="attribute">--rand-spec-res</span>=N  percentage of <span class="string">'special'</span> values <span class="keyword">to</span> use (<span class="keyword">for</span> special distribution) [75]</span><br><span class="line">  <span class="attribute">--rand-seed</span>=N      seed <span class="keyword">for</span> random number generator. When 0, the current time is used as a RNG seed. [0]</span><br><span class="line">  <span class="attribute">--rand-pareto-h</span>=N  parameter h <span class="keyword">for</span> pareto distribution [0.2]</span><br><span class="line"></span><br><span class="line">Log options:</span><br><span class="line">  <span class="attribute">--verbosity</span>=N verbosity level &#123;5 - debug, 0 - only critical messages&#125; [3]</span><br><span class="line"></span><br><span class="line">  <span class="attribute">--percentile</span>=N       percentile <span class="keyword">to</span> calculate <span class="keyword">in</span> latency statistics (1-100). Use the special value of 0 <span class="keyword">to</span> <span class="builtin-name">disable</span> percentile calculations [95]</span><br><span class="line">  --histogram[=on|off] <span class="builtin-name">print</span> latency histogram <span class="keyword">in</span> report [off]</span><br><span class="line"></span><br><span class="line">General database options:</span><br><span class="line"></span><br><span class="line">  <span class="attribute">--db-driver</span>=STRING  specifies database driver <span class="keyword">to</span> use (<span class="string">'help'</span> <span class="keyword">to</span> <span class="builtin-name">get</span> list of available drivers) [mysql]</span><br><span class="line">  <span class="attribute">--db-ps-mode</span>=STRING prepared statements usage mode &#123;auto, disable&#125; [auto]</span><br><span class="line">  --db-<span class="builtin-name">debug</span>[=on|off] <span class="builtin-name">print</span> database-specific <span class="builtin-name">debug</span> information [off]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Compiled-in database drivers:</span><br><span class="line">  mysql - MySQL driver</span><br><span class="line">  pgsql - PostgreSQL driver</span><br><span class="line"></span><br><span class="line">mysql options:</span><br><span class="line">  --mysql-host=[LIST,<span class="built_in">..</span>.]          MySQL<span class="built_in"> server </span>host [localhost]</span><br><span class="line">  --mysql-port=[LIST,<span class="built_in">..</span>.]          MySQL<span class="built_in"> server port </span>[3306]</span><br><span class="line">  --mysql-socket=[LIST,<span class="built_in">..</span>.]        MySQL socket</span><br><span class="line">  <span class="attribute">--mysql-user</span>=STRING              MySQL<span class="built_in"> user </span>[sbtest]</span><br><span class="line">  <span class="attribute">--mysql-password</span>=STRING          MySQL password []</span><br><span class="line">  <span class="attribute">--mysql-db</span>=STRING                MySQL database name [sbtest]</span><br><span class="line">  --mysql-ssl[=on|off]             use SSL connections, <span class="keyword">if</span> available <span class="keyword">in</span> the<span class="built_in"> client </span>library [off]</span><br><span class="line">  <span class="attribute">--mysql-ssl-cipher</span>=STRING        use specific cipher <span class="keyword">for</span> SSL connections []</span><br><span class="line">  --mysql-compression[=on|off]     use compression, <span class="keyword">if</span> available <span class="keyword">in</span> the<span class="built_in"> client </span>library [off]</span><br><span class="line">  --mysql-<span class="builtin-name">debug</span>[=on|off]           trace all<span class="built_in"> client </span>library calls [off]</span><br><span class="line">  --mysql-ignore-errors=[LIST,<span class="built_in">..</span>.] list of errors <span class="keyword">to</span> ignore, <span class="keyword">or</span> <span class="string">"all"</span> [1213,1020,1205]</span><br><span class="line">  --mysql-dry-<span class="builtin-name">run</span>[=on|off]         Dry run, pretend that all MySQL<span class="built_in"> client </span>API calls are successful without executing them [off]</span><br><span class="line"></span><br><span class="line">pgsql options:</span><br><span class="line">  <span class="attribute">--pgsql-host</span>=STRING     PostgreSQL<span class="built_in"> server </span>host [localhost]</span><br><span class="line">  <span class="attribute">--pgsql-port</span>=N          PostgreSQL<span class="built_in"> server port </span>[5432]</span><br><span class="line">  <span class="attribute">--pgsql-user</span>=STRING     PostgreSQL<span class="built_in"> user </span>[sbtest]</span><br><span class="line">  <span class="attribute">--pgsql-password</span>=STRING PostgreSQL password []</span><br><span class="line">  <span class="attribute">--pgsql-db</span>=STRING       PostgreSQL database name [sbtest]</span><br><span class="line"></span><br><span class="line">Compiled-in tests:</span><br><span class="line">  fileio - File I/O test</span><br><span class="line">  cpu - CPU performance test</span><br><span class="line">  memory - Memory functions speed test</span><br><span class="line">  threads - Threads subsystem performance test</span><br><span class="line">  mutex - Mutex performance test</span><br><span class="line"></span><br><span class="line">See <span class="string">'sysbench &lt;testname&gt; help'</span> <span class="keyword">for</span> a list of options <span class="keyword">for</span> each test.</span><br></pre></td></tr></table></figure>
+
+<h1 id="sysbench实践"><a href="#sysbench实践" class="headerlink" title="sysbench实践"></a>sysbench实践</h1><p>参考<a href="https://www.howtoforge.com/how-to-benchmark-your-system-cpu-file-io-mysql-with-sysbench" target="_blank" rel="noopener">How to Benchmark Your System (CPU, File IO, MySQL) with Sysbench</a>和<a href="https://cloud.tencent.com/info/c5a0069ae4ce1ccac3668d4c45c637da.html" target="_blank" rel="noopener">使用sysbench对MySQL进行压力测试</a>进行性能测试。</p>
+<h2 id="CPU"><a href="#CPU" class="headerlink" title="CPU"></a>CPU</h2><p>使用以下命令测试CPU性能：<br><code>sysbench cpu --cpu-max-prime=20000 run</code><br>total time越小，说明CPU性能越好。</p>
+<h2 id="Mysql"><a href="#Mysql" class="headerlink" title="Mysql"></a>Mysql</h2><p>1、创建测试数据</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">sysbench /usr/share/sysbench/oltp_read_only.lua \</span><br><span class="line"><span class="attribute">--db-driver</span>=mysql \</span><br><span class="line"><span class="attribute">--mysql-host</span>=127.0.0.1 \</span><br><span class="line"><span class="attribute">--mysql-db</span>=sbtest  \</span><br><span class="line"><span class="attribute">--mysql-user</span>=root \</span><br><span class="line"><span class="attribute">--mysql-password</span>=voidking \</span><br><span class="line"><span class="attribute">--mysql-socket</span>=/var/run/mysqld/mysqld.sock \</span><br><span class="line"><span class="attribute">--tables</span>=10 \</span><br><span class="line"><span class="attribute">--table-size</span>=100000 \</span><br><span class="line"><span class="attribute">--threads</span>=8 \</span><br><span class="line"><span class="attribute">--events</span>=100000  \</span><br><span class="line">prepare</span><br></pre></td></tr></table></figure>
+
+<p>2、测试</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">time sysbench /usr/share/sysbench/oltp_read_only.lua \</span><br><span class="line"><span class="attribute">--db-driver</span>=mysql \</span><br><span class="line"><span class="attribute">--mysql-host</span>=127.0.0.1 \</span><br><span class="line"><span class="attribute">--mysql-db</span>=sbtest  \</span><br><span class="line"><span class="attribute">--mysql-user</span>=root \</span><br><span class="line"><span class="attribute">--mysql-password</span>=voidking \</span><br><span class="line"><span class="attribute">--mysql-socket</span>=/var/run/mysqld/mysqld.sock \</span><br><span class="line"><span class="attribute">--tables</span>=10 \</span><br><span class="line"><span class="attribute">--table-size</span>=100000 \</span><br><span class="line"><span class="attribute">--threads</span>=8 \</span><br><span class="line"><span class="attribute">--events</span>=100000  \</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+<p>每秒的transactions越高，说明性能越好。</p>
+<p>3、测试命令2</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">time sysbench /usr/share/sysbench/oltp_read_only.lua \</span><br><span class="line"><span class="attribute">--db-driver</span>=mysql \</span><br><span class="line"><span class="attribute">--mysql-host</span>=127.0.0.1 \</span><br><span class="line"><span class="attribute">--mysql-db</span>=sbtest  \</span><br><span class="line"><span class="attribute">--mysql-user</span>=root \</span><br><span class="line"><span class="attribute">--mysql-password</span>=voidking \</span><br><span class="line"><span class="attribute">--mysql-socket</span>=/var/run/mysqld/mysqld.sock \</span><br><span class="line"><span class="attribute">--tables</span>=10 \</span><br><span class="line"><span class="attribute">--table-size</span>=100000 \</span><br><span class="line"><span class="attribute">--threads</span>=8 \</span><br><span class="line"><span class="attribute">--events</span>=0 \</span><br><span class="line"><span class="attribute">--time</span>=30 \</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+<p>4、清理数据（可选）</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">time sysbench /usr/share/sysbench/oltp_read_only.lua \</span><br><span class="line"><span class="attribute">--db-driver</span>=mysql \</span><br><span class="line"><span class="attribute">--mysql-host</span>=127.0.0.1 \</span><br><span class="line"><span class="attribute">--mysql-db</span>=sbtest  \</span><br><span class="line"><span class="attribute">--mysql-user</span>=root \</span><br><span class="line"><span class="attribute">--mysql-password</span>=voidking \</span><br><span class="line"><span class="attribute">--mysql-socket</span>=/var/run/mysqld/mysqld.sock \</span><br><span class="line"><span class="attribute">--tables</span>=10 \</span><br><span class="line"><span class="attribute">--table-size</span>=100000 \</span><br><span class="line"><span class="attribute">--threads</span>=8 \</span><br><span class="line"><span class="attribute">--events</span>=0 \</span><br><span class="line"><span class="attribute">--time</span>=30 \</span><br><span class="line">cleanup</span><br></pre></td></tr></table></figure>
+
+<h1 id="绘图"><a href="#绘图" class="headerlink" title="绘图"></a>绘图</h1><h2 id="sysbench统计数据"><a href="#sysbench统计数据" class="headerlink" title="sysbench统计数据"></a>sysbench统计数据</h2><p>测试搞定了，数据呢？每秒钟的transactions数据呢？关键在于report-interval参数。修改测试命令为：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">sysbench /usr/share/sysbench/oltp_read_only.lua \</span><br><span class="line"><span class="attribute">--db-driver</span>=mysql \</span><br><span class="line"><span class="attribute">--mysql-host</span>=127.0.0.1 \</span><br><span class="line"><span class="attribute">--mysql-db</span>=sbtest  \</span><br><span class="line"><span class="attribute">--mysql-user</span>=root \</span><br><span class="line"><span class="attribute">--mysql-password</span>=voidking \</span><br><span class="line"><span class="attribute">--mysql-socket</span>=/var/run/mysqld/mysqld.sock \</span><br><span class="line"><span class="attribute">--tables</span>=10 \</span><br><span class="line"><span class="attribute">--table-size</span>=100000 \</span><br><span class="line"><span class="attribute">--threads</span>=8 \</span><br><span class="line"><span class="attribute">--events</span>=0 \</span><br><span class="line"><span class="attribute">--time</span>=30 \</span><br><span class="line"><span class="attribute">--report-interval</span>=5 \</span><br><span class="line"><span class="builtin-name">run</span> &gt;&gt; sysbench.log</span><br></pre></td></tr></table></figure>
+
+<p>sysbench.log内容如下：</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">sysbench <span class="number">1.0</span><span class="number">.16</span> (using bundled LuaJIT <span class="number">2.1</span><span class="number">.0</span>-beta2)</span><br><span class="line"></span><br><span class="line">Running the test with following options:</span><br><span class="line">Number of threads: <span class="number">8</span></span><br><span class="line">Report <span class="built_in">int</span>ermediate results every <span class="number">5</span> second(s)</span><br><span class="line">Initializing random number generator <span class="keyword">from</span> current time</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Initializing worker threads...</span><br><span class="line"></span><br><span class="line">Threads started!</span><br><span class="line"></span><br><span class="line">[ <span class="number">5</span>s ] thds: <span class="number">8</span> tps: <span class="number">792.49</span> qps: <span class="number">12698.90</span> (r/w/o: <span class="number">11112.31</span>/<span class="number">0.00</span>/<span class="number">1586.59</span>) lat (ms,<span class="number">95</span>%): <span class="number">11.24</span> err/s: <span class="number">0.00</span> reconn/s: <span class="number">0.00</span></span><br><span class="line">[ <span class="number">10</span>s ] thds: <span class="number">8</span> tps: <span class="number">782.20</span> qps: <span class="number">12511.60</span> (r/w/o: <span class="number">10947.20</span>/<span class="number">0.00</span>/<span class="number">1564.40</span>) lat (ms,<span class="number">95</span>%): <span class="number">11.04</span> err/s: <span class="number">0.00</span> reconn/s: <span class="number">0.00</span></span><br><span class="line">[ <span class="number">15</span>s ] thds: <span class="number">8</span> tps: <span class="number">784.80</span> qps: <span class="number">12561.53</span> (r/w/o: <span class="number">10991.94</span>/<span class="number">0.00</span>/<span class="number">1569.59</span>) lat (ms,<span class="number">95</span>%): <span class="number">11.04</span> err/s: <span class="number">0.00</span> reconn/s: <span class="number">0.00</span></span><br><span class="line">[ <span class="number">20</span>s ] thds: <span class="number">8</span> tps: <span class="number">808.85</span> qps: <span class="number">12935.60</span> (r/w/o: <span class="number">11317.90</span>/<span class="number">0.00</span>/<span class="number">1617.70</span>) lat (ms,<span class="number">95</span>%): <span class="number">10.84</span> err/s: <span class="number">0.00</span> reconn/s: <span class="number">0.00</span></span><br><span class="line">[ <span class="number">25</span>s ] thds: <span class="number">8</span> tps: <span class="number">795.95</span> qps: <span class="number">12737.76</span> (r/w/o: <span class="number">11145.86</span>/<span class="number">0.00</span>/<span class="number">1591.89</span>) lat (ms,<span class="number">95</span>%): <span class="number">10.84</span> err/s: <span class="number">0.00</span> reconn/s: <span class="number">0.00</span></span><br><span class="line">[ <span class="number">30</span>s ] thds: <span class="number">8</span> tps: <span class="number">816.80</span> qps: <span class="number">13065.00</span> (r/w/o: <span class="number">11431.60</span>/<span class="number">0.00</span>/<span class="number">1633.40</span>) lat (ms,<span class="number">95</span>%): <span class="number">10.65</span> err/s: <span class="number">0.00</span> reconn/s: <span class="number">0.00</span></span><br><span class="line">SQL statistics:</span><br><span class="line">    queries performed:</span><br><span class="line">        read:                            <span class="number">334810</span></span><br><span class="line">        write:                           <span class="number">0</span></span><br><span class="line">        other:                           <span class="number">47830</span></span><br><span class="line">        total:                           <span class="number">382640</span></span><br><span class="line">    transactions:                        <span class="number">23915</span>  (<span class="number">796.79</span> per sec.)</span><br><span class="line">    queries:                             <span class="number">382640</span> (<span class="number">12748.68</span> per sec.)</span><br><span class="line">    ignored errors:                      <span class="number">0</span>      (<span class="number">0.00</span> per sec.)</span><br><span class="line">    reconnects:                          <span class="number">0</span>      (<span class="number">0.00</span> per sec.)</span><br><span class="line"></span><br><span class="line">General statistics:</span><br><span class="line">    total time:                          <span class="number">30.0123</span>s</span><br><span class="line">    total number of events:              <span class="number">23915</span></span><br><span class="line"></span><br><span class="line">Latency (ms):</span><br><span class="line">         min:                                    <span class="number">7.65</span></span><br><span class="line">         avg:                                   <span class="number">10.04</span></span><br><span class="line">         max:                                   <span class="number">32.13</span></span><br><span class="line">         <span class="number">95</span>th percentile:                       <span class="number">10.84</span></span><br><span class="line">         sum:                               <span class="number">240031.54</span></span><br><span class="line"></span><br><span class="line">Threads fairness:</span><br><span class="line">    events (avg/stddev):           <span class="number">2989.3750</span>/<span class="number">3.74</span></span><br><span class="line">    execution time (avg/stddev):   <span class="number">30.0039</span>/<span class="number">0.00</span></span><br></pre></td></tr></table></figure>
+
+<p>然后把可以绘图的数据单独提取出来：<br><code>cat sysbench.log | grep tps &gt; sysbench.dat</code> </p>
+<h2 id="gnuplot绘图"><a href="#gnuplot绘图" class="headerlink" title="gnuplot绘图"></a>gnuplot绘图</h2><figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># graph title</span><br><span class="line"><span class="keyword">set</span> title <span class="comment">""</span></span><br><span class="line"><span class="keyword">set</span> <span class="comment">key below box 1</span></span><br><span class="line"></span><br><span class="line"># x-axis <span class="comment">label</span></span><br><span class="line"><span class="keyword">set</span> <span class="comment">xlabel</span> <span class="comment">"time(ms)"</span></span><br><span class="line"></span><br><span class="line"># y-axis <span class="comment">label</span></span><br><span class="line"><span class="keyword">set</span> <span class="comment">ylabel</span> <span class="comment">"queries per second"</span></span><br><span class="line"><span class="keyword">set</span> <span class="comment">yrange[10000:15000]</span></span><br><span class="line"><span class="keyword">set</span> <span class="comment">ytics 500</span></span><br><span class="line"></span><br><span class="line">plot <span class="comment">"sysbench.dat"</span><span class="comment"> using 2:9 with linespoints title</span> <span class="comment">"sysbench0"</span><span class="comment">,\</span></span><br><span class="line"></span><br><span class="line">pause <span class="comment">mouse</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p>至此，sysbench的使用方法和绘图方法就基本掌握了。更详细和高阶的用法，需要的时候再去学习。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/linux/" rel="tag"># linux</a>
+          
+            <a href="/tags/mysql/" rel="tag"># mysql</a>
+          
+            <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/dev-mediawiki-install-and-config/" rel="next" title="MediaWiki安装与配置">
+                <i class="fa fa-chevron-left"></i> MediaWiki安装与配置
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/dev-openstack-compute-node-broken/" rel="prev" title="OpenStack计算节点的奇葩问题">
+                OpenStack计算节点的奇葩问题 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zODU3Mi8xNTEwMA=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="VoidKing" />
+            
+              <p class="site-author-name" itemprop="name">VoidKing</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">583</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">188</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:voidking@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/voidking" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/voidking" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://twitter.com/voidking_com" target="_blank" title="Twitter">
+                      
+                        <i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#sysbench简介"><span class="nav-number">1.</span> <span class="nav-text">sysbench简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装部署"><span class="nav-number">2.</span> <span class="nav-text">安装部署</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装mysql"><span class="nav-number">2.1.</span> <span class="nav-text">安装mysql</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装sysbench"><span class="nav-number">2.2.</span> <span class="nav-text">安装sysbench</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#sysbench指令"><span class="nav-number">3.</span> <span class="nav-text">sysbench指令</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#sysbench实践"><span class="nav-number">4.</span> <span class="nav-text">sysbench实践</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#CPU"><span class="nav-number">4.1.</span> <span class="nav-text">CPU</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mysql"><span class="nav-number">4.2.</span> <span class="nav-text">Mysql</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#绘图"><span class="nav-number">5.</span> <span class="nav-text">绘图</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#sysbench统计数据"><span class="nav-number">5.1.</span> <span class="nav-text">sysbench统计数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#gnuplot绘图"><span class="nav-number">5.2.</span> <span class="nav-text">gnuplot绘图</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#后记"><span class="nav-number">6.</span> <span class="nav-text">后记</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2012 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">VoidKing</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <!-- <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script> -->
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+  <div class="footer-beian">
+    <a href="http://www.beian.miit.gov.cn/" target="_blank">苏ICP备14021030号</a>&nbsp;|&nbsp;
+    <!-- <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=32032202000223">苏公网安备 32032202000223号</a> -->
+    <img src="/images/beian.png" alt="">
+    <a target="_blank" href="http://www.beian.gov.cn/">苏公网安备 32032202000223号</a>
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+      <div id="needsharebutton-float">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "box";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+      flOptions = {};
+      
+          flOptions.iconStyle = "box";
+      
+          flOptions.boxForm = "horizontal";
+      
+          flOptions.position = "topRight";
+      
+          flOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-float', flOptions);
+    
+  </script>
+
+  
+
+  
+  
+
+
+  
+
+  
+
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+
+</body>
+</html>

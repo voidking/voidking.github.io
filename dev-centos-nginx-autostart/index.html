@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=5.1.4">
+
+
+
+
+
+
+  <meta name="keywords" content="centos,nginx," />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="VoidKing" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="前言服务器每次重启，都需要手动启动一些服务，这不是一个程序员可以忍受的，难怪大家都喜欢写脚本。接下来三篇文章，分别记录一下nginx、tomcat和mysql的开机自启动配置。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CentOS7设置Nginx开机自启动">
+<meta property="og:url" content="https://www.voidking.com/dev-centos-nginx-autostart/index.html">
+<meta property="og:site_name" content="VoidKing">
+<meta property="og:description" content="前言服务器每次重启，都需要手动启动一些服务，这不是一个程序员可以忍受的，难怪大家都喜欢写脚本。接下来三篇文章，分别记录一下nginx、tomcat和mysql的开机自启动配置。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-03-27T10:00:00.000Z">
+<meta property="article:modified_time" content="2020-02-07T15:42:49.993Z">
+<meta property="article:author" content="VoidKing">
+<meta property="article:tag" content="centos">
+<meta property="article:tag" content="nginx">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.voidking.com/dev-centos-nginx-autostart/"/>
+
+
+
+
+
+  <title>CentOS7设置Nginx开机自启动 | VoidKing</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?b759ac2a7fa45129e3ef060bf68259f0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">VoidKing</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">好好学习，天天向上！</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.voidking.com/dev-centos-nginx-autostart/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="VoidKing">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="VoidKing">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">CentOS7设置Nginx开机自启动</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-03-27T10:00:00+00:00">
+                2018-03-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/" itemprop="url" rel="index">
+                    <span itemprop="name">专业</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E5%90%8E%E7%AB%AF/" itemprop="url" rel="index">
+                    <span itemprop="name">后端</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index">
+                    <span itemprop="name">运维</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E8%BF%90%E7%BB%B4/centos/" itemprop="url" rel="index">
+                    <span itemprop="name">centos</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E5%90%8E%E7%AB%AF/nginx/" itemprop="url" rel="index">
+                    <span itemprop="name">nginx</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>服务器每次重启，都需要手动启动一些服务，这不是一个程序员可以忍受的，难怪大家都喜欢写脚本。接下来三篇文章，分别记录一下nginx、tomcat和mysql的开机自启动配置。</p>
+<a id="more"></a>
+
+<h1 id="systemd"><a href="#systemd" class="headerlink" title="systemd"></a>systemd</h1><h2 id="systemd简介"><a href="#systemd简介" class="headerlink" title="systemd简介"></a>systemd简介</h2><p>CentOS7已不再使用chkconfig管理启动项，而是使用systemd。关于systemd的衍生和发展，可以参见<a href="https://www.linuxidc.com/Linux/2015-04/115937.htm" target="_blank" rel="noopener">《CentOS7/RHEL7 systemd详解》</a>和<a href="https://www.linuxidc.com/Linux/2016-09/135464.htm" target="_blank" rel="noopener">《CentOS7进程管理systemd详解》</a>。简单介绍如下：</p>
+<p>Linux系统从启动到提供服务的过程是这样，先是机器加电，然后通过MBR或者UEFI加载GRUB，再启动内核，内核启动服务，然后开始对外服务。</p>
+<p>SysV init、UpStart、systemd主要是解决服务引导管理的问题。</p>
+<p>SysV init是最早的解决方案，依靠划分不同的运行级别，启动不同的服务集，服务依靠脚本控制，并且是顺序执行的。在CentOS5中使用，配置文件为/etc/inittab。<br>SysV init方案的优点是：原理简单，易于理解；依靠shell脚本控制，编写服务脚本门槛比较低。<br>缺点是：服务顺序启动，启动过程比较慢；不能做到根据需要来启动服务，比如通常希望插入U盘的时候，再启动USB控制的服务，这样可以更好的节省系统资源。</p>
+<p>为了解决系统服务的即插即用，UpStart应运而生，在CentOS6系统中，SysV init和UpStart是并存的，UpStart主要解决了服务的即插即用。服务顺序启动慢的问题，UpStart的解决办法是把相关的服务分组，组内的服务是顺序启动，组之间是并行启动。在CentOS6系统中，配置文件为/etc/inittab和/etc/init/*.conf。</p>
+<p>但是随着移动互联网的到来，SysV init服务启动慢的问题显得越来越突出，许多移动设备都是基于Linux内核，比如安卓。移动设备启动比较频繁，每次启动都要等待服务顺序启动，显然难以接受，systemd就是为了解决这个问题诞生的。在CentOS7中使用，其配置文件为/usr/lib/systemd/system/ 和 /etc/systemd/system/ 中的文件。<br>systemd的设计思路是：尽可能的快速启动服务；尽可能的减少系统资源占用。</p>
+<h2 id="systemd使用"><a href="#systemd使用" class="headerlink" title="systemd使用"></a>systemd使用</h2><p>在CentOS7中，systemctl命令主要负责控制systemd系统和服务管理器。基本取代了service和chkconfig命令，虽然service和chkconfig命令依然保留，但是据说已经被阉割过。</p>
+<p>参考<a href="https://blog.csdn.net/cds86333774/article/details/51165361" target="_blank" rel="noopener">《Centos7下的systemctl命令与service和chkconfig》</a>，整理常用命令如下：</p>
+<ul>
+<li><code>systemctl --version</code>，查看版本。</li>
+<li><code>whereis systemctl</code>，查看位置。</li>
+<li><code>systemctl list-unit-files</code>，列出所有可用单元（服务）。</li>
+<li><code>systemctl list-units</code>，列出所有运行中的单元。</li>
+<li><code>systemctl --failed</code>，列出所有失败的单元。</li>
+<li><code>systemctl list-unit-files | grep enable</code>，查看自启动的软件。</li>
+<li><code>systemctl is-enabled mysqld.service</code>，查看某个单元是否开机启动。</li>
+<li><code>systemctl status mysqld.service</code>，查看某个单元的状态。</li>
+<li><code>systemctl start mysqld.service</code>，启动某个单元。</li>
+<li><code>systemctl restart mysqld.service</code>，重启某个单元。</li>
+<li><code>systemctl stop mysqld.service</code>，停止某个单元。</li>
+<li><code>systemctl daemon-reload</code>，修改了某个单元的配置文件后，重载配置文件。</li>
+<li><code>systemctl reload mysqld.service</code>，重载某个单元。</li>
+<li><code>systemctl enable mysqld.service</code>，设置开机自启动。</li>
+<li><code>systemctl disable mysqld.service</code>，关闭开机自启动。</li>
+<li><code>systemctl kill mysqld</code>，杀死单元。</li>
+</ul>
+<h1 id="nginx"><a href="#nginx" class="headerlink" title="nginx"></a>nginx</h1><h2 id="yum安装nginx"><a href="#yum安装nginx" class="headerlink" title="yum安装nginx"></a>yum安装nginx</h2><p>参考<a href="https://blog.csdn.net/oldguncm/article/details/78855000" target="_blank" rel="noopener">《如何在CentOS 7上安装Nginx》</a>，安装nginx，安装成功后使用systemctl命令设置自启动。</p>
+<p>1、添加epel库<br><code>yum install epel-release</code></p>
+<p>2、安装nginx<br><code>yum install nginx</code><br>安装完成后，nginx的默认配置路径为/etc/nginx/。</p>
+<p>3、启动nginx<br><code>systemctl start nginx</code></p>
+<p>4、测试访问<br><code>curl localhost</code></p>
+<p>浏览器如果不能访问，就打开防火墙或者开端口。</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 关闭防火墙</span></span><br><span class="line">systemctl stop firewalld.service</span><br><span class="line"><span class="comment"># 开放端口</span></span><br><span class="line">firewall-<span class="keyword">cmd</span><span class="bash"> --zone=public --add-port=80/tcp --permanent</span></span><br><span class="line">firewall-<span class="keyword">cmd</span><span class="bash"> --reload</span></span><br></pre></td></tr></table></figure>
+
+<p>5、设置开机启动<br><code>systemctl enable nginx</code></p>
+<h2 id="手动安装nginx"><a href="#手动安装nginx" class="headerlink" title="手动安装nginx"></a>手动安装nginx</h2><p>参考<a href="https://www.cnblogs.com/hafiz/p/6891458.html?utm_source=itdadao&utm_medium=referral" target="_blank" rel="noopener">《Centos7安装Nginx实战》</a>，安装步骤如下：</p>
+<p>1、安装依赖</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">yum <span class="keyword">install</span> -y gcc-c++</span><br><span class="line">yum <span class="keyword">install</span> -y pcre pcre-devel</span><br><span class="line">yum <span class="keyword">install</span> -y zlib zlib-devel</span><br><span class="line">yum <span class="keyword">install</span> -y openssl openssl-devel</span><br></pre></td></tr></table></figure>
+
+<p>2、下载nginx1.12.0并解压<br><code>wget http://nginx.org/download/nginx-1.12.0.tar.gz</code></p>
+<p><code>tar -xzvf nginx-1.12.0.tar.gz</code></p>
+<p><code>cd nginx-1.12.0</code></p>
+<p>3、创建目录</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">mkdir</span> -p /<span class="keyword">var</span>/temp/nginx</span><br><span class="line"><span class="keyword">mkdir</span> -p /<span class="keyword">var</span>/temp/<span class="keyword">run</span>/nginx</span><br><span class="line">chmod a+wrx -R /<span class="keyword">var</span>/temp</span><br></pre></td></tr></table></figure>
+
+<p>4、配置编译选项</p>
+<figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">./configure \</span><br><span class="line">-<span class="ruby">-prefix=<span class="regexp">/usr/local</span><span class="regexp">/nginx \</span></span></span><br><span class="line"><span class="ruby">--pid-path=<span class="regexp">/var/temp</span><span class="regexp">/run/nginx</span><span class="regexp">/nginx.pid \</span></span></span><br><span class="line"><span class="ruby">--lock-path=<span class="regexp">/var/lock</span><span class="regexp">/nginx.lock \</span></span></span><br><span class="line"><span class="ruby">--error-log-path=<span class="regexp">/var/log</span><span class="regexp">/nginx/error</span>.log \</span></span><br><span class="line"><span class="ruby">--http-log-path=<span class="regexp">/var/log</span><span class="regexp">/nginx/access</span>.log \</span></span><br><span class="line"><span class="ruby">--http-client-body-temp-path=<span class="regexp">/var/temp</span><span class="regexp">/nginx/client</span> \</span></span><br><span class="line"><span class="ruby">--http-proxy-temp-path=<span class="regexp">/var/temp</span><span class="regexp">/nginx/proxy</span> \</span></span><br><span class="line"><span class="ruby">--http-fastcgi-temp-path=<span class="regexp">/var/temp</span><span class="regexp">/nginx/fastcgi</span> \</span></span><br><span class="line"><span class="ruby">--http-uwsgi-temp-path=<span class="regexp">/var/temp</span><span class="regexp">/nginx/uwsgi</span> \</span></span><br><span class="line"><span class="ruby">--http-scgi-temp-path=<span class="regexp">/var/temp</span><span class="regexp">/nginx/scgi</span> \</span></span><br><span class="line"><span class="ruby">--with-http_gzip_static_module</span></span><br></pre></td></tr></table></figure>
+
+<p>切记，pid-path不能设置为/var/run/nginx/nginx.pid。因为CentOS每次重启后，都会删除/var/run目录中的自建目录和文件，从而导致nginx自启动失败。</p>
+<p>5、编译安装<br><code>make &amp;&amp; make install</code></p>
+<p>进入/usr/local/nginx查看文件是否存在conf、sbin、html文件夹，若存在则安装成功</p>
+<p>6、测试启动<br><code>/usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf</code><br>如果不指定-c，nginx在启动时默认加载conf/nginx.conf文件。</p>
+<p>7、测试访问<br><code>curl localhost</code></p>
+<p>浏览器如果不能访问，就打开防火墙或者开端口。</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 关闭防火墙</span></span><br><span class="line">systemctl stop firewalld.service</span><br><span class="line"><span class="comment"># 开放端口</span></span><br><span class="line">firewall-<span class="keyword">cmd</span><span class="bash"> --zone=public --add-port=80/tcp --permanent</span></span><br><span class="line">firewall-<span class="keyword">cmd</span><span class="bash"> --reload</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="手动安装全部组件版nginx"><a href="#手动安装全部组件版nginx" class="headerlink" title="手动安装全部组件版nginx"></a>手动安装全部组件版nginx</h2><p>1、安装依赖</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">yum <span class="keyword">install </span>-y gcc-c++</span><br><span class="line">yum <span class="keyword">install </span>-y pcre pcre-devel</span><br><span class="line">yum <span class="keyword">install </span>-y zlib zlib-devel</span><br><span class="line">yum <span class="keyword">install </span>-y openssl openssl-devel</span><br><span class="line">yum <span class="keyword">install </span>-y libxml2 libxml2-devel</span><br><span class="line">yum <span class="keyword">install </span>-y libxslt libxslt-devel</span><br><span class="line">yum <span class="keyword">install </span>-y gd-devel</span><br><span class="line">yum <span class="keyword">install </span>-y perl-<span class="keyword">ExtUtils-Embed</span></span><br><span class="line"><span class="keyword">yum </span><span class="keyword">install </span>-y GeoIP GeoIP-devel GeoIP-data</span><br><span class="line">yum <span class="keyword">install </span>-y gperftools</span><br><span class="line">yum <span class="keyword">install </span>-y libatomic_ops-devel</span><br></pre></td></tr></table></figure>
+
+<p>2、下载nginx1.12.0并解压<br><code>wget http://nginx.org/download/nginx-1.12.0.tar.gz</code></p>
+<p><code>tar -xzvf nginx-1.12.0.tar.gz</code></p>
+<p><code>cd nginx-1.12.0</code></p>
+<p>3、创建目录</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">mkdir</span> -p /<span class="keyword">var</span>/temp/nginx</span><br><span class="line"><span class="keyword">mkdir</span> -p /<span class="keyword">var</span>/temp/<span class="keyword">run</span>/nginx</span><br><span class="line">chmod a+wrx -R /<span class="keyword">var</span>/temp</span><br></pre></td></tr></table></figure>
+
+<p>4、下载ngx_http_upstream_check_module模块<br><code>git clone https://github.com/yaoweibin/nginx_upstream_check_module</code></p>
+<p>5、配置编译选项</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">./configure <span class="string">\</span></span><br><span class="line">--prefix=/usr/local/nginx <span class="string">\</span></span><br><span class="line">--pid-path=/<span class="keyword">var</span>/temp/run/nginx/nginx.pid <span class="string">\</span></span><br><span class="line">--lock-path=/<span class="keyword">var</span>/lock/nginx.lock <span class="string">\</span></span><br><span class="line">--error-log-path=/<span class="keyword">var</span>/log/nginx/error.log <span class="string">\</span></span><br><span class="line">--http-log-path=/<span class="keyword">var</span>/log/nginx/access.log <span class="string">\</span></span><br><span class="line">--http-client-body-temp-path=/<span class="keyword">var</span>/temp/nginx/client <span class="string">\</span></span><br><span class="line">--http-proxy-temp-path=/<span class="keyword">var</span>/temp/nginx/proxy <span class="string">\</span></span><br><span class="line">--http-fastcgi-temp-path=/<span class="keyword">var</span>/temp/nginx/fastcgi <span class="string">\</span></span><br><span class="line">--http-uwsgi-temp-path=/<span class="keyword">var</span>/temp/nginx/uwsgi <span class="string">\</span></span><br><span class="line">--http-scgi-temp-path=/<span class="keyword">var</span>/temp/nginx/scgi <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-http_gzip_static_module <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-select_module <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-poll_module <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-threads <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-file-aio <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-ipv6 <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-http_ssl_module <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-http_v2_module <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-http_realip_module <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-http_addition_module <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-http_xslt_module <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-http_xslt_module <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-http_image_filter_module <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-http_image_filter_module <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-http_geoip_module <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-http_geoip_module <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-http_sub_module <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-http_dav_module <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-http_flv_module <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-http_mp4_module <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-http_gunzip_module <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-http_auth_request_module <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-http_random_index_module <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-http_secure_link_module <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-http_degradation_module <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-http_slice_module <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-http_stub_status_module <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-http_perl_module <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-mail <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-mail_ssl_module <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-stream <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-stream <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-stream_ssl_module <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-google_perftools_module <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-cpp_test_module <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-pcre <span class="string">\</span></span><br><span class="line">--<span class="keyword">with</span>-libatomic <span class="string">\</span></span><br><span class="line">--add-<span class="built_in">module</span>=./nginx_upstream_check_module</span><br></pre></td></tr></table></figure>
+
+<p>6、编译安装<br><code>make &amp;&amp; make install</code></p>
+<h2 id="设置开机启动"><a href="#设置开机启动" class="headerlink" title="设置开机启动"></a>设置开机启动</h2><p>手动安装的nginx，该怎样设置开机自启动？参照<a href="https://www.cnblogs.com/piscesLoveCc/p/5867900.html" target="_blank" rel="noopener">《Nginx+Center OS 7.2 开机启动设置(转载)》</a>，步骤如下：</p>
+<p>1、在系统服务目录里创建nginx.service文件<br><code>vi /usr/lib/systemd/system/nginx.service</code></p>
+<p>2、写入内容如下：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[Unit]</span></span><br><span class="line"><span class="attr">Description</span>=nginx</span><br><span class="line"><span class="attr">After</span>=network.target</span><br><span class="line">  </span><br><span class="line"><span class="section">[Service]</span></span><br><span class="line"><span class="attr">Type</span>=forking</span><br><span class="line"><span class="attr">ExecStart</span>=/usr/local/nginx/sbin/nginx</span><br><span class="line"><span class="attr">ExecReload</span>=/usr/local/nginx/sbin/nginx -s reload</span><br><span class="line"><span class="attr">ExecStop</span>=/usr/local/nginx/sbin/nginx -s quit</span><br><span class="line"><span class="attr">PrivateTmp</span>=<span class="literal">true</span></span><br><span class="line">  </span><br><span class="line"><span class="section">[Install]</span></span><br><span class="line"><span class="attr">WantedBy</span>=multi-user.target</span><br></pre></td></tr></table></figure>
+
+<p>[Unit]:服务的说明<br>Description:描述服务<br>After:描述服务类别<br>[Service]服务运行参数的设置<br>Type=forking是后台运行的形式<br>ExecStart为服务的具体运行命令<br>ExecReload为重启命令<br>ExecStop为停止命令<br>PrivateTmp=True表示给服务分配独立的临时空间<br>注意：[Service]的启动、重启、停止命令全部要求使用绝对路径<br>[Install]运行级别下服务安装的相关设置，可设置为多用户，即系统运行级别为3</p>
+<p>3、设置开机自启动<br><code>systemctl enable nginx.service</code></p>
+<p>4、查看nginx状态<br><code>systemctl status nginx.service</code><br>很奇怪，明明启动成功了，为什么显示Active: inactive (dead)？</p>
+<p>5、杀死nginx重启nginx<br><code>pkill -9 nginx</code></p>
+<p><code>ps aux | grep nginx</code></p>
+<p><code>systemctl start nginx</code></p>
+<p>再次查看状态，变成了active，搞定。</p>
+<p>6、重启服务器<br><code>reboot</code></p>
+<p>7、再次连接后，查看服务状态<br><code>systemctl status nginx.service</code></p>
+<p>看到nginx已经启动，至此，nginx自启动配置成功。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/centos/" rel="tag"># centos</a>
+          
+            <a href="/tags/nginx/" rel="tag"># nginx</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/dev-ubuntu-ganglia/" rel="next" title="Ubuntu14.04安装配置Ganglia">
+                <i class="fa fa-chevron-left"></i> Ubuntu14.04安装配置Ganglia
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/dev-centos-tomcat-autostart/" rel="prev" title="CentOS7设置tomcat开机自启动">
+                CentOS7设置tomcat开机自启动 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zODU3Mi8xNTEwMA=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="VoidKing" />
+            
+              <p class="site-author-name" itemprop="name">VoidKing</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">583</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">188</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:voidking@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/voidking" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/voidking" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://twitter.com/voidking_com" target="_blank" title="Twitter">
+                      
+                        <i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#systemd"><span class="nav-number">2.</span> <span class="nav-text">systemd</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#systemd简介"><span class="nav-number">2.1.</span> <span class="nav-text">systemd简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#systemd使用"><span class="nav-number">2.2.</span> <span class="nav-text">systemd使用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#nginx"><span class="nav-number">3.</span> <span class="nav-text">nginx</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#yum安装nginx"><span class="nav-number">3.1.</span> <span class="nav-text">yum安装nginx</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#手动安装nginx"><span class="nav-number">3.2.</span> <span class="nav-text">手动安装nginx</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#手动安装全部组件版nginx"><span class="nav-number">3.3.</span> <span class="nav-text">手动安装全部组件版nginx</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设置开机启动"><span class="nav-number">3.4.</span> <span class="nav-text">设置开机启动</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2012 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">VoidKing</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <!-- <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script> -->
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+  <div class="footer-beian">
+    <a href="http://www.beian.miit.gov.cn/" target="_blank">苏ICP备14021030号</a>&nbsp;|&nbsp;
+    <!-- <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=32032202000223">苏公网安备 32032202000223号</a> -->
+    <img src="/images/beian.png" alt="">
+    <a target="_blank" href="http://www.beian.gov.cn/">苏公网安备 32032202000223号</a>
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+      <div id="needsharebutton-float">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "box";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+      flOptions = {};
+      
+          flOptions.iconStyle = "box";
+      
+          flOptions.boxForm = "horizontal";
+      
+          flOptions.position = "topRight";
+      
+          flOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-float', flOptions);
+    
+  </script>
+
+  
+
+  
+  
+
+
+  
+
+  
+
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=5.1.4">
+
+
+
+
+
+
+  <meta name="keywords" content="机器学习,tensorflow," />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="VoidKing" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="tensorflow简介TensorFlow 是一个用于人工智能的开源神器。TensorFlow 是一个采用数据流图（data flow graphs），用于数值计算的开源软件库。节点（Nodes）在图中表示数学操作，图中的线（edges）则表示在节点间相互联系的多维数据数组，即张量（tensor）。它灵活的架构让你可以在多种平台上展开计算，例如台式计算机中的一个或多个CPU（或GPU），服务器，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="tensorflow入门">
+<meta property="og:url" content="https://www.voidking.com/dev-tensorflow-start/index.html">
+<meta property="og:site_name" content="VoidKing">
+<meta property="og:description" content="tensorflow简介TensorFlow 是一个用于人工智能的开源神器。TensorFlow 是一个采用数据流图（data flow graphs），用于数值计算的开源软件库。节点（Nodes）在图中表示数学操作，图中的线（edges）则表示在节点间相互联系的多维数据数组，即张量（tensor）。它灵活的架构让你可以在多种平台上展开计算，例如台式计算机中的一个或多个CPU（或GPU），服务器，">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/tensorflow-start/flow.gif">
+<meta property="article:published_time" content="2017-10-09T22:00:00.000Z">
+<meta property="article:modified_time" content="2020-02-07T15:42:50.013Z">
+<meta property="article:author" content="VoidKing">
+<meta property="article:tag" content="机器学习">
+<meta property="article:tag" content="tensorflow">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.voidking.com//imgs/tensorflow-start/flow.gif">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.voidking.com/dev-tensorflow-start/"/>
+
+
+
+
+
+  <title>tensorflow入门 | VoidKing</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?b759ac2a7fa45129e3ef060bf68259f0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">VoidKing</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">好好学习，天天向上！</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.voidking.com/dev-tensorflow-start/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="VoidKing">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="VoidKing">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">tensorflow入门</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-10-09T22:00:00+00:00">
+                2017-10-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/" itemprop="url" rel="index">
+                    <span itemprop="name">专业</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="tensorflow简介"><a href="#tensorflow简介" class="headerlink" title="tensorflow简介"></a>tensorflow简介</h1><p>TensorFlow 是一个用于人工智能的开源神器。<br>TensorFlow 是一个采用数据流图（data flow graphs），用于数值计算的开源软件库。节点（Nodes）在图中表示数学操作，图中的线（edges）则表示在节点间相互联系的多维数据数组，即张量（tensor）。它灵活的架构让你可以在多种平台上展开计算，例如台式计算机中的一个或多个CPU（或GPU），服务器，移动设备等等。TensorFlow 最初由Google大脑小组（隶属于Google机器智能研究机构）的研究员和工程师们开发出来，用于机器学习和深度神经网络方面的研究，但这个系统的通用性使其也可广泛用于其他计算领域。</p>
+<p>本文主要参考莫烦同学的教程，进行了少量修改。</p>
+<a id="more"></a>
+
+<h1 id="安装tensorflow"><a href="#安装tensorflow" class="headerlink" title="安装tensorflow"></a>安装tensorflow</h1><p>1、参考<a href="https://www.tensorflow.org/install/" target="_blank" rel="noopener">Installing TensorFlow</a>或者<a href="http://www.tensorfly.cn/tfdoc/get_started/os_setup.html" target="_blank" rel="noopener">下载与安装</a>，安装TensorFlow。</p>
+<p>2、假设我们的环境是anaconda，首先我们切换到3.6的环境，然后pip安装即可。</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">activate</span> py3</span><br><span class="line">pip install <span class="comment">--upgrade tensorflow</span></span><br></pre></td></tr></table></figure>
+
+<p>3、测试</p>
+<figure class="highlight xl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line">os.environ[<span class="string">'TF_CPP_MIN_LOG_LEVEL'</span>]=<span class="string">'2'</span></span><br><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line">hello = tf.<span class="keyword">constant</span>(<span class="string">'Hello, TensorFlow!'</span>)</span><br><span class="line">sess = tf.Session()</span><br><span class="line">print(sess.run(hello))</span><br></pre></td></tr></table></figure>
+
+<p>如果屏幕打印出“Hello, TensorFlow!”，则证明安装成功！</p>
+<h1 id="tensorflow基础"><a href="#tensorflow基础" class="headerlink" title="tensorflow基础"></a>tensorflow基础</h1><h2 id="处理结构"><a href="#处理结构" class="headerlink" title="处理结构"></a>处理结构</h2><p>TensorFlow 让我们可以先绘制计算结构图，也可以称是一系列可人机交互的计算操作， 然后把编辑好的Python文件转换成更高效的 C++，并在后端进行计算。</p>
+<blockquote>
+<p>TensorFlow 首先要定义神经网络的结构，然后再把数据放入结构当中去运算和training</p>
+</blockquote>
+<p>下面动图展示了 TensorFlow 数据处理流程：<br><img src="http://cdn.voidking.com//imgs/tensorflow-start/flow.gif" alt="数据流图"></p>
+<p>因为TensorFlow是采用 数据流图（data flow graphs）来计算， 所以首先我们得创建一个数据流图，然后再将我们的数据（数据以 张量(tensor) 的形式存在）放到数据流图中计算。</p>
+<p>图中的 节点（Nodes）一般用来表示施加的数学操作，但也可以表示数据输入（feed in）的起点/输出（push out）的终点，或者是读取/写入持久变量（persistent variable）的终点；线（edges）则表示在节点间相互联系的多维数据数组，即 张量（tensor），训练模型时，tensor 会不断的从数据流图中的一个节点 flow 到另一节点，这就是 TensorFlow 名字的由来。一旦输入端的所有张量准备好，节点将被分配到各种计算设备完成异步并行地执行运算。</p>
+<p>它灵活的架构让你可以在多种平台上展开计算，例如台式计算机中的一个或多个CPU（或GPU），服务器，移动设备等等。</p>
+<ul>
+<li>使用图 (graph) 来表示计算任务</li>
+<li>在被称之为 会话 (Session) 的上下文 (context) 中执行图</li>
+<li>使用 tensor 表示数据</li>
+<li>通过 变量 (Variable) 维护状态</li>
+<li>使用 feed 和 fetch 可以为任意的操作(arbitrary operation) 赋值或者从其中获取数据</li>
+</ul>
+<h2 id="线性预测demo"><a href="#线性预测demo" class="headerlink" title="线性预测demo"></a>线性预测demo</h2><figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">""</span><span class="comment">"</span></span><br><span class="line">Please note, this code <span class="keyword">is</span> <span class="keyword">only</span> <span class="keyword">for</span> <span class="keyword">python</span> <span class="number">3</span>+. If you are using <span class="keyword">python</span> <span class="number">2</span>+, please modify the code accordingly.</span><br><span class="line"><span class="string">""</span><span class="comment">"</span></span><br><span class="line">import os</span><br><span class="line">os.environ[<span class="string">'TF_CPP_MIN_LOG_LEVEL'</span>]=<span class="string">'2'</span></span><br><span class="line"></span><br><span class="line">import tensorflow <span class="keyword">as</span> <span class="keyword">tf</span></span><br><span class="line">import numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"># create data</span><br><span class="line">x_data = np.random.rand(<span class="number">100</span>).astype(np.float32)</span><br><span class="line">y_data = x_data*<span class="number">0.1</span> + <span class="number">0.3</span></span><br><span class="line"></span><br><span class="line">### create tensorflow structure start ###</span><br><span class="line">Weights = <span class="keyword">tf</span>.Variable(<span class="keyword">tf</span>.random_uniform([<span class="number">1</span>], -<span class="number">1.0</span>, <span class="number">1.0</span>))</span><br><span class="line">biases = <span class="keyword">tf</span>.Variable(<span class="keyword">tf</span>.zeros([<span class="number">1</span>]))</span><br><span class="line"></span><br><span class="line"><span class="keyword">y</span> = Weights*x_data + biases</span><br><span class="line"></span><br><span class="line">loss = <span class="keyword">tf</span>.reduce_mean(<span class="keyword">tf</span>.square(<span class="keyword">y</span>-y_data))</span><br><span class="line">optimizer = <span class="keyword">tf</span>.train.GradientDescentOptimizer(<span class="number">0.5</span>)</span><br><span class="line">train = optimizer.minimize(loss)</span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span>(<span class="keyword">tf</span>.__version__)</span><br><span class="line"><span class="keyword">if</span> <span class="keyword">int</span>((<span class="keyword">tf</span>.__version__).<span class="keyword">split</span>(<span class="string">'.'</span>)[<span class="number">1</span>]) &lt; <span class="number">12</span> <span class="built_in">and</span> <span class="keyword">int</span>((<span class="keyword">tf</span>.__version__).<span class="keyword">split</span>(<span class="string">'.'</span>)[<span class="number">0</span>]) &lt; <span class="number">1</span>:</span><br><span class="line">    init = <span class="keyword">tf</span>.initialize_all_variables()</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    init = <span class="keyword">tf</span>.global_variables_initializer()</span><br><span class="line"></span><br><span class="line">### create tensorflow structure end ###</span><br><span class="line"></span><br><span class="line">sess = <span class="keyword">tf</span>.Session()</span><br><span class="line">sess.run(init)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> step in <span class="built_in">range</span>(<span class="number">201</span>):</span><br><span class="line">    sess.run(train)</span><br><span class="line">    <span class="keyword">if</span> step % <span class="number">20</span> == <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">print</span>(step, sess.run(Weights), sess.run(biases))</span><br></pre></td></tr></table></figure>
+
+<p>x_data和y_data是真实数据，y是预测出的数据，loss代表预测误差，optimizer代表调优方法，train代表最小化误差，sess.run(train)代表执行一次调优。</p>
+<h2 id="Session"><a href="#Session" class="headerlink" title="Session"></a>Session</h2><figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">import tensorflow as tf</span><br><span class="line"></span><br><span class="line">m1 = tf.constant(<span class="string">[[2, 2]]</span>)</span><br><span class="line">m2 = tf.constant(<span class="string">[[3],</span></span><br><span class="line"><span class="string">                  [3]]</span>)</span><br><span class="line">dot_operation = tf.matmul(m1, m2)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(dot_operation)  # wrong! no result</span><br><span class="line"></span><br><span class="line"># method1 use session</span><br><span class="line">sess = tf.Session()</span><br><span class="line">result = sess.run(dot_operation)</span><br><span class="line"><span class="built_in">print</span>(result)</span><br><span class="line">sess.<span class="built_in">close</span>()</span><br><span class="line"></span><br><span class="line"># method2 use session</span><br><span class="line">with tf.Session() as sess:</span><br><span class="line">    result_ = sess.run(dot_operation)</span><br><span class="line">    <span class="built_in">print</span>(result_)</span><br></pre></td></tr></table></figure>
+
+<p>从上面代码的执行结果可以看出，以tf开头的那些语句，并没有立即执行，而是在sess.run()的时候才会执行。</p>
+<h2 id="Variable"><a href="#Variable" class="headerlink" title="Variable"></a>Variable</h2><figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">import tensorflow <span class="keyword">as</span> <span class="keyword">tf</span></span><br><span class="line"></span><br><span class="line">var = <span class="keyword">tf</span>.Variable(<span class="number">0</span>)    # our <span class="keyword">first</span> variable in the <span class="string">"global_variable"</span> <span class="keyword">set</span></span><br><span class="line"></span><br><span class="line">add_operation = <span class="keyword">tf</span>.<span class="built_in">add</span>(var, <span class="number">1</span>)</span><br><span class="line">update_operation = <span class="keyword">tf</span>.assign(var, add_operation)</span><br><span class="line"></span><br><span class="line">init = <span class="keyword">tf</span>.global_variables_initializer()</span><br><span class="line"></span><br><span class="line">with <span class="keyword">tf</span>.Session() <span class="keyword">as</span> ses<span class="variable">s:</span></span><br><span class="line">    # once define variables, you have <span class="keyword">to</span> initialize them by doing this</span><br><span class="line">    sess.run(init)</span><br><span class="line">    <span class="keyword">for</span> _ in <span class="built_in">range</span>(<span class="number">3</span>):</span><br><span class="line">        sess.run(update_operation)</span><br><span class="line">        <span class="keyword">print</span>(sess.run(var))</span><br></pre></td></tr></table></figure>
+
+<p>如果定义了变量，一定要global_variables_initializer并且run。</p>
+<h2 id="placeholder"><a href="#placeholder" class="headerlink" title="placeholder"></a>placeholder</h2><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">import tensorflow as tf</span><br><span class="line"></span><br><span class="line">x1 = tf.placeholder(<span class="attribute">dtype</span>=tf.float32, <span class="attribute">shape</span>=None)</span><br><span class="line">y1 = tf.placeholder(<span class="attribute">dtype</span>=tf.float32, <span class="attribute">shape</span>=None)</span><br><span class="line">z1 = x1 + y1</span><br><span class="line"></span><br><span class="line">x2 = tf.placeholder(<span class="attribute">dtype</span>=tf.float32, shape=[2, 1])</span><br><span class="line">y2 = tf.placeholder(<span class="attribute">dtype</span>=tf.float32, shape=[1, 2])</span><br><span class="line">z2 = tf.matmul(x2, y2)</span><br><span class="line"></span><br><span class="line">with tf.Session() as sess:</span><br><span class="line">    # when only one operation <span class="keyword">to</span> run</span><br><span class="line">    z1_value = sess.<span class="builtin-name">run</span>(z1, feed_dict=&#123;x1: 1, y1: 2&#125;)</span><br><span class="line"></span><br><span class="line">    # when <span class="builtin-name">run</span> multiple operations</span><br><span class="line">    z1_value, z2_value = sess.<span class="builtin-name">run</span>(</span><br><span class="line">        [z1, z2],       # <span class="builtin-name">run</span> them together</span><br><span class="line">        feed_dict=&#123;</span><br><span class="line">            x1: 1, y1: 2,</span><br><span class="line">            x2: [[2], [2]], y2: [[3, 3]]</span><br><span class="line">        &#125;)</span><br><span class="line">    <span class="builtin-name">print</span>(z1_value)</span><br><span class="line">    <span class="builtin-name">print</span>(z2_value)</span><br></pre></td></tr></table></figure>
+
+<p>在计算时，给x1赋值1，给y1赋值2。</p>
+<h2 id="激励函数"><a href="#激励函数" class="headerlink" title="激励函数"></a>激励函数</h2><p>激励函数是用来激活神经元的函数。当你的神经网络层只有两三层，不是很多的时候， 对于隐藏层，使用任意的激励函数；在多层神经网络中，则要有所选择。在卷积神经网络中，一般使用relu；在循环神经网络中，一般使用relu或者tanh。</p>
+<h1 id="神经网络"><a href="#神经网络" class="headerlink" title="神经网络"></a>神经网络</h1><h2 id="添加层"><a href="#添加层" class="headerlink" title="添加层"></a>添加层</h2><figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">import tensorflow <span class="keyword">as</span> tf</span><br><span class="line"></span><br><span class="line">def add<span class="constructor">_layer(<span class="params">inputs</span>, <span class="params">in_size</span>, <span class="params">out_size</span>, <span class="params">activation_function</span>=None)</span>:</span><br><span class="line">    # add one more layer <span class="keyword">and</span> return the output <span class="keyword">of</span> this layer</span><br><span class="line">    Weights = tf.<span class="constructor">Variable(<span class="params">tf</span>.<span class="params">random_normal</span>([<span class="params">in_size</span>, <span class="params">out_size</span>])</span>)</span><br><span class="line">    biases = tf.<span class="constructor">Variable(<span class="params">tf</span>.<span class="params">zeros</span>([1, <span class="params">out_size</span>])</span> + <span class="number">0.1</span>)</span><br><span class="line">    Wx_plus_b = tf.matmul(inputs, Weights) + biases</span><br><span class="line">    <span class="keyword">if</span> activation_function is None:</span><br><span class="line">        outputs = Wx_plus_b</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        outputs = activation<span class="constructor">_function(Wx_plus_b)</span></span><br><span class="line">    return outputs</span><br></pre></td></tr></table></figure>
+
+<h2 id="建造神经网络"><a href="#建造神经网络" class="headerlink" title="建造神经网络"></a>建造神经网络</h2><figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">import tensorflow <span class="keyword">as</span> tf</span><br><span class="line">import numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line">def add<span class="constructor">_layer(<span class="params">inputs</span>, <span class="params">in_size</span>, <span class="params">out_size</span>, <span class="params">activation_function</span>=None)</span>:</span><br><span class="line">    # add one more layer <span class="keyword">and</span> return the output <span class="keyword">of</span> this layer</span><br><span class="line">    Weights = tf.<span class="constructor">Variable(<span class="params">tf</span>.<span class="params">random_normal</span>([<span class="params">in_size</span>, <span class="params">out_size</span>])</span>)</span><br><span class="line">    biases = tf.<span class="constructor">Variable(<span class="params">tf</span>.<span class="params">zeros</span>([1, <span class="params">out_size</span>])</span> + <span class="number">0.1</span>)</span><br><span class="line">    Wx_plus_b = tf.matmul(inputs, Weights) + biases</span><br><span class="line">    <span class="keyword">if</span> activation_function is None:</span><br><span class="line">        outputs = Wx_plus_b</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        outputs = activation<span class="constructor">_function(Wx_plus_b)</span></span><br><span class="line">    return outputs</span><br><span class="line"></span><br><span class="line"># Make up some real data</span><br><span class="line">x_data = np.linspace(-<span class="number">1</span>,<span class="number">1</span>,<span class="number">300</span>)<span class="literal">[:, <span class="identifier">np</span>.<span class="identifier">newaxis</span>]</span></span><br><span class="line">noise = np.random.normal(<span class="number">0</span>, <span class="number">0.05</span>, x_data.shape)</span><br><span class="line">y_data = np.square(x_data) - <span class="number">0.5</span> + noise</span><br><span class="line"></span><br><span class="line"># define placeholder for inputs <span class="keyword">to</span> network</span><br><span class="line">xs = tf.placeholder(tf.float32, <span class="literal">[N<span class="identifier">one</span>, <span class="number">1</span>]</span>)</span><br><span class="line">ys = tf.placeholder(tf.float32, <span class="literal">[N<span class="identifier">one</span>, <span class="number">1</span>]</span>)</span><br><span class="line"># add hidden layer</span><br><span class="line">l1 = add<span class="constructor">_layer(<span class="params">xs</span>, 1, 10, <span class="params">activation_function</span>=<span class="params">tf</span>.<span class="params">nn</span>.<span class="params">relu</span>)</span></span><br><span class="line"># add output layer</span><br><span class="line">prediction = add<span class="constructor">_layer(<span class="params">l1</span>, 10, 1, <span class="params">activation_function</span>=None)</span></span><br><span class="line"></span><br><span class="line"># the error between prediction <span class="keyword">and</span> real data</span><br><span class="line">loss = tf.reduce<span class="constructor">_mean(<span class="params">tf</span>.<span class="params">reduce_sum</span>(<span class="params">tf</span>.<span class="params">square</span>(<span class="params">ys</span> - <span class="params">prediction</span>)</span>,</span><br><span class="line">                     reduction_indices=<span class="literal">[<span class="number">1</span>]</span>))</span><br><span class="line">train_step = tf.train.<span class="constructor">GradientDescentOptimizer(0.1)</span>.minimize(loss)</span><br><span class="line"></span><br><span class="line"># important step</span><br><span class="line">init = tf.global<span class="constructor">_variables_initializer()</span></span><br><span class="line">sess = tf.<span class="constructor">Session()</span></span><br><span class="line">sess.run(init)</span><br><span class="line"></span><br><span class="line">for i <span class="keyword">in</span> range(<span class="number">1000</span>):</span><br><span class="line">    # training</span><br><span class="line">    sess.run(train_step, feed_dict=&#123;xs: x_data, ys: y_data&#125;)</span><br><span class="line">    <span class="keyword">if</span> i % <span class="number">50</span><span class="operator"> == </span><span class="number">0</span>:</span><br><span class="line">        # <span class="keyword">to</span> see the step improvement</span><br><span class="line">        print(sess.run(loss, feed_dict=&#123;xs: x_data, ys: y_data&#125;))</span><br></pre></td></tr></table></figure>
+
+<h2 id="结果可视化"><a href="#结果可视化" class="headerlink" title="结果可视化"></a>结果可视化</h2><figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">import</span> <span class="string">tensorflow as tf</span></span><br><span class="line"><span class="attr">import</span> <span class="string">numpy as np</span></span><br><span class="line"><span class="attr">import</span> <span class="string">matplotlib.pyplot as plt</span></span><br><span class="line"></span><br><span class="line"><span class="attr">def</span> <span class="string">add_layer(inputs, in_size, out_size, activation_function=None):</span></span><br><span class="line"><span class="comment">    # add one more layer and return the output of this layer</span></span><br><span class="line">    <span class="attr">Weights</span> = <span class="string">tf.Variable(tf.random_normal([in_size, out_size]))</span></span><br><span class="line">    <span class="attr">biases</span> = <span class="string">tf.Variable(tf.zeros([1, out_size]) + 0.1)</span></span><br><span class="line">    <span class="attr">Wx_plus_b</span> = <span class="string">tf.matmul(inputs, Weights) + biases</span></span><br><span class="line">    <span class="attr">if</span> <span class="string">activation_function is None:</span></span><br><span class="line">        <span class="attr">outputs</span> = <span class="string">Wx_plus_b</span></span><br><span class="line">    <span class="attr">else</span>:<span class="string"></span></span><br><span class="line">        <span class="attr">outputs</span> = <span class="string">activation_function(Wx_plus_b)</span></span><br><span class="line">    <span class="attr">return</span> <span class="string">outputs</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Make up some real data</span></span><br><span class="line"><span class="attr">x_data</span> = <span class="string">np.linspace(-1,1,300)[:, np.newaxis]</span></span><br><span class="line"><span class="attr">noise</span> = <span class="string">np.random.normal(0, 0.05, x_data.shape)</span></span><br><span class="line"><span class="attr">y_data</span> = <span class="string">np.square(x_data) - 0.5 + noise</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># define placeholder for inputs to network</span></span><br><span class="line"><span class="attr">xs</span> = <span class="string">tf.placeholder(tf.float32, [None, 1])</span></span><br><span class="line"><span class="attr">ys</span> = <span class="string">tf.placeholder(tf.float32, [None, 1])</span></span><br><span class="line"><span class="comment"># add hidden layer</span></span><br><span class="line"><span class="attr">l1</span> = <span class="string">add_layer(xs, 1, 10, activation_function=tf.nn.relu)</span></span><br><span class="line"><span class="comment"># add output layer</span></span><br><span class="line"><span class="attr">prediction</span> = <span class="string">add_layer(l1, 10, 1, activation_function=None)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># the error between prediction and real data</span></span><br><span class="line"><span class="attr">loss</span> = <span class="string">tf.reduce_mean(tf.reduce_sum(tf.square(ys - prediction),</span></span><br><span class="line">                     <span class="attr">reduction_indices</span>=<span class="string">[1]))</span></span><br><span class="line"><span class="attr">train_step</span> = <span class="string">tf.train.GradientDescentOptimizer(0.1).minimize(loss)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># important step</span></span><br><span class="line"><span class="attr">init</span> = <span class="string">tf.global_variables_initializer()</span></span><br><span class="line"><span class="attr">sess</span> = <span class="string">tf.Session()</span></span><br><span class="line"><span class="attr">sess.run(init)</span></span><br><span class="line"></span><br><span class="line"><span class="attr">fig</span> = <span class="string">plt.figure()</span></span><br><span class="line"><span class="attr">ax</span> = <span class="string">fig.add_subplot(1,1,1)</span></span><br><span class="line"><span class="meta">ax.scatter(x_data,</span> <span class="string">y_data)</span></span><br><span class="line"><span class="attr">plt.ion()</span></span><br><span class="line"><span class="attr">plt.show()</span></span><br><span class="line"><span class="comment"># plt.show(block=False)</span></span><br><span class="line"></span><br><span class="line"><span class="attr">for</span> <span class="string">i in range(1000):</span></span><br><span class="line"><span class="comment">    # training</span></span><br><span class="line">    <span class="meta">sess.run(train_step,</span> <span class="string">feed_dict=&#123;xs: x_data, ys: y_data&#125;)</span></span><br><span class="line">    <span class="attr">if</span> <span class="string">i % 50 == 0:</span></span><br><span class="line"><span class="comment">        # to see the step improvement</span></span><br><span class="line"><span class="comment">        # print(sess.run(loss, feed_dict=&#123;xs: x_data, ys: y_data&#125;))</span></span><br><span class="line">        <span class="attr">try</span>:<span class="string"></span></span><br><span class="line">            <span class="attr">ax.lines.remove(lines[0])</span></span><br><span class="line">        <span class="attr">except</span> <span class="string">Exception:</span></span><br><span class="line">            <span class="attr">pass</span></span><br><span class="line">        <span class="attr">prediction_value</span> = <span class="string">sess.run(prediction,feed_dict=&#123;xs: x_data&#125;)</span></span><br><span class="line">        <span class="attr">lines</span> = <span class="string">ax.plot(x_data, prediction_value, 'r-',lw=5)       </span></span><br><span class="line">        <span class="attr">plt.pause(0.1)</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="加速神经网络训练"><a href="#加速神经网络训练" class="headerlink" title="加速神经网络训练"></a>加速神经网络训练</h2><p>加速神经网络训练的方法:</p>
+<ul>
+<li>Stochastic Gradient Descent (SGD)</li>
+<li>Momentum</li>
+<li>AdaGrad</li>
+<li>RMSProp</li>
+<li>Adam</li>
+</ul>
+<p>具体参考<a href="https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/3-4-A-speed-up-learning/" target="_blank" rel="noopener">《加速神经网络训练 (Speed Up Training)》</a></p>
+<h2 id="optimizer"><a href="#optimizer" class="headerlink" title="optimizer"></a>optimizer</h2><p>相关资料：</p>
+<ul>
+<li>TensorFlow可用的optimizer <a href="https://www.tensorflow.org/api_guides/python/train" target="_blank" rel="noopener">链接</a></li>
+<li>各种Optimizer 的对比 <a href="http://cs231n.github.io/neural-networks-3/" target="_blank" rel="noopener">链接</a></li>
+</ul>
+<p>一般使用GradientDescentOptimizer就够了，往后学习的话，可以使用MomentumOptimizer、AdamOptimizer、RMSPropOptimizer。</p>
+<h1 id="源码分享"><a href="#源码分享" class="headerlink" title="源码分享"></a>源码分享</h1><p><a href="https://github.com/voidking/Tensorflow-Tutorial.git" target="_blank" rel="noopener">https://github.com/voidking/Tensorflow-Tutorial.git</a></p>
+<h1 id="书签"><a href="#书签" class="headerlink" title="书签"></a>书签</h1><p><a href="https://www.tensorflow.org/" target="_blank" rel="noopener">TensorFlow官网</a></p>
+<p><a href="http://playground.tensorflow.org/" target="_blank" rel="noopener">Tensorflow游乐场</a></p>
+<p><a href="https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/" target="_blank" rel="noopener">莫烦Tensorflow教程系列</a></p>
+<p><a href="http://wiki.jikexueyuan.com/project/tensorflow-zh/" target="_blank" rel="noopener">TensorFlow 官方文档中文版</a></p>
+<p><a href="http://www.tensorfly.cn/" target="_blank" rel="noopener">TensorFlow中文社区</a></p>
+<p><a href="http://hacker.duanshishi.com/?p=1639" target="_blank" rel="noopener">TensorFlow入门</a></p>
+<p><a href="https://www.bilibili.com/video/av9156347/" target="_blank" rel="noopener">youtube CS 20SI: Tensorflow for Deep Learning Research</a></p>
+<p><a href="http://www.jianshu.com/p/2b06b5630852" target="_blank" rel="noopener">Tensorflow 的处理结构及基本使用</a></p>
+<p><a href="https://www.jiqizhixin.com/articles/2016-12-14-2" target="_blank" rel="noopener">2016年不可错过的21个深度学习视频、教程和课程</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag"># 机器学习</a>
+          
+            <a href="/tags/tensorflow/" rel="tag"># tensorflow</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/dev-numpy-matplotlib/" rel="next" title="Numpy和Matplotlib">
+                <i class="fa fa-chevron-left"></i> Numpy和Matplotlib
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/dev-tensorboard/" rel="prev" title="tensorboard基础">
+                tensorboard基础 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zODU3Mi8xNTEwMA=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="VoidKing" />
+            
+              <p class="site-author-name" itemprop="name">VoidKing</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">583</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">188</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:voidking@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/voidking" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/voidking" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://twitter.com/voidking_com" target="_blank" title="Twitter">
+                      
+                        <i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#tensorflow简介"><span class="nav-number">1.</span> <span class="nav-text">tensorflow简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装tensorflow"><span class="nav-number">2.</span> <span class="nav-text">安装tensorflow</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#tensorflow基础"><span class="nav-number">3.</span> <span class="nav-text">tensorflow基础</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#处理结构"><span class="nav-number">3.1.</span> <span class="nav-text">处理结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线性预测demo"><span class="nav-number">3.2.</span> <span class="nav-text">线性预测demo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Session"><span class="nav-number">3.3.</span> <span class="nav-text">Session</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Variable"><span class="nav-number">3.4.</span> <span class="nav-text">Variable</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#placeholder"><span class="nav-number">3.5.</span> <span class="nav-text">placeholder</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#激励函数"><span class="nav-number">3.6.</span> <span class="nav-text">激励函数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#神经网络"><span class="nav-number">4.</span> <span class="nav-text">神经网络</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#添加层"><span class="nav-number">4.1.</span> <span class="nav-text">添加层</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#建造神经网络"><span class="nav-number">4.2.</span> <span class="nav-text">建造神经网络</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结果可视化"><span class="nav-number">4.3.</span> <span class="nav-text">结果可视化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#加速神经网络训练"><span class="nav-number">4.4.</span> <span class="nav-text">加速神经网络训练</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#optimizer"><span class="nav-number">4.5.</span> <span class="nav-text">optimizer</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#源码分享"><span class="nav-number">5.</span> <span class="nav-text">源码分享</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#书签"><span class="nav-number">6.</span> <span class="nav-text">书签</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2012 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">VoidKing</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <!-- <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script> -->
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+  <div class="footer-beian">
+    <a href="http://www.beian.miit.gov.cn/" target="_blank">苏ICP备14021030号</a>&nbsp;|&nbsp;
+    <!-- <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=32032202000223">苏公网安备 32032202000223号</a> -->
+    <img src="/images/beian.png" alt="">
+    <a target="_blank" href="http://www.beian.gov.cn/">苏公网安备 32032202000223号</a>
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+      <div id="needsharebutton-float">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "box";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+      flOptions = {};
+      
+          flOptions.iconStyle = "box";
+      
+          flOptions.boxForm = "horizontal";
+      
+          flOptions.position = "topRight";
+      
+          flOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-float', flOptions);
+    
+  </script>
+
+  
+
+  
+  
+
+
+  
+
+  
+
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=5.1.4">
+
+
+
+
+
+
+  <meta name="keywords" content="android," />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="VoidKing" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="前言工欲善其事，必先利其器。来学习一下这款将要陪伴哥哥很久的工具——AS。 简介Android Studio 是一个Android开发环境，基于IntelliJ IDEA. 类似 Eclipse ADT，Android Studio 提供了集成的 Android 开发工具用于开发和调试。 在IDEA的基础上，Android Studio 提供：  基于Gradle的构建支持 Android 专属的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android开发——Android Studio">
+<meta property="og:url" content="https://www.voidking.com/dev-android-as/index.html">
+<meta property="og:site_name" content="VoidKing">
+<meta property="og:description" content="前言工欲善其事，必先利其器。来学习一下这款将要陪伴哥哥很久的工具——AS。 简介Android Studio 是一个Android开发环境，基于IntelliJ IDEA. 类似 Eclipse ADT，Android Studio 提供了集成的 Android 开发工具用于开发和调试。 在IDEA的基础上，Android Studio 提供：  基于Gradle的构建支持 Android 专属的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/android/as/%E7%95%8C%E9%9D%A2.png">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/android/as/android.jpg">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/android/as/project.jpg">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/android/as/_gradle.jpg">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/android/as/_idea.jpg">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/android/as/module.jpg">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/android/as/build.jpg">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/android/as/gradle.jpg">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/android/as/font.jpg">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/android/as/lint.png">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/android/as/lint2.png">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/android/as/%E5%AF%8C%E5%B8%83%E5%B1%80%E7%BC%96%E8%BE%91%E5%99%A8.png">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/android/as/%E5%AF%8C%E5%B8%83%E5%B1%80%E7%BC%96%E8%BE%91%E5%99%A82.png">
+<meta property="article:published_time" content="2015-07-17T21:34:49.000Z">
+<meta property="article:modified_time" content="2020-02-07T15:42:49.993Z">
+<meta property="article:author" content="VoidKing">
+<meta property="article:tag" content="android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.voidking.com/@/imgs/android/as/%E7%95%8C%E9%9D%A2.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.voidking.com/dev-android-as/"/>
+
+
+
+
+
+  <title>Android开发——Android Studio | VoidKing</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?b759ac2a7fa45129e3ef060bf68259f0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">VoidKing</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">好好学习，天天向上！</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.voidking.com/dev-android-as/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="VoidKing">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="VoidKing">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Android开发——Android Studio</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2015-07-17T21:34:49+00:00">
+                2015-07-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/" itemprop="url" rel="index">
+                    <span itemprop="name">专业</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E5%89%8D%E7%AB%AF/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>工欲善其事，必先利其器。来学习一下这款将要陪伴哥哥很久的工具——AS。</p>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>Android Studio 是一个Android开发环境，基于IntelliJ IDEA. 类似 Eclipse ADT，Android Studio 提供了集成的 Android 开发工具用于开发和调试。</p>
+<p>在IDEA的基础上，Android Studio 提供：</p>
+<ul>
+<li>基于Gradle的构建支持</li>
+<li>Android 专属的重构和快速修复</li>
+<li>提示工具以捕获性能、可用性、版本兼容性等问题</li>
+<li>支持ProGuard 和应用签名</li>
+<li>基于模板的向导来生成常用的 Android 应用设计和组件</li>
+<li>功能强大的布局编辑器，可以让你拖拉 UI 控件并进行效果预览</li>
+</ul>
+<a id="more"></a>
+
+<h1 id="界面"><a href="#界面" class="headerlink" title="界面"></a>界面</h1><p><img src="http://cdn.voidking.com/@/imgs/android/as/%E7%95%8C%E9%9D%A2.png" alt=""><br>1、Project 面板<br>用于浏览项目文件。 Project面板会显示当前的所有的module 。</p>
+<p>2、Build Variants 面板<br>用于设置当前项目的Build Variants。</p>
+<p>3、Android 面板<br>功能类似于Eclipse中的Logcat，但是比其多了一些常用功能，例如：截图，查看系统信息等。</p>
+<p>4、编辑区<br>用于编辑文件。</p>
+<p>5、Gradle 面板<br>Gradle任务列表，双击可执行Gradle任务。常用任务： build 、 clean 、 assemble 、 assembleRelease 、 assembleDebug 、 lint 。</p>
+<h1 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h1><h2 id="Android模式"><a href="#Android模式" class="headerlink" title="Android模式"></a>Android模式</h2><p>新建一个项目，默认项目结构如下：<br><img src="http://cdn.voidking.com/@/imgs/android/as/android.jpg" alt=""><br>可以看到和Eclipse的目录结构有很大区别，AS一个窗口只能有一个项目，而Eclipse则可以同时存在很多项目。</p>
+<h2 id="Project模式"><a href="#Project模式" class="headerlink" title="Project模式"></a>Project模式</h2><p><img src="http://cdn.voidking.com/@/imgs/android/as/project.jpg" alt=""></p>
+<p>目录结构中将java代码和资源文件（图片、布局文件等）全部归结为src，在src/main下，有java和res两个文件夹，java文件夹则相当于Eclipse下的src文件夹，res目录结构则一样。</p>
+<p>下面详解一下Project模式下的目录结构：</p>
+<h3 id="gradle"><a href="#gradle" class="headerlink" title=".gradle"></a>.gradle</h3><p>官网<a href="http://www.gradle.org上介绍Gradle是升级版(evolved)的自动化构建工具。它可以自动构建，测试，发布，部署，同时使更多的软件包或其他类型诸如生成静态网站，文档等项目自动化。" target="_blank" rel="noopener">www.gradle.org上介绍Gradle是升级版(evolved)的自动化构建工具。它可以自动构建，测试，发布，部署，同时使更多的软件包或其他类型诸如生成静态网站，文档等项目自动化。</a></p>
+<p>说白了，gradle是maven的同类工具，而且比maven更好用。</p>
+<p><img src="http://cdn.voidking.com/@/imgs/android/as/_gradle.jpg" alt=""><br>打开.gradle文件夹，我们看到，里面除了有配置文件，还有一些二进制文件。由此，小编推测，这个目录中存放的就是gracle这款工具。</p>
+<h3 id="idea"><a href="#idea" class="headerlink" title=".idea"></a>.idea</h3><p><img src="http://cdn.voidking.com/@/imgs/android/as/_idea.jpg" alt=""><br>Project的配置文件目录，类似Eclipse中的project.properties。</p>
+<h3 id="app"><a href="#app" class="headerlink" title="app"></a>app</h3><p><img src="http://cdn.voidking.com/@/imgs/android/as/module.jpg" alt=""><br>一个Module，基本开发单位。</p>
+<ul>
+<li><p>build<br>构建目录，相当于Eclipse中默认Java工程的bin目录。 </p>
+</li>
+<li><p>libs<br>依赖包。</p>
+</li>
+<li><p>src/main/java<br>Java代码。</p>
+</li>
+<li><p>src/main/res/layout<br>App布局及界面元素配置。</p>
+</li>
+<li><p>src/main/res/menu<br>App菜单配置。</p>
+</li>
+<li><p>src/main/res/values<br>dimens.xml 定义css的配置文件；<br>strings.xml 定义字符串的配置文件；<br>styles.xml 定义style的配置文件。</p>
+</li>
+<li><p>src/main/res/mipmap-*<br>App图标。</p>
+</li>
+<li><p>src/main/AndroidMainfest.xml<br>App基本信息（名称、版本、SDK、权限等等）。</p>
+</li>
+<li><p>src/.gitignore<br>顾名思义，小编猜测这个文件是用来配置上传到github时忽略的文件夹。</p>
+</li>
+<li><p>src/app.iml<br>.iml文件是AS识别项目的配置文件，跟Eclipse里面的.project文件作用类似</p>
+</li>
+<li><p>src/build.gradle<br>gradle构建脚本。</p>
+</li>
+<li><p>src/proguard-rules.pro<br>混淆规则的声明。混淆代码，可以保护自己的作品不被别人破解。</p>
+</li>
+</ul>
+<h3 id="build"><a href="#build" class="headerlink" title="build"></a>build</h3><p><img src="http://cdn.voidking.com/@/imgs/android/as/build.jpg" alt=""></p>
+<h3 id="gradle-1"><a href="#gradle-1" class="headerlink" title="gradle"></a>gradle</h3><p><img src="http://cdn.voidking.com/@/imgs/android/as/gradle.jpg" alt=""></p>
+<h3 id="gitignore等"><a href="#gitignore等" class="headerlink" title=".gitignore等"></a>.gitignore等</h3><p>.gitignore、build.gradle、First.iml三个文件，在Module中也存在，只不过作用范围不一样。</p>
+<h3 id="gradle-properties"><a href="#gradle-properties" class="headerlink" title="gradle.properties"></a>gradle.properties</h3><p>Project-wide Gradle settings。</p>
+<h3 id="gradlew和gradlew-bat"><a href="#gradlew和gradlew-bat" class="headerlink" title="gradlew和gradlew.bat"></a>gradlew和gradlew.bat</h3><p>gradlew是一个shell脚本，适用于Linux；gradlew.bat是一个批处理文件，适用于windows。</p>
+<p>gradlew，是对gradle的一个封装，在使用这个命令时会自动去下载gradle，如果已经安装了gradle则在编译过程中使用的gradlew命令应该都可以替换成gradle。自动下载gradle是根据gradle\wrapper目录中的gradle-wrapper.properties中配置的，distributionUrl=https\://services.gradle.org/distributions/gradle-2.2.1-all.zip</p>
+<h3 id="local-properties"><a href="#local-properties" class="headerlink" title="local.properties"></a>local.properties</h3><p>This file is automatically generated by Android Studio。</p>
+<h3 id="setting-gradle"><a href="#setting-gradle" class="headerlink" title="setting.gradle"></a>setting.gradle</h3><p>配置Project中包含的Module。在完全删除某个Module之前,如果还想要把它添加到当前project中,直接setting.gradle中添加该Module的名称即可。</p>
+<blockquote>
+<p>AS中有Project和Module的概念：<br>project in Android Studio is like a workspace in Eclipse。<br>module in Android Studio is like a project in Eclipse。</p>
+</blockquote>
+<h1 id="增删项目"><a href="#增删项目" class="headerlink" title="增删项目"></a>增删项目</h1><h2 id="新建Project"><a href="#新建Project" class="headerlink" title="新建Project"></a>新建Project</h2><p>新建Project的时候，会同时新建一个默认Module，name为app，可以重命名。<br>新建Project和打开Project，都会打开一个新的AS窗口，可以在菜单栏Window中切换Project。</p>
+<h2 id="删除Project"><a href="#删除Project" class="headerlink" title="删除Project"></a>删除Project</h2><p>在工作路径下，删除Project文件夹。</p>
+<h2 id="新建Module"><a href="#新建Module" class="headerlink" title="新建Module"></a>新建Module</h2><p>新建Module，存放在当前的Project下，共享当前Project的一些资源，比如External Libraries和部分配置文件。</p>
+<h2 id="删除Module"><a href="#删除Module" class="headerlink" title="删除Module"></a>删除Module</h2><p>1、File，Project Structure；或者右击项目，Open Module Settings。<br>2、选中Module，单击右上角的“-”号。<br>3、右击Module（此时Module上的手机符号已经没有了），delete。</p>
+<h1 id="个性设置"><a href="#个性设置" class="headerlink" title="个性设置"></a>个性设置</h1><h2 id="编辑器字体"><a href="#编辑器字体" class="headerlink" title="编辑器字体"></a>编辑器字体</h2><p>1、File，Settings；或者直接点击工具栏的Settings。<br>2、Editor，Color&amp;Fonts，Font。<br>3、把Darcula主题sava as为自己的主题，然后进行设置。<br><img src="http://cdn.voidking.com/@/imgs/android/as/font.jpg" alt=""></p>
+<h2 id="编码格式"><a href="#编码格式" class="headerlink" title="编码格式"></a>编码格式</h2><p>默认编码格式：<br>File，Other Settings，Default Settings，Editor，File Encodings。</p>
+<p>当前Project编码格式：<br>File，Settings，Editor，File Encodings。</p>
+<h2 id="代码提示"><a href="#代码提示" class="headerlink" title="代码提示"></a>代码提示</h2><p>Settings，Editor，General，Code Completion，Case sensitive completion改为None。</p>
+<h2 id="悬停提示"><a href="#悬停提示" class="headerlink" title="悬停提示"></a>悬停提示</h2><p>Settings，Editor，General，Show quick doc on mouse move前打勾。</p>
+<h1 id="Lint工具"><a href="#Lint工具" class="headerlink" title="Lint工具"></a>Lint工具</h1><p>对代码进行测试是一回事，但同样重要的是、我们还需要在编写代码的同时引入各种最佳实践。这不仅能够显著改进性能表现，也能增加应用程序的整体稳定性。另外，经过合理结构调整的项目在维护方面也更为轻松。</p>
+<p>Android Studio中提供的Android Lint是一款静态分析工具，它负责对项目源代码加以分析。它能够检测出应用程序中的潜在漏洞以及其它可能被编译器所忽略的其它代码问题。</p>
+<p>就以下面这幅截图为例，大家可以看到该布局中的LinearLayout并未得到实际使用。Android Lint的优势在于，它能帮助我们重视警告或报错信息的出现原因，从而更轻松地修复或者解决这些问题。<br><img src="http://cdn.voidking.com/@/imgs/android/as/lint.png" alt=""></p>
+<p>请大家养成重复使用Android Studio Lint工具的好习惯，这能帮助我们准确检测到项目当中存在的潜在问题。Lint工具甚至能告诉我们应用程序中是否存在重复的图片或者编译内容。</p>
+<p>要运行Lint工具，大家首先需要在Android Studio的“Analyze”菜单中选择“Inspect Code…”。当Android Studio完成了对项目的检测之后，它会在窗口底部显示出分析结果。请注意，除了Android Lint之外，Android Studio还提供一系列其它检查功能。只需双击某个已经发现的问题，系统就会帮助大家定位到对应文件中存在问题的位置。<br><img src="http://cdn.voidking.com/@/imgs/android/as/lint2.png" alt=""></p>
+<h1 id="富布局编辑器"><a href="#富布局编辑器" class="headerlink" title="富布局编辑器"></a>富布局编辑器</h1><p>AS提供一套富布局编辑器，大家可以在其中随意拖拽各类用户界面组件。大家还可以在多屏幕配置中同时查看多种布局的显示效果，这一点我们在前文中已经提到过。</p>
+<p>这款富布局编辑器在使用方面非常直观简单。我们首先需要一套要处理的布局方案。浏览到项目中res文件夹下的layout文件夹，右键点击layout文件夹，然后在弹出的菜单中选择New&gt;Layout resource file。</p>
+<p>下面为新布局设定一个名称与root元素，而后点击“OK”。AS会自动在窗口右侧的编辑器当中打开该布局。<br><img src="http://cdn.voidking.com/@/imgs/android/as/%E5%AF%8C%E5%B8%83%E5%B1%80%E7%BC%96%E8%BE%91%E5%99%A8.png" alt=""></p>
+<p>在编辑器的底部，大家会看到两个标签，分别是Design与Text。点击Text标签后编辑器将被激活，这样我们就能对当前选定的布局方案作出变更。</p>
+<p>点击Design标签则会激活另一套编辑器内容，其中显示出布局的预览效果。要向布局当中添加其它功能性组件，我们只需将其从布局左侧的组件列表中拖出并放入布局内即可。是的，就这么简单。</p>
+<p><img src="http://cdn.voidking.com/@/imgs/android/as/%E5%AF%8C%E5%B8%83%E5%B1%80%E7%BC%96%E8%BE%91%E5%99%A82.png" alt=""></p>
+<h1 id="快捷键"><a href="#快捷键" class="headerlink" title="快捷键"></a>快捷键</h1><p>Settings，Keymap，选择一个Keymaps。如果习惯用Eclipse，那么不妨选择Eclipse。谷歌建议使用默认快捷键，因为比Eclipse要丰富。如果使用默认快捷键，下面的几个快捷键最好记住。</p>
+<h2 id="ctrl-shift-enter"><a href="#ctrl-shift-enter" class="headerlink" title="ctrl+shift+enter"></a>ctrl+shift+enter</h2><p>代码自动补全。</p>
+<h2 id="alt-enter"><a href="#alt-enter" class="headerlink" title="alt+enter"></a>alt+enter</h2><p>代码提示。</p>
+<h2 id="ctrl-alt-o"><a href="#ctrl-alt-o" class="headerlink" title="ctrl+alt+o"></a>ctrl+alt+o</h2><p>引入包管理。</p>
+<h2 id="ctrl-q"><a href="#ctrl-q" class="headerlink" title="ctrl+q"></a>ctrl+q</h2><p>查看定义。</p>
+<h2 id="ctrl-alt-t"><a href="#ctrl-alt-t" class="headerlink" title="ctrl+alt+t"></a>ctrl+alt+t</h2><p>弹出包围结构。</p>
+<h2 id="ctrl-j"><a href="#ctrl-j" class="headerlink" title="ctrl+j"></a>ctrl+j</h2><p>模板提示。</p>
+<h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p>AS很强大，不可能面面俱到，先就这些吧。<br>无论使用什么工具，当你开始使用它，一切都会变得简单！</p>
+<h1 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h1><p>与Android Studio的第一次亲密接触<br><a href="http://www.imooc.com/learn/206" target="_blank" rel="noopener">http://www.imooc.com/learn/206</a></p>
+<p>Android Studio 常用功能介绍<br><a href="http://ask.android-studio.org/?/article/23" target="_blank" rel="noopener">http://ask.android-studio.org/?/article/23</a></p>
+<p>Android Studio系列教程二–基本设置与运行<br><a href="http://stormzhang.com/devtools/android-studio-tutorial2/" target="_blank" rel="noopener">http://stormzhang.com/devtools/android-studio-tutorial2/</a></p>
+<p>Android学习系列(41)–Android Studio简单使用<br><a href="http://www.cnblogs.com/qianxudetianxia/p/3848272.html" target="_blank" rel="noopener">http://www.cnblogs.com/qianxudetianxia/p/3848272.html</a></p>
+<p>最全面的Android Studio使用教程<br><a href="http://www.open-open.com/lib/view/open1416883124753.html" target="_blank" rel="noopener">http://www.open-open.com/lib/view/open1416883124753.html</a></p>
+<p>Gradle基础<br><a href="http://segmentfault.com/a/1190000002439306" target="_blank" rel="noopener">http://segmentfault.com/a/1190000002439306</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/dev-android-helloworld/" rel="next" title="Android开发——helloworld">
+                <i class="fa fa-chevron-left"></i> Android开发——helloworld
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/dev-android-frameanimation/" rel="prev" title="Android开发——帧动画">
+                Android开发——帧动画 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zODU3Mi8xNTEwMA=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="VoidKing" />
+            
+              <p class="site-author-name" itemprop="name">VoidKing</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">583</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">188</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:voidking@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/voidking" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/voidking" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://twitter.com/voidking_com" target="_blank" title="Twitter">
+                      
+                        <i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#简介"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#界面"><span class="nav-number">3.</span> <span class="nav-text">界面</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#项目结构"><span class="nav-number">4.</span> <span class="nav-text">项目结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Android模式"><span class="nav-number">4.1.</span> <span class="nav-text">Android模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Project模式"><span class="nav-number">4.2.</span> <span class="nav-text">Project模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#gradle"><span class="nav-number">4.2.1.</span> <span class="nav-text">.gradle</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#idea"><span class="nav-number">4.2.2.</span> <span class="nav-text">.idea</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#app"><span class="nav-number">4.2.3.</span> <span class="nav-text">app</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#build"><span class="nav-number">4.2.4.</span> <span class="nav-text">build</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#gradle-1"><span class="nav-number">4.2.5.</span> <span class="nav-text">gradle</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#gitignore等"><span class="nav-number">4.2.6.</span> <span class="nav-text">.gitignore等</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#gradle-properties"><span class="nav-number">4.2.7.</span> <span class="nav-text">gradle.properties</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#gradlew和gradlew-bat"><span class="nav-number">4.2.8.</span> <span class="nav-text">gradlew和gradlew.bat</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#local-properties"><span class="nav-number">4.2.9.</span> <span class="nav-text">local.properties</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#setting-gradle"><span class="nav-number">4.2.10.</span> <span class="nav-text">setting.gradle</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#增删项目"><span class="nav-number">5.</span> <span class="nav-text">增删项目</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#新建Project"><span class="nav-number">5.1.</span> <span class="nav-text">新建Project</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除Project"><span class="nav-number">5.2.</span> <span class="nav-text">删除Project</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#新建Module"><span class="nav-number">5.3.</span> <span class="nav-text">新建Module</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除Module"><span class="nav-number">5.4.</span> <span class="nav-text">删除Module</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#个性设置"><span class="nav-number">6.</span> <span class="nav-text">个性设置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#编辑器字体"><span class="nav-number">6.1.</span> <span class="nav-text">编辑器字体</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编码格式"><span class="nav-number">6.2.</span> <span class="nav-text">编码格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码提示"><span class="nav-number">6.3.</span> <span class="nav-text">代码提示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#悬停提示"><span class="nav-number">6.4.</span> <span class="nav-text">悬停提示</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Lint工具"><span class="nav-number">7.</span> <span class="nav-text">Lint工具</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#富布局编辑器"><span class="nav-number">8.</span> <span class="nav-text">富布局编辑器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#快捷键"><span class="nav-number">9.</span> <span class="nav-text">快捷键</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ctrl-shift-enter"><span class="nav-number">9.1.</span> <span class="nav-text">ctrl+shift+enter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#alt-enter"><span class="nav-number">9.2.</span> <span class="nav-text">alt+enter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ctrl-alt-o"><span class="nav-number">9.3.</span> <span class="nav-text">ctrl+alt+o</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ctrl-q"><span class="nav-number">9.4.</span> <span class="nav-text">ctrl+q</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ctrl-alt-t"><span class="nav-number">9.5.</span> <span class="nav-text">ctrl+alt+t</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ctrl-j"><span class="nav-number">9.6.</span> <span class="nav-text">ctrl+j</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#后记"><span class="nav-number">10.</span> <span class="nav-text">后记</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考文档"><span class="nav-number">11.</span> <span class="nav-text">参考文档</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2012 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">VoidKing</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <!-- <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script> -->
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+  <div class="footer-beian">
+    <a href="http://www.beian.miit.gov.cn/" target="_blank">苏ICP备14021030号</a>&nbsp;|&nbsp;
+    <!-- <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=32032202000223">苏公网安备 32032202000223号</a> -->
+    <img src="/images/beian.png" alt="">
+    <a target="_blank" href="http://www.beian.gov.cn/">苏公网安备 32032202000223号</a>
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+      <div id="needsharebutton-float">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "box";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+      flOptions = {};
+      
+          flOptions.iconStyle = "box";
+      
+          flOptions.boxForm = "horizontal";
+      
+          flOptions.position = "topRight";
+      
+          flOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-float', flOptions);
+    
+  </script>
+
+  
+
+  
+  
+
+
+  
+
+  
+
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=5.1.4">
+
+
+
+
+
+
+  <meta name="keywords" content="angularjs,php,thinkphp," />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="VoidKing" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="前言小太阳项目最先做的模块，用户管理模块。业主端该模块分为三个功能：注册登录、个人信息修改、认证。注册时需要用到短信验证码，本文记录一下思路和具体实现。短信验证平台使用云片，短信验证码的生成使用thinkphp。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="thinkphp实现短信验证注册">
+<meta property="og:url" content="https://www.voidking.com/dev-sms-verification-code/index.html">
+<meta property="og:site_name" content="VoidKing">
+<meta property="og:description" content="前言小太阳项目最先做的模块，用户管理模块。业主端该模块分为三个功能：注册登录、个人信息修改、认证。注册时需要用到短信验证码，本文记录一下思路和具体实现。短信验证平台使用云片，短信验证码的生成使用thinkphp。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/sms-vertification-code/%E6%8E%A5%E5%8F%A3%E6%B5%8B%E8%AF%95.jpg?imageView2/0/w/700">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/sms-vertification-code/result.gif">
+<meta property="article:published_time" content="2016-10-14T18:00:01.000Z">
+<meta property="article:modified_time" content="2020-02-07T15:42:50.009Z">
+<meta property="article:author" content="VoidKing">
+<meta property="article:tag" content="angularjs">
+<meta property="article:tag" content="php">
+<meta property="article:tag" content="thinkphp">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.voidking.com//imgs/sms-vertification-code/%E6%8E%A5%E5%8F%A3%E6%B5%8B%E8%AF%95.jpg?imageView2/0/w/700">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.voidking.com/dev-sms-verification-code/"/>
+
+
+
+
+
+  <title>thinkphp实现短信验证注册 | VoidKing</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?b759ac2a7fa45129e3ef060bf68259f0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">VoidKing</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">好好学习，天天向上！</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.voidking.com/dev-sms-verification-code/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="VoidKing">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="VoidKing">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">thinkphp实现短信验证注册</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-10-14T18:00:01+00:00">
+                2016-10-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/" itemprop="url" rel="index">
+                    <span itemprop="name">专业</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E5%90%8E%E7%AB%AF/" itemprop="url" rel="index">
+                    <span itemprop="name">后端</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E5%89%8D%E7%AB%AF/angularjs/" itemprop="url" rel="index">
+                    <span itemprop="name">angularjs</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E5%90%8E%E7%AB%AF/php/" itemprop="url" rel="index">
+                    <span itemprop="name">php</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>小太阳项目最先做的模块，用户管理模块。业主端该模块分为三个功能：注册登录、个人信息修改、认证。<br>注册时需要用到短信验证码，本文记录一下思路和具体实现。<br>短信验证平台使用云片，短信验证码的生成使用thinkphp。</p>
+<a id="more"></a>
+
+<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><p>1、用户输入手机号，请求获取短信验证码。<br>2、thinkphp生成短信验证码，存储，同时和其他参数一起发送请求给云片。<br>3、云片发送短信验证码到指定手机号。<br>4、用户输入短信验证码。<br>5、thinkphp根据验证码是否正确、验证码是否过期两个条件判断是否验证通过。</p>
+<h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><h2 id="验证接口"><a href="#验证接口" class="headerlink" title="验证接口"></a>验证接口</h2><p>接口地址：<code>https://sms.yunpian.com/v1/sms/send.json</code>。<br>使用postman，输入三个必须的参数<code>apikey</code>、<code>mobile</code>和<code>text</code>。<br><img src="http://cdn.voidking.com//imgs/sms-vertification-code/%E6%8E%A5%E5%8F%A3%E6%B5%8B%E8%AF%95.jpg?imageView2/0/w/700" alt=""></p>
+<h2 id="php发起http-https请求"><a href="#php发起http-https请求" class="headerlink" title="php发起http/https请求"></a>php发起http/https请求</h2><p>使用php的curl函数发起https请求，带入参数<code>apikey</code>、<code>mobile</code>和<code>text</code>。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取短信验证码</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getSMSCode</span><span class="params">()</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// create curl resource </span></span><br><span class="line">    $ch = curl_init(); </span><br><span class="line"></span><br><span class="line">    <span class="comment">// set url</span></span><br><span class="line">    $url = <span class="string">'https://sms.yunpian.com/v1/sms/send.json'</span>; </span><br><span class="line">    curl_setopt($ch, CURLOPT_URL, $url); </span><br><span class="line"></span><br><span class="line">    <span class="comment">// set param</span></span><br><span class="line">    $paramArr = <span class="keyword">array</span>(</span><br><span class="line">        <span class="string">'apikey'</span> =&gt; <span class="string">'******'</span>,</span><br><span class="line">        <span class="string">'mobile'</span> =&gt; <span class="string">'******'</span>,</span><br><span class="line">        <span class="string">'text'</span> =&gt; <span class="string">'【小太阳】您的验证码是1234'</span></span><br><span class="line">    );</span><br><span class="line">    $param = <span class="string">''</span>;</span><br><span class="line">    <span class="keyword">foreach</span> ($paramArr <span class="keyword">as</span> $key =&gt; $value) &#123;</span><br><span class="line">        $param .= urlencode($key).<span class="string">'='</span>.urlencode($value).<span class="string">'&amp;'</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    $param = substr($param, <span class="number">0</span>, strlen($param)<span class="number">-1</span>);</span><br><span class="line"></span><br><span class="line">    curl_setopt($ch, CURLOPT_POSTFIELDS, $param);</span><br><span class="line">    curl_setopt($ch, CURLOPT_HEADER, <span class="number">0</span>);</span><br><span class="line">    curl_setopt($ch, CURLOPT_POST, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//curl默认不支持https协议，设置不验证协议</span></span><br><span class="line">    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, <span class="keyword">false</span>); </span><br><span class="line">    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, <span class="keyword">false</span>); </span><br><span class="line"></span><br><span class="line">    <span class="comment">//return the transfer as a string </span></span><br><span class="line">    curl_setopt($ch, CURLOPT_RETURNTRANSFER, <span class="number">1</span>); </span><br><span class="line"></span><br><span class="line">    <span class="comment">// $output contains the output string </span></span><br><span class="line">    $output = curl_exec($ch); </span><br><span class="line"></span><br><span class="line">    <span class="comment">// close curl resource to free up system resources </span></span><br><span class="line">    curl_close($ch); </span><br><span class="line"></span><br><span class="line">    <span class="keyword">echo</span> $output;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="生成随机短信验证码"><a href="#生成随机短信验证码" class="headerlink" title="生成随机短信验证码"></a>生成随机短信验证码</h2><p>默认生成四位的随机短信验证码。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 生成短信验证码</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">createSMSCode</span><span class="params">($length = <span class="number">4</span>)</span></span>&#123;</span><br><span class="line">    $min = pow(<span class="number">10</span> , ($length - <span class="number">1</span>));</span><br><span class="line">    $max = pow(<span class="number">10</span>, $length) - <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">return</span> rand($min, $max);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="整合"><a href="#整合" class="headerlink" title="整合"></a>整合</h2><p>在数据库新建表sun_smscode：</p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DROP</span> TABLE <span class="keyword">IF</span> <span class="keyword">EXISTS</span> <span class="symbol">`sun_smscode`</span>;</span><br><span class="line"><span class="keyword">CREATE</span> TABLE <span class="symbol">`sun_smscode`</span> (</span><br><span class="line">  <span class="symbol">`id`</span> int(<span class="number">8</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  <span class="symbol">`mobile`</span> varchar(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="symbol">`code`</span> int(<span class="number">4</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="symbol">`create_at`</span> datetime <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="symbol">`update_at`</span> datetime <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> <span class="keyword">KEY</span> (<span class="symbol">`id`</span>)</span><br><span class="line">) ENGINE=MyISAM AUTO_INCREMENT=<span class="number">3</span> DEFAULT CHARSET=utf8;</span><br></pre></td></tr></table></figure>
+
+<p>thinkphp代码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取短信验证码</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getSMSCode</span><span class="params">()</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// create curl resource </span></span><br><span class="line">    $ch = curl_init(); </span><br><span class="line"></span><br><span class="line">    <span class="comment">// set url</span></span><br><span class="line">    $url = <span class="string">'https://sms.yunpian.com/v1/sms/send.json'</span>; </span><br><span class="line">    curl_setopt($ch, CURLOPT_URL, $url); </span><br><span class="line"></span><br><span class="line">    <span class="comment">// set param</span></span><br><span class="line">    $mobile = $_POST[<span class="string">'mobile'</span>];</span><br><span class="line">    $code = <span class="keyword">$this</span>-&gt;createSMSCode();</span><br><span class="line">    $paramArr = <span class="keyword">array</span>(</span><br><span class="line">        <span class="string">'apikey'</span> =&gt; <span class="string">'******'</span>,</span><br><span class="line">        <span class="string">'mobile'</span> =&gt; $mobile,</span><br><span class="line">        <span class="string">'text'</span> =&gt; <span class="string">'【小太阳】您的验证码是'</span>.$code</span><br><span class="line">    );</span><br><span class="line">    $param = <span class="string">''</span>;</span><br><span class="line">    <span class="keyword">foreach</span> ($paramArr <span class="keyword">as</span> $key =&gt; $value) &#123;</span><br><span class="line">        $param .= urlencode($key).<span class="string">'='</span>.urlencode($value).<span class="string">'&amp;'</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    $param = substr($param, <span class="number">0</span>, strlen($param)<span class="number">-1</span>);</span><br><span class="line"></span><br><span class="line">    curl_setopt($ch, CURLOPT_POSTFIELDS, $param);</span><br><span class="line">    curl_setopt($ch, CURLOPT_HEADER, <span class="number">0</span>);</span><br><span class="line">    curl_setopt($ch, CURLOPT_POST, <span class="number">1</span>);</span><br><span class="line">    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, <span class="keyword">false</span>); <span class="comment">//不验证证书下同</span></span><br><span class="line">    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, <span class="keyword">false</span>); </span><br><span class="line"></span><br><span class="line">    <span class="comment">//return the transfer as a string </span></span><br><span class="line">    curl_setopt($ch, CURLOPT_RETURNTRANSFER, <span class="number">1</span>); </span><br><span class="line"></span><br><span class="line">    <span class="comment">// $output contains the output string </span></span><br><span class="line">    $output = curl_exec($ch); </span><br><span class="line"></span><br><span class="line">    <span class="comment">// close curl resource to free up system resources </span></span><br><span class="line">    curl_close($ch); </span><br><span class="line">    <span class="comment">//$outputJson = json_decode($output);</span></span><br><span class="line">    $outputArr = json_decode($output, <span class="keyword">true</span>);</span><br><span class="line">    <span class="comment">//echo $outputJson-&gt;code;</span></span><br><span class="line">    <span class="comment">//echo $outputArr['code'];</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>($outputArr[<span class="string">'code'</span>] == <span class="string">'0'</span>)&#123;</span><br><span class="line">        $data[<span class="string">'mobile'</span>] = $mobile;</span><br><span class="line">        $data[<span class="string">'code'</span>] = $code;</span><br><span class="line"></span><br><span class="line">        $smscode = D(<span class="string">'smscode'</span>);</span><br><span class="line">        $smscodeObj = $smscode-&gt;where(<span class="string">"mobile='$mobile'"</span>)-&gt;find();</span><br><span class="line">        <span class="keyword">if</span>($smscodeObj)&#123;</span><br><span class="line">            $data[<span class="string">'update_at'</span>] = date(<span class="string">'Y-m-d H:i:s'</span>);</span><br><span class="line">            $success = $smscode-&gt;where(<span class="string">"mobile='$mobile'"</span>)-&gt;save($data);</span><br><span class="line">            <span class="keyword">if</span>($success !== <span class="keyword">false</span>)&#123;</span><br><span class="line">                $result = <span class="keyword">array</span>(</span><br><span class="line">                    <span class="string">'code'</span> =&gt; <span class="string">'0'</span>,</span><br><span class="line">                    <span class="string">'ext'</span> =&gt; <span class="string">'修改成功'</span>,</span><br><span class="line">                    <span class="string">'obj'</span> =&gt; $smscodeObj</span><br><span class="line">                );</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">echo</span> json_encode($result,JSON_UNESCAPED_UNICODE);</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            $data[<span class="string">'create_at'</span>] = date(<span class="string">'Y-m-d H:i:s'</span>);</span><br><span class="line">            $data[<span class="string">'update_at'</span>] = $data[<span class="string">'create_at'</span>];</span><br><span class="line">            <span class="keyword">if</span>($smscode-&gt;create($data))&#123;</span><br><span class="line">                $id = $smscode-&gt;add();</span><br><span class="line">                <span class="keyword">if</span>($id)&#123;</span><br><span class="line">                    $smscode_temp = $smscode-&gt;where(<span class="string">"id='$id'"</span>)-&gt;find();</span><br><span class="line">                    $result = <span class="keyword">array</span>(</span><br><span class="line">                        <span class="string">'code'</span>=&gt; <span class="string">'0'</span>,</span><br><span class="line">                        <span class="string">'ext'</span>=&gt; <span class="string">'创建成功'</span>,</span><br><span class="line">                        <span class="string">'obj'</span>=&gt;$smscode_temp</span><br><span class="line">                    );</span><br><span class="line">                    <span class="keyword">echo</span> json_encode($result,JSON_UNESCAPED_UNICODE);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="验证短信验证码"><a href="#验证短信验证码" class="headerlink" title="验证短信验证码"></a>验证短信验证码</h2><p>验证短信验证码时间是否过期，验证短信验证码是否正确。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 验证短信验证码是否有效</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">checkSMSCode</span><span class="params">()</span></span>&#123;</span><br><span class="line">    $mobile = $_POST[<span class="string">'mobile'</span>];</span><br><span class="line">    $code = $_POST[<span class="string">'code'</span>];</span><br><span class="line">    $nowTimeStr = date(<span class="string">'Y-m-d H:i:s'</span>);</span><br><span class="line"></span><br><span class="line">    $smscode = D(<span class="string">'smscode'</span>);</span><br><span class="line">    $smscodeObj = $smscode-&gt;where(<span class="string">"mobile='$mobile'"</span>)-&gt;find();</span><br><span class="line">    <span class="keyword">if</span>($smscodeObj)&#123;</span><br><span class="line">        $smsCodeTimeStr = $smscodeObj[<span class="string">'update_at'</span>];</span><br><span class="line">        $recordCode = $smscodeObj[<span class="string">'code'</span>];</span><br><span class="line">        $flag = <span class="keyword">$this</span>-&gt;checkTime($nowTimeStr, $smsCodeTimeStr);</span><br><span class="line">        <span class="keyword">if</span>(!$flag)&#123;</span><br><span class="line">            $result = <span class="keyword">array</span>(</span><br><span class="line">                <span class="string">'code'</span> =&gt; <span class="string">'1'</span>,</span><br><span class="line">                <span class="string">'ext'</span> =&gt; <span class="string">'验证码过期，请刷新后重新获取'</span></span><br><span class="line">            );</span><br><span class="line">            <span class="keyword">echo</span> json_encode($result,JSON_UNESCAPED_UNICODE);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>($code != $recordCode)&#123;</span><br><span class="line">            $result = <span class="keyword">array</span>(</span><br><span class="line">                <span class="string">'code'</span> =&gt; <span class="string">'2'</span>,</span><br><span class="line">                <span class="string">'ext'</span> =&gt; <span class="string">'验证码错误，请重新输入'</span></span><br><span class="line">            );</span><br><span class="line">            <span class="keyword">echo</span> json_encode($result,JSON_UNESCAPED_UNICODE);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        $result = <span class="keyword">array</span>(</span><br><span class="line">            <span class="string">'code'</span> =&gt; <span class="string">'0'</span>,</span><br><span class="line">            <span class="string">'ext'</span> =&gt; <span class="string">'验证通过'</span></span><br><span class="line">        );</span><br><span class="line">        <span class="keyword">echo</span> json_encode($result,JSON_UNESCAPED_UNICODE);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 验证验证码时间是否过期</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">checkTime</span><span class="params">($nowTimeStr,$smsCodeTimeStr)</span></span>&#123;</span><br><span class="line">    <span class="comment">//$nowTimeStr = '2016-10-15 14:39:59';</span></span><br><span class="line">    <span class="comment">//$smsCodeTimeStr = '2016-10-15 14:30:00';</span></span><br><span class="line">    $nowTime = strtotime($nowTimeStr);</span><br><span class="line">    $smsCodeTime = strtotime($smsCodeTimeStr);</span><br><span class="line">    $period = floor(($nowTime-$smsCodeTime)/<span class="number">60</span>); <span class="comment">//60s</span></span><br><span class="line">    <span class="keyword">if</span>($period&gt;=<span class="number">0</span> &amp;&amp; $period&lt;=<span class="number">20</span>)&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="改进"><a href="#改进" class="headerlink" title="改进"></a>改进</h1><p>为了防止短信轰炸，在请求获取短信验证码时，需要加入图片验证码。</p>
+<p>thinkphp提供了生成图片验证码的函数，下面我们来实现验证码的生成、刷新和验证。</p>
+<h2 id="生成和刷新图片验证码"><a href="#生成和刷新图片验证码" class="headerlink" title="生成和刷新图片验证码"></a>生成和刷新图片验证码</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取图片验证码，刷新图片验证码</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getPicCode</span><span class="params">()</span></span>&#123;</span><br><span class="line">    $config = <span class="keyword">array</span>(</span><br><span class="line">        <span class="string">'fontSize'</span>=&gt;<span class="number">30</span>,    <span class="comment">// 验证码字体大小</span></span><br><span class="line">        <span class="string">'length'</span>=&gt;<span class="number">4</span>,     <span class="comment">// 验证码位数</span></span><br><span class="line">        <span class="string">'useNoise'</span>=&gt;<span class="keyword">false</span>, <span class="comment">// 关闭验证码杂点</span></span><br><span class="line">        <span class="string">'expire'</span>=&gt;<span class="number">600</span></span><br><span class="line">    );</span><br><span class="line">    $Verify = <span class="keyword">new</span> \Think\Verify($config);</span><br><span class="line">    $Verify-&gt;entry(<span class="number">2333</span>);<span class="comment">//2333是验证码标志</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>假设，该函数的对应url为<code>http://localhost/owner-bd/index.php/Home/CheckCode/getPicCode</code>，那么，图片验证码的地址就是这个url，放入页面图片标签的src属性即可。</p>
+<h2 id="验证图片验证码"><a href="#验证图片验证码" class="headerlink" title="验证图片验证码"></a>验证图片验证码</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 验证验证码是否正确</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">checkPicCode</span><span class="params">($code)</span></span>&#123;</span><br><span class="line">    $verify = <span class="keyword">new</span> \Think\Verify();</span><br><span class="line">    <span class="keyword">if</span>($verify-&gt;check($code, <span class="number">2333</span>))&#123;</span><br><span class="line">        $result = <span class="keyword">array</span>(</span><br><span class="line">            <span class="string">'code'</span> =&gt; <span class="string">'0'</span>,</span><br><span class="line">            <span class="string">'ext'</span> =&gt; <span class="string">'验证通过'</span></span><br><span class="line">        );</span><br><span class="line">        <span class="keyword">echo</span> json_encode($result,JSON_UNESCAPED_UNICODE);</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        $result = <span class="keyword">array</span>(</span><br><span class="line">            <span class="string">'code'</span> =&gt; <span class="string">'1'</span>,</span><br><span class="line">            <span class="string">'ext'</span> =&gt; <span class="string">'验证码错误，请重新输入'</span></span><br><span class="line">        );</span><br><span class="line">        <span class="keyword">echo</span> json_encode($result,JSON_UNESCAPED_UNICODE);</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上方法，我们利用了thinkphp提供的check方法，实现起来很简单。但是，如果想要得到验证细节，就没有办法了。比如，验证码错误，可能验证码超时，可能因为输入验证码错误，可能因为验证码已经使用过等等。必要的时候，可以重写thinkphp的验证码类，或者重写thinkphp的check方法。</p>
+<h1 id="跑通前后端"><a href="#跑通前后端" class="headerlink" title="跑通前后端"></a>跑通前后端</h1><h2 id="后端修改"><a href="#后端修改" class="headerlink" title="后端修改"></a>后端修改</h2><p>验证图片验证码函数，改为被调用函数：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">checkPicCode</span><span class="params">($picCode)</span></span>&#123;</span><br><span class="line">    $verify = <span class="keyword">new</span> \Think\Verify();</span><br><span class="line">    <span class="keyword">if</span>($verify-&gt;check($picCode, <span class="number">2333</span>))&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在获取短信验证码函数的最顶部，添加调用图片验证码函数，只有通过验证，才发送请求给云片。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取短信验证码</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getSMSCode</span><span class="params">()</span></span>&#123;</span><br><span class="line">    $picCode = $_POST[<span class="string">'picCode'</span>];</span><br><span class="line">    <span class="keyword">if</span>(!<span class="keyword">$this</span>-&gt;checkPicCode($picCode))&#123;</span><br><span class="line">        $result = <span class="keyword">array</span>(</span><br><span class="line">            <span class="string">'code'</span> =&gt; <span class="string">'1'</span>,</span><br><span class="line">            <span class="string">'ext'</span> =&gt; <span class="string">'验证码错误，请重新输入'</span></span><br><span class="line">        );</span><br><span class="line">        <span class="keyword">echo</span> json_encode($result,JSON_UNESCAPED_UNICODE);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/*省略*/</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="前端核心代码"><a href="#前端核心代码" class="headerlink" title="前端核心代码"></a>前端核心代码</h2><figure class="highlight django"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="xml"><span class="comment">&lt;!--register.html--&gt;</span></span></span><br><span class="line"><span class="xml"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"zh"</span> <span class="attr">ng-app</span>=<span class="string">"sunApp"</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>注册<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">body</span> <span class="attr">ng-controller</span>=<span class="string">"registerController"</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">""</span> <span class="attr">class</span>=<span class="string">"register-form"</span> <span class="attr">ng-show</span>=<span class="string">"isShow1"</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"input-group"</span>&gt;</span></span></span><br><span class="line"><span class="xml">            <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">class</span>=<span class="string">"mobile"</span> <span class="attr">ng-model</span>=<span class="string">"mobile"</span> <span class="attr">placeholder</span>=<span class="string">"手机号"</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"input-group"</span>&gt;</span></span></span><br><span class="line"><span class="xml">            <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">class</span>=<span class="string">"pic-code"</span> <span class="attr">ng-model</span>=<span class="string">"picCode"</span> <span class="attr">placeholder</span>=<span class="string">"图片验证码"</span>&gt;</span></span></span><br><span class="line"><span class="xml">            <span class="tag">&lt;<span class="name">img</span> <span class="attr">class</span>=<span class="string">"img"</span> <span class="attr">src</span>=<span class="string">"</span></span></span><span class="template-variable">&#123;&#123;picCodeUrl&#125;&#125;</span><span class="xml"><span class="tag"><span class="string">"</span> <span class="attr">alt</span>=<span class="string">""</span> <span class="attr">ng-click</span>=<span class="string">"refresh()"</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"input-group"</span>&gt;</span></span></span><br><span class="line"><span class="xml">            <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">class</span>=<span class="string">"sms-code"</span> <span class="attr">ng-model</span>=<span class="string">"SMSCode"</span> <span class="attr">placeholder</span>=<span class="string">"短信验证码"</span>&gt;</span></span></span><br><span class="line"><span class="xml">            <span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">"btn-sms"</span> <span class="attr">ng-click</span>=<span class="string">"getSMSCode()"</span> <span class="attr">ng-disabled</span>=<span class="string">"btnSMSDisabled"</span>&gt;</span></span><span class="template-variable">&#123;&#123;btnSMSText&#125;&#125;</span><span class="xml"><span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">"confirm-btn"</span> <span class="attr">ng-click</span>=<span class="string">"next()"</span>&gt;</span>下一步<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">form</span>&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">""</span> <span class="attr">class</span>=<span class="string">"register-form"</span> <span class="attr">ng-show</span>=<span class="string">"isShow2"</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"input-group"</span>&gt;</span></span></span><br><span class="line"><span class="xml">            <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">class</span>=<span class="string">"mobile"</span> <span class="attr">ng-model</span>=<span class="string">"mobile"</span> <span class="attr">placeholder</span>=<span class="string">"手机号"</span> <span class="attr">disabled</span>=<span class="string">"true"</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"input-group"</span>&gt;</span></span></span><br><span class="line"><span class="xml">            <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"password"</span> <span class="attr">class</span>=<span class="string">"password"</span> <span class="attr">ng-model</span>=<span class="string">"password"</span> <span class="attr">placeholder</span>=<span class="string">"请输入密码"</span>&gt;</span></span></span><br><span class="line"><span class="xml">            <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"password"</span> <span class="attr">class</span>=<span class="string">"password"</span> <span class="attr">ng-model</span>=<span class="string">"password2"</span> <span class="attr">placeholder</span>=<span class="string">"请再次输入密码"</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">"confirm-btn"</span> <span class="attr">ng-click</span>=<span class="string">"getSMSCode()"</span>&gt;</span>注册<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">form</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// register.js</span></span><br><span class="line">angular.module(<span class="string">'sunApp'</span>).controller(<span class="string">'registerController'</span>, <span class="function"><span class="keyword">function</span> <span class="params">($scope,$http,$httpParamSerializer,$state,$interval)</span> </span>&#123; </span><br><span class="line">    $scope.picCodeUrl = <span class="string">'/owner-bd/index.php/Home/CheckCode/getPicCode'</span>;</span><br><span class="line">    $scope.isShow1 = <span class="keyword">true</span>;</span><br><span class="line">    $scope.isShow2 = <span class="keyword">false</span>;</span><br><span class="line">    $scope.btnSMSText = <span class="string">'获取验证码'</span>;</span><br><span class="line">    $scope.btnSMSDisabled = <span class="keyword">false</span>;</span><br><span class="line">    $scope.checkOver = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取短信验证码</span></span><br><span class="line">    $scope.getSMSCode = <span class="function"><span class="keyword">function</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">var</span> param = &#123;</span><br><span class="line">            mobile: $scope.mobile,</span><br><span class="line">            picCode: $scope.picCode</span><br><span class="line">        &#125;;</span><br><span class="line">        $http(&#123;</span><br><span class="line">            method:<span class="string">'POST'</span>,</span><br><span class="line">            url:<span class="string">'/owner-bd/index.php/Home/SMS/getSMSCode'</span>,</span><br><span class="line">            <span class="comment">//url: '/owner-fd/mock/common.json',</span></span><br><span class="line">            headers:&#123;</span><br><span class="line">                <span class="string">'Content-Type'</span>:<span class="string">'application/x-www-form-urlencoded'</span></span><br><span class="line">            &#125;,</span><br><span class="line">            dataType: <span class="string">'json'</span>,</span><br><span class="line">            data: $httpParamSerializer(param)</span><br><span class="line">        &#125;).then(<span class="function"><span class="keyword">function</span> <span class="title">successCallback</span><span class="params">(response)</span> </span>&#123;</span><br><span class="line">            console.log(response.data);</span><br><span class="line">            <span class="keyword">if</span>(response.data.code == <span class="string">'0'</span>)&#123;</span><br><span class="line">                $scope.checkOver = <span class="keyword">true</span>;</span><br><span class="line">                $scope.btnSMSDisabled = <span class="keyword">true</span>;</span><br><span class="line">                <span class="keyword">var</span> time = <span class="number">60</span>;</span><br><span class="line">                <span class="keyword">var</span> timer = <span class="keyword">null</span>;</span><br><span class="line">                timer = $interval(<span class="function"><span class="keyword">function</span><span class="params">()</span></span>&#123;</span><br><span class="line">                    time = time - <span class="number">1</span>;</span><br><span class="line">                    $scope.btnSMSText = time+<span class="string">'秒'</span>;</span><br><span class="line">                    <span class="keyword">if</span>(time == <span class="number">0</span>) &#123;</span><br><span class="line">                        $interval.cancel(timer);</span><br><span class="line">                        $scope.btnSMSDisabled = <span class="keyword">false</span>;</span><br><span class="line">                        $scope.btnSMSText = <span class="string">'重新获取'</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;, <span class="number">1000</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, <span class="function"><span class="keyword">function</span> <span class="title">errorCallback</span><span class="params">(response)</span> </span>&#123;</span><br><span class="line">            console.log(response.data);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 验证短信验证码</span></span><br><span class="line">    $scope.next = <span class="function"><span class="keyword">function</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(!$scope.checkOver)&#123;</span><br><span class="line">            console.log(<span class="string">'未通过验证'</span>);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">var</span> param = &#123;</span><br><span class="line">            mobile: $scope.mobile,</span><br><span class="line">            code: $scope.SMSCode</span><br><span class="line">        &#125;;</span><br><span class="line">        $http(&#123;</span><br><span class="line">            method:<span class="string">'POST'</span>,</span><br><span class="line">            url:<span class="string">'/owner-bd/index.php/Home/SMS/checkSMSCode'</span>,</span><br><span class="line">            <span class="comment">//url: '/owner-fd/mock/common.json',</span></span><br><span class="line">            headers:&#123;</span><br><span class="line">                <span class="string">'Content-Type'</span>:<span class="string">'application/x-www-form-urlencoded'</span></span><br><span class="line">            &#125;,</span><br><span class="line">            dataType: <span class="string">'json'</span>,</span><br><span class="line">            data: $httpParamSerializer(param)</span><br><span class="line">        &#125;).then(<span class="function"><span class="keyword">function</span> <span class="title">successCallback</span><span class="params">(response)</span> </span>&#123;</span><br><span class="line">            console.log(response.data);</span><br><span class="line">            <span class="keyword">if</span>(response.data.code == <span class="string">'0'</span>)&#123;</span><br><span class="line">                $scope.isShow1 = <span class="keyword">false</span>;</span><br><span class="line">                $scope.isShow2 = <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, <span class="function"><span class="keyword">function</span> <span class="title">errorCallback</span><span class="params">(response)</span> </span>&#123;</span><br><span class="line">            console.log(response.data);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 刷新图片验证码</span></span><br><span class="line">    $scope.refresh = <span class="function"><span class="keyword">function</span><span class="params">()</span></span>&#123;</span><br><span class="line">        $scope.picCodeUrl = <span class="string">'/owner-bd/index.php/Home/CheckCode/getPicCode?'</span>+Math.random();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="优化"><a href="#优化" class="headerlink" title="优化"></a>优化</h2><p>以上代码，安全性不是很好，我们可以利用工具绕过前端验证。为了避免这个问题，可以在checkPicCode和checkSMSCode函数中添加session值来标记。</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$_SESSION[<span class="string">'checkPicCode'</span>] = <span class="literal">true</span><span class="comment">;</span></span><br><span class="line">$_SESSION[<span class="string">'checkSMSCode'</span>] = <span class="literal">true</span><span class="comment">;</span></span><br></pre></td></tr></table></figure>
+<p>在最后一步，向数据库中添加用户时，先验证一下两个session值是否都为true，都为true时再添加。</p>
+<h2 id="成果"><a href="#成果" class="headerlink" title="成果"></a>成果</h2><p><img src="http://cdn.voidking.com//imgs/sms-vertification-code/result.gif" alt=""></p>
+<h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p>以后也许有用的代码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">echo</span> json_encode($_SESSION);<span class="comment">// 打印出session中的数据</span></span><br><span class="line"><span class="keyword">echo</span> session_id();<span class="comment">// 打印当前session的id</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="书签"><a href="#书签" class="headerlink" title="书签"></a>书签</h1><p>云片网<br><a href="https://www.yunpian.com/" target="_blank" rel="noopener">https://www.yunpian.com/</a></p>
+<p>cURL函数<br><a href="http://php.net/manual/zh/ref.curl.php" target="_blank" rel="noopener">http://php.net/manual/zh/ref.curl.php</a></p>
+<p>curl 基础例子<br><a href="http://php.net/manual/zh/curl.examples.php" target="_blank" rel="noopener">http://php.net/manual/zh/curl.examples.php</a></p>
+<p>在PHP语言中使用JSON<br><a href="http://www.ruanyifeng.com/blog/2011/01/json_in_php.html" target="_blank" rel="noopener">http://www.ruanyifeng.com/blog/2011/01/json_in_php.html</a></p>
+<p>thinkphp验证码<br><a href="http://document.thinkphp.cn/manual_3_2.html#verify" target="_blank" rel="noopener">http://document.thinkphp.cn/manual_3_2.html#verify</a></p>
+<p>修改ThinkPHP的验证码类<br><a href="http://www.cnblogs.com/BTMaster/p/3547878.html" target="_blank" rel="noopener">http://www.cnblogs.com/BTMaster/p/3547878.html</a></p>
+<p>ThinkPHP 3.2版本 , 无法读取$_SESSION[‘verify_code’]<br><a href="http://www.cnblogs.com/lovezbs/p/4496117.html" target="_blank" rel="noopener">http://www.cnblogs.com/lovezbs/p/4496117.html</a></p>
+<p>LICEcap - Download<br><a href="http://licecap.en.softonic.com/" target="_blank" rel="noopener">http://licecap.en.softonic.com/</a></p>
+<p>gif动态图局部加马赛克模糊广告文字<br><a href="http://www.leawo.cn/space-138176-do-thread-id-64000.html" target="_blank" rel="noopener">http://www.leawo.cn/space-138176-do-thread-id-64000.html</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/angularjs/" rel="tag"># angularjs</a>
+          
+            <a href="/tags/php/" rel="tag"># php</a>
+          
+            <a href="/tags/thinkphp/" rel="tag"># thinkphp</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/dev-leetcode-009/" rel="next" title="leetcode刷题记录009-Palindrome Number">
+                <i class="fa fa-chevron-left"></i> leetcode刷题记录009-Palindrome Number
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/dev-chrome-extension-start/" rel="prev" title="Chrome插件开发基础">
+                Chrome插件开发基础 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zODU3Mi8xNTEwMA=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="VoidKing" />
+            
+              <p class="site-author-name" itemprop="name">VoidKing</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">583</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">188</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:voidking@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/voidking" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/voidking" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://twitter.com/voidking_com" target="_blank" title="Twitter">
+                      
+                        <i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#思路"><span class="nav-number">2.</span> <span class="nav-text">思路</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#代码实现"><span class="nav-number">3.</span> <span class="nav-text">代码实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#验证接口"><span class="nav-number">3.1.</span> <span class="nav-text">验证接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#php发起http-https请求"><span class="nav-number">3.2.</span> <span class="nav-text">php发起http&#x2F;https请求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#生成随机短信验证码"><span class="nav-number">3.3.</span> <span class="nav-text">生成随机短信验证码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#整合"><span class="nav-number">3.4.</span> <span class="nav-text">整合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#验证短信验证码"><span class="nav-number">3.5.</span> <span class="nav-text">验证短信验证码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#改进"><span class="nav-number">4.</span> <span class="nav-text">改进</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#生成和刷新图片验证码"><span class="nav-number">4.1.</span> <span class="nav-text">生成和刷新图片验证码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#验证图片验证码"><span class="nav-number">4.2.</span> <span class="nav-text">验证图片验证码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#跑通前后端"><span class="nav-number">5.</span> <span class="nav-text">跑通前后端</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#后端修改"><span class="nav-number">5.1.</span> <span class="nav-text">后端修改</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#前端核心代码"><span class="nav-number">5.2.</span> <span class="nav-text">前端核心代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#优化"><span class="nav-number">5.3.</span> <span class="nav-text">优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#成果"><span class="nav-number">5.4.</span> <span class="nav-text">成果</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#后记"><span class="nav-number">6.</span> <span class="nav-text">后记</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#书签"><span class="nav-number">7.</span> <span class="nav-text">书签</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2012 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">VoidKing</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <!-- <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script> -->
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+  <div class="footer-beian">
+    <a href="http://www.beian.miit.gov.cn/" target="_blank">苏ICP备14021030号</a>&nbsp;|&nbsp;
+    <!-- <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=32032202000223">苏公网安备 32032202000223号</a> -->
+    <img src="/images/beian.png" alt="">
+    <a target="_blank" href="http://www.beian.gov.cn/">苏公网安备 32032202000223号</a>
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+      <div id="needsharebutton-float">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "box";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+      flOptions = {};
+      
+          flOptions.iconStyle = "box";
+      
+          flOptions.boxForm = "horizontal";
+      
+          flOptions.position = "topRight";
+      
+          flOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-float', flOptions);
+    
+  </script>
+
+  
+
+  
+  
+
+
+  
+
+  
+
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=5.1.4">
+
+
+
+
+
+
+  <meta name="keywords" content="转载,anaconda," />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="VoidKing" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="前言本文转载自优达学城《机器学习工程师》 欢迎来到本课程！我叫 Mat Leonard，是数据分析师纳米学位的项目主管，也是这个简短课程的讲师。我会在课程中介绍两个对于数据分析师最为重要的工具，即 Anaconda 和 Jupyter notebook。 Anaconda 是一个包含数据科学常用包的发行版本。它是基于 conda ——一个包和环境管理器——衍生而来。你将使用 conda 创建环境，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Anaconda">
+<meta property="og:url" content="https://www.voidking.com/dev-anaconda/index.html">
+<meta property="og:site_name" content="VoidKing">
+<meta property="og:description" content="前言本文转载自优达学城《机器学习工程师》 欢迎来到本课程！我叫 Mat Leonard，是数据分析师纳米学位的项目主管，也是这个简短课程的讲师。我会在课程中介绍两个对于数据分析师最为重要的工具，即 Anaconda 和 Jupyter notebook。 Anaconda 是一个包含数据科学常用包的发行版本。它是基于 conda ——一个包和环境管理器——衍生而来。你将使用 conda 创建环境，">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/anaconda/condanumpy.jpg">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/anaconda/env.jpg">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/anaconda/conda_default_install.gif">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/anaconda/conda_install.gif">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/anaconda/beautifulsoup.jpg">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/anaconda/myenv.jpg">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/anaconda/conda_enter.gif">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/anaconda/export.jpg">
+<meta property="article:published_time" content="2017-02-04T09:00:00.000Z">
+<meta property="article:modified_time" content="2020-02-07T15:42:49.993Z">
+<meta property="article:author" content="VoidKing">
+<meta property="article:tag" content="转载">
+<meta property="article:tag" content="anaconda">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.voidking.com//imgs/anaconda/condanumpy.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.voidking.com/dev-anaconda/"/>
+
+
+
+
+
+  <title>Anaconda | VoidKing</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?b759ac2a7fa45129e3ef060bf68259f0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">VoidKing</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">好好学习，天天向上！</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.voidking.com/dev-anaconda/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="VoidKing">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="VoidKing">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Anaconda</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-02-04T09:00:00+00:00">
+                2017-02-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/" itemprop="url" rel="index">
+                    <span itemprop="name">专业</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/udacity/" itemprop="url" rel="index">
+                    <span itemprop="name">udacity</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文转载自<a href="https://cn.udacity.com/course/machine-learning-engineer-nanodegree--nd009" target="_blank" rel="noopener">优达学城《机器学习工程师》</a></p>
+<p>欢迎来到本课程！我叫 Mat Leonard，是数据分析师纳米学位的项目主管，也是这个简短课程的讲师。我会在课程中介绍两个对于数据分析师最为重要的工具，即 Anaconda 和 Jupyter notebook。</p>
+<p><a href="https://anaconda.org/" target="_blank" rel="noopener">Anaconda</a> 是一个包含数据科学常用包的发行版本。它是基于 conda ——一个包和环境管理器——衍生而来。你将使用 conda 创建环境，以便分隔使用不同 Python 版本和/或不同包的项目。你还将使用它在环境中安装、卸载和更新包。通过使用 Anaconda，使我处理数据的过程更加愉快。</p>
+<p><a href="http://jupyter.org/" target="_blank" rel="noopener">Jupyter notebook</a> 是 Web 文档，能让你将文本、图像和代码全部组合到一个文档中。它已经成为数据分析的标准环境。notebook 源自 2011 年的 IPython 项目，之后迅速流行起来。在本课程的第二节课中，你将获得使用 notebook 进行分析工作的经验。</p>
+<p>让我们继续课程！首先学习 Anaconda。</p>
+<a id="more"></a>
+
+<h1 id="Anaconda"><a href="#Anaconda" class="headerlink" title="Anaconda"></a>Anaconda</h1><p>欢迎学习本课，即如何使用 <a href="https://www.continuum.io/why-anaconda" target="_blank" rel="noopener">Anaconda</a> 来管理 Python 所用的包和环境。Anaconda 能让你轻松安装在数据科学工作中经常使用的包。你还将使用它创建虚拟环境，以便更轻松地处理多个项目。Anaconda 简化了我的工作流程，并且解决了我在处理包和多个 Python 版本时遇到的大量问题。</p>
+<p>Anaconda 实际上是一个软件发行版，它附带了 conda、Python 和 150 多个科学包及其依赖项。应用程序 conda 是包和环境管理器。Anaconda 的下载文件比较大（约 500 MB），因为它附带了 Python 中最常用的数据科学包。如果只需要某些包，或者需要节省带宽或存储空间，也可以使用 Miniconda 这个较小的发行版（仅包含 conda 和 Python）。你仍可以使用 conda 来安装任何可用的包，它只是没有附带这些包而已。</p>
+<p>conda 是一种只能通过命令行来使用的程序，因此，如果你觉得它很难用，请查看这个<a href="https://www.lynda.com/-tutorials/Windows-command-line-basics/497312/513424-4.html" target="_blank" rel="noopener">面向 Windows 的命令提示符教程</a>，或者学习我们面向 OSX/Linux 的 <a href="https://www.udacity.com/course/linux-command-line-basics--ud595" target="_blank" rel="noopener">Linux 命令行基础知识课程</a>。</p>
+<p>你可能已经安装了 Python，并且想知道为何还需要 Anaconda。首先，由于 Anaconda 附带了一大批数据科学包，因此你可以立即开始处理数据。其次，使用 conda 来管理包和环境能减少将来在处理你要使用的各种库时遇到的问题。</p>
+<h2 id="管理包"><a href="#管理包" class="headerlink" title="管理包"></a>管理包</h2><p><img src="http://cdn.voidking.com//imgs/anaconda/condanumpy.jpg" alt="使用 conda 安装 numpy"></p>
+<p>包管理器用于在计算机上安装库和其他软件。你可能已经熟悉 pip，它是 Python 库的默认包管理器。conda 与 pip 相似，不同之处是可用的包以数据科学包为主，而 pip 适合一般用途。但是，conda 并非 像 pip 那样专门适用于 Python，它也可以安装非 Python 的包。它是适用于 任何 软件堆栈的包管理器。也就是说，并非所有的 Python 库都能通过 Anaconda 发行版和 conda 获得。在使用 conda 的同时，你仍可以并且仍将使用 pip 来安装包。</p>
+<p>Conda 安装了预编译的包。例如，Anaconda 发行版附带了使用 <a href="https://docs.continuum.io/mkl-optimizations/" target="_blank" rel="noopener">MKL 库</a>编译的 Numpy、Scipy 和 Scikit-learn，从而加快了各种数学运算的速度。这些包由发行版的贡献者维护，这意味着它们通常滞后于新版本。但是，由于有人需要为许多系统构建这些包，因此，它们往往更为稳定，而且更便于你使用。</p>
+<h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><p><img src="http://cdn.voidking.com//imgs/anaconda/env.jpg" alt="使用 conda 创建环境"><br>除了管理包之外，conda 还是虚拟环境管理器。它类似于另外两个很流行的环境管理器，即 <a href="https://virtualenv.pypa.io/en/stable/" target="_blank" rel="noopener">virtualenv</a> 和 <a href="https://github.com/yyuu/pyenv" target="_blank" rel="noopener">pyenv</a>。</p>
+<p>环境能让你分隔你要用于不同项目的包。你常常要使用依赖于某个库的不同版本的代码。例如，你的代码可能使用了 Numpy 中的新功能，或者使用了已删除的旧功能。实际上，不可能同时安装两个 Numpy 版本。你要做的应该是，为每个 Numpy 版本创建一个环境，然后在适用于项目的环境中工作。</p>
+<p>在应对 Python 2 和 Python 3 时，此问题也会常常发生。你可能会使用在 Python 3 中不能运行的旧代码，以及在 Python 2 中不能运行的新代码。同时安装两个版本可能会造成许多混乱和错误。而创建独立的环境会好很多。</p>
+<p>也可以将环境中的包的列表导出为文件，然后将该文件与代码包括在一起。这能让其他人轻松加载代码的所有依赖项。pip 提供了类似的功能，即 <code>pip freeze &gt; requirements.txt</code>。</p>
+<h2 id="接下来介绍的内容"><a href="#接下来介绍的内容" class="headerlink" title="接下来介绍的内容"></a>接下来介绍的内容</h2><p>接下来，我会详细介绍 Anaconda 的用法。首先，我会介绍它的安装过程，然后介绍如何使用包管理器，最后介绍如何创建和管理环境。</p>
+<h1 id="安装-Anaconda"><a href="#安装-Anaconda" class="headerlink" title="安装 Anaconda"></a>安装 Anaconda</h1><p>Anaconda 可用于 Windows、Mac OS X 和 Linux。可以在 <a href="https://www.continuum.io/downloads" target="_blank" rel="noopener">https://www.continuum.io/downloads</a> 上找到安装程序和安装说明。</p>
+<p>如果计算机上已经安装了 Python，这不会有任何影响。实际上，脚本和程序使用的默认 Python 是 Anaconda 附带的 Python。</p>
+<p>选择 Python 2.7 版本（你可以在以后安装 Python 3 版本）。此外，如果是 64 位操作系统，则选择 64 位安装程序，否则选择 32 位安装程序。继续并选择合适的版本，然后安装它。之后，继续进行！</p>
+<p>完成安装后，会自动进入默认的 conda 环境，而且所有包均已安装完毕，如下面所示。可以在终端或命令提示符中键入 <code>conda list</code>，以查看你安装的内容。</p>
+<p><img src="http://cdn.voidking.com//imgs/anaconda/conda_default_install.gif" alt=""></p>
+<p>在 Windows 上，会随 Anaconda 一起安装一批应用程序：</p>
+<ul>
+<li>Anaconda Navigator，它是用于管理环境和包的 GUI</li>
+<li>Anaconda Prompt 终端，它可让你使用命令行界面来管理环境和包</li>
+<li>Spyder，它是面向科学开发的 IDE</li>
+</ul>
+<p>为了避免报错，我推荐在默认环境下更新所有的包。打开 Anaconda Prompt （或者 Mac 下的终端），键入：<br><code>conda upgrade --all</code></p>
+<p>并在提示是否更新的时候输入y（Yes）以便让更新继续。初次安装下的软件包版本一般都比较老旧，因此提前更新可以避免未来不必要的问题。</p>
+<p>在本课的余下部分，我会要求你在终端中使用命令。我强烈建议你以这种方式开始使用 Anaconda，之后再根据需要使用 GUI。</p>
+<h1 id="管理包-1"><a href="#管理包-1" class="headerlink" title="管理包"></a>管理包</h1><p>安装了 Anaconda 之后，管理包是相当简单的。要安装包，请在终端中键入 <code>conda install package_name</code>。例如，要安装 numpy，请键入 <code>conda install numpy</code>。<br><img src="http://cdn.voidking.com//imgs/anaconda/conda_install.gif" alt=""><br>你还可以同时安装多个包。类似 <code>conda install numpy scipy pandas</code>的命令会同时安装所有这些包。还可以通过添加版本号（例如 <code>conda install numpy=1.10</code>）来指定所需的包版本。</p>
+<p>Conda 还会自动为你安装依赖项。例如，scipy 依赖于 numpy，因为它使用并需要 numpy。如果你只安装 scipy (<code>conda install scipy</code>)，则 conda 还会安装 numpy（如果尚未安装的话）。</p>
+<p>大多数命令都是很直观的。要卸载包，请使用 <code>conda remove package_name</code>。要更新包，请使用 <code>conda update package_name</code>。如果想更新环境中的所有包（这样做常常很有用），请使用 <code>conda update --all</code>。最后，要列出已安装的包，请使用前面提过的 <code>conda list</code>。</p>
+<p>如果不知道要找的包的确切名称，可以尝试使用 <code>conda search search_term</code> 进行搜索。例如，我知道我想安装 Beautiful Soup，但我不清楚确切的包名称。因此，我尝试执行 <code>conda search beautifulsoup</code>。<br><img src="http://cdn.voidking.com//imgs/anaconda/beautifulsoup.jpg" alt="搜索beautifulsoup"><br>它返回可用的 Beautiful Soup 包的列表，并列出了相应的包名称 beautifulsoup4。</p>
+<h1 id="管理环境"><a href="#管理环境" class="headerlink" title="管理环境"></a>管理环境</h1><p>如前所述，可以使用 conda 创建环境以隔离项目。要创建环境，请在终端中使用 <code>conda create -n env_name list of packages</code>。在这里，-n env_name 设置环境的名称（-n 是指名称），而 list of packages 是要安装在环境中的包的列表。例如，要创建名为 my_env 的环境并在其中安装 numpy，请键入 <code>conda create -n my_env numpy</code>。<br><img src="http://cdn.voidking.com//imgs/anaconda/myenv.jpg" alt=""><br>创建环境时，可以指定要安装在环境中的 Python 版本。这在你同时使用 Python 2.x 和 Python 3.x 中的代码时很有用。要创建具有特定 Python 版本的环境，请键入类似于 <code>conda create -n py3 python=3</code> 或 <code>conda create -n py2 python=2</code> 的命令。实际上，我在我的个人计算机上创建了这两个环境。我将它们用作与任何特定项目均无关的通用环境，以处理普通的工作（可轻松使用每个 Python 版本）。这些命令将分别安装 Python 3 和 2 的最新版本。要安装特定版本（例如 Python 3.3），请使用 <code>conda create -n py python=3.3</code>。</p>
+<h2 id="进入环境"><a href="#进入环境" class="headerlink" title="进入环境"></a>进入环境</h2><p>创建了环境后，在 OSX/Linux 上使用 <code>source activate my_env</code> 进入环境。在 Windows 上，请使用 <code>activate my_env</code>。<br><img src="http://cdn.voidking.com//imgs/anaconda/conda_enter.gif" alt=""></p>
+<p>进入环境后，你会在终端提示符中看到环境名称，它类似于 <code>(my_env) ~ $</code>。环境中只安装了几个默认的包，以及你在创建它时安装的包。可以使用 <code>conda list</code> 检查这一点。在环境中安装包的命令与前面一样：<code>conda install package_name</code>。不过，这次你安装的特定包仅在你进入环境后才可用。要离开环境，请键入 <code>source deactivate</code>（在 OSX/Linux 上）。在 Windows 上，请使用 <code>deactivate</code>。</p>
+<h2 id="保存和加载环境"><a href="#保存和加载环境" class="headerlink" title="保存和加载环境"></a>保存和加载环境</h2><p>共享环境这项功能确实很有用，它能让其他人安装你的代码中使用的所有包，并确保这些包的版本正确。可以使用 <code>conda env export &gt; environment.yaml</code> 将包保存为 <a href="http://www.yaml.org/" target="_blank" rel="noopener">YAML</a>。第一部分 <code>conda env export</code> 写出环境中的所有包（包括 Python 版本）。<br><img src="http://cdn.voidking.com//imgs/anaconda/export.jpg" alt="导出的环境输出到终端中"><br>上图可以看到列出了环境的名称和所有依赖项及其版本。导出命令的第二部分 <code>&gt; environment.yaml</code> 将导出的文本写入到 YAML 文件 environment.yaml 中。现在可以共享此文件，而且其他人能够创建和你用于项目相同的环境。</p>
+<p>要通过环境文件创建环境，请使用 <code>conda env create -f environment.yaml</code>。这会创建一个新环境，而且它具有在 environment.yaml 中列出的同一库。</p>
+<h2 id="列出环境"><a href="#列出环境" class="headerlink" title="列出环境"></a>列出环境</h2><p>如果忘记了环境的名称（我有时会这样），可以使用 <code>conda env list</code> 列出你创建的所有环境。你会看到环境的列表，而且你当前所在环境的旁边会有一个星号。默认的环境（即当你不在环境中时使用的环境）名为 root。</p>
+<h2 id="删除环境"><a href="#删除环境" class="headerlink" title="删除环境"></a>删除环境</h2><p>如果你不再使用某些环境，可以使用 <code>conda env remove -n env_name</code> 删除指定的环境（在这里名为 env_name）。</p>
+<h1 id="最佳做法"><a href="#最佳做法" class="headerlink" title="最佳做法"></a>最佳做法</h1><h2 id="使用环境"><a href="#使用环境" class="headerlink" title="使用环境"></a>使用环境</h2><p>对我帮助很大的一点是，我的 Python 2 和 Python 3 具有独立的环境。我使用了 <code>conda create -n py2 python=2</code> 和 <code>conda create -n py3 python=3</code> 创建两个独立的环境，即 py2 和 py3。现在，我的每个 Python 版本都有一个通用环境。在所有这些环境中，我都安装了大多数标准的数据科学包（numpy、scipy、pandas 等）。</p>
+<p>我还发现，为我从事的每个项目创建环境很有用。这对于与数据不相关的项目（例如使用 Flask 开发的 Web 应用）也很有用。例如，我为我的个人博客（使用 <a href="http://docs.getpelican.com/en/stable/" target="_blank" rel="noopener">Pelican</a>）创建了一个环境。</p>
+<h2 id="共享环境"><a href="#共享环境" class="headerlink" title="共享环境"></a>共享环境</h2><p>在 GitHub 上共享代码时，最好同样创建环境文件并将其包括在代码库中。这能让其他人更轻松地安装你的代码的所有依赖项。对于不使用 conda 的人，我通常还会使用 <code>pip freeze</code>（<a href="https://pip.pypa.io/en/stable/reference/pip_freeze/" target="_blank" rel="noopener">在此处了解详情</a>）将一个 pip requirements.txt 文件包括在内。</p>
+<h2 id="了解更多信息"><a href="#了解更多信息" class="headerlink" title="了解更多信息"></a>了解更多信息</h2><p>要详细了解 conda 和它如何融入到 Python 生态系统中，请查看这篇由 Jake Vanderplas 撰写的文章：<a href="https://jakevdp.github.io/blog/conda-myths-and-misconceptions/" target="_blank" rel="noopener">Conda myths and misconceptions</a>（有关 conda 的迷思和误解）。此外，有空也可以参考这篇 <a href="http://conda.pydata.org/docs/using/index.html" target="_blank" rel="noopener">conda 文档</a>。</p>
+<h1 id="书签"><a href="#书签" class="headerlink" title="书签"></a>书签</h1><p>Video to animated GIF converter<br><a href="http://ezgif.com/video-to-gif" target="_blank" rel="noopener">http://ezgif.com/video-to-gif</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E8%BD%AC%E8%BD%BD/" rel="tag"># 转载</a>
+          
+            <a href="/tags/anaconda/" rel="tag"># anaconda</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/dev-machine-learning-titanic/" rel="next" title="机器学习——泰坦尼克号生还者分析">
+                <i class="fa fa-chevron-left"></i> 机器学习——泰坦尼克号生还者分析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/dev-jupyter-notebook/" rel="prev" title="Jupyter notebook">
+                Jupyter notebook <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zODU3Mi8xNTEwMA=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="VoidKing" />
+            
+              <p class="site-author-name" itemprop="name">VoidKing</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">583</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">188</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:voidking@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/voidking" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/voidking" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://twitter.com/voidking_com" target="_blank" title="Twitter">
+                      
+                        <i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Anaconda"><span class="nav-number">2.</span> <span class="nav-text">Anaconda</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#管理包"><span class="nav-number">2.1.</span> <span class="nav-text">管理包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#环境"><span class="nav-number">2.2.</span> <span class="nav-text">环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#接下来介绍的内容"><span class="nav-number">2.3.</span> <span class="nav-text">接下来介绍的内容</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装-Anaconda"><span class="nav-number">3.</span> <span class="nav-text">安装 Anaconda</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#管理包-1"><span class="nav-number">4.</span> <span class="nav-text">管理包</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#管理环境"><span class="nav-number">5.</span> <span class="nav-text">管理环境</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#进入环境"><span class="nav-number">5.1.</span> <span class="nav-text">进入环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#保存和加载环境"><span class="nav-number">5.2.</span> <span class="nav-text">保存和加载环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#列出环境"><span class="nav-number">5.3.</span> <span class="nav-text">列出环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除环境"><span class="nav-number">5.4.</span> <span class="nav-text">删除环境</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#最佳做法"><span class="nav-number">6.</span> <span class="nav-text">最佳做法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用环境"><span class="nav-number">6.1.</span> <span class="nav-text">使用环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#共享环境"><span class="nav-number">6.2.</span> <span class="nav-text">共享环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#了解更多信息"><span class="nav-number">6.3.</span> <span class="nav-text">了解更多信息</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#书签"><span class="nav-number">7.</span> <span class="nav-text">书签</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2012 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">VoidKing</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <!-- <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script> -->
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+  <div class="footer-beian">
+    <a href="http://www.beian.miit.gov.cn/" target="_blank">苏ICP备14021030号</a>&nbsp;|&nbsp;
+    <!-- <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=32032202000223">苏公网安备 32032202000223号</a> -->
+    <img src="/images/beian.png" alt="">
+    <a target="_blank" href="http://www.beian.gov.cn/">苏公网安备 32032202000223号</a>
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+      <div id="needsharebutton-float">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "box";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+      flOptions = {};
+      
+          flOptions.iconStyle = "box";
+      
+          flOptions.boxForm = "horizontal";
+      
+          flOptions.position = "topRight";
+      
+          flOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-float', flOptions);
+    
+  </script>
+
+  
+
+  
+  
+
+
+  
+
+  
+
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+
+</body>
+</html>

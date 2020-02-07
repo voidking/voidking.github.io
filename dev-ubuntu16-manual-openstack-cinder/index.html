@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=5.1.4">
+
+
+
+
+
+
+  <meta name="keywords" content="linux,ubuntu,openstack," />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="VoidKing" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="目标在《Ubuntu16手动安装OpenStack——修改镜像》一文中，我们通过修改镜像，实现了ssh密码访问实例。看上去，这个openstack系统已经可以投入使用了，实际上，也确实可以投入使用了。 但是，我们总是追求更好更多的服务。所以接下来，我们继续安装openstack的服务组件。本文中要安装配置的是cinder，主要参考OpenStack Queens : Configure Cinde">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ubuntu16手动安装OpenStack——cinder篇">
+<meta property="og:url" content="https://www.voidking.com/dev-ubuntu16-manual-openstack-cinder/index.html">
+<meta property="og:site_name" content="VoidKing">
+<meta property="og:description" content="目标在《Ubuntu16手动安装OpenStack——修改镜像》一文中，我们通过修改镜像，实现了ssh密码访问实例。看上去，这个openstack系统已经可以投入使用了，实际上，也确实可以投入使用了。 但是，我们总是追求更好更多的服务。所以接下来，我们继续安装openstack的服务组件。本文中要安装配置的是cinder，主要参考OpenStack Queens : Configure Cinde">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/ubuntu16-manual-openstack-cinder/volume.jpg?imageView2/0/w/700">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/ubuntu16-manual-openstack-cinder/disk.jpg?imageView2/0/w/700">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/ubuntu16-manual-openstack-cinder/create.jpg?imageView2/0/w/700">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/ubuntu16-manual-openstack-cinder/list.jpg?imageView2/0/w/700">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/ubuntu16-manual-openstack-cinder/disk1.jpg?imageView2/0/w/700">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/ubuntu16-manual-openstack-cinder/list1.jpg?imageView2/0/w/700">
+<meta property="article:published_time" content="2018-07-11T15:00:00.000Z">
+<meta property="article:modified_time" content="2020-02-07T15:42:50.013Z">
+<meta property="article:author" content="VoidKing">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="ubuntu">
+<meta property="article:tag" content="openstack">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.voidking.com//imgs/ubuntu16-manual-openstack-cinder/volume.jpg?imageView2/0/w/700">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.voidking.com/dev-ubuntu16-manual-openstack-cinder/"/>
+
+
+
+
+
+  <title>Ubuntu16手动安装OpenStack——cinder篇 | VoidKing</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?b759ac2a7fa45129e3ef060bf68259f0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">VoidKing</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">好好学习，天天向上！</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.voidking.com/dev-ubuntu16-manual-openstack-cinder/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="VoidKing">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="VoidKing">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Ubuntu16手动安装OpenStack——cinder篇</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-11T15:00:00+00:00">
+                2018-07-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/" itemprop="url" rel="index">
+                    <span itemprop="name">专业</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index">
+                    <span itemprop="name">运维</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E8%BF%90%E7%BB%B4/ubuntu/" itemprop="url" rel="index">
+                    <span itemprop="name">ubuntu</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h1><p>在<a href="https://www.voidking.com/dev-ubuntu16-manual-openstack-modify-mirror/">《Ubuntu16手动安装OpenStack——修改镜像》</a>一文中，我们通过修改镜像，实现了ssh密码访问实例。看上去，这个openstack系统已经可以投入使用了，实际上，也确实可以投入使用了。</p>
+<p>但是，我们总是追求更好更多的服务。所以接下来，我们继续安装openstack的服务组件。本文中要安装配置的是cinder，主要参考<a href="https://www.server-world.info/en/note?os=Ubuntu_16.04&p=openstack_queens2&f=1" target="_blank" rel="noopener">OpenStack Queens : Configure Cinder</a>和<a href="https://docs.openstack.org/cinder/queens/install/" target="_blank" rel="noopener">Cinder Installation Guide</a>。</p>
+<a id="more"></a>
+
+<h1 id="cinder简介"><a href="#cinder简介" class="headerlink" title="cinder简介"></a>cinder简介</h1><p>块存储服务（cinder）为用户实例提供块存储设备。配置和使用存储的方法由块存储驱动程序确定，或者在多后端配置的情况下由驱动程序确定。有多种驱动程序可用：NAS / SAN，NFS，iSCSI，Ceph等。Block Storage API和调度程序服务通常在控制器节点上运行。根据所使用的驱动程序，卷服务可以在控制器节点，计算节点或独立存储节点上运行。</p>
+<h1 id="控制节点"><a href="#控制节点" class="headerlink" title="控制节点"></a>控制节点</h1><h2 id="root用户"><a href="#root用户" class="headerlink" title="root用户"></a>root用户</h2><p>为了避免权限问题，建议切换到root用户进行操作（否则要加很多sudo）。<br><code>sudo -i</code></p>
+<h2 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h2><p>1、登录数据库<br><code>mysql -uroot -p</code>，密码为openstack。</p>
+<p>2、创建cinder数据库<br><code>create database cinder;</code></p>
+<p>3、授权</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">grant</span> <span class="keyword">all</span> <span class="keyword">privileges</span> <span class="keyword">on</span> cinder.* <span class="keyword">to</span> cinder@<span class="string">'localhost'</span> <span class="keyword">identified</span> <span class="keyword">by</span> <span class="string">'openstack'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">grant</span> <span class="keyword">all</span> <span class="keyword">privileges</span> <span class="keyword">on</span> cinder.* <span class="keyword">to</span> cinder@<span class="string">'%'</span> <span class="keyword">identified</span> <span class="keyword">by</span> <span class="string">'openstack'</span>;</span><br></pre></td></tr></table></figure>
+
+<p>4、退出数据库<br><code>flush privileges;</code></p>
+<p><code>exit;</code></p>
+<h2 id="证书和端点"><a href="#证书和端点" class="headerlink" title="证书和端点"></a>证书和端点</h2><p>1、使admin环境生效<br><code>. admin-openrc</code></p>
+<p>2、创建cinder用户，密码为openstack<br><code>openstack user create --domain default --project service --password openstack cinder</code></p>
+<p>3、给cinder用户添加admin角色<br><code>openstack role add --project service --user cinder admin</code></p>
+<p>4、创建cinder服务</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">openstack<span class="built_in"> service </span>create --name cinderv2 --description <span class="string">"OpenStack Block Storage"</span> volumev2</span><br><span class="line"></span><br><span class="line">openstack<span class="built_in"> service </span>create --name cinderv3 --description <span class="string">"OpenStack Block Storage"</span> volumev3</span><br></pre></td></tr></table></figure>
+
+<p>5、创建cinder服务端点</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">openstack endpoint create --region RegionOne volumev2 <span class="keyword">public</span> <span class="string">http:</span><span class="comment">//controller:8776/v2/%\(project_id\)s</span></span><br><span class="line"></span><br><span class="line">openstack endpoint create --region RegionOne volumev2 internal <span class="string">http:</span><span class="comment">//controller:8776/v2/%\(project_id\)s</span></span><br><span class="line"></span><br><span class="line">openstack endpoint create --region RegionOne volumev2 admin <span class="string">http:</span><span class="comment">//controller:8776/v2/%\(project_id\)s</span></span><br><span class="line"></span><br><span class="line">openstack endpoint create --region RegionOne volumev3 <span class="keyword">public</span> <span class="string">http:</span><span class="comment">//controller:8776/v3/%\(project_id\)s </span></span><br><span class="line"></span><br><span class="line">openstack endpoint create --region RegionOne volumev3 internal <span class="string">http:</span><span class="comment">//controller:8776/v3/%\(project_id\)s </span></span><br><span class="line"></span><br><span class="line">openstack endpoint create --region RegionOne volumev3 admin <span class="string">http:</span><span class="comment">//controller:8776/v3/%\(project_id\)s</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="安装配置"><a href="#安装配置" class="headerlink" title="安装配置"></a>安装配置</h2><p>1、下载安装组件<br><code>apt-get -y install cinder-api cinder-scheduler python-cinderclient</code></p>
+<p>2、备份cinder.conf<br><code>mv /etc/cinder/cinder.conf /etc/cinder/cinder.conf.bak</code></p>
+<p>3、<code>vi /etc/cinder/cinder.conf</code>，新建cinder.conf内容为：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># create new</span></span><br><span class="line"><span class="section">[DEFAULT]</span></span><br><span class="line"><span class="comment"># define own IP address</span></span><br><span class="line"><span class="attr">my_ip</span> = <span class="number">172.16</span>.<span class="number">0.105</span></span><br><span class="line"><span class="attr">rootwrap_config</span> = /etc/cinder/rootwrap.conf</span><br><span class="line"><span class="attr">api_paste_confg</span> = /etc/cinder/api-paste.ini</span><br><span class="line"><span class="attr">state_path</span> = /var/lib/cinder</span><br><span class="line"><span class="attr">auth_strategy</span> = keystone</span><br><span class="line"><span class="comment"># RabbitMQ connection info</span></span><br><span class="line"><span class="attr">transport_url</span> = rabbit://openstack:openstack@controller</span><br><span class="line"></span><br><span class="line"><span class="comment"># MariaDB connection info</span></span><br><span class="line"><span class="section">[database]</span></span><br><span class="line"><span class="attr">connection</span> = mysql+pymysql://cinder:openstack@controller/cinder</span><br><span class="line"></span><br><span class="line"><span class="comment"># Keystone auth info</span></span><br><span class="line"><span class="section">[keystone_authtoken]</span></span><br><span class="line"><span class="attr">www_authenticate_uri</span> = http://controller:<span class="number">5000</span></span><br><span class="line"><span class="attr">auth_url</span> = http://controller:<span class="number">5000</span></span><br><span class="line"><span class="attr">memcached_servers</span> = controller:<span class="number">11211</span></span><br><span class="line"><span class="attr">auth_type</span> = password</span><br><span class="line"><span class="attr">project_domain_name</span> = default</span><br><span class="line"><span class="attr">user_domain_name</span> = default</span><br><span class="line"><span class="attr">project_name</span> = service</span><br><span class="line"><span class="attr">username</span> = cinder</span><br><span class="line"><span class="attr">password</span> = openstack</span><br><span class="line"></span><br><span class="line"><span class="section">[oslo_concurrency]</span></span><br><span class="line"><span class="attr">lock_path</span> = <span class="variable">$state_path</span>/tmp</span><br></pre></td></tr></table></figure>
+
+<p>4、更改权限<br><code>chmod 644 /etc/cinder/cinder.conf</code></p>
+<p><code>chown root:cinder /etc/cinder/cinder.conf</code></p>
+<p>5、生成数据库数据<br><code>su -s /bin/bash cinder -c &quot;cinder-manage db sync&quot;</code></p>
+<p>6、重启cinder-scheduler<br><code>systemctl restart cinder-scheduler</code></p>
+<p>7、查看volume<br><code>openstack volume service list</code><br><img src="http://cdn.voidking.com//imgs/ubuntu16-manual-openstack-cinder/volume.jpg?imageView2/0/w/700" alt=""></p>
+<h1 id="存储节点"><a href="#存储节点" class="headerlink" title="存储节点"></a>存储节点</h1><p>本文中，我们的存储节点和计算节点在同一个节点，该节点的IP为172.16.0.106。已经安装的服务和virtualbox计算节点（192.168.56.111）相同，包括nova-compute和neutron。</p>
+<h2 id="root用户-1"><a href="#root用户-1" class="headerlink" title="root用户"></a>root用户</h2><p>为了避免权限问题，建议切换到root用户进行操作（否则要加很多sudo）。<br><code>sudo -i</code></p>
+<h2 id="安装配置-1"><a href="#安装配置-1" class="headerlink" title="安装配置"></a>安装配置</h2><p>1、安装cinder-volume<br><code>apt-get -y install cinder-volume python-mysqldb</code></p>
+<p>2、备份cinder.conf<br><code>mv /etc/cinder/cinder.conf /etc/cinder/cinder.conf.bak</code></p>
+<p>3、<code>vi /etc/cinder/cinder.conf</code>，新建cinder.conf内容为：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># create new</span></span><br><span class="line"><span class="section">[DEFAULT]</span></span><br><span class="line"><span class="comment"># define own IP address</span></span><br><span class="line"><span class="attr">my_ip</span> = <span class="number">172.16</span>.<span class="number">0.106</span></span><br><span class="line"><span class="attr">rootwrap_config</span> = /etc/cinder/rootwrap.conf</span><br><span class="line"><span class="attr">api_paste_confg</span> = /etc/cinder/api-paste.ini</span><br><span class="line"><span class="attr">state_path</span> = /var/lib/cinder</span><br><span class="line"><span class="attr">auth_strategy</span> = keystone</span><br><span class="line"><span class="comment"># RabbitMQ connection info</span></span><br><span class="line"><span class="attr">transport_url</span> = rabbit://openstack:openstack@controller</span><br><span class="line"><span class="comment"># Glance connection info</span></span><br><span class="line"><span class="attr">glance_api_servers</span> = http://controller:<span class="number">9292</span></span><br><span class="line"><span class="comment"># OK with empty value now</span></span><br><span class="line"><span class="attr">enabled_backends</span> =</span><br><span class="line"></span><br><span class="line"><span class="comment"># MariaDB connection info</span></span><br><span class="line"><span class="section">[database]</span></span><br><span class="line"><span class="attr">connection</span> = mysql+pymysql://cinder:openstack@controller/cinder</span><br><span class="line"></span><br><span class="line"><span class="comment"># Keystone auth info</span></span><br><span class="line"><span class="section">[keystone_authtoken]</span></span><br><span class="line"><span class="attr">www_authenticate_uri</span> = http://controller:<span class="number">5000</span></span><br><span class="line"><span class="attr">auth_url</span> = http://controller:<span class="number">5000</span></span><br><span class="line"><span class="attr">memcached_servers</span> = controller:<span class="number">11211</span></span><br><span class="line"><span class="attr">auth_type</span> = password</span><br><span class="line"><span class="attr">project_domain_name</span> = default</span><br><span class="line"><span class="attr">user_domain_name</span> = default</span><br><span class="line"><span class="attr">project_name</span> = service</span><br><span class="line"><span class="attr">username</span> = cinder</span><br><span class="line"><span class="attr">password</span> = openstack</span><br><span class="line"></span><br><span class="line"><span class="section">[oslo_concurrency]</span></span><br><span class="line"><span class="attr">lock_path</span> = <span class="variable">$state_path</span>/tmp</span><br></pre></td></tr></table></figure>
+
+<p>4、更改权限<br><code>chmod 644 /etc/cinder/cinder.conf</code></p>
+<p><code>chown root:cinder /etc/cinder/cinder.conf</code></p>
+<p>5、重启cinder-volume<br><code>systemctl restart cinder-volume</code></p>
+<h1 id="使用lvm卷"><a href="#使用lvm卷" class="headerlink" title="使用lvm卷"></a>使用lvm卷</h1><h2 id="存储节点-1"><a href="#存储节点-1" class="headerlink" title="存储节点"></a>存储节点</h2><p>1、在存储节点添加硬盘，保证至少有两块硬盘。</p>
+<p>2、创建物理卷<br><code>ll /dev/sd*</code></p>
+<p><code>pvcreate /dev/sdb</code></p>
+<p>3、创建volume group<br><code>vgcreate -s 32M vg_volume01 /dev/sdb</code></p>
+<p>4、安装lvm相关组件<br><code>apt-get -y install tgt thin-provisioning-tools</code></p>
+<p>5、<code>vi /etc/cinder/cinder.conf</code>，如下修改cinder.conf：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># add a value for enabled_backends</span></span><br><span class="line"><span class="attr">enabled_backends</span> = lvm</span><br><span class="line"><span class="comment"># add follows to the end</span></span><br><span class="line"><span class="section">[lvm]</span></span><br><span class="line"><span class="attr">iscsi_helper</span> = tgtadm</span><br><span class="line"><span class="comment"># volume group name just created</span></span><br><span class="line"><span class="attr">volume_group</span> = vg_volume01</span><br><span class="line"><span class="comment"># IP address of Storage Node</span></span><br><span class="line"><span class="attr">iscsi_ip_address</span> = <span class="number">172.16</span>.<span class="number">0.106</span></span><br><span class="line"><span class="attr">volume_driver</span> = cinder.volume.drivers.lvm.LVMVolumeDriver</span><br><span class="line"><span class="attr">volumes_dir</span> = <span class="variable">$state_path</span>/volumes</span><br><span class="line"><span class="attr">iscsi_protocol</span> = iscsi</span><br></pre></td></tr></table></figure>
+
+<p>6、重启服务<br><code>systemctl restart cinder-volume tgt</code></p>
+<h2 id="计算节点"><a href="#计算节点" class="headerlink" title="计算节点"></a>计算节点</h2><p>1、<code>vi /etc/nova/nova.conf</code>，编辑nova.conf文件：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># add to the end</span></span><br><span class="line"><span class="section">[cinder]</span></span><br><span class="line"><span class="attr">os_region_name</span> = RegionOne</span><br></pre></td></tr></table></figure>
+
+<p>2、重启compute服务<br><code>systemctl restart nova-compute</code></p>
+<h2 id="控制节点-1"><a href="#控制节点-1" class="headerlink" title="控制节点"></a>控制节点</h2><p>以上，已经准备好了cinder服务，我们在控制节点使用cinder服务（也可以在其他机器使用）。</p>
+<p>1、假设我们已经按照<a href="https://www.voidking.com/dev-ubuntu16-manual-openstack-instance/">《Ubuntu16手动安装OpenStack——创建实例》</a>一文，创建了一个cirros0实例，ip为10.0.0.206。</p>
+<p>2、登录cirros0<br><code>ssh cirros@10.0.0.206</code>，密码默认为gocubsgo。</p>
+<p>3、在cirros0中查看硬盘<br><code>df -h</code></p>
+<p><code>ls -l /dev/vd*</code></p>
+<p><code>sudo fdisk -l</code></p>
+<p><img src="http://cdn.voidking.com//imgs/ubuntu16-manual-openstack-cinder/disk.jpg?imageView2/0/w/700" alt=""><br>可以看到，当前虚拟机只有一块vda硬盘。</p>
+<p>4、控制节点中修改voidking用户环境，并使环境生效<br><code>echo &quot;export OS_VOLUME_API_VERSION=2&quot; &gt;&gt; ~/voidkingrc</code></p>
+<p><code>. voidkingrc</code></p>
+<p>5、创建卷disk01，大小为1G<br><code>openstack volume create --size 1 disk01</code><br><img src="http://cdn.voidking.com//imgs/ubuntu16-manual-openstack-cinder/create.jpg?imageView2/0/w/700" alt=""></p>
+<p>6、查看卷<br><code>openstack volume list</code><br><img src="http://cdn.voidking.com//imgs/ubuntu16-manual-openstack-cinder/list.jpg?imageView2/0/w/700" alt=""></p>
+<p>7、把卷disk01添加给cirros0实例<br><code>openstack server list</code></p>
+<p><code>openstack server add volume cirros0 disk01</code></p>
+<p>8、在cirros0中查看硬盘<br><code>ls -l /dev/vd*</code><br><img src="http://cdn.voidking.com//imgs/ubuntu16-manual-openstack-cinder/disk1.jpg?imageView2/0/w/700" alt=""></p>
+<p>发现cirros0中多出了一块硬盘vdb。</p>
+<p>9、在控制节点查看卷<br><code>openstack volume list</code><br><img src="http://cdn.voidking.com//imgs/ubuntu16-manual-openstack-cinder/list1.jpg?imageView2/0/w/700" alt=""><br>显示disk01已经attach到了cirros0的/dev/vdb，和我们在cirros0中看到的结果一致。</p>
+<p>10、移除卷<br><code>openstack server remove volume cirros0 disk01</code></p>
+<h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p>关于NFS（网络文件系统）的使用，参考<a href="https://www.server-world.info/en/note?os=Ubuntu_16.04&p=openstack_queens2&f=4" target="_blank" rel="noopener">OpenStack Queens : Use Cinder Storage (NFS)</a>。</p>
+<p>关于LVM和NFS格式卷的混合使用，参考<a href="https://www.server-world.info/en/note?os=Ubuntu_16.04&p=openstack_queens2&f=5" target="_blank" rel="noopener">OpenStack Queens : Use Cinder Storage (Multi-BackEnds)</a>。</p>
+<p>关于使用cinder备份卷，参考<a href="https://www.server-world.info/en/note?os=Ubuntu_16.04&p=openstack_queens2&f=6" target="_blank" rel="noopener">OpenStack Queens : Configure Cinder Backup</a>。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/linux/" rel="tag"># linux</a>
+          
+            <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
+          
+            <a href="/tags/openstack/" rel="tag"># openstack</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/dev-ubuntu16-manual-openstack-modify-mirror/" rel="next" title="Ubuntu16手动安装OpenStack——修改镜像">
+                <i class="fa fa-chevron-left"></i> Ubuntu16手动安装OpenStack——修改镜像
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/dev-ubuntu16-manual-openstack-swift/" rel="prev" title="Ubuntu16手动安装OpenStack——swift篇">
+                Ubuntu16手动安装OpenStack——swift篇 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zODU3Mi8xNTEwMA=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="VoidKing" />
+            
+              <p class="site-author-name" itemprop="name">VoidKing</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">583</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">188</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:voidking@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/voidking" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/voidking" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://twitter.com/voidking_com" target="_blank" title="Twitter">
+                      
+                        <i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#目标"><span class="nav-number">1.</span> <span class="nav-text">目标</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#cinder简介"><span class="nav-number">2.</span> <span class="nav-text">cinder简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#控制节点"><span class="nav-number">3.</span> <span class="nav-text">控制节点</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#root用户"><span class="nav-number">3.1.</span> <span class="nav-text">root用户</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库"><span class="nav-number">3.2.</span> <span class="nav-text">数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#证书和端点"><span class="nav-number">3.3.</span> <span class="nav-text">证书和端点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装配置"><span class="nav-number">3.4.</span> <span class="nav-text">安装配置</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#存储节点"><span class="nav-number">4.</span> <span class="nav-text">存储节点</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#root用户-1"><span class="nav-number">4.1.</span> <span class="nav-text">root用户</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装配置-1"><span class="nav-number">4.2.</span> <span class="nav-text">安装配置</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用lvm卷"><span class="nav-number">5.</span> <span class="nav-text">使用lvm卷</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#存储节点-1"><span class="nav-number">5.1.</span> <span class="nav-text">存储节点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#计算节点"><span class="nav-number">5.2.</span> <span class="nav-text">计算节点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#控制节点-1"><span class="nav-number">5.3.</span> <span class="nav-text">控制节点</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#后记"><span class="nav-number">6.</span> <span class="nav-text">后记</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2012 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">VoidKing</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <!-- <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script> -->
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+  <div class="footer-beian">
+    <a href="http://www.beian.miit.gov.cn/" target="_blank">苏ICP备14021030号</a>&nbsp;|&nbsp;
+    <!-- <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=32032202000223">苏公网安备 32032202000223号</a> -->
+    <img src="/images/beian.png" alt="">
+    <a target="_blank" href="http://www.beian.gov.cn/">苏公网安备 32032202000223号</a>
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+      <div id="needsharebutton-float">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "box";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+      flOptions = {};
+      
+          flOptions.iconStyle = "box";
+      
+          flOptions.boxForm = "horizontal";
+      
+          flOptions.position = "topRight";
+      
+          flOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-float', flOptions);
+    
+  </script>
+
+  
+
+  
+  
+
+
+  
+
+  
+
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+
+</body>
+</html>

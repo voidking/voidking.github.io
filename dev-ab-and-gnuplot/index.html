@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=5.1.4">
+
+
+
+
+
+
+  <meta name="keywords" content="apache,linux,ubuntu," />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="VoidKing" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="前言《虚拟机在线迁移的性能统计》一文中，提到了虚拟机迁移的四个性能指标。但是文中只记录了迁移时间、停机时间、迁移数据量的测量方法，对于应用程序的性能，由于没有想到好的测量方法，最终搁置。 又参考了一些论文，发现他们在考虑Web应用程序性能时，主要考虑吞吐量。本文，就来研究一下ApacheBench测量吞吐量的方法，并且使用gnuplot绘制出吞吐量与时间的关系。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ApacheBenchmark和gnuplot">
+<meta property="og:url" content="https://www.voidking.com/dev-ab-and-gnuplot/index.html">
+<meta property="og:site_name" content="VoidKing">
+<meta property="og:description" content="前言《虚拟机在线迁移的性能统计》一文中，提到了虚拟机迁移的四个性能指标。但是文中只记录了迁移时间、停机时间、迁移数据量的测量方法，对于应用程序的性能，由于没有想到好的测量方法，最终搁置。 又参考了一些论文，发现他们在考虑Web应用程序性能时，主要考虑吞吐量。本文，就来研究一下ApacheBench测量吞吐量的方法，并且使用gnuplot绘制出吞吐量与时间的关系。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/ab-and-gnuplot/gnuplot.jpg?imageView2/0/w/600">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/ab-and-gnuplot/sin.jpg?imageView2/0/w/600">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/ab-and-gnuplot/x11.jpg?imageView2/0/w/600">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/ab-and-gnuplot/dat.jpg?imageView2/0/w/600">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/ab-and-gnuplot/t10.png?imageView2/0/w/600">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/ab-and-gnuplot/vk.png?imageView2/0/w/600">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/ab-and-gnuplot/throughput.png?imageView2/0/w/600">
+<meta property="article:published_time" content="2019-01-15T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-02-07T15:42:49.989Z">
+<meta property="article:author" content="VoidKing">
+<meta property="article:tag" content="apache">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="ubuntu">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.voidking.com//imgs/ab-and-gnuplot/gnuplot.jpg?imageView2/0/w/600">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.voidking.com/dev-ab-and-gnuplot/"/>
+
+
+
+
+
+  <title>ApacheBenchmark和gnuplot | VoidKing</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?b759ac2a7fa45129e3ef060bf68259f0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">VoidKing</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">好好学习，天天向上！</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.voidking.com/dev-ab-and-gnuplot/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="VoidKing">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="VoidKing">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">ApacheBenchmark和gnuplot</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-15T16:00:00+00:00">
+                2019-01-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/" itemprop="url" rel="index">
+                    <span itemprop="name">专业</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index">
+                    <span itemprop="name">运维</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E8%BF%90%E7%BB%B4/ubuntu/" itemprop="url" rel="index">
+                    <span itemprop="name">ubuntu</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><a href="https://www.voidking.com/dev-openstack-vm-live-migration-performance/">《虚拟机在线迁移的性能统计》</a>一文中，提到了虚拟机迁移的四个性能指标。但是文中只记录了迁移时间、停机时间、迁移数据量的测量方法，对于应用程序的性能，由于没有想到好的测量方法，最终搁置。</p>
+<p>又参考了一些论文，发现他们在考虑Web应用程序性能时，主要考虑吞吐量。本文，就来研究一下ApacheBench测量吞吐量的方法，并且使用gnuplot绘制出吞吐量与时间的关系。</p>
+<a id="more"></a>
+
+<h1 id="ApacheBench"><a href="#ApacheBench" class="headerlink" title="ApacheBench"></a>ApacheBench</h1><p>ApacheBench（ab）是Apache自带的一个Web压力测试工具，也可以单独下载使用。ab非常实用，它不仅可以对apache服务器进行网站访问压力测试，也可以对或其它类型的服务器进行压力测试。比如nginx、tomcat、IIS等。</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>1、安装apache<br><code>apt install apache2</code></p>
+<p>2、测试</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">curl</span> <span class="string">localhost</span></span><br><span class="line"><span class="attr">ab</span> <span class="string">-V</span></span><br></pre></td></tr></table></figure>
+
+<p>单独下载ab的话，可以使用<code>apt install apache2-utils</code>。</p>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>ab命令使用说明：<br><code>ab [options] [http[s]://]hostname[:port]/path</code></p>
+<p>可选参数如下：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">-n requests     Number of requests <span class="keyword">to</span> perform</span><br><span class="line">-c concurrency  Number of multiple requests <span class="keyword">to</span> make at a time</span><br><span class="line">-t timelimit    Seconds <span class="keyword">to</span> max. <span class="keyword">to</span> spend on benchmarking</span><br><span class="line">                This implies -n 50000</span><br><span class="line">-s timeout      Seconds <span class="keyword">to</span> max. wait <span class="keyword">for</span> each response</span><br><span class="line">               <span class="built_in"> Default </span>is 30 seconds</span><br><span class="line">-b windowsize   Size of TCP send/receive buffer, <span class="keyword">in</span> bytes</span><br><span class="line">-B<span class="built_in"> address </span>    <span class="built_in"> Address </span><span class="keyword">to</span> bind <span class="keyword">to</span> when making outgoing connections</span><br><span class="line">-p postfile     File containing data <span class="keyword">to</span> POST. Remember also <span class="keyword">to</span> <span class="builtin-name">set</span> -T</span><br><span class="line">-u putfile      File containing data <span class="keyword">to</span> PUT. Remember also <span class="keyword">to</span> <span class="builtin-name">set</span> -T</span><br><span class="line">-T content-type Content-type header <span class="keyword">to</span> use <span class="keyword">for</span> POST/PUT data, eg.</span><br><span class="line">                <span class="string">'application/x-www-form-urlencoded'</span></span><br><span class="line">               <span class="built_in"> Default </span>is <span class="string">'text/plain'</span></span><br><span class="line">-v verbosity    How much troubleshooting <span class="builtin-name">info</span> <span class="keyword">to</span> print</span><br><span class="line">-w              <span class="builtin-name">Print</span> out results <span class="keyword">in</span> HTML tables</span><br><span class="line">-i              Use HEAD instead of GET</span><br><span class="line">-x attributes   String <span class="keyword">to</span> insert as table attributes</span><br><span class="line">-y attributes   String <span class="keyword">to</span> insert as tr attributes</span><br><span class="line">-z attributes   String <span class="keyword">to</span> insert as td <span class="keyword">or</span> th attributes</span><br><span class="line">-C attribute    <span class="builtin-name">Add</span> cookie, eg. <span class="string">'Apache=1234'</span>. (repeatable)</span><br><span class="line">-H attribute    <span class="builtin-name">Add</span> Arbitrary header line, eg. <span class="string">'Accept-Encoding: gzip'</span></span><br><span class="line">                Inserted after all normal header lines. (repeatable)</span><br><span class="line">-A attribute    <span class="builtin-name">Add</span> Basic WWW Authentication, the attributes</span><br><span class="line">                are a colon separated username <span class="keyword">and</span> password.</span><br><span class="line">-P attribute    <span class="builtin-name">Add</span> Basic<span class="built_in"> Proxy </span>Authentication, the attributes</span><br><span class="line">                are a colon separated username <span class="keyword">and</span> password.</span><br><span class="line">-X proxy:port   Proxyserver <span class="keyword">and</span><span class="built_in"> port </span>number <span class="keyword">to</span> use</span><br><span class="line">-V              <span class="builtin-name">Print</span> version number <span class="keyword">and</span> exit</span><br><span class="line">-k              Use HTTP KeepAlive feature</span><br><span class="line">-d              <span class="keyword">Do</span> <span class="keyword">not</span> show percentiles served table.</span><br><span class="line">-S              <span class="keyword">Do</span> <span class="keyword">not</span> show confidence estimators <span class="keyword">and</span> warnings.</span><br><span class="line">-q              <span class="keyword">Do</span> <span class="keyword">not</span> show progress when doing more than 150 requests</span><br><span class="line">-l              Accept variable document length (use this <span class="keyword">for</span> dynamic pages)</span><br><span class="line">-g filename     Output collected data <span class="keyword">to</span> gnuplot format file.</span><br><span class="line">-e filename     Output CSV file with percentages served</span><br><span class="line">-r              Don<span class="string">'t exit on socket receive errors.</span></span><br><span class="line"><span class="string">-m method       Method name</span></span><br><span class="line"><span class="string">-h              Display usage information (this message)</span></span><br><span class="line"><span class="string">-Z ciphersuite  Specify SSL/TLS cipher suite (See openssl ciphers)</span></span><br><span class="line"><span class="string">-f protocol     Specify SSL/TLS protocol</span></span><br><span class="line"><span class="string">                (TLS1, TLS1.1, TLS1.2 or ALL)</span></span><br></pre></td></tr></table></figure>
+
+<p>1、模拟10个client，总共发送100个请求（每个client发送10个请求）<br><code>ab -n 100 -c 10 http://localhost/</code><br>注意网址后面要加”/“或者明确的path。<br>运行结果如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">This</span> <span class="string">is</span> <span class="string">ApacheBench,</span> <span class="string">Version</span> <span class="number">2.3</span> <span class="string">&lt;$Revision:</span> <span class="number">1706008</span> <span class="string">$&gt;</span></span><br><span class="line"><span class="string">Copyright</span> <span class="number">1996</span> <span class="string">Adam</span> <span class="string">Twiss,</span> <span class="string">Zeus</span> <span class="string">Technology</span> <span class="string">Ltd,</span> <span class="string">http://www.zeustech.net/</span></span><br><span class="line"><span class="string">Licensed</span> <span class="string">to</span> <span class="string">The</span> <span class="string">Apache</span> <span class="string">Software</span> <span class="string">Foundation,</span> <span class="string">http://www.apache.org/</span></span><br><span class="line"></span><br><span class="line"><span class="string">Benchmarking</span> <span class="string">localhost</span> <span class="string">(be</span> <span class="string">patient).....done</span></span><br><span class="line"></span><br><span class="line"><span class="attr">Server Software:</span>        <span class="string">Apache/2.4.18</span></span><br><span class="line"><span class="attr">Server Hostname:</span>        <span class="string">localhost</span></span><br><span class="line"><span class="attr">Server Port:</span>            <span class="number">80</span></span><br><span class="line"></span><br><span class="line"><span class="attr">Document Path:</span>          <span class="string">/</span></span><br><span class="line"><span class="attr">Document Length:</span>        <span class="number">11321</span> <span class="string">bytes</span></span><br><span class="line"></span><br><span class="line"><span class="attr">Concurrency Level:</span>      <span class="number">10</span></span><br><span class="line"><span class="attr">Time taken for tests:</span>   <span class="number">0.013</span> <span class="string">seconds</span></span><br><span class="line"><span class="attr">Complete requests:</span>      <span class="number">100</span></span><br><span class="line"><span class="attr">Failed requests:</span>        <span class="number">0</span></span><br><span class="line"><span class="attr">Total transferred:</span>      <span class="number">1159500</span> <span class="string">bytes</span></span><br><span class="line"><span class="attr">HTML transferred:</span>       <span class="number">1132100</span> <span class="string">bytes</span></span><br><span class="line"><span class="comment"># 相当于LoadRunner中的每秒事务数</span></span><br><span class="line"><span class="attr">Requests per second:</span>    <span class="number">7841.29</span> <span class="string">[#/sec]</span> <span class="string">(mean)</span></span><br><span class="line"><span class="comment"># 相当于LoadRunner中的平均事务响应时间</span></span><br><span class="line"><span class="attr">Time per request:</span>       <span class="number">1.275</span> <span class="string">[ms]</span> <span class="string">(mean)</span></span><br><span class="line"><span class="comment"># 每个连接请求实际运行时间的平均值</span></span><br><span class="line"><span class="attr">Time per request:</span>       <span class="number">0.128</span> <span class="string">[ms]</span> <span class="string">(mean,</span> <span class="string">across</span> <span class="string">all</span> <span class="string">concurrent</span> <span class="string">requests)</span></span><br><span class="line"><span class="attr">Transfer rate:</span>          <span class="number">88788.85</span> <span class="string">[Kbytes/sec]</span> <span class="string">received</span></span><br><span class="line"></span><br><span class="line"><span class="string">Connection</span> <span class="string">Times</span> <span class="string">(ms)</span></span><br><span class="line">              <span class="string">min</span>  <span class="string">mean[+/-sd]</span> <span class="string">median</span>   <span class="string">max</span></span><br><span class="line"><span class="attr">Connect:</span>        <span class="number">0</span>    <span class="number">0</span>   <span class="number">0.1</span>      <span class="number">0</span>       <span class="number">1</span></span><br><span class="line"><span class="attr">Processing:</span>     <span class="number">0</span>    <span class="number">1</span>   <span class="number">0.3</span>      <span class="number">1</span>       <span class="number">1</span></span><br><span class="line"><span class="attr">Waiting:</span>        <span class="number">0</span>    <span class="number">0</span>   <span class="number">0.2</span>      <span class="number">0</span>       <span class="number">1</span></span><br><span class="line"><span class="attr">Total:</span>          <span class="number">1</span>    <span class="number">1</span>   <span class="number">0.3</span>      <span class="number">1</span>       <span class="number">2</span></span><br><span class="line"></span><br><span class="line"><span class="string">Percentage</span> <span class="string">of</span> <span class="string">the</span> <span class="string">requests</span> <span class="string">served</span> <span class="string">within</span> <span class="string">a</span> <span class="string">certain</span> <span class="string">time</span> <span class="string">(ms)</span></span><br><span class="line">  <span class="number">50</span><span class="string">%</span>      <span class="number">1</span></span><br><span class="line">  <span class="number">66</span><span class="string">%</span>      <span class="number">1</span></span><br><span class="line">  <span class="number">75</span><span class="string">%</span>      <span class="number">1</span></span><br><span class="line">  <span class="number">80</span><span class="string">%</span>      <span class="number">1</span></span><br><span class="line">  <span class="number">90</span><span class="string">%</span>      <span class="number">2</span></span><br><span class="line">  <span class="number">95</span><span class="string">%</span>      <span class="number">2</span></span><br><span class="line">  <span class="number">98</span><span class="string">%</span>      <span class="number">2</span></span><br><span class="line">  <span class="number">99</span><span class="string">%</span>      <span class="number">2</span></span><br><span class="line"> <span class="number">100</span><span class="string">%</span>      <span class="number">2</span> <span class="string">(longest</span> <span class="string">request)</span></span><br></pre></td></tr></table></figure>
+
+<p>性能测试得到的最重要的指标是QPS(Requests per second)，反映了接口的并发承受能力，也就是系统的峰值性能。如果对接口的调用超过了这一限制，就要考虑提升硬件或者做一些优化了。更多结果说明参考<a href="https://blog.csdn.net/voke_/article/details/80718832" target="_blank" rel="noopener">Web性能压力测试工具之ApacheBench详解</a>。</p>
+<p>2、指定测试的最大时间为10秒<br><code>ab -t 10 -n 1000000 http://localhost/</code><br>“-t”可以指定测试的最大时间，如果还不到此数请求已经发完，那么测试也会结束。当使用”-t”参数时，ab内部默认最大的请求数为50000，为了同时使用”-n”指定的参数，可以将”-t”参数放在”-n”参数之前。更多内容参考<a href="https://100continue.iteye.com/blog/1325398" target="_blank" rel="noopener">按时间进行压力测试</a>。</p>
+<p>3、测试结果存入gnuplot格式的文件<br><code>ab -g t10.dat -t 10 -n 1000000 http://localhost/</code></p>
+<h1 id="gnuplot"><a href="#gnuplot" class="headerlink" title="gnuplot"></a>gnuplot</h1><p>gnuplot是一个小巧实用的数据处理工具，主要用来绘制2D/3D的数据或者函数图像，但是也包含数学计算、拟合等功能。虽然它的名字里有个“gnu”，但是它和大名鼎鼎的GNU没什么关系，使用的授权协议也不是GNU GPL，所以这里的“gnu”是小写，全名应该读作“new plot”。</p>
+<h2 id="安装-1"><a href="#安装-1" class="headerlink" title="安装"></a>安装</h2><p>1、终端输入<code>gnuplot</code>，提示：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">The <span class="keyword">program</span> 'gnuplot' can be found <span class="keyword">in</span> the following packages:</span><br><span class="line"><span class="comment"> * gnuplot-nox</span></span><br><span class="line"><span class="comment"> * gnuplot-qt</span></span><br><span class="line"><span class="comment"> * gnuplot-x11</span></span><br><span class="line"><span class="comment"> * gnuplot5-nox</span></span><br><span class="line"><span class="comment"> * gnuplot5-qt</span></span><br><span class="line"><span class="comment"> * gnuplot5-x11</span></span><br><span class="line">Try: sudo apt install &lt;selected package&gt;</span><br></pre></td></tr></table></figure>
+<p>可见gnuplot在多个软件包中都包含，这里我们选择安装gnuplot-nox或者gnuplot-qt。</p>
+<p>2、安装gnuplot-nox<br><code>apt install gnuplot-nox</code></p>
+<p>3、测试<br><code>gnuplot -V</code></p>
+<p>其他平台的安装，参考<a href="http://blog.sciencenet.cn/blog-373392-495870.html" target="_blank" rel="noopener">谈谈gnuplot（一）：安装</a>。</p>
+<h2 id="使用-1"><a href="#使用-1" class="headerlink" title="使用"></a>使用</h2><p>1、启动<br>输入<code>gnuplot</code>，进入gnuplotshell。<br><img src="http://cdn.voidking.com//imgs/ab-and-gnuplot/gnuplot.jpg?imageView2/0/w/600" alt=""><br>这里包含gnuplot的版本、系统、版权等信息。最关键的是最后一条：<br>Terminal type set to ‘unknown’<br>什么是terminal？在gnuplot中，terminal就是说你打算用什么方式输出图片。这里默认的terminal是unknown，因为我们安装了gnuplot-nox。一般需要修改为wxt，也就是直接输出到电脑屏幕上。</p>
+<p>2、设置terminal</p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> terminal <span class="comment">dumb</span></span><br><span class="line">plot <span class="comment">sin(x)</span></span><br></pre></td></tr></table></figure>
+<p><img src="http://cdn.voidking.com//imgs/ab-and-gnuplot/sin.jpg?imageView2/0/w/600" alt=""><br>以上，设置terminal为dumb，也就是直接在shell中显示绘图结果。</p>
+<p>3、图形界面显示<br>在shell中绘图，太粗糙，我们想要在图形界面中显示。<br>（1）使用vncserver连接服务器，参考<a href="https://www.voidking.com/dev-linux-virtualbox/">Linux下使用VirtualBox</a><br>（2）启动gnuplot，设置terminal<br><code>set terminal wxt</code>或者<code>set terminal x11</code>无法成功，因为没有安装图形界面支持。<br>（3）安装图形界面支持<br><code>apt install gnuplot-x11</code><br>之后再启动gnuplot，默认terminal为x11。<br>（4）尝试绘图<br><img src="http://cdn.voidking.com//imgs/ab-and-gnuplot/x11.jpg?imageView2/0/w/600" alt=""><br>更多绘制方法，参考<a href="https://www.cnblogs.com/lvdongjie/p/4362173.html" target="_blank" rel="noopener">程序员的绘图利器 — Gnuplot</a>。</p>
+<p>4、gnuplot脚本<br>（1）新建sin.plt脚本，内容为：</p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 绘制<span class="built-in">sin</span></span><br><span class="line"><span class="keyword">set</span> xlabel <span class="comment">'x'</span></span><br><span class="line"><span class="keyword">set</span> <span class="comment">ylabel</span> <span class="comment">'y'</span></span><br><span class="line">plot <span class="comment">sin(x)</span></span><br></pre></td></tr></table></figure>
+<p>（2）运行脚本<br><code>gnuplot sin.plt</code>或者在gnushell中执行<code>load &#39;sin.plt&#39;</code>，值得一提的是，前一种方法绘制的图像会一闪而过。<br>（3）保存脚本<br>如果在gnushell执行了一些set命令，然后plot进行绘图，想要保存这些操作，方便下次使用，那么可以使用<code>save &#39;filename.plt&#39;</code>命令保存脚本。</p>
+<h1 id="绘制ab数据"><a href="#绘制ab数据" class="headerlink" title="绘制ab数据"></a>绘制ab数据</h1><p>在ab使用一节，已经保存两个文件，n10000.dat和t10.dat，接下来我们把该文件中的数据绘制一下。主要参考<a href="https://colobu.com/2014/08/04/Apache-Bench-and-Gnuplot/" target="_blank" rel="noopener">使用Apache Bench 和 Gnuplot产生性能测试图</a>。</p>
+<h2 id="响应时间"><a href="#响应时间" class="headerlink" title="响应时间"></a>响应时间</h2><p>1、查看t10.dat文件<br><code>tail t10.dat</code><br><img src="http://cdn.voidking.com//imgs/ab-and-gnuplot/dat.jpg?imageView2/0/w/600" alt=""></p>
+<ul>
+<li>starttime：人类可读的开始时间</li>
+<li>seconds：开始时间的unix时间戳值</li>
+<li>ctime：对应的ab输出中的Connection Times(ms)中的Connect</li>
+<li>dtime：对应的ab输出中的Connection Times(ms)中的Processing</li>
+<li>ttime：对应的ab输出中的Connection Times(ms)中的Total</li>
+<li>wait：对应的ab输出中的Connection Times(ms)中的Waiting</li>
+</ul>
+<p>2、新建t10.plt脚本，绘制request与response time的关系图</p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"># output as png image</span><br><span class="line"><span class="keyword">set</span> terminal <span class="comment">png</span></span><br><span class="line"></span><br><span class="line"># save <span class="comment">file to</span> <span class="comment">"t10.png"</span></span><br><span class="line"><span class="keyword">set</span> <span class="comment">output</span> <span class="comment">"t10.png"</span></span><br><span class="line"></span><br><span class="line"># graph <span class="comment">title</span></span><br><span class="line"><span class="keyword">set</span> <span class="comment">title</span> <span class="comment">"ab -g t10.dat -t 10 -n 1000000 http://localhost/"</span></span><br><span class="line"></span><br><span class="line"># nicer <span class="comment">aspect ratio for image size</span></span><br><span class="line"><span class="keyword">set</span> <span class="comment">size 1,0.7</span></span><br><span class="line"></span><br><span class="line"># y-axis <span class="comment">grid</span></span><br><span class="line"><span class="keyword">set</span> <span class="comment">grid y</span></span><br><span class="line"></span><br><span class="line">#x-axis <span class="comment">label</span></span><br><span class="line"><span class="keyword">set</span> <span class="comment">xlabel</span> <span class="comment">"request"</span></span><br><span class="line"></span><br><span class="line">#y-axis <span class="comment">label</span></span><br><span class="line"><span class="keyword">set</span> <span class="comment">ylabel</span> <span class="comment">"response time (ms)"</span></span><br><span class="line"></span><br><span class="line">#plot <span class="comment">data from</span> <span class="comment">"t10.dat"</span><span class="comment"> using column 9 with smooth sbezier lines</span></span><br><span class="line">plot <span class="comment">"t10.dat"</span><span class="comment"> using 9 smooth sbezier with lines title</span> <span class="comment">"t10"</span></span><br></pre></td></tr></table></figure>
+
+<p>3、执行t10.plt脚本<br><code>gnuplot t10.plt</code><br>生成的t10.png图像如下：<br><img src="http://cdn.voidking.com//imgs/ab-and-gnuplot/t10.png?imageView2/0/w/600" alt=""><br>这张图，和教程中给的结果差别很大，看不出逐渐增长的趋势。从上图可以看出，10s内发送了接近6万个请求，response time最大才12ms，应该是因为本机性能太好导致的。所以，小编决定换一个主机测试。</p>
+<p>4、测试个人博客<br><code>ab -g t10.dat -t 10 -n 1000000 http://www.voidking.com/</code></p>
+<p>5、再次执行t10.plt脚本<br>生成的图像如下：<br><img src="http://cdn.voidking.com//imgs/ab-and-gnuplot/vk.png?imageView2/0/w/600" alt=""><br>由上图可以看出，10s内发送了接近120个请求，response time逐渐增长，最大为99ms。</p>
+<h2 id="吞吐量"><a href="#吞吐量" class="headerlink" title="吞吐量"></a>吞吐量</h2><p>上面的效果并不是我们最终想要的，我们需要的，是response per second与time的关系，也就是吞吐量。</p>
+<p>1、新建pt10.sh脚本，处理t10.dat</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">start_time=`awk <span class="string">'&#123;print $6&#125;'</span> t10.dat | grep -v <span class="string">'wait'</span> | sort | uniq -c|head -1|awk <span class="string">'&#123;print $2&#125;'</span>`</span><br><span class="line">awk <span class="string">'&#123;print $6&#125;'</span> t10.dat | grep -v <span class="string">'wait'</span> | sort | uniq -c|awk -v t=<span class="variable">$start_time</span> <span class="string">'&#123;print $2-t,$1&#125;'</span> &gt; epochtime.dat</span><br></pre></td></tr></table></figure>
+
+<p>2、执行pt10.sh</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">chmod a+x pt10.<span class="keyword">sh</span></span><br><span class="line">./pt10.<span class="keyword">sh</span></span><br></pre></td></tr></table></figure>
+
+<p>3、新建throughput.plt脚本</p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># output as png image</span><br><span class="line"><span class="keyword">set</span> terminal <span class="comment">png  size 1000,560</span></span><br><span class="line"><span class="keyword">set</span> <span class="comment">output</span> <span class="comment">"throughput.png"</span></span><br><span class="line">#graph <span class="comment">title</span></span><br><span class="line"><span class="keyword">set</span> <span class="comment">title</span> <span class="comment">"Throughput"</span></span><br><span class="line"><span class="keyword">set</span> <span class="comment">key invert reverse Left outside</span></span><br><span class="line"># nicer <span class="comment">aspect ratio for image size</span></span><br><span class="line">#<span class="keyword">set</span> <span class="comment">size 1,0.6</span></span><br><span class="line"># y-axis <span class="comment">grid</span></span><br><span class="line"><span class="keyword">set</span> <span class="comment">grid y</span></span><br><span class="line"># x-axis <span class="comment">label</span></span><br><span class="line"><span class="keyword">set</span> <span class="comment">xlabel</span> <span class="comment">"time"</span></span><br><span class="line"># y-axis <span class="comment">label</span></span><br><span class="line"><span class="keyword">set</span> <span class="comment">ylabel</span> <span class="comment">"responses per second"</span></span><br><span class="line">plot <span class="comment">"epochtime.dat"</span><span class="comment"> using 1:2 with lines title</span> <span class="comment">"t10"</span></span><br></pre></td></tr></table></figure>
+
+<p>生成的图像如下：<br><img src="http://cdn.voidking.com//imgs/ab-and-gnuplot/throughput.png?imageView2/0/w/600" alt=""></p>
+<h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p>以上，完成了ApacheBenchmark和gnuplot的基础学习。gnuplot确实是一个很棒的绘图工具，绘出的图看起来就专业。以后就不用excel绘图了，安装一个<a href="http://sourceforge.net/projects/gnuplot/files/gnuplot/" target="_blank" rel="noopener">windows版gnuplot</a>，完美。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/apache/" rel="tag"># apache</a>
+          
+            <a href="/tags/linux/" rel="tag"># linux</a>
+          
+            <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/love-ubuntu-on-windows/" rel="next" title="Win10安装Ubuntu">
+                <i class="fa fa-chevron-left"></i> Win10安装Ubuntu
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/dev-vm-live-migration-gnuplot/" rel="prev" title="虚拟机在线迁移实验结果绘图">
+                虚拟机在线迁移实验结果绘图 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zODU3Mi8xNTEwMA=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="VoidKing" />
+            
+              <p class="site-author-name" itemprop="name">VoidKing</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">583</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">188</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:voidking@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/voidking" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/voidking" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://twitter.com/voidking_com" target="_blank" title="Twitter">
+                      
+                        <i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ApacheBench"><span class="nav-number">2.</span> <span class="nav-text">ApacheBench</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-number">2.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用"><span class="nav-number">2.2.</span> <span class="nav-text">使用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#gnuplot"><span class="nav-number">3.</span> <span class="nav-text">gnuplot</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装-1"><span class="nav-number">3.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用-1"><span class="nav-number">3.2.</span> <span class="nav-text">使用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#绘制ab数据"><span class="nav-number">4.</span> <span class="nav-text">绘制ab数据</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#响应时间"><span class="nav-number">4.1.</span> <span class="nav-text">响应时间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#吞吐量"><span class="nav-number">4.2.</span> <span class="nav-text">吞吐量</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#后记"><span class="nav-number">5.</span> <span class="nav-text">后记</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2012 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">VoidKing</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <!-- <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script> -->
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+  <div class="footer-beian">
+    <a href="http://www.beian.miit.gov.cn/" target="_blank">苏ICP备14021030号</a>&nbsp;|&nbsp;
+    <!-- <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=32032202000223">苏公网安备 32032202000223号</a> -->
+    <img src="/images/beian.png" alt="">
+    <a target="_blank" href="http://www.beian.gov.cn/">苏公网安备 32032202000223号</a>
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+      <div id="needsharebutton-float">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "box";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+      flOptions = {};
+      
+          flOptions.iconStyle = "box";
+      
+          flOptions.boxForm = "horizontal";
+      
+          flOptions.position = "topRight";
+      
+          flOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-float', flOptions);
+    
+  </script>
+
+  
+
+  
+  
+
+
+  
+
+  
+
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+
+</body>
+</html>

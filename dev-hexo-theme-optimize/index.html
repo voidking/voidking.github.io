@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=5.1.4">
+
+
+
+
+
+
+  <meta name="keywords" content="hexo," />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="VoidKing" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="前言大概一年前开始使用hexo，主题一直使用jacman。后来Hexo更新到3.0，主题也跟着更新，但是，懒惰的小编并没有参与这一更新活动。如今，安装了hexo3.0，问题来了——主题不匹配。当年千辛万苦优化过的主题，又要重新搞起！ 选择主题啊嘞，几个月不见，hexo已经如此牛逼！不仅官网更加高端大气上档次，而且主题数量翻了几翻！https:&#x2F;&#x2F;github.com&#x2F;hexojs&#x2F;hexo&#x2F;wik">
+<meta property="og:type" content="article">
+<meta property="og:title" content="hexo主题优化">
+<meta property="og:url" content="https://www.voidking.com/dev-hexo-theme-optimize/index.html">
+<meta property="og:site_name" content="VoidKing">
+<meta property="og:description" content="前言大概一年前开始使用hexo，主题一直使用jacman。后来Hexo更新到3.0，主题也跟着更新，但是，懒惰的小编并没有参与这一更新活动。如今，安装了hexo3.0，问题来了——主题不匹配。当年千辛万苦优化过的主题，又要重新搞起！ 选择主题啊嘞，几个月不见，hexo已经如此牛逼！不仅官网更加高端大气上档次，而且主题数量翻了几翻！https:&#x2F;&#x2F;github.com&#x2F;hexojs&#x2F;hexo&#x2F;wik">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2015-05-31T16:22:12.000Z">
+<meta property="article:modified_time" content="2020-02-07T15:42:50.001Z">
+<meta property="article:author" content="VoidKing">
+<meta property="article:tag" content="hexo">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.voidking.com/dev-hexo-theme-optimize/"/>
+
+
+
+
+
+  <title>hexo主题优化 | VoidKing</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?b759ac2a7fa45129e3ef060bf68259f0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">VoidKing</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">好好学习，天天向上！</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.voidking.com/dev-hexo-theme-optimize/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="VoidKing">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="VoidKing">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">hexo主题优化</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2015-05-31T16:22:12+00:00">
+                2015-05-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/" itemprop="url" rel="index">
+                    <span itemprop="name">专业</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E5%89%8D%E7%AB%AF/hexo/" itemprop="url" rel="index">
+                    <span itemprop="name">hexo</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>大概一年前开始使用hexo，主题一直使用jacman。后来Hexo更新到3.0，主题也跟着更新，但是，懒惰的小编并没有参与这一更新活动。<br>如今，安装了hexo3.0，问题来了——主题不匹配。当年千辛万苦优化过的主题，又要重新搞起！</p>
+<h3 id="选择主题"><a href="#选择主题" class="headerlink" title="选择主题"></a>选择主题</h3><p>啊嘞，几个月不见，hexo已经如此牛逼！不仅官网更加高端大气上档次，而且主题数量翻了几翻！<br><a href="https://github.com/hexojs/hexo/wiki/Themes" target="_blank" rel="noopener">https://github.com/hexojs/hexo/wiki/Themes</a> ，可以看到，群众的力量是巨大的！<br>换个主题，换个心情，这次我选择了yilia，简洁大气！</p>
+<h3 id="添加“关于”"><a href="#添加“关于”" class="headerlink" title="添加“关于”"></a>添加“关于”</h3><p><code>hexo new page &quot;about&quot;</code>，<br>编辑hexo/source/about/index.md，<br>编辑hexo/themes/yilia/_config.yml，添加如下：</p>
+<figure class="highlight mel"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">menu</span>:</span><br><span class="line">  关于: /<span class="keyword">about</span></span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<h3 id="添加RSS"><a href="#添加RSS" class="headerlink" title="添加RSS"></a>添加RSS</h3><p><code>npm install hexo-generator-feed --save</code>，</p>
+<p>注意，后面的参数<code>--save</code>绝对不能省，否则该插件信息不会写入package.json。<br><code>hexo clean</code>，<code>hexo g</code>，查看public文件夹，可以看到atom.xml文件。</p>
+<h3 id="添加sitemap"><a href="#添加sitemap" class="headerlink" title="添加sitemap"></a>添加sitemap</h3><p><code>npm install hexo-generator-sitemap --save</code>。<br><code>hexo clean</code>，<code>hexo g</code>，查看public文件夹，可以看到sitemap.xml文件。<br>sitemap的初衷是给搜索引擎看的，为了提高搜索引擎对自己站点的收录效果，我们最好手动到google和百度等搜索引擎提交sitemap.xml。</p>
+<h3 id="添加多说"><a href="#添加多说" class="headerlink" title="添加多说"></a>添加多说</h3><p><a href="http://duoshuo.com/" target="_blank" rel="noopener">http://duoshuo.com/</a> ，注册一个账号。登录，添加新站点voidking。<br>在工具，获取代码界面，可以看到通用代码：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 多说评论框 start --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"ds-thread"</span> <span class="attr">data-thread-key</span>=<span class="string">"请将此处替换成文章在你的站点中的ID"</span> <span class="attr">data-title</span>=<span class="string">"请替换成文章的标题"</span> <span class="attr">data-url</span>=<span class="string">"请替换成文章的网址"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- 多说评论框 end --&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- 多说公共JS代码 start (一个网页只需插入一次) --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span></span><br><span class="line"><span class="actionscript"><span class="keyword">var</span> duoshuoQuery = &#123;short_name:<span class="string">"voidking"</span>&#125;;</span></span><br><span class="line"><span class="actionscript">	(<span class="function"><span class="keyword">function</span><span class="params">()</span> </span>&#123;</span></span><br><span class="line"><span class="javascript">		<span class="keyword">var</span> ds = <span class="built_in">document</span>.createElement(<span class="string">'script'</span>);</span></span><br><span class="line"><span class="actionscript">		ds.type = <span class="string">'text/javascript'</span>;ds.async = <span class="literal">true</span>;</span></span><br><span class="line"><span class="javascript">		ds.src = (<span class="built_in">document</span>.location.protocol == <span class="string">'https:'</span> ? <span class="string">'https:'</span> : <span class="string">'http:'</span>) + <span class="string">'//static.duoshuo.com/embed.js'</span>;</span></span><br><span class="line"><span class="actionscript">		ds.charset = <span class="string">'UTF-8'</span>;</span></span><br><span class="line"><span class="javascript">		(<span class="built_in">document</span>.getElementsByTagName(<span class="string">'head'</span>)[<span class="number">0</span>] </span></span><br><span class="line"><span class="javascript">		 || <span class="built_in">document</span>.getElementsByTagName(<span class="string">'body'</span>)[<span class="number">0</span>]).appendChild(ds);</span></span><br><span class="line">	&#125;)();</span><br><span class="line">	<span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- 多说公共JS代码 end --&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>var duoshuoQuery = {short_name:&quot;voidking&quot;};</code>中的voidking，就是我们要用到的duoshuo-key，也有人称之为duoshuo_shortname。<br>打开hexo/themes/yilia/layout/_partial/post/duoshuo.ejs，可以看到：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"duoshuo"</span>&gt;</span></span><br><span class="line">	<span class="comment">&lt;!-- 多说评论框 start --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"ds-thread"</span> <span class="attr">data-thread-key</span>=<span class="string">"&lt;%=key%&gt;"</span> <span class="attr">data-title</span>=<span class="string">"&lt;%=title%&gt;"</span> <span class="attr">data-url</span>=<span class="string">"&lt;%=url%&gt;"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">	<span class="comment">&lt;!-- 多说评论框 end --&gt;</span></span><br><span class="line">	<span class="comment">&lt;!-- 多说公共JS代码 start (一个网页只需插入一次) --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span></span><br><span class="line"><span class="actionscript">	<span class="keyword">var</span> duoshuoQuery = &#123;short_name:<span class="string">"&lt;%=theme.duoshuo%&gt;"</span>&#125;;</span></span><br><span class="line"><span class="actionscript">	(<span class="function"><span class="keyword">function</span><span class="params">()</span> </span>&#123;</span></span><br><span class="line"><span class="javascript">		<span class="keyword">var</span> ds = <span class="built_in">document</span>.createElement(<span class="string">'script'</span>);</span></span><br><span class="line"><span class="actionscript">		ds.type = <span class="string">'text/javascript'</span>;ds.async = <span class="literal">true</span>;</span></span><br><span class="line"><span class="javascript">		ds.src = (<span class="built_in">document</span>.location.protocol == <span class="string">'https:'</span> ? <span class="string">'https:'</span> : <span class="string">'http:'</span>) + <span class="string">'//static.duoshuo.com/embed.js'</span>;</span></span><br><span class="line"><span class="actionscript">		ds.charset = <span class="string">'UTF-8'</span>;</span></span><br><span class="line"><span class="javascript">		(<span class="built_in">document</span>.getElementsByTagName(<span class="string">'head'</span>)[<span class="number">0</span>] </span></span><br><span class="line"><span class="javascript">		 || <span class="built_in">document</span>.getElementsByTagName(<span class="string">'body'</span>)[<span class="number">0</span>]).appendChild(ds);</span></span><br><span class="line">	&#125;)();</span><br><span class="line">	<span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">	<span class="comment">&lt;!-- 多说公共JS代码 end --&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>我们需要填入的，是<code>&lt;%=theme.duoshuo%&gt;</code>的值，那么，在哪里填入呢？在hexo/themes/yilia/_config.yml文件中。<br>是这样的，我们可以认为，_config.yml就是<code>theme</code>，而在_config.yml中写入<code>duoshuo: voidking</code>，就是给<code>duoshuo</code>赋值为<code>voidking</code>。</p>
+<p>当然，你也可以直接在duoshuo.ejs中把<code>&lt;%=theme.duoshuo%&gt;</code>替换为<code>voidking</code>。但是不建议这么做，因为这样破坏了作者可复用性设计。</p>
+<h3 id="添加头像"><a href="#添加头像" class="headerlink" title="添加头像"></a>添加头像</h3><p>在hexo/themes/yilia/source/img中添加一个图片headportrait.jpg，然后编辑hexo/themes/yilia/_config.yml：</p>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#你的头像url</span></span><br><span class="line"><span class="symbol">avatar:</span> <span class="string">"img/headportrait.jpg"</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="添加favicon"><a href="#添加favicon" class="headerlink" title="添加favicon"></a>添加favicon</h3><p>使用Axialis IconWorkshop，制作一个16X16的favicon.png。放置到hexo/themes/yilia/source中，然后编辑hexo/themes/yilia/_config.yml：</p>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">favicon:</span> /favicon.png</span><br></pre></td></tr></table></figure>
+
+<p>添加好之后，本地测试，只有主页会显示favicon，其他页面不显示，不知道是什么原因。</p>
+<p>找了很久没找到解决办法，狠了狠心，直接上传。惊奇地发现，上传到gitcafe之后，所有页面都可以显示favicon。</p>
+<h3 id="archieves数量"><a href="#archieves数量" class="headerlink" title="archieves数量"></a>archieves数量</h3><p>要修改hexo主题，多少要懂得一点hexo的结构和原理。<br>全局配置文件hexo/_config.yml中有这么一段：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">per_page:</span> <span class="number">5</span></span><br><span class="line"><span class="attr">pagination_dir:</span> <span class="string">page</span></span><br></pre></td></tr></table></figure>
+
+<p>这里的per_page，同时设置index、archive、tag、categoriy。如果想要单独设置，可以这么写：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">index_generator:</span></span><br><span class="line">  <span class="attr">per_page:</span> <span class="number">5</span></span><br><span class="line"></span><br><span class="line"><span class="attr">archive_generator:</span></span><br><span class="line">  <span class="attr">per_page:</span> <span class="number">200</span></span><br><span class="line">  <span class="attr">yearly:</span> <span class="literal">true</span>  </span><br><span class="line">  <span class="attr">monthly:</span> <span class="literal">true</span> </span><br><span class="line"></span><br><span class="line"><span class="attr">tag_generator:</span></span><br><span class="line">  <span class="attr">per_page:</span> <span class="number">10</span> </span><br><span class="line"></span><br><span class="line"><span class="attr">category_generator:</span> </span><br><span class="line">  <span class="attr">per_page:</span> <span class="number">10</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Categories"><a href="#Categories" class="headerlink" title="Categories"></a>Categories</h3><p>Litten大哥，你这不要Categories是什么节奏？修改起来，非常不容易哇！<br>需要修改的文件有<code>hexo/themes/yilia/source/js/main.js</code>，<code>hexo/themes/yilia/source/css/_partial/main.styl</code>，<code>hexo/themes/yilia/layout/_partial/left-col.ejs</code>。也许还有别的文件，修改了一下午，以失败告终。。。<br>总之，还是能力不够，看来得找时间系统学习一下hexo主题的制作了。。。先放着吧！</p>
+<h3 id="添加文章目录"><a href="#添加文章目录" class="headerlink" title="添加文章目录"></a>添加文章目录</h3><p>TOC (Table of contents) ，中文翻译做目录。之前用jacman，感觉目录很方便，可以很快定位文章内容，尤其对于长文章来说。但是，yilia貌似没有集成，那就自己添加吧！查找资料，居然找到了好友twiceYuan的写的教程，世界真小哇！<br>详情请访问参考文档，摘录twiceYuan的教程如下：</p>
+<h4 id="修改article-ejs"><a href="#修改article-ejs" class="headerlink" title="修改article.ejs"></a>修改article.ejs</h4><p>打开<code>hexo/themes/yilia/layout/_partial/article.ejs</code>，在<code>&lt;%- post.content %&gt;</code>前面插入：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">%</span> <span class="attr">if</span>(<span class="attr">post.toc</span> !== <span class="string">false)&#123;</span> %&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"toc"</span> <span class="attr">class</span>=<span class="string">"toc-article"</span>&gt;</span></span><br><span class="line">	  <span class="tag">&lt;<span class="name">strong</span> <span class="attr">class</span>=<span class="string">"toc-title"</span>&gt;</span>文章目录<span class="tag">&lt;/<span class="name">strong</span>&gt;</span></span><br><span class="line">	  <span class="tag">&lt;<span class="name">%-</span> <span class="attr">toc</span>(<span class="attr">post.content</span>) %&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">%&#125;%</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>这里加了一个<code>post.toc</code>的判断，也就是说，只有在启用toc的post会出现目录，而不是每篇文章都出现。</p>
+<h4 id="修改article-yml"><a href="#修改article-yml" class="headerlink" title="修改article.yml"></a>修改article.yml</h4><p>打开<code>hexo/themes/yilia/layout/source/css/_partial/article.yml</code>，在最后插入：</p>
+<figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*toc*/</span></span><br><span class="line"><span class="selector-class">.toc-article</span></span><br><span class="line">  <span class="attribute">background</span> <span class="selector-id">#eeeeee</span></span><br><span class="line">  <span class="attribute">margin</span> 2em 0 0 0<span class="selector-class">.2em</span></span><br><span class="line">  <span class="attribute">padding</span> 1em</span><br><span class="line">  <span class="attribute">border-radius</span> 5px</span><br><span class="line">  <span class="selector-class">.toc-title</span></span><br><span class="line">    <span class="attribute">font-size</span> 120%</span><br><span class="line">  <span class="selector-tag">strong</span></span><br><span class="line">    <span class="attribute">padding</span> 0<span class="selector-class">.3em</span> 1</span><br><span class="line"><span class="selector-tag">ol</span><span class="selector-class">.toc</span></span><br><span class="line">  <span class="attribute">width</span> 100%</span><br><span class="line">  <span class="attribute">margin</span> 1em 2em 0 0</span><br><span class="line"><span class="selector-id">#toc</span></span><br><span class="line">  <span class="attribute">line-height</span> 1em</span><br><span class="line">  <span class="attribute">font-size</span> 0<span class="selector-class">.8em</span></span><br><span class="line">  <span class="attribute">float</span> <span class="attribute">right</span></span><br><span class="line">  <span class="selector-class">.toc</span></span><br><span class="line">    <span class="attribute">padding</span> 0 </span><br><span class="line">    <span class="selector-tag">li</span></span><br><span class="line">      <span class="attribute">list-style-type</span> <span class="attribute">none</span></span><br><span class="line">  <span class="selector-class">.toc-child</span> </span><br><span class="line">    <span class="attribute">padding-left</span> 0em</span><br><span class="line"><span class="selector-id">#toc</span><span class="selector-class">.toc-aside</span></span><br><span class="line">  <span class="attribute">display</span> <span class="attribute">none</span></span><br><span class="line">  <span class="attribute">width</span> 13%</span><br><span class="line">  <span class="attribute">position</span> fixed</span><br><span class="line">  <span class="attribute">right</span> 2%</span><br><span class="line">  <span class="attribute">top</span> 320px</span><br><span class="line">  <span class="attribute">overflow</span> hidden</span><br><span class="line">  <span class="attribute">line-height</span> 1<span class="selector-class">.5em</span></span><br><span class="line">  <span class="attribute">font-size</span> 1em</span><br><span class="line">  <span class="attribute">color</span> <span class="attribute">color</span>-heading</span><br><span class="line">  <span class="attribute">opacity</span> <span class="selector-class">.6</span></span><br><span class="line">  <span class="attribute">transition</span> <span class="attribute">opacity</span> 1s ease-out</span><br><span class="line">  <span class="selector-tag">strong</span></span><br><span class="line">    <span class="attribute">padding</span> 0<span class="selector-class">.3em</span> 0</span><br><span class="line">    <span class="attribute">color</span> <span class="attribute">color</span>-<span class="attribute">font</span></span><br><span class="line">  &amp;<span class="selector-pseudo">:hover</span></span><br><span class="line">    <span class="attribute">transition</span> <span class="attribute">opacity</span> <span class="selector-class">.3s</span> ease-out</span><br><span class="line">    <span class="attribute">opacity</span> 1</span><br><span class="line">  <span class="selector-tag">a</span></span><br><span class="line">    <span class="attribute">transition</span> <span class="attribute">color</span> 1s ease-out</span><br><span class="line">    &amp;<span class="selector-pseudo">:hover</span></span><br><span class="line">      <span class="attribute">color</span> <span class="attribute">color</span>-theme</span><br><span class="line">      <span class="attribute">transition</span> <span class="attribute">color</span> <span class="selector-class">.3s</span> ease-out</span><br></pre></td></tr></table></figure>
+
+<h4 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h4><p>编辑.md文档，如果要使用文章目录，就要文章开头添加toc属性并且设置为true。</p>
+<figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">title: hexo主题优化</span><br><span class="line">date: 2015<span class="string">-05</span><span class="string">-31</span> 16:22:12</span><br><span class="line"><span class="keyword">tags:</span></span><br><span class="line">categories: 专业</span><br><span class="line">toc: true</span><br></pre></td></tr></table></figure>
+
+<h4 id="新的问题"><a href="#新的问题" class="headerlink" title="新的问题"></a>新的问题</h4><p>小伙伴很靠谱，这个方法可用！但是，新的问题来了，文章目录特别紧凑，不够人性化，应该是因为主题差别。于是，参考格式良好的css文件，改写了article.styl的<code>/*toc*/</code>部分：</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*toc*/</span></span><br><span class="line">.toc-article&#123;</span><br><span class="line">  background #eee</span><br><span class="line">  margin <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0.2</span>em</span><br><span class="line">  padding <span class="number">1</span>em</span><br><span class="line">  border-radius <span class="number">5</span>px</span><br><span class="line">  -webkit-border-radius <span class="number">5</span>px</span><br><span class="line">  strong&#123;</span><br><span class="line">	padding <span class="number">0.3</span>em <span class="number">0</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;  </span><br><span class="line">#toc&#123;</span><br><span class="line">  line-height <span class="number">1.5</span>em</span><br><span class="line">  font-size <span class="number">1</span>em</span><br><span class="line">  <span class="built_in">float</span> right</span><br><span class="line">  ol&#123;</span><br><span class="line">	margin-left: <span class="number">0</span></span><br><span class="line">  &#125;	</span><br><span class="line">  .toc&#123;</span><br><span class="line">	padding <span class="number">0</span></span><br><span class="line">	li&#123;</span><br><span class="line">	  list-style-type none</span><br><span class="line">	&#125;  </span><br><span class="line">  &#125;    </span><br><span class="line">  .toc-child&#123;</span><br><span class="line">	padding-left <span class="number">1.5</span>em</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>问题完美解决，看来，不同的theme，添加TOC的时候，确实需要个性定制。</p>
+<h4 id="奇怪现象"><a href="#奇怪现象" class="headerlink" title="奇怪现象"></a>奇怪现象</h4><p>添加目录后，出现了一个奇怪的现象：如果一篇文章在主页展示全部内容，也就是没有添加<code>&lt;!--more--&gt;</code>，那么，该文章就会自动生成目录，无论文章中有没有添加toc属性。<br>且不去管它，等到技术更加牛逼了再来处理。……等一下，貌似有了灵感，修改article.ejs如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">%</span> <span class="attr">if</span>(<span class="attr">post.toc</span> &amp;&amp; <span class="attr">post.toc</span> !== <span class="string">false)&#123;</span> %&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"toc"</span> <span class="attr">class</span>=<span class="string">"toc-article"</span>&gt;</span></span><br><span class="line">	  <span class="tag">&lt;<span class="name">strong</span> <span class="attr">class</span>=<span class="string">"toc-title"</span>&gt;</span>文章目录<span class="tag">&lt;/<span class="name">strong</span>&gt;</span></span><br><span class="line">	  <span class="tag">&lt;<span class="name">%-</span> <span class="attr">toc</span>(<span class="attr">post.content</span>) %&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">%&#125;%</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<p>修改完成，执行命令：</p>
+<p><code>hexo clean</code>，<code>hexo g</code>，<code>hexo s</code>。</p>
+<p>查看效果，主页目录没有了，Perfect！</p>
+<h3 id="书写代码块"><a href="#书写代码块" class="headerlink" title="书写代码块"></a>书写代码块</h3><p>一直以来，写博客的时候，如果用到代码块，都是用三个反引号包围。现在发现，似乎出现了问题。如果连续两个代码块，那么，经常出现一种情况：判断代码块不准确，两个代码块被当成了一个代码块。<br>而如果代码块使用缩进一个TAB的方法，那么，代码块前面就会没有行号。<br>。。。麻烦的问题，且不去管它。。。</p>
+<h3 id="文章模板"><a href="#文章模板" class="headerlink" title="文章模板"></a>文章模板</h3><p>打开hexo/scaffolds/post.md，可以看到：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">title:</span> <span class="string">&#123;&#123;</span> <span class="string">title</span> <span class="string">&#125;&#125;</span></span><br><span class="line"><span class="attr">date:</span> <span class="string">&#123;&#123;</span> <span class="string">date</span> <span class="string">&#125;&#125;</span></span><br><span class="line"><span class="attr">tags:</span></span><br><span class="line"><span class="meta">---</span></span><br></pre></td></tr></table></figure>
+<p>如果我们想要在每次生成.md文件的时候，自动生成categories和toc，可以修改如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">title:</span> <span class="string">&#123;&#123;</span> <span class="string">title</span> <span class="string">&#125;&#125;</span></span><br><span class="line"><span class="attr">date:</span> <span class="string">&#123;&#123;</span> <span class="string">date</span> <span class="string">&#125;&#125;</span></span><br><span class="line"><span class="attr">tags:</span></span><br><span class="line"><span class="attr">categories:</span> </span><br><span class="line"><span class="attr">toc:</span> <span class="literal">true</span></span><br><span class="line"><span class="meta">---</span></span><br></pre></td></tr></table></figure>
+<h3 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h3><p>hexo博客的优化技巧续<br><a href="http://zipperary.com/hexo-guide-5/" target="_blank" rel="noopener">http://zipperary.com/hexo-guide-5/</a></p>
+<hr>
+<p>如何在谷歌站长工具提交网站地图sitemap.xml<br><a href="http://jingyan.baidu.com/article/066074d669a958c3c31cb076.html" target="_blank" rel="noopener">http://jingyan.baidu.com/article/066074d669a958c3c31cb076.html</a></p>
+<hr>
+<p>Hexo 3.0 静态博客使用指南<br><a href="http://segmentfault.com/a/1190000002592993" target="_blank" rel="noopener">http://segmentfault.com/a/1190000002592993</a></p>
+<hr>
+<p>hexo你的博客<br><a href="http://ibruce.info/hexo-your-blog/" target="_blank" rel="noopener">http://ibruce.info/hexo-your-blog/</a></p>
+<hr>
+<p>twiceYuan：<a href="http://twiceyuan.com/%E4%B8%BAHexo%E4%B8%BB%E9%A2%98%E6%B7%BB%E5%8A%A0%E6%96%87%E7%AB%A0%E7%9B%AE%E5%BD%95/" target="_blank" rel="noopener">为Hexo添加文章目录</a></p>
+<hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/hexo/" rel="tag"># hexo</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/dev-hexo-deposit-to-gitcafe/" rel="next" title="hexo托管到gitcafe">
+                <i class="fa fa-chevron-left"></i> hexo托管到gitcafe
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/love-it-zb-guide/" rel="prev" title="IT圈装逼速成指南">
+                IT圈装逼速成指南 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zODU3Mi8xNTEwMA=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="VoidKing" />
+            
+              <p class="site-author-name" itemprop="name">VoidKing</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">583</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">188</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:voidking@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/voidking" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/voidking" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://twitter.com/voidking_com" target="_blank" title="Twitter">
+                      
+                        <i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#选择主题"><span class="nav-number">2.</span> <span class="nav-text">选择主题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加“关于”"><span class="nav-number">3.</span> <span class="nav-text">添加“关于”</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加RSS"><span class="nav-number">4.</span> <span class="nav-text">添加RSS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加sitemap"><span class="nav-number">5.</span> <span class="nav-text">添加sitemap</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加多说"><span class="nav-number">6.</span> <span class="nav-text">添加多说</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加头像"><span class="nav-number">7.</span> <span class="nav-text">添加头像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加favicon"><span class="nav-number">8.</span> <span class="nav-text">添加favicon</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#archieves数量"><span class="nav-number">9.</span> <span class="nav-text">archieves数量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Categories"><span class="nav-number">10.</span> <span class="nav-text">Categories</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加文章目录"><span class="nav-number">11.</span> <span class="nav-text">添加文章目录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#修改article-ejs"><span class="nav-number">11.1.</span> <span class="nav-text">修改article.ejs</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#修改article-yml"><span class="nav-number">11.2.</span> <span class="nav-text">修改article.yml</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用"><span class="nav-number">11.3.</span> <span class="nav-text">使用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#新的问题"><span class="nav-number">11.4.</span> <span class="nav-text">新的问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#奇怪现象"><span class="nav-number">11.5.</span> <span class="nav-text">奇怪现象</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#书写代码块"><span class="nav-number">12.</span> <span class="nav-text">书写代码块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文章模板"><span class="nav-number">13.</span> <span class="nav-text">文章模板</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考文档"><span class="nav-number">14.</span> <span class="nav-text">参考文档</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2012 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">VoidKing</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <!-- <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script> -->
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+  <div class="footer-beian">
+    <a href="http://www.beian.miit.gov.cn/" target="_blank">苏ICP备14021030号</a>&nbsp;|&nbsp;
+    <!-- <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=32032202000223">苏公网安备 32032202000223号</a> -->
+    <img src="/images/beian.png" alt="">
+    <a target="_blank" href="http://www.beian.gov.cn/">苏公网安备 32032202000223号</a>
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+      <div id="needsharebutton-float">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "box";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+      flOptions = {};
+      
+          flOptions.iconStyle = "box";
+      
+          flOptions.boxForm = "horizontal";
+      
+          flOptions.position = "topRight";
+      
+          flOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-float', flOptions);
+    
+  </script>
+
+  
+
+  
+  
+
+
+  
+
+  
+
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+
+</body>
+</html>

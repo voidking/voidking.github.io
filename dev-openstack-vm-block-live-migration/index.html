@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=5.1.4">
+
+
+
+
+
+
+  <meta name="keywords" content="docker,linux,ubuntu,openstack," />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="VoidKing" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="前言虚拟机迁移主要有三种方式：P2V、V2V和V2P。P2V指迁移物理服务器上的操作系统及其上的应用软件和数据到VMM（Virtual Machine Monitor）管理的虚拟服务器中。V2V迁移是在虚拟机之间移动操作系统和数据。V2P 指把一个操作系统、应用程序和数据从一个虚拟机中迁移到物理机的主硬盘上，是 P2V 的逆操作。 V2V迁移又分为离线迁移和在线迁移。离线迁移也叫做常规迁移、静态迁">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OpenStack中虚拟机的在线迁移">
+<meta property="og:url" content="https://www.voidking.com/dev-openstack-vm-block-live-migration/index.html">
+<meta property="og:site_name" content="VoidKing">
+<meta property="og:description" content="前言虚拟机迁移主要有三种方式：P2V、V2V和V2P。P2V指迁移物理服务器上的操作系统及其上的应用软件和数据到VMM（Virtual Machine Monitor）管理的虚拟服务器中。V2V迁移是在虚拟机之间移动操作系统和数据。V2P 指把一个操作系统、应用程序和数据从一个虚拟机中迁移到物理机的主硬盘上，是 P2V 的逆操作。 V2V迁移又分为离线迁移和在线迁移。离线迁移也叫做常规迁移、静态迁">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/openstack-vm-live-migration/detail.jpg?imageView2/0/w/600">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/openstack-vm-live-migration/service.jpg?imageView2/0/w/600">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/openstack-vm-live-migration/compute2.jpg?imageView2/0/w/600">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/openstack-vm-live-migration/migration.jpg?imageView2/0/w/600">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/openstack-vm-live-migration/waiting.jpg?imageView2/0/w/600">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/openstack-vm-live-migration/detail2.jpg?imageView2/0/w/600">
+<meta property="article:published_time" content="2018-11-13T09:00:00.000Z">
+<meta property="article:modified_time" content="2020-02-07T15:42:50.009Z">
+<meta property="article:author" content="VoidKing">
+<meta property="article:tag" content="docker">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="ubuntu">
+<meta property="article:tag" content="openstack">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.voidking.com//imgs/openstack-vm-live-migration/detail.jpg?imageView2/0/w/600">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.voidking.com/dev-openstack-vm-block-live-migration/"/>
+
+
+
+
+
+  <title>OpenStack中虚拟机的在线迁移 | VoidKing</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?b759ac2a7fa45129e3ef060bf68259f0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">VoidKing</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">好好学习，天天向上！</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.voidking.com/dev-openstack-vm-block-live-migration/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="VoidKing">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="VoidKing">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">OpenStack中虚拟机的在线迁移</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-11-13T09:00:00+00:00">
+                2018-11-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/" itemprop="url" rel="index">
+                    <span itemprop="name">专业</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index">
+                    <span itemprop="name">运维</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E8%BF%90%E7%BB%B4/ubuntu/" itemprop="url" rel="index">
+                    <span itemprop="name">ubuntu</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>虚拟机迁移主要有三种方式：P2V、V2V和V2P。P2V指迁移物理服务器上的操作系统及其上的应用软件和数据到VMM（Virtual Machine Monitor）管理的虚拟服务器中。V2V迁移是在虚拟机之间移动操作系统和数据。V2P 指把一个操作系统、应用程序和数据从一个虚拟机中迁移到物理机的主硬盘上，是 P2V 的逆操作。</p>
+<p>V2V迁移又分为离线迁移和在线迁移。离线迁移也叫做常规迁移、静态迁移，在迁移之前需要将虚拟机关闭。在线迁移又称为实时迁移，是指保持虚拟机正常运行的同时进行迁移。本文要研究的，就是虚拟机的在线迁移。更多详细内容，请参考<a href="https://www.ibm.com/developerworks/cn/linux/l-cn-mgrtvm1/index.html" target="_blank" rel="noopener">虚拟机迁移技术漫谈，第 1 部分</a>。</p>
+<a id="more"></a>
+
+<h1 id="迁移相关命令"><a href="#迁移相关命令" class="headerlink" title="迁移相关命令"></a>迁移相关命令</h1><p>本文研究的是OpenStack集群中的虚拟机迁移，那么先研究一下OpenStack的虚拟机迁移命令。主要参考<a href="https://docs.openstack.org/nova/rocky/admin/live-migration-usage.html" target="_blank" rel="noopener">Live-migrate instances</a>、<a href="https://www.mirantis.com/blog/block-live-migration-openstack-environment/" target="_blank" rel="noopener">Block Live Migration in OpenStack environment</a>。</p>
+<p>1、查看实例ID<br><code>openstack server list</code><br><a href="http://cdn.voidking.com//imgs/openstack-vm-live-migration/server.jpg?imageView2/0/w/600" target="_blank" rel="noopener"></a></p>
+<p>PS：<code>openstack server</code>可以换成<code>nova</code>。</p>
+<p>2、查看实例详情<br><code>openstack server show 180617ec-1348-4144-a496-8751d12e84bf</code><br><img src="http://cdn.voidking.com//imgs/openstack-vm-live-migration/detail.jpg?imageView2/0/w/600" alt=""></p>
+<p>PS：实例ID可以换成demo1。</p>
+<p>3、查看可以迁移的节点<br><code>openstack compute service list</code><br><img src="http://cdn.voidking.com//imgs/openstack-vm-live-migration/service.jpg?imageView2/0/w/600" alt=""></p>
+<p>4、查看其它节点资源使用情况<br><code>openstack host list</code></p>
+<p><code>openstack host show compute2</code><br><img src="http://cdn.voidking.com//imgs/openstack-vm-live-migration/compute2.jpg?imageView2/0/w/600" alt=""></p>
+<p>5、迁移<br><code>nova live-migration 180617ec-1348-4144-a496-8751d12e84bf compute2</code><br><img src="http://cdn.voidking.com//imgs/openstack-vm-live-migration/migration.jpg?imageView2/0/w/600" alt=""><br>啊嘞，没有反应是闹哪样？查看实例详情，依然位于compute节点。</p>
+<p>6、调试迁移<br><code>nova live-migration 180617ec-1348-4144-a496-8751d12e84bf compute2 --debug</code><br>信息很多，找不到重点。在<a href="https://www.cnblogs.com/pycode/p/6494848.html" target="_blank" rel="noopener">openstack热迁移和冷迁移</a>一文中发现，在线迁移又可以分为两种：live migration和block migration。live migration需要实例保存在NFS共享存储中，这种迁移主要是实例的内存状态的迁移，速度应该会很快。block migration除了实例内存状态要迁移外，还得迁移磁盘文件，速度会慢些，但是它不要求实例存储在共享文件系统中。</p>
+<p>而我们的这个集群，没有共享存储，所以应该用block migration？</p>
+<p>7、再次迁移<br><code>nova live-migration --block-migrate 180617ec-1348-4144-a496-8751d12e84bf compute2</code><br><img src="http://cdn.voidking.com//imgs/openstack-vm-live-migration/waiting.jpg?imageView2/0/w/600" alt=""><br>修改后的命令，在shell中同样没有更多提示，但是查看horizon，发现了惊喜，正在迁移。等到迁移完成，查看实例详情，却发现，实例所在主机依然没有发生变化！<br>是因为nova没有配置好吗？很有可能，那么修改一下nova的配置试试。</p>
+<h1 id="nova配置"><a href="#nova配置" class="headerlink" title="nova配置"></a>nova配置</h1><p>因为是使用kolla部署的OpenStack，所以修改配置重启服务的方法，和传统方法有所不同。参考<a href="https://www.jianshu.com/p/02c8b026fb1c" target="_blank" rel="noopener">kolla(Ocata)部署nova组件关键配置和volume映射</a>和<a href="http://blog.51cto.com/yuweibing/2071364" target="_blank" rel="noopener">Openstack 之 调整nova相关参数</a>。可以知道，主机中的/etc/kolla/nova-compute/nova.conf，对应容器中的/etc/nova/nova.conf。修改后重启容器，nova-compute服务配置就会发生改变。</p>
+<p>1、在两个计算节点，修改nova.conf<br><code>vim /etc/kolla/nova-compute/nova.conf</code>，添加:</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">live_migration_flag</span>=VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE</span><br></pre></td></tr></table></figure>
+
+<p>2、重启nova-compute</p>
+<figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker stop nov<span class="built_in">a_compute</span></span><br><span class="line">docker start nov<span class="built_in">a_compute</span></span><br></pre></td></tr></table></figure>
+
+<p>3、进入容器<br><code>docker exec -it nova_compute /bin/bash</code></p>
+<p>4、查看配置是否生效<br><code>vi /etc/nova/nova.conf</code></p>
+<h1 id="再次迁移"><a href="#再次迁移" class="headerlink" title="再次迁移"></a>再次迁移</h1><p>1、在控制节点执行迁移命令<br><code>nova live-migration --block-migrate 180617ec-1348-4144-a496-8751d12e84bf compute2</code><br>满怀期望，但是依然失败。</p>
+<p>2、在计算节点查看日志<br><code>tail -n 20 /var/lib/docker/volumes/kolla_logs/_data/nova/nova-compute.log</code><br>日志报错部分如下：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2018</span><span class="number">-11</span><span class="number">-13</span> <span class="number">19</span>:<span class="number">12</span>:<span class="number">04.614</span> <span class="number">6</span> ERROR nova.virt.libvirt.driver [req-e6654355-fcec<span class="number">-4</span>b93-a662-c758a03766fa b2edc935f89d4d2684ec4039c02a21cc ab7e3eb8c00d4299afd8572e1ec437bf - <span class="keyword">default</span> <span class="keyword">default</span>] [instance: <span class="number">180617</span>ec<span class="number">-1348</span><span class="number">-4144</span>-a496<span class="number">-8751</span>d12e84bf] Live Migration failure: operation failed: Failed <span class="keyword">to</span> <span class="keyword">connect</span> <span class="keyword">to</span> remote libvirt URI qemu+tcp://compute2/<span class="keyword">system</span>: Unable <span class="keyword">to</span> resolve address <span class="string">'compute2'</span> service <span class="string">'16509'</span>: <span class="type">Name</span> <span class="keyword">or</span> service <span class="keyword">not</span> known: libvirtError: operation failed: Failed <span class="keyword">to</span> <span class="keyword">connect</span> <span class="keyword">to</span> remote libvirt URI qemu+tcp://compute2/<span class="keyword">system</span>: Unable <span class="keyword">to</span> resolve address <span class="string">'compute2'</span> service <span class="string">'16509'</span>: <span class="type">Name</span> <span class="keyword">or</span> service <span class="keyword">not</span> known</span><br></pre></td></tr></table></figure>
+<p>由日志可以看出，问题出现在libvirt上，那么修改一下libvirt的配置。</p>
+<h1 id="libvirt配置"><a href="#libvirt配置" class="headerlink" title="libvirt配置"></a>libvirt配置</h1><p>参考<a href="https://www.cnblogs.com/goldsunshine/p/9588017.html" target="_blank" rel="noopener">OpenStack虚拟机冷迁移与热迁移</a>、<a href="https://www.ibm.com/developerworks/cn/cloud/library/1508_wangyx_openstacklivemigrate/" target="_blank" rel="noopener">虚拟机在 OpenStack 里没有共享存储条件下的在线迁移</a>、<a href="https://www.cnblogs.com/lin1/p/5776280.html" target="_blank" rel="noopener">虚拟化之KVM virsh常用命令篇</a>，对libvirt的配置进行修改。</p>
+<p>1、查看libvirtd.conf<br><code>vim /etc/kolla/nova-libvirt/libvirtd.conf</code><br>修改配置如下：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">listen_tcp</span> = <span class="number">1</span></span><br><span class="line"><span class="attr">listen_tls</span> = <span class="number">0</span></span><br><span class="line"><span class="attr">auth_tcp</span> = <span class="string">"none"</span></span><br><span class="line"><span class="attr">ca_file</span> = <span class="string">""</span></span><br><span class="line"><span class="attr">log_level</span> = <span class="number">3</span></span><br><span class="line"><span class="attr">log_outputs</span> = <span class="string">"3:file:/var/log/kolla/libvirt/libvirtd.log"</span></span><br><span class="line"><span class="attr">listen_addr</span> = <span class="string">"0.0.0.0"</span></span><br></pre></td></tr></table></figure>
+
+<p>2、重启libvirt服务</p>
+<figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker stop nov<span class="built_in">a_libvirt</span></span><br><span class="line">docker start nov<span class="built_in">a_libvirt</span></span><br></pre></td></tr></table></figure>
+
+<p>3、查看libvirt服务<br><code>netstat -anpt | grep libvirt</code><br>看到libvirtd监听在0.0.0.0:16509端口即为正常。</p>
+<p>PS：可以在其他节点使用virsh命令测试连通性<br><code>virsh -c qemu+tcp://compute2/system</code></p>
+<h1 id="第三次迁移"><a href="#第三次迁移" class="headerlink" title="第三次迁移"></a>第三次迁移</h1><p>1、在控制节点执行迁移命令<br><code>nova live-migration --block-migrate 180617ec-1348-4144-a496-8751d12e84bf compute2</code></p>
+<p>2、查看实例详情<br><code>openstack server show demo1</code><br><img src="http://cdn.voidking.com//imgs/openstack-vm-live-migration/detail2.jpg?imageView2/0/w/600" alt=""><br>迁移成功了，nice。</p>
+<h1 id="其他命令"><a href="#其他命令" class="headerlink" title="其他命令"></a>其他命令</h1><p>1、查看迁移任务<br><code>nova server-migration-list 180617ec-1348-4144-a496-8751d12e84bf</code><br>该命令查看到迁移任务的ID，然后根据这个ID就可以看到更详细的迁移过程。</p>
+<p>2、查看迁移过程<br><code>nova server-migration-show 180617ec-1348-4144-a496-8751d12e84bf 2</code></p>
+<p>3、查看警告或者出错日志<br><code>grep WARNING.*180617ec-1348-4144-a496-8751d12e84bf /var/lib/docker/volumes/kolla_logs/_data/nova/nova-compute.log</code></p>
+<p>4、取消迁移<br><code>nova live-migration-abort 180617ec-1348-4144-a496-8751d12e84bf 2</code></p>
+<h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p>以上，实现了OpenStack虚拟机的block live migration。后续实验，不妨再研究下共享存储的live migration。</p>
+<h1 id="书签"><a href="#书签" class="headerlink" title="书签"></a>书签</h1><p><a href="https://www.sdnlab.com/20489.html" target="_blank" rel="noopener">OpenStack命令行操作之虚机管理实现</a></p>
+<p><a href="https://dwz.cn/CF438sJZ" target="_blank" rel="noopener">虚拟机迁移之热迁移(live_migrate)源码解读</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/docker/" rel="tag"># docker</a>
+          
+            <a href="/tags/linux/" rel="tag"># linux</a>
+          
+            <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
+          
+            <a href="/tags/openstack/" rel="tag"># openstack</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/dev-kolla-openstack-add-new-node/" rel="next" title="Kolla安装OpenStack添加新节点">
+                <i class="fa fa-chevron-left"></i> Kolla安装OpenStack添加新节点
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/dev-openstack-vm-live-migration/" rel="prev" title="OpenStack中共享存储的虚拟机在线迁移">
+                OpenStack中共享存储的虚拟机在线迁移 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zODU3Mi8xNTEwMA=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="VoidKing" />
+            
+              <p class="site-author-name" itemprop="name">VoidKing</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">583</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">188</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:voidking@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/voidking" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/voidking" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://twitter.com/voidking_com" target="_blank" title="Twitter">
+                      
+                        <i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#迁移相关命令"><span class="nav-number">2.</span> <span class="nav-text">迁移相关命令</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#nova配置"><span class="nav-number">3.</span> <span class="nav-text">nova配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#再次迁移"><span class="nav-number">4.</span> <span class="nav-text">再次迁移</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#libvirt配置"><span class="nav-number">5.</span> <span class="nav-text">libvirt配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第三次迁移"><span class="nav-number">6.</span> <span class="nav-text">第三次迁移</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其他命令"><span class="nav-number">7.</span> <span class="nav-text">其他命令</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#后记"><span class="nav-number">8.</span> <span class="nav-text">后记</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#书签"><span class="nav-number">9.</span> <span class="nav-text">书签</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2012 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">VoidKing</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <!-- <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script> -->
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+  <div class="footer-beian">
+    <a href="http://www.beian.miit.gov.cn/" target="_blank">苏ICP备14021030号</a>&nbsp;|&nbsp;
+    <!-- <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=32032202000223">苏公网安备 32032202000223号</a> -->
+    <img src="/images/beian.png" alt="">
+    <a target="_blank" href="http://www.beian.gov.cn/">苏公网安备 32032202000223号</a>
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+      <div id="needsharebutton-float">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "box";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+      flOptions = {};
+      
+          flOptions.iconStyle = "box";
+      
+          flOptions.boxForm = "horizontal";
+      
+          flOptions.position = "topRight";
+      
+          flOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-float', flOptions);
+    
+  </script>
+
+  
+
+  
+  
+
+
+  
+
+  
+
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+
+</body>
+</html>

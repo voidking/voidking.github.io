@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=5.1.4">
+
+
+
+
+
+
+  <meta name="keywords" content="php,yii," />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="VoidKing" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="前言新入手的项目需要使用Yii框架开发，那就仿照之前写的《ThinkPHP实战》，整理一下必须掌握的三个部分：路由控制、模板渲染、增删改查。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Yii框架实战">
+<meta property="og:url" content="https://www.voidking.com/dev-yii-in-action/index.html">
+<meta property="og:site_name" content="VoidKing">
+<meta property="og:description" content="前言新入手的项目需要使用Yii框架开发，那就仿照之前写的《ThinkPHP实战》，整理一下必须掌握的三个部分：路由控制、模板渲染、增删改查。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-05-18T09:00:00.000Z">
+<meta property="article:modified_time" content="2020-02-07T15:42:50.017Z">
+<meta property="article:author" content="VoidKing">
+<meta property="article:tag" content="php">
+<meta property="article:tag" content="yii">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.voidking.com/dev-yii-in-action/"/>
+
+
+
+
+
+  <title>Yii框架实战 | VoidKing</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?b759ac2a7fa45129e3ef060bf68259f0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">VoidKing</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">好好学习，天天向上！</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.voidking.com/dev-yii-in-action/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="VoidKing">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="VoidKing">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Yii框架实战</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-18T09:00:00+00:00">
+                2017-05-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/" itemprop="url" rel="index">
+                    <span itemprop="name">专业</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E5%90%8E%E7%AB%AF/" itemprop="url" rel="index">
+                    <span itemprop="name">后端</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E5%90%8E%E7%AB%AF/php/" itemprop="url" rel="index">
+                    <span itemprop="name">php</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>新入手的项目需要使用Yii框架开发，那就仿照之前写的<a href="http://www.voidking.com/dev-thinkphp-in-action/">《ThinkPHP实战》</a>，整理一下必须掌握的三个部分：路由控制、模板渲染、增删改查。</p>
+<a id="more"></a>
+
+<h1 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h1><p>参照<a href="http://www.voidking.com/dev-thinkphp-environment/">《ThinkPHP开发环境搭建》</a>。</p>
+<h1 id="下载安装"><a href="#下载安装" class="headerlink" title="下载安装"></a>下载安装</h1><p>1、下载<a href="https://github.com/yiisoft/yii2/releases/download/2.0.11/yii-basic-app-2.0.11.tgz" target="_blank" rel="noopener">Yii2的基本应用程序模板</a>。</p>
+<p>2、解压出basic目录。</p>
+<p>3、移动basic目录到wampserver的www目录下。</p>
+<p>4、修改 basic/config/web.php 文件，给 cookieValidationKey 配置项 添加一个密钥：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'cookieValidationKey'</span> =&gt; <span class="string">'voidking'</span>,</span><br></pre></td></tr></table></figure>
+
+<p>5、启动wampserver，浏览器访问：<a href="http://localhost/basic/web/index.php" target="_blank" rel="noopener">http://localhost/basic/web/index.php</a> 。如果安装成功，就会看到“Congratulations! You have successfully created your Yii-powered application.”。</p>
+<h1 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h1><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">basic/                  应用根目录</span><br><span class="line">    composer<span class="selector-class">.json</span>       Composer 配置文件, 描述包信息</span><br><span class="line">    config/             包含应用配置及其它配置</span><br><span class="line">        console<span class="selector-class">.php</span>     控制台应用配置信息</span><br><span class="line">        web<span class="selector-class">.php</span>         Web 应用配置信息</span><br><span class="line">    commands/           包含控制台命令类</span><br><span class="line">    controllers/        包含控制器类</span><br><span class="line">    models/             包含模型类</span><br><span class="line">    runtime/            包含 Yii 在运行时生成的文件，例如日志和缓存文件</span><br><span class="line">    vendor/             包含已经安装的 Composer 包，包括 Yii 框架自身</span><br><span class="line">    views/              包含视图文件</span><br><span class="line">    web/                Web 应用根目录，包含 Web 入口文件</span><br><span class="line">        assets/         包含 Yii 发布的资源文件（javascript 和 css）</span><br><span class="line">        index<span class="selector-class">.php</span>       应用入口文件</span><br><span class="line">    yii                 Yii 控制台命令执行脚本</span><br></pre></td></tr></table></figure>
+
+<p>一般来说，应用中的文件可被分为两类：在 basic/web 下的和在其它目录下的。 前者可以直接通过 HTTP 访问，后者不能也不应该被直接访问。</p>
+<h1 id="helloworld"><a href="#helloworld" class="headerlink" title="helloworld"></a>helloworld</h1><h2 id="创建动作"><a href="#创建动作" class="headerlink" title="创建动作"></a>创建动作</h2><p>对于“Hello”任务，需要创建一个 say 动作， 从请求中接收 message 参数并显示给最终用户。如果请求没有提供 message 参数， 动作将显示默认参数 “Hello”。</p>
+<blockquote>
+<p> 动作是最终用户可以直接访问并执行的对象。 动作被组织在控制器中。 一个动作的执行结果就是最终用户收到的响应内容。</p>
+</blockquote>
+<p>动作必须声明在控制器中。为了简单起见， 你可以在现存的 SiteController 控制器里声明 say 动作。这个控制器定义在 controllers/SiteController.php 类文件中。 以下是一个动作的声明：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">namespace</span> <span class="title">app</span>\<span class="title">controllers</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">yii</span>\<span class="title">web</span>\<span class="title">Controller</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">SiteController</span> <span class="keyword">extends</span> <span class="title">Controller</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="comment">// ...现存的代码...</span></span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">actionSay</span><span class="params">($message = <span class="string">'Hello'</span>)</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;render(<span class="string">'say'</span>, [<span class="string">'message'</span> =&gt; $message]);</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>在上述 SiteController 代码中，say 动作被定义为 actionSay 方法。 Yii 使用 action 前缀区分普通方法和动作。 action 前缀后面的名称被映射为动作的 ID。</p>
+<p>动作 ID 总是被以小写处理，如果一个操作 ID 由多个单词组成， 单词之间将由破折号连接（如 create-comment）。动作 ID 映射为方法名时移除了破折号， 将每个单词首字母大写，并加上 action 前缀。 比如：动作 ID create-comment 对应方法名 actionCreateComment。</p>
+<p>上述代码中的动作方法接受一个参数 message，它的默认值是 “Hello”。 </p>
+<p>在动作方法中，<code>yii\web\Controller::render()</code> 被用来渲染一个名为 say 的视图文件。 message 参数也被传入视图，这样就可以在里面使用。动作方法会返回渲染结果。 结果会被应用接收并显示给最终用户的浏览器（作为整页 HTML 的一部分）。</p>
+<h2 id="创建视图"><a href="#创建视图" class="headerlink" title="创建视图"></a>创建视图</h2><p>视图是你用来生成响应内容的脚本。为了说 “Hello”， 你需要创建一个 say 视图，以便显示从动作方法中传来的 message 参数。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">yii</span>\<span class="title">helpers</span>\<span class="title">Html</span>;</span></span><br><span class="line"><span class="php"><span class="meta">?&gt;</span></span></span><br><span class="line"><span class="php"><span class="meta">&lt;?</span>= Html::encode($message) <span class="meta">?&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<p>say 视图应该存为 views/site/say.php 文件。当一个动作中调用了 <code>yii\web\Controller::render()</code> 方法时， 它将会寻找名为 views/控制器 ID/视图名.php 的PHP文件。。</p>
+<p>当然了，你大概会在 say 视图里放入更多内容。内容可以由 HTML 标签，纯文本， 甚至 PHP 语句组成。实际上 say 视图就是一个由 <code>yii\web\Controller::render()</code> 执行的 PHP 脚本。 视图脚本输出的内容将会作为响应结果返回给应用。应用将依次输出结果给最终用户。</p>
+<h2 id="试运行"><a href="#试运行" class="headerlink" title="试运行"></a>试运行</h2><p>创建完动作和视图后，你就可以通过下面的 URL 访问新页面了：<br><a href="http://localhost/basic/web/index.php?r=site/say&amp;message=helloworld" target="_blank" rel="noopener">http://localhost/basic/web/index.php?r=site/say&amp;message=helloworld</a></p>
+<h1 id="路由控制"><a href="#路由控制" class="headerlink" title="路由控制"></a>路由控制</h1><h2 id="URL美化"><a href="#URL美化" class="headerlink" title="URL美化"></a>URL美化</h2><p>从上面的helloworld例子中，我们看出，访问的URL分成几个部分：</p>
+<ul>
+<li>表示主机信息的 <a href="http://localhost/basic/web/" target="_blank" rel="noopener">http://localhost/basic/web/</a></li>
+<li>表示入口脚本的 index.php</li>
+<li>表示路由的 r=site/say</li>
+<li>表示普通参数的 message=helloworld</li>
+</ul>
+<p>该URL，如果变形成 <a href="http://localhost/basic/web/index.php/site/say?message=helloworld" target="_blank" rel="noopener">http://localhost/basic/web/index.php/site/say?message=helloworld</a> ，是不是好看很多？</p>
+<p>该URL，如果变形成 <a href="http://localhost/basic/web/site/say?message=helloworld" target="_blank" rel="noopener">http://localhost/basic/web/site/say?message=helloworld</a> ，是不是更好看？</p>
+<p>该URL，如果变形成 <a href="http://localhost/basic/web/say?message=helloworld" target="_blank" rel="noopener">http://localhost/basic/web/say?message=helloworld</a> ，是不是更好看？</p>
+<p>该URL，如果变形成 <a href="http://localhost/basic/web/say/helloworld" target="_blank" rel="noopener">http://localhost/basic/web/say/helloworld</a> ，是不是更好看？</p>
+<p>Yii有专门的 <code>yii\web\UrlManager</code> 来进行处理，其中：</p>
+<ul>
+<li>隐藏入口脚本可以通过 <code>yii\web\UrlManager::showScriptName = false</code> 来实现</li>
+<li>路由的路径化可以通过 <code>yii\web\UrlManager::enablePrettyUrl = true</code> 来实现</li>
+<li>参数的路径化可以通过路由规则来实现</li>
+<li>加入假后缀(fake suffix) .html 可以通过 <code>yii\web\UrlManager::suffix = &#39;.html&#39;</code> 来实现</li>
+</ul>
+<h2 id="路由规则"><a href="#路由规则" class="headerlink" title="路由规则"></a>路由规则</h2><p>路由规则是指 urlManager 用于解析请求或生成URL的规则。</p>
+<p>1、打开basic/config/web.php，找到urlManager，取消注释。</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'urlManager'</span> =&gt; [</span><br><span class="line">    <span class="string">'enablePrettyUrl'</span> =&gt; <span class="keyword">true</span>,</span><br><span class="line">    <span class="string">'showScriptName'</span> =&gt; <span class="keyword">false</span>,</span><br><span class="line">    <span class="string">'rules'</span> =&gt; [</span><br><span class="line">    ],</span><br><span class="line">],</span><br></pre></td></tr></table></figure>
+
+<p>这时，<a href="http://localhost/basic/web/index.php/site/say?message=helloworld" target="_blank" rel="noopener">http://localhost/basic/web/index.php/site/say?message=helloworld</a> 就可以使用了。</p>
+<p>2、找到apache的配置文件httpd.conf，去掉去掉rewrite前的#。</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute"><span class="nomarkup">LoadModule</span></span> rewrite_module modules/mod_rewrite.so</span><br></pre></td></tr></table></figure>
+
+<p>3、在index.php所在目录，添加.htaccess文件（不添加该文件也可以）。</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute"><span class="nomarkup">Options</span></span> +FollowSymLinks  </span><br><span class="line"><span class="attribute">IndexIgnore</span> */*  </span><br><span class="line"><span class="attribute"><span class="nomarkup">RewriteEngine</span></span> <span class="literal">on</span>  </span><br><span class="line"></span><br><span class="line"><span class="comment"># if a directory or a file exists, use it directly  </span></span><br><span class="line"><span class="attribute"><span class="nomarkup">RewriteCond</span></span> <span class="variable">%&#123;REQUEST_FILENAME&#125;</span> !-f  </span><br><span class="line"><span class="attribute"><span class="nomarkup">RewriteCond</span></span> <span class="variable">%&#123;REQUEST_FILENAME&#125;</span> !-d</span><br><span class="line"></span><br><span class="line"><span class="comment"># otherwise forward it to index.php  </span></span><br><span class="line"><span class="attribute"><span class="nomarkup">RewriteRule</span></span> . index.php</span><br></pre></td></tr></table></figure>
+
+<p>这时，<a href="http://localhost/basic/web/site/say?message=helloworld" target="_blank" rel="noopener">http://localhost/basic/web/site/say?message=helloworld</a> 就可以使用了。</p>
+<p>4、打开basic/config/web.php，修改rules。</p>
+<figure class="highlight sml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">'urlManager'</span> =&gt; [</span><br><span class="line">    <span class="symbol">'enablePrettyUrl'</span> =&gt; <span class="literal">true</span>,</span><br><span class="line">    <span class="symbol">'showScriptName'</span> =&gt; <span class="literal">false</span>,</span><br><span class="line">    <span class="symbol">'rules'</span> =&gt; [</span><br><span class="line">        <span class="symbol">'say'</span> =&gt; <span class="symbol">'site</span>/say'</span><br><span class="line">    ],</span><br><span class="line">],</span><br></pre></td></tr></table></figure>
+
+<p>这时，<a href="http://localhost/basic/web/say?message=helloworld" target="_blank" rel="noopener">http://localhost/basic/web/say?message=helloworld</a> 就可以使用了。</p>
+<p>5、继续修改rules。</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'urlManager'</span> =&gt; [</span><br><span class="line">    <span class="string">'enablePrettyUrl'</span> =&gt; <span class="keyword">true</span>,</span><br><span class="line">    <span class="string">'showScriptName'</span> =&gt; <span class="keyword">false</span>,</span><br><span class="line">    <span class="string">'rules'</span> =&gt; [</span><br><span class="line">        <span class="string">'say'</span> =&gt; <span class="string">'site/say'</span>,</span><br><span class="line">        <span class="string">'say/&lt;message:\w+&gt;'</span>=&gt;<span class="string">'site/say'</span></span><br><span class="line">    ],</span><br><span class="line">],</span><br></pre></td></tr></table></figure>
+
+<p>这时， <a href="http://localhost/basic/web/say/helloworld" target="_blank" rel="noopener">http://localhost/basic/web/say/helloworld</a> 就可以使用了。</p>
+<h1 id="模板渲染"><a href="#模板渲染" class="headerlink" title="模板渲染"></a>模板渲染</h1><h2 id="默认模板引擎"><a href="#默认模板引擎" class="headerlink" title="默认模板引擎"></a>默认模板引擎</h2><p>1、在controllers/SiteController.php中添加函数：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">actionTemplate</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    $data = <span class="string">'测试数据'</span>;</span><br><span class="line">    $dataArr = <span class="keyword">array</span>(</span><br><span class="line">        <span class="keyword">array</span>(<span class="string">'name'</span>=&gt;<span class="string">'郝锦'</span>,<span class="string">'age'</span>=&gt;<span class="string">'24'</span>),</span><br><span class="line">        <span class="keyword">array</span>(<span class="string">'name'</span>=&gt;<span class="string">'小帅'</span>,<span class="string">'age'</span>=&gt;<span class="string">'22'</span>),</span><br><span class="line">        <span class="keyword">array</span>(<span class="string">'name'</span>=&gt;<span class="string">'小飞'</span>,<span class="string">'age'</span>=&gt;<span class="string">'22'</span>)</span><br><span class="line">    );</span><br><span class="line">    $dataObj = <span class="keyword">new</span> userInfo();</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;render(<span class="string">'template'</span>, </span><br><span class="line">        [<span class="string">'data'</span> =&gt; $data,</span><br><span class="line">        <span class="string">'dataArr'</span> =&gt; $dataArr,</span><br><span class="line">        <span class="string">'dataObj'</span> =&gt; $dataObj</span><br><span class="line">        ]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>2、同时，在文件最后添加一个userInfo类：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">userInfo</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> $name = <span class="string">'郝锦'</span>;</span><br><span class="line">    <span class="keyword">public</span> $age = <span class="string">'24'</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">show</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">'一个函数'</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>3、在views/site中添加template.php：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"zh"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>Template<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h1</span>&gt;</span>模板<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span><span class="php"><span class="meta">&lt;?php</span> <span class="keyword">echo</span> $data; <span class="meta">?&gt;</span></span><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span><span class="php"><span class="meta">&lt;?php</span> <span class="keyword">echo</span> $dataObj-&gt;name; <span class="meta">?&gt;</span></span><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span><span class="php"><span class="meta">&lt;?php</span> <span class="keyword">echo</span> $dataObj-&gt;age; <span class="meta">?&gt;</span></span><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span></span><br><span class="line">        <span class="php"><span class="meta">&lt;?php</span> </span></span><br><span class="line"><span class="php">            <span class="keyword">foreach</span> ($dataArr <span class="keyword">as</span> $value) &#123;</span></span><br><span class="line"><span class="php">                <span class="keyword">echo</span> $value[<span class="string">'name'</span>];</span></span><br><span class="line"><span class="php">                <span class="keyword">echo</span> $value[<span class="string">'age'</span>];</span></span><br><span class="line"><span class="php">            &#125;</span></span><br><span class="line"><span class="php">        <span class="meta">?&gt;</span></span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>4、测试访问url： <a href="http://localhost/basic/web/site/template" target="_blank" rel="noopener">http://localhost/basic/web/site/template</a></p>
+<h2 id="smarty"><a href="#smarty" class="headerlink" title="smarty"></a>smarty</h2><p>上面的渲染中，我们发现，template.php中的写法不友好。<br>因为默认情况下，Yii 使用 PHP 作为其默认的模板引擎语言。但是，我们可以配置 Yii 以扩展的方式支持其他的渲染引擎， 比如 Twig 或 Smarty等。<br>下面我们把模板引擎换成smarty。</p>
+<p>1、下载安装<a href="https://getcomposer.org/doc/00-intro.md#installation-nix" target="_blank" rel="noopener">Composer</a>。</p>
+<p>2、在basic目录，执行命令<code>composer require --prefer-dist yiisoft/yii2-smarty</code>，安装smarty插件。</p>
+<p>如果提示输入token，解决办法为：<br>进入 <a href="https://github.com/settings/tokens" target="_blank" rel="noopener">https://github.com/settings/tokens</a> 点击 「Generate new token」 新建一个 Token，选择默认新建就行，然后就会得到一个 Token，然后输入这个值就 OK 了。</p>
+<p>3、打开basic/config/web.php，找到components，添加使用smarty：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'components'</span> =&gt; [</span><br><span class="line">    <span class="comment">// other settings</span></span><br><span class="line">    <span class="string">'view'</span> =&gt; [</span><br><span class="line">        <span class="string">'renderers'</span> =&gt; [</span><br><span class="line">            <span class="string">'tpl'</span> =&gt; [</span><br><span class="line">                <span class="string">'class'</span> =&gt; <span class="string">'yii\smarty\ViewRenderer'</span>,</span><br><span class="line">                <span class="comment">//'cachePath' =&gt; '@runtime/Smarty/cache',</span></span><br><span class="line">            ],</span><br><span class="line">        ],</span><br><span class="line">    ],</span><br><span class="line">],</span><br></pre></td></tr></table></figure>
+
+<p>4、修改actionTemplate为：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">actionTemplate</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    $data = <span class="string">'测试数据'</span>;</span><br><span class="line">    $dataArr = <span class="keyword">array</span>(</span><br><span class="line">        <span class="keyword">array</span>(<span class="string">'name'</span>=&gt;<span class="string">'郝锦'</span>,<span class="string">'age'</span>=&gt;<span class="string">'24'</span>),</span><br><span class="line">        <span class="keyword">array</span>(<span class="string">'name'</span>=&gt;<span class="string">'小帅'</span>,<span class="string">'age'</span>=&gt;<span class="string">'22'</span>),</span><br><span class="line">        <span class="keyword">array</span>(<span class="string">'name'</span>=&gt;<span class="string">'小飞'</span>,<span class="string">'age'</span>=&gt;<span class="string">'22'</span>)</span><br><span class="line">    );</span><br><span class="line">    $dataObj = <span class="keyword">new</span> userInfo();</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;render(<span class="string">'template.tpl'</span>, </span><br><span class="line">        [<span class="string">'data'</span> =&gt; $data,</span><br><span class="line">        <span class="string">'dataArr'</span> =&gt; $dataArr,</span><br><span class="line">        <span class="string">'dataObj'</span> =&gt; $dataObj</span><br><span class="line">        ]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>5、在views/site中添加template.tpl：</p>
+<figure class="highlight dust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="xml"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"zh"</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>Template<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">h1</span>&gt;</span>模板<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">p</span>&gt;</span></span><span class="template-variable">&#123;$data&#125;</span><span class="xml"><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">p</span>&gt;</span></span><span class="template-variable">&#123;$dataObj-&gt;name&#125;</span><span class="xml"><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">p</span>&gt;</span></span><span class="template-variable">&#123;$dataObj-&gt;age&#125;</span><span class="xml"><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">p</span>&gt;</span></span></span><br><span class="line"><span class="xml">        </span><span class="template-variable">&#123;foreach from=$dataArr key=mykey item=$value&#125;</span></span><br><span class="line"><span class="xml">            </span><span class="template-variable">&#123;$value.name&#125;</span><span class="xml"><span class="symbol">&amp;nbsp;</span></span><span class="template-variable">&#123;$value.age&#125;</span></span><br><span class="line"><span class="xml">        </span><span class="template-tag">&#123;/<span class="name">foreach</span>&#125;</span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<p>6、测试访问url： <a href="http://localhost/basic/web/site/template" target="_blank" rel="noopener">http://localhost/basic/web/site/template</a></p>
+<h1 id="增删改查"><a href="#增删改查" class="headerlink" title="增删改查"></a>增删改查</h1><h2 id="数据库配置"><a href="#数据库配置" class="headerlink" title="数据库配置"></a>数据库配置</h2><p>利用navicat等工具连接到本地mysql数据库，创建数据库basic，在数据库中创建表bas_project(int id, varchar title, varchar content)。注意，编码格式选择utf8。</p>
+<h2 id="连接配置"><a href="#连接配置" class="headerlink" title="连接配置"></a>连接配置</h2><p>打开basic/config/db.php，修改内容如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">return</span> [</span></span><br><span class="line"><span class="php">    <span class="string">'class'</span> =&gt; <span class="string">'yii\db\Connection'</span>,</span></span><br><span class="line"><span class="php">    <span class="string">'dsn'</span> =&gt; <span class="string">'mysql:host=localhost;dbname=basic'</span>,</span></span><br><span class="line"><span class="php">    <span class="string">'username'</span> =&gt; <span class="string">'root'</span>,</span></span><br><span class="line"><span class="php">    <span class="string">'password'</span> =&gt; <span class="string">''</span>,</span></span><br><span class="line"><span class="php">    <span class="string">'charset'</span> =&gt; <span class="string">'utf8'</span>,</span></span><br><span class="line"><span class="php">    <span class="string">'tablePrefix'</span> =&gt; <span class="string">'bas_'</span>,</span></span><br><span class="line"><span class="php">];</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="新建model"><a href="#新建model" class="headerlink" title="新建model"></a>新建model</h2><p>在basic/models下，新建Project.php，内容如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">namespace</span> <span class="title">app</span>\<span class="title">models</span>;</span></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">yii</span>\<span class="title">db</span>\<span class="title">ActiveRecord</span>;</span></span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * Project model</span><br><span class="line"><span class="php"> */</span></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">Project</span> <span class="keyword">extends</span> <span class="title">ActiveRecord</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">model</span><span class="params">($className=__CLASS__)</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">return</span> <span class="keyword">parent</span>::model($className);</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="新建Controller"><a href="#新建Controller" class="headerlink" title="新建Controller"></a>新建Controller</h2><p>在basic/controllers下，新建ProjectController.php，内容如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">namespace</span> <span class="title">app</span>\<span class="title">controllers</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">Yii</span>;</span></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">yii</span>\<span class="title">filters</span>\<span class="title">AccessControl</span>;</span></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">yii</span>\<span class="title">web</span>\<span class="title">Controller</span>;</span></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">yii</span>\<span class="title">filters</span>\<span class="title">VerbFilter</span>;</span></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">app</span>\<span class="title">models</span>\<span class="title">LoginForm</span>;</span></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">app</span>\<span class="title">models</span>\<span class="title">ContactForm</span>;</span></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">app</span>\<span class="title">models</span>\<span class="title">Project</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">ProjectController</span> <span class="keyword">extends</span> <span class="title">Controller</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">actionAdd</span><span class="params">($title, $content)</span></span>&#123;</span></span><br><span class="line"><span class="php">        $project = <span class="keyword">new</span> Project();</span></span><br><span class="line"><span class="php">        $project-&gt;title = $title;</span></span><br><span class="line"><span class="php">        $project-&gt;content = $content;</span></span><br><span class="line"><span class="php"> </span></span><br><span class="line"><span class="php">        $success = $project-&gt;save();</span></span><br><span class="line"><span class="php">        <span class="keyword">if</span>($success)&#123;</span></span><br><span class="line"><span class="php">            $result = <span class="keyword">array</span>(</span></span><br><span class="line"><span class="php">                <span class="string">'code'</span> =&gt; <span class="string">'0'</span>,</span></span><br><span class="line"><span class="php">                <span class="string">'ext'</span> =&gt; <span class="string">'success'</span></span></span><br><span class="line"><span class="php">            );</span></span><br><span class="line"><span class="php">            <span class="keyword">echo</span> json_encode($result,JSON_UNESCAPED_UNICODE);</span></span><br><span class="line"><span class="php">        &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">actionEdit</span><span class="params">($id, $title, $content)</span></span>&#123;</span></span><br><span class="line"><span class="php">        $project = Project::find()-&gt;where([<span class="string">'id'</span>=&gt;$id])-&gt;one();</span></span><br><span class="line"><span class="php">        $project-&gt;title = $title;</span></span><br><span class="line"><span class="php">        $project-&gt;content = $content;</span></span><br><span class="line"><span class="php">        $success = $project-&gt;save();</span></span><br><span class="line"></span><br><span class="line"><span class="php">        <span class="keyword">if</span>($success)&#123;</span></span><br><span class="line"><span class="php">            $result = <span class="keyword">array</span>(</span></span><br><span class="line"><span class="php">                <span class="string">'code'</span>=&gt; <span class="string">'0'</span>,</span></span><br><span class="line"><span class="php">                <span class="string">'ext'</span>=&gt; <span class="string">'success'</span></span></span><br><span class="line"><span class="php">            );</span></span><br><span class="line"><span class="php">            <span class="keyword">echo</span> json_encode($result,JSON_UNESCAPED_UNICODE);</span></span><br><span class="line"><span class="php">        &#125;<span class="keyword">else</span> &#123;</span></span><br><span class="line"><span class="php">            $result = <span class="keyword">array</span>(</span></span><br><span class="line"><span class="php">                <span class="string">'code'</span>=&gt; <span class="string">'1'</span>,</span></span><br><span class="line"><span class="php">                <span class="string">'ext'</span>=&gt; <span class="string">'fail'</span></span></span><br><span class="line"><span class="php">            );</span></span><br><span class="line"><span class="php">            <span class="keyword">echo</span> json_encode($result,JSON_UNESCAPED_UNICODE);</span></span><br><span class="line"><span class="php">        &#125;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">actionDelete</span><span class="params">($id)</span></span>&#123;</span></span><br><span class="line"><span class="php">        $project = Project::find()-&gt;where([<span class="string">'id'</span>=&gt;$id])-&gt;one();</span></span><br><span class="line"><span class="php">        $success = $project-&gt;delete();</span></span><br><span class="line"><span class="php">        <span class="keyword">if</span>($success)&#123;</span></span><br><span class="line"><span class="php">            $result = <span class="keyword">array</span>(</span></span><br><span class="line"><span class="php">                <span class="string">'code'</span>=&gt; <span class="string">'0'</span>,</span></span><br><span class="line"><span class="php">                <span class="string">'ext'</span>=&gt; <span class="string">'success'</span></span></span><br><span class="line"><span class="php">            );</span></span><br><span class="line"><span class="php">            <span class="keyword">echo</span> json_encode($result);</span></span><br><span class="line"><span class="php">        &#125;<span class="keyword">else</span> &#123;</span></span><br><span class="line"><span class="php">            $result = <span class="keyword">array</span>(</span></span><br><span class="line"><span class="php">                <span class="string">'code'</span>=&gt; <span class="string">'1'</span>,</span></span><br><span class="line"><span class="php">                <span class="string">'ext'</span>=&gt; <span class="string">'fail'</span></span></span><br><span class="line"><span class="php">            );</span></span><br><span class="line"><span class="php">            <span class="keyword">echo</span> json_encode($result);</span></span><br><span class="line"><span class="php">        &#125;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">actionList</span><span class="params">()</span></span>&#123;</span></span><br><span class="line"><span class="php">        $projectList = Project::find()-&gt;asArray()-&gt;all();</span></span><br><span class="line"><span class="php">        $result = <span class="keyword">array</span>(</span></span><br><span class="line"><span class="php">                <span class="string">'code'</span>=&gt; <span class="string">'0'</span>,</span></span><br><span class="line"><span class="php">                <span class="string">'ext'</span>=&gt; <span class="string">'success'</span>,</span></span><br><span class="line"><span class="php">                <span class="string">'projectList'</span> =&gt; $projectList</span></span><br><span class="line"><span class="php">        );</span></span><br><span class="line"><span class="php">        <span class="keyword">echo</span> json_encode($result,JSON_UNESCAPED_UNICODE);</span></span><br><span class="line"></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">actionPage</span><span class="params">($pageSize,$pageNum)</span></span>&#123;</span></span><br><span class="line"><span class="php">        $project = <span class="keyword">new</span> Project();</span></span><br><span class="line"><span class="php">        $total = $project-&gt;find()-&gt;count();</span></span><br><span class="line"><span class="php">        $totalPage = $total%$pageSize ? (int)($total/$pageSize)+<span class="number">1</span> : (int)($total/$pageSize);</span></span><br><span class="line"></span><br><span class="line"><span class="php">        $projectList = $project-&gt;find()-&gt;offset(($pageNum<span class="number">-1</span>)*$pageSize)-&gt;limit($pageSize)-&gt;asArray()-&gt;all();</span></span><br><span class="line"><span class="php">        </span></span><br><span class="line"><span class="php">        <span class="keyword">if</span>($projectList)&#123;</span></span><br><span class="line"><span class="php">            $resultArr = <span class="keyword">array</span>(</span></span><br><span class="line"><span class="php">                <span class="string">'totalPage'</span>=&gt; $totalPage,</span></span><br><span class="line"><span class="php">                <span class="string">'pageNum'</span>=&gt; $pageNum,</span></span><br><span class="line"><span class="php">                <span class="string">'projectList'</span>=&gt; $projectList</span></span><br><span class="line"></span><br><span class="line"><span class="php">            );</span></span><br><span class="line"><span class="php">            $result = <span class="keyword">array</span>(</span></span><br><span class="line"><span class="php">                <span class="string">'code'</span>=&gt; <span class="string">'0'</span>,</span></span><br><span class="line"><span class="php">                <span class="string">'ext'</span>=&gt; <span class="string">'success'</span>,</span></span><br><span class="line"><span class="php">                <span class="string">'obj'</span>=&gt; $resultArr</span></span><br><span class="line"><span class="php">            );</span></span><br><span class="line"><span class="php">            <span class="keyword">echo</span> json_encode($result,JSON_UNESCAPED_UNICODE);</span></span><br><span class="line"><span class="php">        &#125;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">actionFind</span><span class="params">($id)</span></span>&#123;</span></span><br><span class="line"><span class="php">        $project = <span class="keyword">new</span> Project();</span></span><br><span class="line"><span class="php">        $item = $project-&gt;find()-&gt;where([<span class="string">'id'</span>=&gt;$id])-&gt;asArray()-&gt;one();</span></span><br><span class="line"><span class="php">        $result = <span class="keyword">array</span>(</span></span><br><span class="line"><span class="php">            <span class="string">'code'</span>=&gt; <span class="string">'0'</span>,</span></span><br><span class="line"><span class="php">            <span class="string">'ext'</span>=&gt; <span class="string">'success'</span>,</span></span><br><span class="line"><span class="php">            <span class="string">'obj'</span>=&gt; $item</span></span><br><span class="line"><span class="php">        );</span></span><br><span class="line"><span class="php">        <span class="keyword">echo</span> json_encode($result,JSON_UNESCAPED_UNICODE);</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="测试接口"><a href="#测试接口" class="headerlink" title="测试接口"></a>测试接口</h2><p>1、添加：<a href="http://localhost/basic/web/project/add?title=voidking-title&amp;content=voidking-content" target="_blank" rel="noopener">http://localhost/basic/web/project/add?title=voidking-title&amp;content=voidking-content</a></p>
+<p>2、修改：<a href="http://localhost/basic/web/project/edit?id=1&amp;title=voidking-title&amp;content=voidking-content" target="_blank" rel="noopener">http://localhost/basic/web/project/edit?id=1&amp;title=voidking-title&amp;content=voidking-content</a></p>
+<p>3、查找全部：<a href="http://localhost/basic/web/project/list" target="_blank" rel="noopener">http://localhost/basic/web/project/list</a></p>
+<p>4、查找一页：<a href="http://localhost/basic/web/project/page?pageSize=10&amp;pageNum=1" target="_blank" rel="noopener">http://localhost/basic/web/project/page?pageSize=10&amp;pageNum=1</a></p>
+<p>5、查找一条：<a href="http://localhost/basic/web/project/find?id=1" target="_blank" rel="noopener">http://localhost/basic/web/project/find?id=1</a></p>
+<p>6、删除：<a href="http://localhost/basic/web/project/delete?id=1" target="_blank" rel="noopener">http://localhost/basic/web/project/delete?id=1</a></p>
+<p>路由控制、模板渲染、增删改查，至此全部跑通，可以进行简单的开发了。至于yii框架提供的其他更加强大的功能，在需要时查查文档就好。</p>
+<h1 id="源码分享"><a href="#源码分享" class="headerlink" title="源码分享"></a>源码分享</h1><p>1、下载安装：<code>git clone https://github.com/voidking/yii-basic.git basic</code></p>
+<p>2、利用navicat等工具连接到本地mysql数据库，创建数据库basic，在数据库中创建表bas_project(int id, varchar title, varchar content)。注意，编码格式选择utf8。</p>
+<h1 id="书签"><a href="#书签" class="headerlink" title="书签"></a>书签</h1><p><a href="http://www.yiichina.com/" target="_blank" rel="noopener">Yii Framework中文社区</a></p>
+<p><a href="http://www.yiichina.com/download" target="_blank" rel="noopener">下载安装Yii</a></p>
+<p><a href="http://www.yiichina.com/doc/guide/2.0" target="_blank" rel="noopener">Yii 2.0 权威指南</a> </p>
+<p><a href="http://www.yiiframework.com/doc/guide/1.1/zh_cn/topics.url" target="_blank" rel="noopener">URL Management(网址管理)</a></p>
+<p><a href="http://www.yiichina.com/tutorial/834" target="_blank" rel="noopener">Yii2.0数据库操作增删改查详解</a></p>
+<p><a href="http://www.yiichina.com/doc/api/2.0/yii-db-activerecord" target="_blank" rel="noopener">ActiveRecord</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/php/" rel="tag"># php</a>
+          
+            <a href="/tags/yii/" rel="tag"># yii</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/love-aria2-download/" rel="next" title="使用aria2离线下载">
+                <i class="fa fa-chevron-left"></i> 使用aria2离线下载
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/dev-dockerfile-build-tomcat/" rel="prev" title="Dockerfile构建Tomcat">
+                Dockerfile构建Tomcat <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zODU3Mi8xNTEwMA=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="VoidKing" />
+            
+              <p class="site-author-name" itemprop="name">VoidKing</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">583</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">188</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:voidking@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/voidking" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/voidking" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://twitter.com/voidking_com" target="_blank" title="Twitter">
+                      
+                        <i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#环境准备"><span class="nav-number">2.</span> <span class="nav-text">环境准备</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#下载安装"><span class="nav-number">3.</span> <span class="nav-text">下载安装</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#项目结构"><span class="nav-number">4.</span> <span class="nav-text">项目结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#helloworld"><span class="nav-number">5.</span> <span class="nav-text">helloworld</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建动作"><span class="nav-number">5.1.</span> <span class="nav-text">创建动作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建视图"><span class="nav-number">5.2.</span> <span class="nav-text">创建视图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#试运行"><span class="nav-number">5.3.</span> <span class="nav-text">试运行</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#路由控制"><span class="nav-number">6.</span> <span class="nav-text">路由控制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#URL美化"><span class="nav-number">6.1.</span> <span class="nav-text">URL美化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#路由规则"><span class="nav-number">6.2.</span> <span class="nav-text">路由规则</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#模板渲染"><span class="nav-number">7.</span> <span class="nav-text">模板渲染</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#默认模板引擎"><span class="nav-number">7.1.</span> <span class="nav-text">默认模板引擎</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#smarty"><span class="nav-number">7.2.</span> <span class="nav-text">smarty</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#增删改查"><span class="nav-number">8.</span> <span class="nav-text">增删改查</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库配置"><span class="nav-number">8.1.</span> <span class="nav-text">数据库配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#连接配置"><span class="nav-number">8.2.</span> <span class="nav-text">连接配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#新建model"><span class="nav-number">8.3.</span> <span class="nav-text">新建model</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#新建Controller"><span class="nav-number">8.4.</span> <span class="nav-text">新建Controller</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试接口"><span class="nav-number">8.5.</span> <span class="nav-text">测试接口</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#源码分享"><span class="nav-number">9.</span> <span class="nav-text">源码分享</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#书签"><span class="nav-number">10.</span> <span class="nav-text">书签</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2012 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">VoidKing</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <!-- <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script> -->
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+  <div class="footer-beian">
+    <a href="http://www.beian.miit.gov.cn/" target="_blank">苏ICP备14021030号</a>&nbsp;|&nbsp;
+    <!-- <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=32032202000223">苏公网安备 32032202000223号</a> -->
+    <img src="/images/beian.png" alt="">
+    <a target="_blank" href="http://www.beian.gov.cn/">苏公网安备 32032202000223号</a>
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+      <div id="needsharebutton-float">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "box";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+      flOptions = {};
+      
+          flOptions.iconStyle = "box";
+      
+          flOptions.boxForm = "horizontal";
+      
+          flOptions.position = "topRight";
+      
+          flOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-float', flOptions);
+    
+  </script>
+
+  
+
+  
+  
+
+
+  
+
+  
+
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+
+</body>
+</html>

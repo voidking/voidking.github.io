@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=5.1.4">
+
+
+
+
+
+
+  <meta name="keywords" content="linux,centos,elk," />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="VoidKing" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="ELK简介ELK是一个日志分析平台，它主要由Elasticsearch、Logstash和Kibana三个部分组成。Elasticsearch是一个开源的全文搜索和分析引擎，它可以实现数据的实时全文搜索，可以处理大规模日志数据，比如Nginx、Tomcat、系统日志等功能。Logstash负责日志收集和转发，支持日志过滤，支持普通log、自定义json格式的日志解析。Kibana通过接口调用Ela">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CentOS7安装部署ELK">
+<meta property="og:url" content="https://www.voidking.com/dev-centos7-install-elk/index.html">
+<meta property="og:site_name" content="VoidKing">
+<meta property="og:description" content="ELK简介ELK是一个日志分析平台，它主要由Elasticsearch、Logstash和Kibana三个部分组成。Elasticsearch是一个开源的全文搜索和分析引擎，它可以实现数据的实时全文搜索，可以处理大规模日志数据，比如Nginx、Tomcat、系统日志等功能。Logstash负责日志收集和转发，支持日志过滤，支持普通log、自定义json格式的日志解析。Kibana通过接口调用Ela">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/centos7-install-elk/structure.jpg?imageView2/0/w/600">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/centos7-install-elk/elasticsearch.jpg?imageView2/0/w/600">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/centos7-install-elk/curl.jpg?imageView2/0/w/500">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/centos7-install-elk/kibana.jpg?imageView2/0/w/600">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/centos7-install-elk/welcome.jpg?imageView2/0/w/800">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/centos7-install-elk/sample.jpg?imageView2/0/w/800">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/centos7-install-elk/logstash.jpg?imageView2/0/w/600">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/centos7-install-elk/helloworld.jpg?imageView2/0/w/700">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/centos7-install-elk/hellologstash.jpg?imageView2/0/w/300">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/centos7-install-elk/indices.jpg?imageView2/0/w/600">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/centos7-install-elk/search.jpg?imageView2/0/w/600">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/centos7-install-elk/kibanalogs.jpg?imageView2/0/h/700">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/centos7-install-elk/configuresource.jpg?imageView2/0/w/600">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/centos7-install-elk/kibanainfo.jpg?imageView2/0/w/600">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/centos7-install-elk/update.jpg?imageView2/0/w/600">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/centos7-install-elk/logstash.jpg?imageView2/0/w/600">
+<meta property="og:image" content="http://cdn.voidking.com/@/imgs/centos7-install-elk/kibanainfo2.jpg?imageView2/0/w/600">
+<meta property="article:published_time" content="2019-07-26T20:00:00.000Z">
+<meta property="article:modified_time" content="2020-02-07T15:42:49.993Z">
+<meta property="article:author" content="VoidKing">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="centos">
+<meta property="article:tag" content="elk">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.voidking.com/@/imgs/centos7-install-elk/structure.jpg?imageView2/0/w/600">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.voidking.com/dev-centos7-install-elk/"/>
+
+
+
+
+
+  <title>CentOS7安装部署ELK | VoidKing</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?b759ac2a7fa45129e3ef060bf68259f0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">VoidKing</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">好好学习，天天向上！</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.voidking.com/dev-centos7-install-elk/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="VoidKing">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="VoidKing">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">CentOS7安装部署ELK</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-07-26T20:00:00+00:00">
+                2019-07-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/" itemprop="url" rel="index">
+                    <span itemprop="name">专业</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index">
+                    <span itemprop="name">运维</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E8%BF%90%E7%BB%B4/centos/" itemprop="url" rel="index">
+                    <span itemprop="name">centos</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="ELK简介"><a href="#ELK简介" class="headerlink" title="ELK简介"></a>ELK简介</h1><p>ELK是一个日志分析平台，它主要由Elasticsearch、Logstash和Kibana三个部分组成。<br>Elasticsearch是一个开源的全文搜索和分析引擎，它可以实现数据的实时全文搜索，可以处理大规模日志数据，比如Nginx、Tomcat、系统日志等功能。<br>Logstash负责日志收集和转发，支持日志过滤，支持普通log、自定义json格式的日志解析。<br>Kibana通过接口调用Elasticsearch的数据，并进行前端数据可视化。</p>
+<a id="more"></a>
+
+<h1 id="部署规划"><a href="#部署规划" class="headerlink" title="部署规划"></a>部署规划</h1><p>计划在三台CentOS7机器上部署ELK，其中一台机器作为ELK的服务节点，IP为192.168.56.101；另外两台作为客户节点，IP为192.168.56.102/103。<br>其中服务节点部署Elasticsearch、Logstash和Kibana三个组件，客户节点部署Logstash。<br><img src="http://cdn.voidking.com/@/imgs/centos7-install-elk/structure.jpg?imageView2/0/w/600" alt=""></p>
+<h1 id="服务节点部署"><a href="#服务节点部署" class="headerlink" title="服务节点部署"></a>服务节点部署</h1><h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><p>默认root用户下操作，其他用户请自觉添加sudo。  </p>
+<p>1、安装JDK，参考<a href="">《全平台安装JDK》</a>。</p>
+<p>2、关闭防火墙。</p>
+<figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl <span class="keyword">stop</span> firewalld</span><br><span class="line">systemctl <span class="keyword">disable</span> firewalld</span><br></pre></td></tr></table></figure>
+
+<p>或者设置防火墙规则：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">firewall-<span class="keyword">cmd</span><span class="bash"> --add-port=9200/tcp --permanent</span></span><br><span class="line">firewall-<span class="keyword">cmd</span><span class="bash"> --add-port=9300/tcp --permanent</span></span><br><span class="line">firewall-<span class="keyword">cmd</span><span class="bash"> --add-port=5601/tcp --permanent</span></span><br><span class="line">firewall-<span class="keyword">cmd</span><span class="bash"> --reload</span></span><br></pre></td></tr></table></figure>
+
+<p>3、添加ELK仓库</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">cat &lt;&lt;EOF | tee /etc/yum.repos.d/elasticsearch.repo</span><br><span class="line">[elasticsearch-7.x]</span><br><span class="line"><span class="attribute">name</span>=Elasticsearch repository <span class="keyword">for</span> 7.x packages</span><br><span class="line"><span class="attribute">baseurl</span>=https://artifacts.elastic.co/packages/7.x/yum</span><br><span class="line"><span class="attribute">gpgcheck</span>=1</span><br><span class="line"><span class="attribute">gpgkey</span>=https://artifacts.elastic.co/GPG-KEY-elasticsearch</span><br><span class="line"><span class="attribute">enabled</span>=1</span><br><span class="line"><span class="attribute">autorefresh</span>=1</span><br><span class="line"><span class="attribute">type</span>=rpm-md</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<p>4、引入GPG key<br><code>rpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch</code></p>
+<p>5、更新yum包</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">yum</span> <span class="string">clean all</span></span><br><span class="line"><span class="attr">yum</span> <span class="string">makecache</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Elasticsearch"><a href="#Elasticsearch" class="headerlink" title="Elasticsearch"></a>Elasticsearch</h2><p>1、安装Elasticsearch<br><code>yum install -y elasticsearch</code><br>安装过程中会下载 <a href="https://artifacts.elastic.co/packages/7.x/yum/7.2.0/elasticsearch-7.2.0-x86_64.rpm" target="_blank" rel="noopener">https://artifacts.elastic.co/packages/7.x/yum/7.2.0/elasticsearch-7.2.0-x86_64.rpm</a> ，但是，下载速度非常慢。这里建议通过浏览器下载，然后上传到服务节点上。上传完成后，执行安装：<br><code>rpm -ivh elasticsearch-7.2.0-x86_64.rpm</code><br>提示future versions of Elasticsearch will require Java 11; your Java version does not meet this requirement. 不过没关系，当前版本能用就行。</p>
+<p>2、确认Elasticsearch的安装信息<br><code>rpm -qi elasticsearch</code><br><img src="http://cdn.voidking.com/@/imgs/centos7-install-elk/elasticsearch.jpg?imageView2/0/w/600" alt=""></p>
+<p>3、启动Elasticsearch并设置开机启动</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">systemctl</span> <span class="string">daemon-reload</span></span><br><span class="line"><span class="attr">systemctl</span> <span class="string">start elasticsearch</span></span><br><span class="line"><span class="attr">systemctl</span> <span class="string">enable elasticsearch</span></span><br></pre></td></tr></table></figure>
+
+<p>4、查看Elasticsearch运行状态</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">systemctl</span> <span class="string">status elasticsearch</span></span><br><span class="line"><span class="attr">ps</span> <span class="string">-ef | grep elasticsearch</span></span><br><span class="line"><span class="attr">netstat</span> <span class="string">-nlpt</span></span><br></pre></td></tr></table></figure>
+
+<p>5、尝试请求<br><code>curl localhost:9200</code><br><img src="http://cdn.voidking.com/@/imgs/centos7-install-elk/curl.jpg?imageView2/0/w/500" alt=""></p>
+<p>6、设置允许其他机器访问<br>当前只能响应本机的请求，想要其他机器也能访问的话，那么需要修改elasticsearch的配置。<code>vim /etc/elasticsearch/elasticsearch.yml</code>，如下修改：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># line 17, uncomment</span></span><br><span class="line"><span class="attr">cluster.name:</span> <span class="string">my-application</span></span><br><span class="line"><span class="comment"># line 22, uncomment and change</span></span><br><span class="line"><span class="attr">node.name:</span> <span class="string">master</span></span><br><span class="line"><span class="comment"># line 55, uncomment and change</span></span><br><span class="line"><span class="attr">network.host:</span> <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span></span><br><span class="line"><span class="comment"># line 59, uncomment</span></span><br><span class="line"><span class="attr">ttp.port:</span> <span class="number">9200</span></span><br><span class="line"><span class="comment"># line 72, uncomment and change</span></span><br><span class="line"><span class="attr">cluster.initial_master_nodes:</span> <span class="string">["master",</span> <span class="string">"node-2"</span><span class="string">]</span></span><br></pre></td></tr></table></figure>
+
+<p>7、重启Elasticsearch</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">systemctl</span> <span class="string">stop elasticsearch</span></span><br><span class="line"><span class="attr">systemctl</span> <span class="string">start elasticsearch</span></span><br><span class="line"><span class="comment"># 启动后稍等一会</span></span><br><span class="line"><span class="attr">netstat</span> <span class="string">-nlpt</span></span><br></pre></td></tr></table></figure>
+
+<p>如果可以看到<code>:::9200</code>，就可以通过外部浏览器访问Elasticsearch服务了，至此Elasticsearch安装配置完成。</p>
+<h2 id="Kibana"><a href="#Kibana" class="headerlink" title="Kibana"></a>Kibana</h2><p>1、安装Kibana<br><code>yum install -y kibana</code><br>同样的，如果下载速度缓慢，那么可以通过浏览器下载 <a href="https://artifacts.elastic.co/packages/7.x/yum/7.2.0/kibana-7.2.0-x86_64.rpm" target="_blank" rel="noopener">https://artifacts.elastic.co/packages/7.x/yum/7.2.0/kibana-7.2.0-x86_64.rpm</a> ，然后上传到服务节点，上传后执行安装：<br><code>rpm -ivh kibana-7.2.0-x86_64.rpm</code></p>
+<p>2、确认Kibana的安装信息<br><code>rpm -qi kibana</code><br><img src="http://cdn.voidking.com/@/imgs/centos7-install-elk/kibana.jpg?imageView2/0/w/600" alt=""></p>
+<p>3、启动Kibana并设置开机启动</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl <span class="keyword">start</span> kibana</span><br><span class="line">systemctl <span class="keyword">enable</span> kibana</span><br></pre></td></tr></table></figure>
+
+<p>4、查看Kibana运行状态</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">systemctl</span> <span class="string">status kibana</span></span><br><span class="line"><span class="attr">ps</span> <span class="string">-ef | grep kibana</span></span><br><span class="line"><span class="attr">netstat</span> <span class="string">-nlpt</span></span><br></pre></td></tr></table></figure>
+
+<p>5、测试访问<br><code>curl localhost:5601 -L</code></p>
+<p>6、设置允许其他机器访问<br><code>vim /etc/kibana/kibana.yml</code>，如下修改：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># <span class="built_in">line</span> <span class="number">2</span>, uncomment <span class="built_in">and</span> <span class="keyword">change</span></span><br><span class="line">server.por<span class="variable">t:</span> <span class="number">5601</span></span><br><span class="line"># <span class="built_in">line</span> <span class="number">7</span>, uncomment <span class="built_in">and</span> <span class="keyword">change</span></span><br><span class="line">server.hos<span class="variable">t:</span> <span class="string">"0.0.0.0"</span></span><br><span class="line"># <span class="built_in">line</span> <span class="number">28</span>, uncomment</span><br><span class="line">elasticsearch.host<span class="variable">s:</span> [<span class="string">"http://localhost:9200"</span>]</span><br></pre></td></tr></table></figure>
+
+<p>7、重启Kibana</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">systemctl</span> <span class="string">stop kibana</span></span><br><span class="line"><span class="attr">systemctl</span> <span class="string">start kibana</span></span><br><span class="line"><span class="comment"># 启动后稍等一会</span></span><br><span class="line"><span class="attr">netstat</span> <span class="string">-nlpt</span></span><br></pre></td></tr></table></figure>
+<p>如果可以看到<code>0.0.0.0:5601</code>，就可以通过外部浏览器访问Kibana服务了，至此Kibana安装配置完成。<br><img src="http://cdn.voidking.com/@/imgs/centos7-install-elk/welcome.jpg?imageView2/0/w/800" alt=""><br><img src="http://cdn.voidking.com/@/imgs/centos7-install-elk/sample.jpg?imageView2/0/w/800" alt=""></p>
+<h2 id="Logstash"><a href="#Logstash" class="headerlink" title="Logstash"></a>Logstash</h2><p>1、安装Logstash<br><code>yum install -y logstash</code><br>也可以通过浏览器下载 <a href="https://artifacts.elastic.co/packages/7.x/yum/7.2.0/logstash-7.2.0.rpm" target="_blank" rel="noopener">https://artifacts.elastic.co/packages/7.x/yum/7.2.0/logstash-7.2.0.rpm</a> ，然后上传到服务节点，上传后执行安装：<br><code>rpm -ivh logstash-7.2.0.rpm</code></p>
+<p>2、确认Logstash的安装信息<br><code>rpm -qi logstash</code><br><img src="http://cdn.voidking.com/@/imgs/centos7-install-elk/logstash.jpg?imageView2/0/w/600" alt=""></p>
+<p>3、启动Logstash</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl <span class="literal">start</span> logstash</span><br></pre></td></tr></table></figure>
+
+<p>4、查看Logstash运行状态</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">systemctl</span> <span class="string">status logstash</span></span><br><span class="line"><span class="attr">ps</span> <span class="string">-ef | grep logstash</span></span><br><span class="line"><span class="attr">netstat</span> <span class="string">-nlpt</span></span><br></pre></td></tr></table></figure>
+
+<p>启动成功了，然后呢？怎么使用？</p>
+<p>5、Logstash hello world</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl <span class="keyword">stop</span> logstash</span><br><span class="line">/usr/<span class="keyword">share</span>/logstash/<span class="keyword">bin</span>/logstash -e <span class="string">'input &#123; stdin &#123; &#125; &#125; output &#123; stdout &#123;&#125; &#125;'</span></span><br></pre></td></tr></table></figure>
+<p>输入启动命令后，耐心等待服务启动，直到出现Successfully started Logstash API endpoint。输入“hello world”回车，即可打印出输出。<br><img src="http://cdn.voidking.com/@/imgs/centos7-install-elk/helloworld.jpg?imageView2/0/w/700" alt=""><br>logstash通过管道来处理数据，标准的管道包含input、filter和output。以上命令，指定了一个管道的参数，没有filter，input是控制台标准输入，output是控制台标准输出。</p>
+<p>6、管道配置写入文件<br>新建配置文件std.conf，内容为：</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class">input </span>&#123; </span><br><span class="line">    <span class="class">stdin </span>&#123; &#125; </span><br><span class="line">&#125; </span><br><span class="line"><span class="class">output </span>&#123; </span><br><span class="line">    <span class="class">stdout </span>&#123;&#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>7、测试配置文件并启动</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="regexp">/usr/</span>share<span class="regexp">/logstash/</span>bin<span class="regexp">/logstash -f ~/</span>std.conf --config.test_and_exit</span><br><span class="line"><span class="regexp">/usr/</span>share<span class="regexp">/logstash/</span>bin<span class="regexp">/logstash -f ~/</span>std.conf</span><br></pre></td></tr></table></figure>
+
+<p>8、从文件中读取信息<br>（1）新建/usr/local/test.log文件，内容为：</p>
+<figure class="highlight erlang-repl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hello logstash!</span><br></pre></td></tr></table></figure>
+
+<p>（2）新建test.conf，内容为：</p>
+<figure class="highlight puppet"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">input</span> &#123;</span><br><span class="line">    file &#123;</span><br><span class="line">        <span class="attr">path</span> =&gt; [<span class="string">"/usr/local/test.log"</span>]</span><br><span class="line">        <span class="attr">sincedb_path</span> =&gt; <span class="string">"/dev/null"</span></span><br><span class="line">        <span class="attr">start_position</span> =&gt; <span class="string">"beginning"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">filter</span> &#123;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">output</span> &#123;</span><br><span class="line">    stdout &#123;</span><br><span class="line">        <span class="attr">codec</span> =&gt; rubydebug</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>（3）启动Logstash<br><code>/usr/share/logstash/bin/logstash -f ~/test.conf</code><br><img src="http://cdn.voidking.com/@/imgs/centos7-install-elk/hellologstash.jpg?imageView2/0/w/300" alt=""></p>
+<p>9、写入信息到文件<br>（1）修改test.conf为：</p>
+<figure class="highlight puppet"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">input</span> &#123;</span><br><span class="line">    file &#123;</span><br><span class="line">        <span class="attr">path</span> =&gt; [<span class="string">"/usr/local/test.log"</span>]</span><br><span class="line">        <span class="attr">sincedb_path</span> =&gt; <span class="string">"/dev/null"</span></span><br><span class="line">        <span class="attr">start_position</span> =&gt; <span class="string">"beginning"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">filter</span> &#123;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">output</span> &#123;</span><br><span class="line">    file &#123;</span><br><span class="line">        <span class="attr">path</span> =&gt; [<span class="string">"/usr/local/test.log.out"</span>]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>（2）启动Logstash<br><code>/usr/share/logstash/bin/logstash -f ~/test.conf</code><br>启动后，/usr/local/目录下多了test.log.out文件。</p>
+<h2 id="数据传递"><a href="#数据传递" class="headerlink" title="数据传递"></a>数据传递</h2><p>Logstash收集到了数据，怎样传递给Elasticsearch显示？怎样传递给Kibana显示？<br>1、修改test.conf为：</p>
+<figure class="highlight puppet"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">input</span> &#123;</span><br><span class="line">    file &#123;</span><br><span class="line">        <span class="attr">path</span> =&gt; [<span class="string">"/usr/local/test.log"</span>]</span><br><span class="line">        <span class="attr">sincedb_path</span> =&gt; <span class="string">"/dev/null"</span></span><br><span class="line">        <span class="attr">start_position</span> =&gt; <span class="string">"beginning"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">filter</span> &#123;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">output</span> &#123;</span><br><span class="line">    elasticsearch &#123;</span><br><span class="line">        <span class="attr">hosts</span> =&gt; [<span class="string">"http://localhost:9200"</span>]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>2、启动Logstash<br><code>/usr/share/logstash/bin/logstash -f ~/test.conf</code></p>
+<p>3、查看索引<br>浏览器访问 <a href="http://192.168.56.101:9200/_cat/indices?v" target="_blank" rel="noopener">http://192.168.56.101:9200/_cat/indices?v</a><br><img src="http://cdn.voidking.com/@/imgs/centos7-install-elk/indices.jpg?imageView2/0/w/600" alt=""><br>其中有个索引是logstash的，这就是我们想要查看的数据索引。</p>
+<p>4、查看数据<br>浏览器访问 <a href="http://192.168.56.101:9200/logstash-2019.07.24-000001/_search" target="_blank" rel="noopener">http://192.168.56.101:9200/logstash-2019.07.24-000001/_search</a><br><img src="http://cdn.voidking.com/@/imgs/centos7-install-elk/search.jpg?imageView2/0/w/600" alt=""><br>看到了hello logstash!，说明数据已经成功传递到了Elasticsearch。链接后添加?pretty参数，可以进行格式化显示。</p>
+<p>5、Kibana添加indices<br>浏览器访问Kibana <a href="http://192.168.56.101:5601" target="_blank" rel="noopener">http://192.168.56.101:5601</a><br><img src="http://cdn.voidking.com/@/imgs/centos7-install-elk/kibanalogs.jpg?imageView2/0/h/700" alt=""><br>点击页面上的Logs，然后填写indices相关信息。<br><img src="http://cdn.voidking.com/@/imgs/centos7-install-elk/configuresource.jpg?imageView2/0/w/600" alt=""><br>最后点击Update Source，即可在页面上看到Logstash传递的信息。<br><img src="http://cdn.voidking.com/@/imgs/centos7-install-elk/kibanainfo.jpg?imageView2/0/w/600" alt=""></p>
+<p>6、修改test.log<br>修改test.log为：</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hello logstash!</span><br><span class="line"><span class="keyword">the</span> <span class="built_in">log</span> has been updated.</span><br></pre></td></tr></table></figure>
+<p>再次查看Kibana的日志显示，可以看到更新。<br><img src="http://cdn.voidking.com/@/imgs/centos7-install-elk/update.jpg?imageView2/0/w/600" alt=""></p>
+<h1 id="客户节点部署"><a href="#客户节点部署" class="headerlink" title="客户节点部署"></a>客户节点部署</h1><h2 id="环境准备-1"><a href="#环境准备-1" class="headerlink" title="环境准备"></a>环境准备</h2><p>默认root用户下操作，其他用户请自觉添加sudo。</p>
+<p>1、安装JDK。</p>
+<p>2、关闭防火墙。</p>
+<figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl <span class="keyword">stop</span> firewalld</span><br><span class="line">systemctl <span class="keyword">disable</span> firewalld</span><br></pre></td></tr></table></figure>
+
+<p>3、添加ELK仓库</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">cat &lt;&lt;EOF | tee /etc/yum.repos.d/elasticsearch.repo</span><br><span class="line">[elasticsearch-7.x]</span><br><span class="line"><span class="attribute">name</span>=Elasticsearch repository <span class="keyword">for</span> 7.x packages</span><br><span class="line"><span class="attribute">baseurl</span>=https://artifacts.elastic.co/packages/7.x/yum</span><br><span class="line"><span class="attribute">gpgcheck</span>=1</span><br><span class="line"><span class="attribute">gpgkey</span>=https://artifacts.elastic.co/GPG-KEY-elasticsearch</span><br><span class="line"><span class="attribute">enabled</span>=1</span><br><span class="line"><span class="attribute">autorefresh</span>=1</span><br><span class="line"><span class="attribute">type</span>=rpm-md</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<p>4、引入GPG key<br><code>rpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch</code></p>
+<p>5、更新yum包</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">yum</span> <span class="string">clean all</span></span><br><span class="line"><span class="attr">yum</span> <span class="string">makecache</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Logstash-1"><a href="#Logstash-1" class="headerlink" title="Logstash"></a>Logstash</h2><p>1、安装Logstash<br><code>yum install -y logstash</code><br>也可以通过浏览器下载 <a href="https://artifacts.elastic.co/packages/7.x/yum/7.2.0/logstash-7.2.0.rpm" target="_blank" rel="noopener">https://artifacts.elastic.co/packages/7.x/yum/7.2.0/logstash-7.2.0.rpm</a> ，然后上传到服务节点，上传后执行安装：<br><code>rpm -ivh logstash-7.2.0.rpm</code></p>
+<p>2、确认Logstash的安装信息<br><code>rpm -qi logstash</code><br><img src="http://cdn.voidking.com/@/imgs/centos7-install-elk/logstash.jpg?imageView2/0/w/600" alt=""></p>
+<p>3、创建测试文件<br>新建配置文件test.conf，内容为：</p>
+<figure class="highlight puppet"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">input</span> &#123;</span><br><span class="line">    file &#123;</span><br><span class="line">        <span class="attr">path</span> =&gt; [<span class="string">"/usr/local/test.log"</span>]</span><br><span class="line">        <span class="attr">sincedb_path</span> =&gt; <span class="string">"/dev/null"</span></span><br><span class="line">        <span class="attr">start_position</span> =&gt; <span class="string">"beginning"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">filter</span> &#123;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">output</span> &#123;</span><br><span class="line">    elasticsearch &#123;</span><br><span class="line">        <span class="attr">hosts</span> =&gt; [<span class="string">"http://192.168.56.101:9200"</span>]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>新建/usr/local/test.log，内容为：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span> <span class="keyword">is</span> a log recorded <span class="keyword">by</span> <span class="number">102</span></span><br></pre></td></tr></table></figure>
+
+<p>4、启动logstash</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="regexp">/usr/</span>share<span class="regexp">/logstash/</span>bin<span class="regexp">/logstash -f ~/</span>test.conf</span><br></pre></td></tr></table></figure>
+
+<p>5、在Kibana查看日志<br>刷新Kibana，即可看到客户节点的日志。<br><img src="http://cdn.voidking.com/@/imgs/centos7-install-elk/kibanainfo2.jpg?imageView2/0/w/600" alt=""></p>
+<h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p>以上，完成了ELK的基本安装配置，实现了一个最简单的架构。Logstash收集数据，传递给Elasticsearch，然后Kibana显示Elasticsearch中的数据。更多关于ELK的内容，后续会继续学习。</p>
+<h1 id="书签"><a href="#书签" class="headerlink" title="书签"></a>书签</h1><p><a href="https://computingforgeeks.com/how-to-install-elk-stack-on-centos-fedora/" target="_blank" rel="noopener">How to Install ELK Stack on CentOS 7</a></p>
+<p><a href="https://www.elastic.co/cn/blog/a-practical-introduction-to-logstash" target="_blank" rel="noopener">Logstash 实用介绍</a></p>
+<p><a href="https://www.elastic.co/guide/en/logstash/current/getting-started-with-logstash.html" target="_blank" rel="noopener">Getting Started with Logstash</a></p>
+<p><a href="https://www.ihaiyun.cc/2018/06/28/ELK/" target="_blank" rel="noopener">开源日志实时分析平台ELK</a></p>
+<p><a href="https://www.cnblogs.com/qingqing74647464/p/9378385.html" target="_blank" rel="noopener">logstash的各个场景应用（配置文件均已实践过）</a></p>
+<p><a href="https://www.cnblogs.com/cjsblog/p/9459781.html" target="_blank" rel="noopener">Logstash介绍</a></p>
+<p><a href="https://www.cnblogs.com/cheesebar/p/9126171.html" target="_blank" rel="noopener">在 CentOS7 安装 ELK</a></p>
+<p><a href="https://blog.51cto.com/lingxudong/2397209" target="_blank" rel="noopener">ELK-7.0安装部署收集展示</a></p>
+<p><a href="https://www.jianshu.com/p/e7362ccfe7e3" target="_blank" rel="noopener">ELK部署安装以及配置</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/linux/" rel="tag"># linux</a>
+          
+            <a href="/tags/centos/" rel="tag"># centos</a>
+          
+            <a href="/tags/elk/" rel="tag"># elk</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/dev-centos7-change-repo/" rel="next" title="CentOS7更换软件安装源">
+                <i class="fa fa-chevron-left"></i> CentOS7更换软件安装源
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/dev-elk-with-filebeat/" rel="prev" title="ELK配置FileBeat">
+                ELK配置FileBeat <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zODU3Mi8xNTEwMA=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="VoidKing" />
+            
+              <p class="site-author-name" itemprop="name">VoidKing</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">583</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">188</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:voidking@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/voidking" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/voidking" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://twitter.com/voidking_com" target="_blank" title="Twitter">
+                      
+                        <i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ELK简介"><span class="nav-number">1.</span> <span class="nav-text">ELK简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#部署规划"><span class="nav-number">2.</span> <span class="nav-text">部署规划</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#服务节点部署"><span class="nav-number">3.</span> <span class="nav-text">服务节点部署</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#环境准备"><span class="nav-number">3.1.</span> <span class="nav-text">环境准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Elasticsearch"><span class="nav-number">3.2.</span> <span class="nav-text">Elasticsearch</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kibana"><span class="nav-number">3.3.</span> <span class="nav-text">Kibana</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Logstash"><span class="nav-number">3.4.</span> <span class="nav-text">Logstash</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据传递"><span class="nav-number">3.5.</span> <span class="nav-text">数据传递</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#客户节点部署"><span class="nav-number">4.</span> <span class="nav-text">客户节点部署</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#环境准备-1"><span class="nav-number">4.1.</span> <span class="nav-text">环境准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Logstash-1"><span class="nav-number">4.2.</span> <span class="nav-text">Logstash</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#后记"><span class="nav-number">5.</span> <span class="nav-text">后记</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#书签"><span class="nav-number">6.</span> <span class="nav-text">书签</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2012 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">VoidKing</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <!-- <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script> -->
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+  <div class="footer-beian">
+    <a href="http://www.beian.miit.gov.cn/" target="_blank">苏ICP备14021030号</a>&nbsp;|&nbsp;
+    <!-- <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=32032202000223">苏公网安备 32032202000223号</a> -->
+    <img src="/images/beian.png" alt="">
+    <a target="_blank" href="http://www.beian.gov.cn/">苏公网安备 32032202000223号</a>
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+      <div id="needsharebutton-float">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "box";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+      flOptions = {};
+      
+          flOptions.iconStyle = "box";
+      
+          flOptions.boxForm = "horizontal";
+      
+          flOptions.position = "topRight";
+      
+          flOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-float', flOptions);
+    
+  </script>
+
+  
+
+  
+  
+
+
+  
+
+  
+
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+
+</body>
+</html>

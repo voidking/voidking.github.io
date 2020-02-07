@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=5.1.4">
+
+
+
+
+
+
+  <meta name="keywords" content="ubuntu,openstack,virtualbox,ssh," />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="VoidKing" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="前言OpenStack的安装是一个难点，非常难。哪怕已经安装过OpenStack，再次安装，也不敢说一定成功。安装过程中某处细微变化，也许就会出现各种奇葩错误。 总的来说，OpenStack大致分为4种安装方式：1、基于虚拟机的快速体验安装。这是最简单的方法，把搭建好环境的虚拟机运行起来即可。但是，遗憾的是，在网上没有找到OpenStack的虚拟机镜像。 2、基于DevStack快速脚本安装。这是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="VirtualBox中安装OpenStack">
+<meta property="og:url" content="https://www.voidking.com/dev-virtualbox-ubuntu-openstack/index.html">
+<meta property="og:site_name" content="VoidKing">
+<meta property="og:description" content="前言OpenStack的安装是一个难点，非常难。哪怕已经安装过OpenStack，再次安装，也不敢说一定成功。安装过程中某处细微变化，也许就会出现各种奇葩错误。 总的来说，OpenStack大致分为4种安装方式：1、基于虚拟机的快速体验安装。这是最简单的方法，把搭建好环境的虚拟机运行起来即可。但是，遗憾的是，在网上没有找到OpenStack的虚拟机镜像。 2、基于DevStack快速脚本安装。这是">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/virtualbox-ubuntu-openstack/success.jpg?imageView2/0/w/700">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/virtualbox-ubuntu-openstack/dashboard.jpg?imageView2/0/w/700">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/virtualbox-ubuntu-openstack/dashboard2.jpg?imageView2/0/w/700">
+<meta property="article:published_time" content="2017-06-13T12:00:00.000Z">
+<meta property="article:modified_time" content="2020-02-07T15:42:50.017Z">
+<meta property="article:author" content="VoidKing">
+<meta property="article:tag" content="ubuntu">
+<meta property="article:tag" content="openstack">
+<meta property="article:tag" content="virtualbox">
+<meta property="article:tag" content="ssh">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.voidking.com//imgs/virtualbox-ubuntu-openstack/success.jpg?imageView2/0/w/700">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.voidking.com/dev-virtualbox-ubuntu-openstack/"/>
+
+
+
+
+
+  <title>VirtualBox中安装OpenStack | VoidKing</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?b759ac2a7fa45129e3ef060bf68259f0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">VoidKing</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">好好学习，天天向上！</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.voidking.com/dev-virtualbox-ubuntu-openstack/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="VoidKing">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="VoidKing">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">VirtualBox中安装OpenStack</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-13T12:00:00+00:00">
+                2017-06-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/" itemprop="url" rel="index">
+                    <span itemprop="name">专业</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index">
+                    <span itemprop="name">运维</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E8%BF%90%E7%BB%B4/ubuntu/" itemprop="url" rel="index">
+                    <span itemprop="name">ubuntu</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>OpenStack的安装是一个难点，非常难。哪怕已经安装过OpenStack，再次安装，也不敢说一定成功。安装过程中某处细微变化，也许就会出现各种奇葩错误。</p>
+<p>总的来说，OpenStack大致分为4种安装方式：<br>1、基于虚拟机的快速体验安装。<br>这是最简单的方法，把搭建好环境的虚拟机运行起来即可。但是，遗憾的是，在网上没有找到OpenStack的虚拟机镜像。</p>
+<p>2、基于DevStack快速脚本安装。<br>这是OpenStack官方推荐的方式，安装速度较快，基于Folsom版本。但是，安装过程中一言不合就报错，困难重重。</p>
+<p>3、使用自动化安装工具。<br>RDO、Fuel、Puppet、Chef、Salt等，都是OpenStack的自动化安装工具。说是自动化安装工具，实际上安装配置时，也是非常繁琐。</p>
+<p>5、手动安装。<br>这种方式最困难，但是实际生产环境下，基本都需要手动安装。</p>
+<p>本文，就探讨一下在VirtualBox中使用DevStack安装OpenStack的步骤。也就是说，我们要自己创建一个OpenStack的虚拟机镜像。</p>
+<a id="more"></a>
+
+<h1 id="系统准备"><a href="#系统准备" class="headerlink" title="系统准备"></a>系统准备</h1><p>1、VirtualBox中安装好Ubuntu16，至少需要内存4G，硬盘20G。</p>
+<p>2、配置好Ubuntu16的网络地址为192.169.56.102。</p>
+<p>3、安装好ssh服务，方便远程操作。</p>
+<p>步骤2和3可以参考<a href="http://www.voidking.com/dev-virtualbox-centos-ubuntu-network/">《VirtualBox下CentOS7和Ubuntu16.04网络配置》</a>。</p>
+<h1 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h1><p>1、安装git<br><code>apt-get install git</code></p>
+<p>2、安装python<br><code>apt-get install python</code></p>
+<p>3、添加stack用户<br><code>useradd -s /bin/bash -d /opt/stack -m stack</code></p>
+<p>4、给stack用户添加sudo权限<br><code>echo &quot;stack ALL=(ALL) NOPASSWD: ALL&quot; | sudo tee /etc/sudoers.d/stack</code></p>
+<p>5、切换到stack用户<br><code>su - stack</code></p>
+<p>6、下载devstack<br><code>git clone https://git.openstack.org/openstack-dev/devstack</code><br>或者<br><code>git clone https://github.com/openstack-dev/devstack</code></p>
+<p>推荐从github下载。速度缓慢，请耐心等待。</p>
+<p>7、切换到stable/newton分支<br><code>cd devstack</code></p>
+<p><code>git checkout stable/newton</code></p>
+<h1 id="配置devstack"><a href="#配置devstack" class="headerlink" title="配置devstack"></a>配置devstack</h1><h2 id="创建local-conf"><a href="#创建local-conf" class="headerlink" title="创建local.conf"></a>创建local.conf</h2><p>在devstack目录下创建local.conf文件，内容如下：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">[[local|localrc]]</span><br><span class="line">ADMIN_PASSWORD=voidking</span><br><span class="line">DATABASE_PASSWORD=$ADMIN_PASSWORD</span><br><span class="line">RABBIT_PASSWORD=$ADMIN_PASSWORD</span><br><span class="line">SERVICE_PASSWORD=$ADMIN_PASSWORD</span><br><span class="line"></span><br><span class="line"><span class="comment"># Branches</span></span><br><span class="line">KEYSTONE_BRANCH=stable/newton</span><br><span class="line">NOVA_BRANCH=stable/newton</span><br><span class="line">NEUTRON_BRANCH=stable/newton</span><br><span class="line">SWIFT_BRANCH=stable/newton</span><br><span class="line">GLANCE_BRANCH=stable/newton</span><br><span class="line">CINDER_BRANCH=stable/newton</span><br><span class="line"></span><br><span class="line"><span class="comment"># Use mirror</span></span><br><span class="line">GIT_BASE=http://git.trystack.cn</span><br><span class="line">NOVNC_REPO=http://git.trystack.cn/kanaka/noVNC.git</span><br><span class="line">SPICE_REPO=http://git.trystack.cn/git/spice/spice-html5.git</span><br><span class="line"></span><br><span class="line"><span class="comment"># Enable heat services</span></span><br><span class="line">enable_service h-eng h-api h-api-cfn h-api-cw</span><br><span class="line"></span><br><span class="line"><span class="comment"># Enable heat plugin</span></span><br><span class="line">enable_plugin heat http://git.trystack.cn/openstack/heat.git stable/newton</span><br><span class="line"></span><br><span class="line">IMAGE_URL_SITE=<span class="string">"http://download.fedoraproject.org"</span></span><br><span class="line">IMAGE_URL_PATH=<span class="string">"/pub/fedora/linux/releases/25/CloudImages/x86_64/images/"</span></span><br><span class="line">IMAGE_URL_FILE=<span class="string">"Fedora-Cloud-Base-25-1.3.x86_64.qcow2"</span></span><br><span class="line">IMAGE_URLS+=<span class="string">","</span>$IMAGE_URL_SITE$IMAGE_URL_PATH$IMAGE_URL_FILE</span><br><span class="line"></span><br><span class="line"><span class="comment"># Service/Dashboard IP</span></span><br><span class="line">FLOATING_RANGE=192.168.1.224/27</span><br><span class="line">HOST_IP=192.168.56.102</span><br><span class="line">FLAT_INTERFACE=enp0s3</span><br></pre></td></tr></table></figure>
+
+<h2 id="local-conf说明"><a href="#local-conf说明" class="headerlink" title="local.conf说明"></a>local.conf说明</h2><p>1、密码配置</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">ADMIN_PASSWORD</span>=voidking</span><br><span class="line"><span class="attr">DATABASE_PASSWORD</span>=<span class="variable">$ADMIN_PASSWORD</span></span><br><span class="line"><span class="attr">RABBIT_PASSWORD</span>=<span class="variable">$ADMIN_PASSWORD</span></span><br><span class="line"><span class="attr">SERVICE_PASSWORD</span>=<span class="variable">$ADMIN_PASSWORD</span></span><br></pre></td></tr></table></figure>
+
+<p>2、git仓库<br>devstack默认会从 <a href="https://git.openstack.org" target="_blank" rel="noopener">https://git.openstack.org</a> 上下载openstack组件，那是相当的慢。故在local.conf必须要把仓库替换成其他源，国内推荐git.trystack.cn。注意，trystack用的是http，不是https。</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GIT_BASE=<span class="string">http:</span><span class="comment">//git.trystack.cn</span></span><br></pre></td></tr></table></figure>
+<p>或者</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GIT_BASE=<span class="string">https:</span><span class="comment">//github.com</span></span><br></pre></td></tr></table></figure>
+
+<p>3、branch<br>保证与devstack的branch一致，避免不可预知的问题。</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">NOVA_BRANCH</span>=stable/newton</span><br></pre></td></tr></table></figure>
+
+<p>4、Service/Dashboard IP<br>与虚拟机IP保持一致。</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HOST_IP=<span class="number">192.168</span><span class="number">.56</span><span class="number">.102</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="更换pypi源（可选）"><a href="#更换pypi源（可选）" class="headerlink" title="更换pypi源（可选）"></a>更换pypi源（可选）</h2><p>devstack默认python源为 <a href="https://pypi.python.org" target="_blank" rel="noopener">https://pypi.python.org</a> ，国内访问非常慢。可以从 <a href="https://www.pypi-mirrors.org/" target="_blank" rel="noopener">https://www.pypi-mirrors.org/</a> 选一个国内的镜像，把镜像地址写到pip.conf文件，并放到/root/.pip/pip.conf以及/home/stack/.pip/pip.conf。</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[<span class="keyword">global</span>]</span><br><span class="line"><span class="built_in">index</span>-url = http<span class="variable">s:</span>//pypi.doubanio.<span class="keyword">com</span>/simple</span><br></pre></td></tr></table></figure>
+
+<h1 id="安装devstack"><a href="#安装devstack" class="headerlink" title="安装devstack"></a>安装devstack</h1><p>1、切换stack用户，在devstack目录下。<br><code>./stack.sh</code></p>
+<p>安装过程中，会三次提示输入密码，这些密码需要和local.conf中保持一致。</p>
+<p>如果下载报错了。。。，请重新执行：<br><code>./stack.sh</code></p>
+<p>这一步非常久，小编用了六个多小时，请耐心等待。</p>
+<p>3、安装成功，提示：</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">=========================</span><br><span class="line">Total runtime         <span class="number">2982</span></span><br><span class="line"></span><br><span class="line">run_process           <span class="number">104</span></span><br><span class="line">test_with_retry         <span class="number">6</span></span><br><span class="line">apt-<span class="keyword">get</span>-update         <span class="number">22</span></span><br><span class="line">pip_install           <span class="number">462</span></span><br><span class="line">restart_apache_server  <span class="number">15</span></span><br><span class="line">wait_for_service       <span class="number">26</span></span><br><span class="line">apt-<span class="keyword">get</span>                <span class="number">12</span></span><br><span class="line">=========================</span><br><span class="line"></span><br><span class="line">This <span class="keyword">is</span> your host IP address: <span class="number">192.168</span><span class="number">.56</span><span class="number">.102</span></span><br><span class="line">This <span class="keyword">is</span> your host IPv6 address: ::<span class="number">1</span></span><br><span class="line">Horizon <span class="keyword">is</span> now available at http:<span class="comment">//192.168.56.102/dashboard</span></span><br><span class="line">Keystone <span class="keyword">is</span> serving at http:<span class="comment">//192.168.56.102/identity/</span></span><br><span class="line">The <span class="keyword">default</span> users are: admin <span class="keyword">and</span> demo</span><br><span class="line">The password: <span class="built_in">void</span>king</span><br><span class="line"><span class="number">2017</span><span class="number">-06</span><span class="number">-15</span> <span class="number">01</span>:<span class="number">01</span>:<span class="number">59.770</span> | WARNING: </span><br><span class="line"><span class="number">2017</span><span class="number">-06</span><span class="number">-15</span> <span class="number">01</span>:<span class="number">01</span>:<span class="number">59.771</span> | Using lib/neutron-legacy <span class="keyword">is</span> deprecated, <span class="keyword">and</span> it will be removed <span class="keyword">in</span> the future</span><br><span class="line"><span class="number">2017</span><span class="number">-06</span><span class="number">-15</span> <span class="number">01</span>:<span class="number">01</span>:<span class="number">59.771</span> | stack.sh completed <span class="keyword">in</span> <span class="number">2982</span> seconds.</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://cdn.voidking.com//imgs/virtualbox-ubuntu-openstack/success.jpg?imageView2/0/w/700" alt=""></p>
+<p>4、大功告成，这时就可以通过浏览器访问openstack服务了！<br>访问地址：<a href="http://192.168.56.102/dashboard" target="_blank" rel="noopener">http://192.168.56.102/dashboard</a></p>
+<p><img src="http://cdn.voidking.com//imgs/virtualbox-ubuntu-openstack/dashboard.jpg?imageView2/0/w/700" alt=""></p>
+<p>PS：如果这一步无法访问，提示“Internal Server Error”，那么需要手动把ip地址加到local_settings.py里的ALLOWED_HOSTS字段。<br><code>vim /opt/stack/horizon/openstack_dashboard/local/local_settings.py</code></p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># If horizon is running in production (DEBUG is False), set this</span></span><br><span class="line"><span class="comment"># with the list of host/domain names that the application can serve.</span></span><br><span class="line"><span class="comment"># For more information see:</span></span><br><span class="line"><span class="comment"># https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts</span></span><br><span class="line"><span class="attr">ALLOWED_HOSTS</span> = [<span class="string">'*'</span>]</span><br></pre></td></tr></table></figure>
+
+<p>然后重启apache2服务，<code>service apache2 restart</code></p>
+<p>5、输入用户名admin，密码voidking，进入管理面板。<br><img src="http://cdn.voidking.com//imgs/virtualbox-ubuntu-openstack/dashboard2.jpg?imageView2/0/w/700" alt=""></p>
+<h1 id="书签"><a href="#书签" class="headerlink" title="书签"></a>书签</h1><p><a href="http://blog.csdn.net/dead911/article/details/53953965" target="_blank" rel="noopener">VirtualBox + DevStack</a></p>
+<p><a href="https://docs.openstack.org/developer/devstack/" target="_blank" rel="noopener">DevStack</a></p>
+<p><a href="https://www.ustack.com/blog/install-openstack-in-10mins" target="_blank" rel="noopener">10分钟安装OpenStack</a></p>
+<p><a href="http://www.cnblogs.com/yudar/p/4630758.html" target="_blank" rel="noopener">Fuel 30 分钟快速安装OpenStack</a></p>
+<p><a href="http://geek.csdn.net/news/detail/53890/" target="_blank" rel="noopener">个人电脑上搭建OpenStack的实验室</a></p>
+<p><a href="https://docs.openstack.org/developer/devstack/guides/single-machine.html" target="_blank" rel="noopener">All-In-One Single Machine</a></p>
+<p><a href="http://lingxiankong.github.io/blog/huawei-allinone-operation-guide/" target="_blank" rel="noopener">Huawei Icehouse All in One Operation Guide</a></p>
+<p><a href="http://www.chenshake.com/openstack-project-series-3-devstack/" target="_blank" rel="noopener">penStack项目系列介绍（3） Devstack</a></p>
+<p><a href="http://blog.csdn.net/mygrus/article/details/53816022" target="_blank" rel="noopener">DevStack环境搭建</a></p>
+<p><a href="http://releases.ubuntu.com/14.04/" target="_blank" rel="noopener">Ubuntu14.04下载地址1</a></p>
+<p><a href="http://ftp.sjtu.edu.cn/ubuntu-cd/14.04/" target="_blank" rel="noopener">Ubuntu14.04下载地址2</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
+          
+            <a href="/tags/openstack/" rel="tag"># openstack</a>
+          
+            <a href="/tags/virtualbox/" rel="tag"># virtualbox</a>
+          
+            <a href="/tags/ssh/" rel="tag"># ssh</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/dev-openstack-start/" rel="next" title="OpenStack入门">
+                <i class="fa fa-chevron-left"></i> OpenStack入门
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/en-learning-method-of-english/" rel="prev" title="英语学习方法">
+                英语学习方法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zODU3Mi8xNTEwMA=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="VoidKing" />
+            
+              <p class="site-author-name" itemprop="name">VoidKing</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">583</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">188</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:voidking@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/voidking" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/voidking" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://twitter.com/voidking_com" target="_blank" title="Twitter">
+                      
+                        <i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#系统准备"><span class="nav-number">2.</span> <span class="nav-text">系统准备</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#环境准备"><span class="nav-number">3.</span> <span class="nav-text">环境准备</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#配置devstack"><span class="nav-number">4.</span> <span class="nav-text">配置devstack</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建local-conf"><span class="nav-number">4.1.</span> <span class="nav-text">创建local.conf</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#local-conf说明"><span class="nav-number">4.2.</span> <span class="nav-text">local.conf说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#更换pypi源（可选）"><span class="nav-number">4.3.</span> <span class="nav-text">更换pypi源（可选）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装devstack"><span class="nav-number">5.</span> <span class="nav-text">安装devstack</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#书签"><span class="nav-number">6.</span> <span class="nav-text">书签</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2012 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">VoidKing</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <!-- <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script> -->
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+  <div class="footer-beian">
+    <a href="http://www.beian.miit.gov.cn/" target="_blank">苏ICP备14021030号</a>&nbsp;|&nbsp;
+    <!-- <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=32032202000223">苏公网安备 32032202000223号</a> -->
+    <img src="/images/beian.png" alt="">
+    <a target="_blank" href="http://www.beian.gov.cn/">苏公网安备 32032202000223号</a>
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+      <div id="needsharebutton-float">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "box";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+      flOptions = {};
+      
+          flOptions.iconStyle = "box";
+      
+          flOptions.boxForm = "horizontal";
+      
+          flOptions.position = "topRight";
+      
+          flOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-float', flOptions);
+    
+  </script>
+
+  
+
+  
+  
+
+
+  
+
+  
+
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+
+</body>
+</html>

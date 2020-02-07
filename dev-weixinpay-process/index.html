@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=5.1.4">
+
+
+
+
+
+
+  <meta name="keywords" content="node,微信," />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="VoidKing" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="前言花费了一天时间，调通了微信公众号支付。作下记录，方便以后再次填坑。先声明，微信公众号支付，不同于微信H5支付，这点在本文结束时再详细说明。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="微信公众号支付流程">
+<meta property="og:url" content="https://www.voidking.com/dev-weixinpay-process/index.html">
+<meta property="og:site_name" content="VoidKing">
+<meta property="og:description" content="前言花费了一天时间，调通了微信公众号支付。作下记录，方便以后再次填坑。先声明，微信公众号支付，不同于微信H5支付，这点在本文结束时再详细说明。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/weixinpay-process/%E6%B5%8B%E8%AF%95%E7%9B%AE%E5%BD%95.png">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/weixinpay-process/%E6%AD%A3%E5%BC%8F%E7%9B%AE%E5%BD%95.png">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/weixinpay-process/%E6%97%B6%E5%BA%8F%E5%9B%BE.png">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/weixinpay-process/flowchart.jpg">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/weixinpay-process/signerror.jpg?imageView2/0/w/600">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/weixinpay-process/urlerror.jpg?imageView2/0/w/600">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/weixinpay-process/success.png?imageView2/0/w/600">
+<meta property="og:image" content="http://cdn.voidking.com//imgs/weixinpay-process/success.jpg?imageView2/0/w/600">
+<meta property="article:published_time" content="2016-08-11T20:32:49.000Z">
+<meta property="article:modified_time" content="2020-02-07T15:42:50.017Z">
+<meta property="article:author" content="VoidKing">
+<meta property="article:tag" content="node">
+<meta property="article:tag" content="微信">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.voidking.com//imgs/weixinpay-process/%E6%B5%8B%E8%AF%95%E7%9B%AE%E5%BD%95.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.voidking.com/dev-weixinpay-process/"/>
+
+
+
+
+
+  <title>微信公众号支付流程 | VoidKing</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?b759ac2a7fa45129e3ef060bf68259f0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">VoidKing</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">好好学习，天天向上！</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.voidking.com/dev-weixinpay-process/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="VoidKing">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="VoidKing">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">微信公众号支付流程</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-08-11T20:32:49+00:00">
+                2016-08-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/" itemprop="url" rel="index">
+                    <span itemprop="name">专业</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%93%E4%B8%9A/%E5%89%8D%E7%AB%AF/node/" itemprop="url" rel="index">
+                    <span itemprop="name">node</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>花费了一天时间，调通了微信公众号支付。作下记录，方便以后再次填坑。先声明，微信公众号支付，不同于微信H5支付，这点在本文结束时再详细说明。</p>
+<a id="more"></a>
+
+<h1 id="微信配置"><a href="#微信配置" class="headerlink" title="微信配置"></a>微信配置</h1><h2 id="设置测试目录"><a href="#设置测试目录" class="headerlink" title="设置测试目录"></a>设置测试目录</h2><p>在微信公众平台设置，栏目见下图。支付测试状态下，设置测试目录，测试人的微信号添加到白名单，发起支付的页面目录必须与设置的精确匹配。并将支付链接发到对应的公众号会话窗口中才能正常发起支付测试。注意正式目录一定不能与测试目录设置成一样，否则支付会出错。<br><img src="http://cdn.voidking.com//imgs/weixinpay-process/%E6%B5%8B%E8%AF%95%E7%9B%AE%E5%BD%95.png" alt=""></p>
+<h2 id="设置正式支付目录"><a href="#设置正式支付目录" class="headerlink" title="设置正式支付目录"></a>设置正式支付目录</h2><p>根据图中栏目顺序进入修改栏目，勾选JSAPI网页支付开通该权限，并配置好支付授权目录，该目录必须是发起支付的页面的精确目录，子目录下无法正常调用支付。具体界面如图所示：<br><img src="http://cdn.voidking.com//imgs/weixinpay-process/%E6%AD%A3%E5%BC%8F%E7%9B%AE%E5%BD%95.png" alt=""></p>
+<h1 id="交互流程"><a href="#交互流程" class="headerlink" title="交互流程"></a>交互流程</h1><h2 id="业务流程时序图"><a href="#业务流程时序图" class="headerlink" title="业务流程时序图"></a>业务流程时序图</h2><p>首先看下微信官方给出的交互流程：<br><img src="http://cdn.voidking.com//imgs/weixinpay-process/%E6%97%B6%E5%BA%8F%E5%9B%BE.png" alt=""></p>
+<h2 id="服务器交互"><a href="#服务器交互" class="headerlink" title="服务器交互"></a>服务器交互</h2><p>微信公众号支付的流程，简而言之只有两步。第一步，下单，拿到prepay_id等信息；第二步，利用第一步拿到的prepay_id等信息进行支付。<br><img src="http://cdn.voidking.com//imgs/weixinpay-process/flowchart.jpg" alt=""></p>
+<h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><h2 id="Node端"><a href="#Node端" class="headerlink" title="Node端"></a>Node端</h2><figure class="highlight qml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 微信支付</span></span><br><span class="line">exports.weixinpay = <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</span><br><span class="line">  <span class="keyword">var</span> orderId = req.params.orderId;</span><br><span class="line">  <span class="keyword">var</span> selectSum = req.params.selectSum;</span><br><span class="line">  <span class="keyword">var</span> token = req.params.token;</span><br><span class="line">  <span class="comment">// 获取code</span></span><br><span class="line">  <span class="keyword">if</span>(!req.query.code)&#123;</span><br><span class="line">    <span class="keyword">var</span> r_url = <span class="string">'http://'</span> +config.host+<span class="string">'/artist/weixinpay/'</span>+orderId+<span class="string">'/'</span>+selectSum+<span class="string">'/'</span>+token;</span><br><span class="line">    <span class="keyword">var</span> <span class="built_in">url</span> = <span class="string">'https://open.weixin.qq.com/connect/oauth2/authorize?appid='</span>+config.weixin.appid+<span class="string">'&amp;redirect_uri='</span>+urlencode(r_url)+<span class="string">'&amp;response_type=code&amp;scope=snsapi_userinfo&amp;state=111#wechat_redirect'</span>;</span><br><span class="line">    res.redirect(<span class="built_in">url</span>);</span><br><span class="line">  &#125;<span class="title">else</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> code = req.query.code;</span><br><span class="line">    <span class="keyword">var</span> state = req.query.state;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> ep = <span class="keyword">new</span> eventproxy();</span><br><span class="line">    ep.all(<span class="string">'userInfo'</span>,<span class="function"><span class="keyword">function</span>(<span class="params">userInfoData</span>)</span>&#123;</span><br><span class="line">      <span class="keyword">var</span> userInfoData = <span class="built_in">JSON</span>.parse(userInfoData);</span><br><span class="line">      res.render(<span class="string">'artist/weixinpay'</span>,&#123;</span><br><span class="line">        <span class="comment">// 其他数据</span></span><br><span class="line">        <span class="attribute">openid</span>: userInfoData.openid,</span><br><span class="line">        <span class="attribute">orderId</span>: orderId,</span><br><span class="line">        <span class="attribute">selectSum</span>: selectSum,</span><br><span class="line">        <span class="attribute">token</span>: token</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取用户信息userInfo</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">exports.weixinpay2 = <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>)</span>&#123;</span><br><span class="line">  <span class="keyword">var</span> wxParamUrl = config.apihost + <span class="string">'/order/getH5SubOrderforWechat'</span>;</span><br><span class="line">  <span class="keyword">var</span> param = &#123;</span><br><span class="line">    <span class="attribute">orderId</span>: req.query.orderId,</span><br><span class="line">    <span class="attribute">selectSum</span>: req.query.selectSum,</span><br><span class="line">    <span class="attribute">accessToken</span>: req.query.token,</span><br><span class="line">    <span class="attribute">openId</span>: req.query.openid</span><br><span class="line">  &#125;;</span><br><span class="line">  request.post(&#123;<span class="attribute">url</span>: wxParamUrl,<span class="attribute">form</span>: <span class="built_in">JSON</span>.stringify(param)&#125;,<span class="function"><span class="keyword">function</span>(<span class="params">error, response, body</span>)</span>&#123;    </span><br><span class="line">    res.render(<span class="string">'artist/weixinpay2'</span>,&#123;</span><br><span class="line">      <span class="comment">// 其他数据</span></span><br><span class="line">      <span class="attribute">wxParam</span>: <span class="built_in">JSON</span>.parse(response.body)</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的代码看起来很奇怪，为什么需要一个weixinpay2函数？代码全部放在weixinpay函数里面，然后在weixinpay.html里调用微信支付接口，不是很好么？这个，就涉及到支付目录的问题了。weixinpay函数中，微信授权获取用户信息后的回调url，目录太深，而且不确定，因为我们是通过目录来传递参数的。这样，就无法在微信公众号上面设置支付授权目录。所以，我们不能在weixinpay.html这个页面发起支付请求，只能把参数转发给下一个weixinpay2.html页面，在weixinpap2.html中发起支付请求。</p>
+<p>那么，为什么获取用户信息后的回调url目录太深？直接把orderId等信息当做参数放在回调url后面不就可以了吗？很遗憾，回调url无法带入你的自定义参数。因此，只能把参数当做回调url的一部分，也就是目录的一部分。</p>
+<p>综上，weixinpay函数负责获取用户的openid，weixinpay.html负责跳转weixinpay2.html；weixinpay2函数负责获取调用微信JSAPI的参数，weixinpay2.html负责调用微信JSAPI。</p>
+<h2 id="html"><a href="#html" class="headerlink" title="html"></a>html</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--weixinpay.html--&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"zh"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>微信支付<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">a</span> <span class="attr">id</span>=<span class="string">"weixin-link"</span> <span class="attr">href</span>=<span class="string">"/artist/weixinpay2?orderId=&lt;%= orderId%&gt;&amp;selectSum=&lt;%= selectSum%&gt;&amp;token=&lt;%= token%&gt;&amp;openid=&lt;%= openid%&gt;"</span> <span class="attr">style</span>=<span class="string">"display: none"</span>&gt;</span>微信支付<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">var</span> link = <span class="built_in">document</span>.getElementById(<span class="string">'weixin-link'</span>);</span></span><br><span class="line">    link.click();</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--weixinpay2.html--&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"zh"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>微信支付<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">"appId"</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">value</span>=<span class="string">"&lt;%= wxParam.obj.appid%&gt;"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">"timeStamp"</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">value</span>=<span class="string">"&lt;%= wxParam.obj.timestamp%&gt;"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">"nonceStr"</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">value</span>=<span class="string">"&lt;%= wxParam.obj.noncestr%&gt;"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">"package"</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">value</span>=<span class="string">"&lt;%= wxParam.obj.packagestr%&gt;"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">"signType"</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">value</span>=<span class="string">"MD5"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">"paySign"</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">value</span>=<span class="string">"&lt;%= wxParam.obj.sign%&gt;"</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="actionscript"><span class="function"><span class="keyword">function</span> <span class="title">onBridgeReady</span><span class="params">()</span></span>&#123;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">var</span> appId = <span class="built_in">document</span>.getElementById(<span class="string">'appId'</span>).value;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">var</span> timeStamp = <span class="built_in">document</span>.getElementById(<span class="string">'timeStamp'</span>).value;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">var</span> nonceStr = <span class="built_in">document</span>.getElementById(<span class="string">'nonceStr'</span>).value;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">var</span> package = <span class="built_in">document</span>.getElementById(<span class="string">'package'</span>).value;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">var</span> signType = <span class="built_in">document</span>.getElementById(<span class="string">'signType'</span>).value;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">var</span> paySign = <span class="built_in">document</span>.getElementById(<span class="string">'paySign'</span>).value;</span></span><br><span class="line">    WeixinJSBridge.invoke(</span><br><span class="line"><span class="actionscript">        <span class="string">'getBrandWCPayRequest'</span>, &#123;</span></span><br><span class="line"><span class="actionscript">            <span class="string">"appId"</span>: appId,     <span class="comment">//公众号名称，由商户传入     </span></span></span><br><span class="line"><span class="actionscript">            <span class="string">"timeStamp"</span>:timeStamp,         <span class="comment">//时间戳，自1970年以来的秒数     </span></span></span><br><span class="line"><span class="actionscript">            <span class="string">"nonceStr"</span>: nonceStr, <span class="comment">//随机串     </span></span></span><br><span class="line"><span class="actionscript">            <span class="string">"package"</span>: <span class="class"><span class="keyword">package</span>,     </span></span></span><br><span class="line"><span class="actionscript">            <span class="string">"signType"</span>: signType,         <span class="comment">//微信签名方式：     </span></span></span><br><span class="line"><span class="actionscript">            <span class="string">"paySign"</span>: paySign <span class="comment">//微信签名 </span></span></span><br><span class="line">        &#125;,</span><br><span class="line"><span class="actionscript">        <span class="function"><span class="keyword">function</span><span class="params">(res)</span></span>&#123;</span></span><br><span class="line">            WeixinJSBridge.log(res.err_msg);</span><br><span class="line"><span class="actionscript">            <span class="comment">//alert(res.err_code + res.err_desc + res.err_msg);</span></span></span><br><span class="line"><span class="actionscript">            <span class="keyword">if</span> (res.err_msg == <span class="string">"get_brand_wcpay_request:ok"</span>) &#123;  </span></span><br><span class="line"><span class="javascript">                <span class="built_in">window</span>.location.href = <span class="string">'/artist/alipayresult?trade_status=TRADE_SUCCESS'</span>;</span></span><br><span class="line"><span class="actionscript">                <span class="comment">// 执行跳转页面....  </span></span></span><br><span class="line"><span class="actionscript">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (res.err_msg == <span class="string">"get_brand_wcpay_request:cancel"</span>) &#123;  </span></span><br><span class="line"><span class="actionscript">                alert (<span class="string">"用户取消支付!"</span>);  </span></span><br><span class="line"><span class="actionscript">            &#125; <span class="keyword">else</span> &#123;  </span></span><br><span class="line"><span class="actionscript">                alert (<span class="string">"支付失败!"</span>);  </span></span><br><span class="line">            &#125;  </span><br><span class="line">            </span><br><span class="line">        &#125;</span><br><span class="line">    ); </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="actionscript"><span class="keyword">if</span> (<span class="keyword">typeof</span> WeixinJSBridge == <span class="string">"undefined"</span>)&#123;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">if</span>( <span class="built_in">document</span>.addEventListener )&#123;</span></span><br><span class="line"><span class="javascript">        <span class="built_in">document</span>.addEventListener(<span class="string">'WeixinJSBridgeReady'</span>, onBridgeReady, <span class="literal">false</span>);</span></span><br><span class="line"><span class="javascript">    &#125;<span class="keyword">else</span> <span class="keyword">if</span> (<span class="built_in">document</span>.attachEvent)&#123;</span></span><br><span class="line"><span class="javascript">        <span class="built_in">document</span>.attachEvent(<span class="string">'WeixinJSBridgeReady'</span>, onBridgeReady); </span></span><br><span class="line"><span class="javascript">        <span class="built_in">document</span>.attachEvent(<span class="string">'onWeixinJSBridgeReady'</span>, onBridgeReady);</span></span><br><span class="line">    &#125;</span><br><span class="line"><span class="actionscript">&#125;<span class="keyword">else</span>&#123;</span></span><br><span class="line">    onBridgeReady();</span><br><span class="line">&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>为了加快执行速度，这里的两个页面中，都使用原生的js来实现页面逻辑。</p>
+<h1 id="错误"><a href="#错误" class="headerlink" title="错误"></a>错误</h1><h2 id="支付验证签名失败"><a href="#支付验证签名失败" class="headerlink" title="支付验证签名失败"></a>支付验证签名失败</h2><p><img src="http://cdn.voidking.com//imgs/weixinpay-process/signerror.jpg?imageView2/0/w/600" alt=""><br>很明显，支付验证签名失败。怎么判断算出的签名是否正确？使用微信支付<a href="https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=20_1" target="_blank" rel="noopener">接口签名校验工具</a>。<br>校验方式选择自定义参数，把需要签名的参数名称和参数值输入页面，点击生成签名即可。</p>
+<h2 id="当前页面的URL未注册"><a href="#当前页面的URL未注册" class="headerlink" title="当前页面的URL未注册"></a>当前页面的URL未注册</h2><p>不好意思，这个错误忘记截图了。借来了一张图，凑合着看。<br><img src="http://cdn.voidking.com//imgs/weixinpay-process/urlerror.jpg?imageView2/0/w/600" alt=""><br>这个问题，是由于调用支付接口的url不对！那么，怎样是对的呢？举个栗子：如果调用支付接口的url为<code>http://wx.voidking.com/pay/weixinpay</code>，那么微信公众平台上的支付授权目录应该设置为<code>http://wx.voidking.com/pay/</code>。也就是说，支付授权目录应该设置为调用支付接口的url的上一级目录。</p>
+<h1 id="支付成功"><a href="#支付成功" class="headerlink" title="支付成功"></a>支付成功</h1><p><img src="http://cdn.voidking.com//imgs/weixinpay-process/success.png?imageView2/0/w/600" alt=""><br><img src="http://cdn.voidking.com//imgs/weixinpay-process/success.jpg?imageView2/0/w/600" alt=""></p>
+<h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p>微信公众号支付，两个缺点，一是必须在微信浏览器使用，二是必须有一个拉取用户信息的步骤。但是我们发现，很多网站，在其他浏览器也可以使用微信支付，也不需要拉取用户信息，这是怎么回事？</p>
+<p>因为，这是两种不同的支付方式！今天我们讨论的，叫做微信公众号支付；而在其他浏览器中调用微信支付，叫做微信H5支付！</p>
+<p>更多关于微信H5支付的内容，请参考<a href="https://pay.weixin.qq.com/wiki/doc/api/wap.php?chapter=15_1" target="_blank" rel="noopener">微信H5支付官方文档</a>。</p>
+<h1 id="书签"><a href="#书签" class="headerlink" title="书签"></a>书签</h1><p>微信支付开发文档——公众号支付<br><a href="https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=7_1" target="_blank" rel="noopener">https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=7_1</a></p>
+<p>微信支付接口签名校验工具<br><a href="https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=20_1" target="_blank" rel="noopener">https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=20_1</a></p>
+<p>非微信内置浏览器中的网页调起微信支付的方案研究<br><a href="http://blog.csdn.net/ahence/article/details/51317814" target="_blank" rel="noopener">http://blog.csdn.net/ahence/article/details/51317814</a></p>
+<p>微信支付|商户平台开发者文档<br><a href="https://pay.weixin.qq.com/wiki/doc/api/wap.php?chapter=15_1" target="_blank" rel="noopener">https://pay.weixin.qq.com/wiki/doc/api/wap.php?chapter=15_1</a></p>
+<p>【微信支付V2.0】H5支付实例<br><a href="http://wxpay.weixin.qq.com/pub_v2/pay/wap.v2.php" target="_blank" rel="noopener">http://wxpay.weixin.qq.com/pub_v2/pay/wap.v2.php</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/node/" rel="tag"># node</a>
+          
+            <a href="/tags/%E5%BE%AE%E4%BF%A1/" rel="tag"># 微信</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/dev-h5-jump-wechat-public-platform/" rel="next" title="H5跳转微信公众平台">
+                <i class="fa fa-chevron-left"></i> H5跳转微信公众平台
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/dev-thinkphp-environment/" rel="prev" title="ThinkPHP开发环境搭建">
+                ThinkPHP开发环境搭建 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zODU3Mi8xNTEwMA=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="VoidKing" />
+            
+              <p class="site-author-name" itemprop="name">VoidKing</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">583</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">188</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:voidking@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/voidking" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/voidking" target="_blank" title="Weibo">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://twitter.com/voidking_com" target="_blank" title="Twitter">
+                      
+                        <i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#微信配置"><span class="nav-number">2.</span> <span class="nav-text">微信配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#设置测试目录"><span class="nav-number">2.1.</span> <span class="nav-text">设置测试目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设置正式支付目录"><span class="nav-number">2.2.</span> <span class="nav-text">设置正式支付目录</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#交互流程"><span class="nav-number">3.</span> <span class="nav-text">交互流程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#业务流程时序图"><span class="nav-number">3.1.</span> <span class="nav-text">业务流程时序图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务器交互"><span class="nav-number">3.2.</span> <span class="nav-text">服务器交互</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#代码"><span class="nav-number">4.</span> <span class="nav-text">代码</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Node端"><span class="nav-number">4.1.</span> <span class="nav-text">Node端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#html"><span class="nav-number">4.2.</span> <span class="nav-text">html</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#错误"><span class="nav-number">5.</span> <span class="nav-text">错误</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#支付验证签名失败"><span class="nav-number">5.1.</span> <span class="nav-text">支付验证签名失败</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#当前页面的URL未注册"><span class="nav-number">5.2.</span> <span class="nav-text">当前页面的URL未注册</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#支付成功"><span class="nav-number">6.</span> <span class="nav-text">支付成功</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#后记"><span class="nav-number">7.</span> <span class="nav-text">后记</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#书签"><span class="nav-number">8.</span> <span class="nav-text">书签</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2012 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">VoidKing</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <!-- <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script> -->
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+  <div class="footer-beian">
+    <a href="http://www.beian.miit.gov.cn/" target="_blank">苏ICP备14021030号</a>&nbsp;|&nbsp;
+    <!-- <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=32032202000223">苏公网安备 32032202000223号</a> -->
+    <img src="/images/beian.png" alt="">
+    <a target="_blank" href="http://www.beian.gov.cn/">苏公网安备 32032202000223号</a>
+  </div>
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+      <div id="needsharebutton-float">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "box";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+      flOptions = {};
+      
+          flOptions.iconStyle = "box";
+      
+          flOptions.boxForm = "horizontal";
+      
+          flOptions.position = "topRight";
+      
+          flOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-float', flOptions);
+    
+  </script>
+
+  
+
+  
+  
+
+
+  
+
+  
+
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+
+</body>
+</html>
