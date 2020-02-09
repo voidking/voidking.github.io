@@ -32,7 +32,24 @@ hexo cleanhexo ggulphexo d
 "scripts": &#123;  "build": "hexo clean &amp;&amp; hexo g &amp;&amp; gulp",  "deploy": "hexo clean &amp;&amp; hexo g &amp;&amp; gulp &amp;&amp; hexo d"&#125;
 构建只需要执行npm run build，构建发布只需要执行npm run deploy。
 travis配置对应的，修改.travis.yml配置为：
-sudo: falselanguage: node_jsnode_js:  - 10.16.3cache: npmbranches:  only:    - master # build master branch onlyenv: global:   - HEXO_BACKUP_REPO: github.com/voidking/hexo-backup.git   - HEXO_THEME_REPO: github.com/voidking/hexo-theme-next.git   - GITHUB_PAGES_REPO: github.com/voidking/voidking.github.io.git   - VOIDKING_REPO: github.com/voidking/voidking.gitbefore_install:  - npm install hexo -g  - npm install gulp-cli -ginstall:  - npm installscript:  - git clone https://$&#123;HEXO_THEME_REPO&#125; themes/next  - git clone https://$&#123;GITHUB_TOKEN&#125;@$&#123;HEXO_BACKUP_REPO&#125; hexo-backup  - mv hexo-backup/source .  - rm -rf source/private  - npm run buildafter_success:  - git config --global user.name "voidking"  - git config --global user.email "voidking@qq.com"  - git clone https://$&#123;GITHUB_TOKEN&#125;@$&#123;GITHUB_PAGES_REPO&#125; voidking  - unalias cp  - cp -rf public/* voidking  - cd voidking  - git add .  - git commit -m "Travis CI Auto Builder"  - git push --force --quiet "https://$&#123;GITHUB_TOKEN&#125;@$&#123;GITHUB_PAGES_REPO&#125;" master:master]]></content>
+sudo: falselanguage: node_jsnode_js:  - 10.16.3cache: npmbranches:  only:    - master # build master branch onlyenv: global:   - HEXO_BACKUP_REPO: github.com/voidking/hexo-backup.git   - HEXO_THEME_REPO: github.com/voidking/hexo-theme-next.git   - GITHUB_PAGES_REPO: github.com/voidking/voidking.github.io.git   - VOIDKING_REPO: github.com/voidking/voidking.gitbefore_install:  - npm install hexo -g  - npm install gulp-cli -ginstall:  - npm installscript:  - git clone https://$&#123;HEXO_THEME_REPO&#125; themes/next  - git clone https://$&#123;GITHUB_TOKEN&#125;@$&#123;HEXO_BACKUP_REPO&#125; hexo-backup  - mv hexo-backup/source .  - rm -rf source/private  - npm run buildafter_success:  - git config --global user.name "voidking"  - git config --global user.email "voidking@qq.com"  - git clone https://$&#123;GITHUB_TOKEN&#125;@$&#123;GITHUB_PAGES_REPO&#125; voidking  - unalias cp  - cp -rf public/* voidking  - cd voidking  - git add .  - git commit -m "Travis CI Auto Builder"  - git push --force --quiet "https://$&#123;GITHUB_TOKEN&#125;@$&#123;GITHUB_PAGES_REPO&#125;" master:master
+
+精简search.xmlhtml、css和js都压缩了，很开心。但是，还有一个大文件没有压缩，就是本地搜索的DB文件search.xml。我的博客有接近400篇文章，这个search.xml文件的大小为7.5M，很大。打开search.xml文件，发现里面不止包含文章内容，还包含html标签。参考hexo-generator-searchdb，发现可以设置不生成标签。
+修改localsearch配置1、修改hexo/_config.yml的localsearch配置为：
+# local searchsearch:  path: search.xml  field: post  format: striptags  limit: 10000
+
+2、重新生成search.xml文件，新的文件只有3.5M。
+3、修改local-search.js为了正常使用搜索功能，需要修改hexo主题的local-search.js。如果不修改的话，搜索时只搜索标题，不会搜索内容。编辑next/source/js/local-search.js，如下修改：
+// line 120// let content = data.content ? data.content.trim().replace(/&lt;[^&gt;]+&gt;/g, '') : '';let content = data.content;
+
+以上，实现了search.xml的精简，nice。
+自定义精简但是，3.5M依然很大，能不能再精简一下？可以。1、localsearch的format改回html。
+2、修改xml_generator.js编辑hexo/node_modules/hexo-generator-searchdb/lib/xml_generator.js，定义自己想要删除的字符：
+'use strict';const path = require('path');const fs = require('fs');const nunjucks = require('nunjucks');var env = new nunjucks.Environment();var searchTmplSrc = path.join(__dirname, '../templates/search.xml');var searchTmpl = nunjucks.compile(fs.readFileSync(searchTmplSrc, 'utf8'), env);var stripe_code_line_num = function(str) &#123; // 去除代码    return str.replace(/&lt;figure class="highlight.*?&lt;\/figure&gt;/ig, '');&#125;var stripe = function (str) &#123; // 去除html标签    return str.replace(/(&lt;([^&gt;]+)&gt;)/ig, '');&#125;var minify = function (str) &#123; // 压缩成一行    return str.trim().replace(/\n/g, ' ').replace(/\s+/g, ' ');&#125;module.exports = function(locals) &#123;  var config = this.config;  var database = require('./database')(locals, config);  database.forEach( function(element, index) &#123;    element.content = minify(stripe(stripe_code_line_num(element.content)));  &#125;);  var xml = searchTmpl.render(&#123;    articles: database,    config  : config.search  &#125;);  return &#123;    path: config.search.path,    data: xml  &#125;;&#125;;
+
+3、重新生成search.xml，这次只有2.5M，nice。
+以上两种精简search.xml的方法都很好，这里我选择使用修改localsearch format的方法。因为如果在xml_generator.js不删除文章中的代码，两种方法的压缩结果基本相同，而方法一通用性更好。
+]]></content>
       <categories>
         <category>专业</category>
         <category>前端</category>
@@ -18062,8 +18079,8 @@ gif动态图局部加马赛克模糊广告文字http://www.leawo.cn/space-138176
         <category>php</category>
       </categories>
       <tags>
-        <tag>php</tag>
         <tag>angularjs</tag>
+        <tag>php</tag>
         <tag>thinkphp</tag>
       </tags>
   </entry>
@@ -18082,35 +18099,6 @@ public class Solution &#123;    public int reverse(int x) &#123;        String r
 public class Solution &#123;    public int reverse(int x) &#123;        String resultStr = "";        if(x==0)&#123;            resultStr = "0";        &#125;else if(x&gt;0)&#123;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );        &#125;else&#123;            x=-x;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );            resultStr = "-"+resultStr;        &#125;        try &#123;            return Integer.parseInt(resultStr);        &#125; catch (Exception e) &#123;            return 0;        &#125;            &#125;&#125;
 Accepted。
 源码地址https://github.com/voidking/leetcode/tree/master/src/com/voidking/leetcode/question007
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>算法</category>
-        <category>java</category>
-      </categories>
-      <tags>
-        <tag>java</tag>
-        <tag>leetcode</tag>
-        <tag>算法</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>leetcode刷题记录009-Palindrome Number</title>
-    <url>/dev-leetcode-009/</url>
-    <content><![CDATA[题目题目链接：https://leetcode.com/problems/palindrome-number/description/
-Determine whether an integer is a palindrome. Do this without extra space.
-
-
-提示：Could negative integers be palindromes? (ie, -1)
-If you are thinking of converting the integer to string, note the restriction of using extra space.
-You could also try reversing an integer. However, if you have solved the problem “Reverse Integer”, you know that the reversed integer might overflow. How would you handle such case?
-There is a more generic way of solving this problem.
-题目分析负数不是回文数字；不能使用额外的空间，即只能使用空间复杂度 O(1) 的方法。思路一：生成反转整数，对比反转前和反转后的整数。思路二：循环剥离首数字和尾数字，对比是否收尾数字是否相等。
-解题过程下面是思路一的实现：
-class Solution &#123;    public boolean isPalindrome(int x) &#123;        if(x &lt; 0)&#123;            return false;        &#125;                int y = 0;        int tmp = x;        while(tmp &gt; 0)&#123;            y = y*10 + tmp%10;            tmp = tmp/10;        &#125;        return x == y;    &#125;&#125;
-
-思路二略。
-源码地址https://github.com/voidking/leetcode/tree/master/src/com/voidking/leetcode/question009
 ]]></content>
       <categories>
         <category>专业</category>
@@ -18144,6 +18132,35 @@ Accepted，但是我知道，这不是最优方案。先这样吧，有了更好
 书签LeetCode Online Judgehttps://leetcode.com/
 LeetCode 解题报告 | 书影博客http://bookshadow.com/leetcode/
 LintCode - 主页http://www.lintcode.com/zh-cn/
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>算法</category>
+        <category>java</category>
+      </categories>
+      <tags>
+        <tag>java</tag>
+        <tag>leetcode</tag>
+        <tag>算法</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>leetcode刷题记录009-Palindrome Number</title>
+    <url>/dev-leetcode-009/</url>
+    <content><![CDATA[题目题目链接：https://leetcode.com/problems/palindrome-number/description/
+Determine whether an integer is a palindrome. Do this without extra space.
+
+
+提示：Could negative integers be palindromes? (ie, -1)
+If you are thinking of converting the integer to string, note the restriction of using extra space.
+You could also try reversing an integer. However, if you have solved the problem “Reverse Integer”, you know that the reversed integer might overflow. How would you handle such case?
+There is a more generic way of solving this problem.
+题目分析负数不是回文数字；不能使用额外的空间，即只能使用空间复杂度 O(1) 的方法。思路一：生成反转整数，对比反转前和反转后的整数。思路二：循环剥离首数字和尾数字，对比是否收尾数字是否相等。
+解题过程下面是思路一的实现：
+class Solution &#123;    public boolean isPalindrome(int x) &#123;        if(x &lt; 0)&#123;            return false;        &#125;                int y = 0;        int tmp = x;        while(tmp &gt; 0)&#123;            y = y*10 + tmp%10;            tmp = tmp/10;        &#125;        return x == y;    &#125;&#125;
+
+思路二略。
+源码地址https://github.com/voidking/leetcode/tree/master/src/com/voidking/leetcode/question009
 ]]></content>
       <categories>
         <category>专业</category>
@@ -18224,8 +18241,8 @@ Angular结合Bootstrap3的导航菜单http://www.tuicool.com/articles/ayqqmi
       </categories>
       <tags>
         <tag>前端</tag>
-        <tag>php</tag>
         <tag>angularjs</tag>
+        <tag>php</tag>
         <tag>thinkphp</tag>
       </tags>
   </entry>
@@ -18357,8 +18374,8 @@ Hexo的一个小BUG(Template render error)http://www.jianshu.com/p/738ebe02029b
       </categories>
       <tags>
         <tag>前端</tag>
-        <tag>hexo</tag>
         <tag>angularjs</tag>
+        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
