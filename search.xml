@@ -13251,8 +13251,8 @@ tomcat使用supervisor管理
         <category>专业</category>
         <category>后端</category>
         <category>运维</category>
-        <category>docker</category>
         <category>centos</category>
+        <category>docker</category>
         <category>tomcat</category>
       </categories>
       <tags>
@@ -13345,8 +13345,8 @@ Docker实战案例文档
         <category>专业</category>
         <category>后端</category>
         <category>运维</category>
-        <category>docker</category>
         <category>centos</category>
+        <category>docker</category>
         <category>tomcat</category>
       </categories>
       <tags>
@@ -13746,8 +13746,8 @@ ifconfig docker0 down
       <categories>
         <category>专业</category>
         <category>运维</category>
-        <category>docker</category>
         <category>centos</category>
+        <category>docker</category>
       </categories>
       <tags>
         <tag>docker</tag>
@@ -18085,33 +18085,6 @@ gif动态图局部加马赛克模糊广告文字http://www.leawo.cn/space-138176
       </tags>
   </entry>
   <entry>
-    <title>leetcode刷题记录007-Reverse Integer</title>
-    <url>/dev-leetcode-007/</url>
-    <content><![CDATA[题目题目链接：https://leetcode.com/problems/reverse-integer/
-Reverse digits of an integer.
-Example1: x = 123, return 321Example2: x = -123, return -321
-
-
-解题过程第一次思路1、循环内x不断除以10，直到变成0，跳出循环。2、循环内x不断除以10求余，并把求得的余数添加到结果字符串上。3、强制转换结果字符串为int类型。
-public class Solution &#123;    public int reverse(int x) &#123;        String resultStr = "";        if(x==0)&#123;            resultStr = "0";        &#125;else if(x&gt;0)&#123;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );        &#125;else&#123;            x=-x;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );            resultStr = "-"+resultStr;        &#125;        return Integer.parseInt(resultStr);       &#125;&#125;
-报错Line 26: java.lang.NumberFormatException: For input string: “9646324351”。
-第二次思路单击click to show spoilers.，发现还需要处理int溢出的问题。那就加上int超出范围的错误处理。
-public class Solution &#123;    public int reverse(int x) &#123;        String resultStr = "";        if(x==0)&#123;            resultStr = "0";        &#125;else if(x&gt;0)&#123;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );        &#125;else&#123;            x=-x;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );            resultStr = "-"+resultStr;        &#125;        try &#123;            return Integer.parseInt(resultStr);        &#125; catch (Exception e) &#123;            return 0;        &#125;            &#125;&#125;
-Accepted。
-源码地址https://github.com/voidking/leetcode/tree/master/src/com/voidking/leetcode/question007
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>算法</category>
-        <category>java</category>
-      </categories>
-      <tags>
-        <tag>java</tag>
-        <tag>leetcode</tag>
-        <tag>算法</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>leetcode刷题记录001-Two Sum</title>
     <url>/dev-leetcode-001/</url>
     <content><![CDATA[前言leetcode开刷，采用java。
@@ -18132,6 +18105,33 @@ Accepted，但是我知道，这不是最优方案。先这样吧，有了更好
 书签LeetCode Online Judgehttps://leetcode.com/
 LeetCode 解题报告 | 书影博客http://bookshadow.com/leetcode/
 LintCode - 主页http://www.lintcode.com/zh-cn/
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>算法</category>
+        <category>java</category>
+      </categories>
+      <tags>
+        <tag>java</tag>
+        <tag>leetcode</tag>
+        <tag>算法</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>leetcode刷题记录007-Reverse Integer</title>
+    <url>/dev-leetcode-007/</url>
+    <content><![CDATA[题目题目链接：https://leetcode.com/problems/reverse-integer/
+Reverse digits of an integer.
+Example1: x = 123, return 321Example2: x = -123, return -321
+
+
+解题过程第一次思路1、循环内x不断除以10，直到变成0，跳出循环。2、循环内x不断除以10求余，并把求得的余数添加到结果字符串上。3、强制转换结果字符串为int类型。
+public class Solution &#123;    public int reverse(int x) &#123;        String resultStr = "";        if(x==0)&#123;            resultStr = "0";        &#125;else if(x&gt;0)&#123;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );        &#125;else&#123;            x=-x;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );            resultStr = "-"+resultStr;        &#125;        return Integer.parseInt(resultStr);       &#125;&#125;
+报错Line 26: java.lang.NumberFormatException: For input string: “9646324351”。
+第二次思路单击click to show spoilers.，发现还需要处理int溢出的问题。那就加上int超出范围的错误处理。
+public class Solution &#123;    public int reverse(int x) &#123;        String resultStr = "";        if(x==0)&#123;            resultStr = "0";        &#125;else if(x&gt;0)&#123;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );        &#125;else&#123;            x=-x;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );            resultStr = "-"+resultStr;        &#125;        try &#123;            return Integer.parseInt(resultStr);        &#125; catch (Exception e) &#123;            return 0;        &#125;            &#125;&#125;
+Accepted。
+源码地址https://github.com/voidking/leetcode/tree/master/src/com/voidking/leetcode/question007
 ]]></content>
       <categories>
         <category>专业</category>
