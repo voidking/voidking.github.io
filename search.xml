@@ -1030,8 +1030,8 @@ cd vkbeegobee run
         <category>专业</category>
         <category>后端</category>
         <category>运维</category>
-        <category>centos</category>
         <category>go</category>
+        <category>centos</category>
       </categories>
       <tags>
         <tag>golang</tag>
@@ -8982,8 +8982,8 @@ django调试django的调试，需要对PyCharm进行设置，这里以调试djsi
         <category>python</category>
       </categories>
       <tags>
-        <tag>pycharm</tag>
         <tag>debug</tag>
+        <tag>pycharm</tag>
         <tag>调试</tag>
       </tags>
   </entry>
@@ -13251,8 +13251,8 @@ tomcat使用supervisor管理
         <category>专业</category>
         <category>后端</category>
         <category>运维</category>
-        <category>centos</category>
         <category>docker</category>
+        <category>centos</category>
         <category>tomcat</category>
       </categories>
       <tags>
@@ -13345,8 +13345,8 @@ Docker实战案例文档
         <category>专业</category>
         <category>后端</category>
         <category>运维</category>
-        <category>centos</category>
         <category>docker</category>
+        <category>centos</category>
         <category>tomcat</category>
       </categories>
       <tags>
@@ -13746,8 +13746,8 @@ ifconfig docker0 down
       <categories>
         <category>专业</category>
         <category>运维</category>
-        <category>centos</category>
         <category>docker</category>
+        <category>centos</category>
       </categories>
       <tags>
         <tag>docker</tag>
@@ -18085,26 +18085,22 @@ gif动态图局部加马赛克模糊广告文字http://www.leawo.cn/space-138176
       </tags>
   </entry>
   <entry>
-    <title>leetcode刷题记录001-Two Sum</title>
-    <url>/dev-leetcode-001/</url>
-    <content><![CDATA[前言leetcode开刷，采用java。
-题目题目链接：https://leetcode.com/problems/two-sum/
-概要Given an array of integers, return indices of the two numbers such that they add up to a specific target.
-You may assume that each input would have exactly one solution.
-Example:Given nums = [2, 7, 11, 15], target = 9,Because nums[0] + nums[1] = 2 + 7 = 9,return [0, 1].
+    <title>leetcode刷题记录009-Palindrome Number</title>
+    <url>/dev-leetcode-009/</url>
+    <content><![CDATA[题目题目链接：https://leetcode.com/problems/palindrome-number/description/
+Determine whether an integer is a palindrome. Do this without extra space.
 
 
+提示：Could negative integers be palindromes? (ie, -1)
+If you are thinking of converting the integer to string, note the restriction of using extra space.
+You could also try reversing an integer. However, if you have solved the problem “Reverse Integer”, you know that the reversed integer might overflow. How would you handle such case?
+There is a more generic way of solving this problem.
+题目分析负数不是回文数字；不能使用额外的空间，即只能使用空间复杂度 O(1) 的方法。思路一：生成反转整数，对比反转前和反转后的整数。思路二：循环剥离首数字和尾数字，对比是否收尾数字是否相等。
+解题过程下面是思路一的实现：
+class Solution &#123;    public boolean isPalindrome(int x) &#123;        if(x &lt; 0)&#123;            return false;        &#125;                int y = 0;        int tmp = x;        while(tmp &gt; 0)&#123;            y = y*10 + tmp%10;            tmp = tmp/10;        &#125;        return x == y;    &#125;&#125;
 
-解题过程第一次思路两次循环，遍历数组内的数字，两两相加。如果两两相加的和等于target，则把两个数对应的下标放入结果数组内。
-public class Solution &#123;    public int[] twoSum(int[] nums, int target) &#123;        for(int i=0;i&lt;nums.length;i++)&#123;            for(int j=0;j&lt;nums.length;j++)&#123;                if(i!=j)&#123;                    int sum = nums[i]+nums[j];                    if(target == sum)&#123;                        int[] result = new int[]&#123;i,j&#125;;                        return result;                    &#125;                &#125;            &#125;        &#125;        return null;    &#125;&#125;
-未通过，Time Limit Exceeded。leetcode对代码有效率要求，迫使我们优化代码，nice。
-第二次思路第二层循环，从i+1开始。
-public class Solution &#123;    public int[] twoSum(int[] nums, int target) &#123;        for(int i=0;i&lt;nums.length;i++)&#123;            for(int j=i+1;j&lt;nums.length;j++)&#123;                int sum = nums[i]+nums[j];                if(target == sum)&#123;                    int[] result = new int[]&#123;i,j&#125;;                    return result;                &#125;            &#125;        &#125;        return null;    &#125;&#125;
-Accepted，但是我知道，这不是最优方案。先这样吧，有了更好的解法再补上。
-源码地址https://github.com/voidking/leetcode/tree/master/src/com/voidking/leetcode/question001
-书签LeetCode Online Judgehttps://leetcode.com/
-LeetCode 解题报告 | 书影博客http://bookshadow.com/leetcode/
-LintCode - 主页http://www.lintcode.com/zh-cn/
+思路二略。
+源码地址https://github.com/voidking/leetcode/tree/master/src/com/voidking/leetcode/question009
 ]]></content>
       <categories>
         <category>专业</category>
@@ -18145,22 +18141,26 @@ Accepted。
       </tags>
   </entry>
   <entry>
-    <title>leetcode刷题记录009-Palindrome Number</title>
-    <url>/dev-leetcode-009/</url>
-    <content><![CDATA[题目题目链接：https://leetcode.com/problems/palindrome-number/description/
-Determine whether an integer is a palindrome. Do this without extra space.
+    <title>leetcode刷题记录001-Two Sum</title>
+    <url>/dev-leetcode-001/</url>
+    <content><![CDATA[前言leetcode开刷，采用java。
+题目题目链接：https://leetcode.com/problems/two-sum/
+概要Given an array of integers, return indices of the two numbers such that they add up to a specific target.
+You may assume that each input would have exactly one solution.
+Example:Given nums = [2, 7, 11, 15], target = 9,Because nums[0] + nums[1] = 2 + 7 = 9,return [0, 1].
 
 
-提示：Could negative integers be palindromes? (ie, -1)
-If you are thinking of converting the integer to string, note the restriction of using extra space.
-You could also try reversing an integer. However, if you have solved the problem “Reverse Integer”, you know that the reversed integer might overflow. How would you handle such case?
-There is a more generic way of solving this problem.
-题目分析负数不是回文数字；不能使用额外的空间，即只能使用空间复杂度 O(1) 的方法。思路一：生成反转整数，对比反转前和反转后的整数。思路二：循环剥离首数字和尾数字，对比是否收尾数字是否相等。
-解题过程下面是思路一的实现：
-class Solution &#123;    public boolean isPalindrome(int x) &#123;        if(x &lt; 0)&#123;            return false;        &#125;                int y = 0;        int tmp = x;        while(tmp &gt; 0)&#123;            y = y*10 + tmp%10;            tmp = tmp/10;        &#125;        return x == y;    &#125;&#125;
 
-思路二略。
-源码地址https://github.com/voidking/leetcode/tree/master/src/com/voidking/leetcode/question009
+解题过程第一次思路两次循环，遍历数组内的数字，两两相加。如果两两相加的和等于target，则把两个数对应的下标放入结果数组内。
+public class Solution &#123;    public int[] twoSum(int[] nums, int target) &#123;        for(int i=0;i&lt;nums.length;i++)&#123;            for(int j=0;j&lt;nums.length;j++)&#123;                if(i!=j)&#123;                    int sum = nums[i]+nums[j];                    if(target == sum)&#123;                        int[] result = new int[]&#123;i,j&#125;;                        return result;                    &#125;                &#125;            &#125;        &#125;        return null;    &#125;&#125;
+未通过，Time Limit Exceeded。leetcode对代码有效率要求，迫使我们优化代码，nice。
+第二次思路第二层循环，从i+1开始。
+public class Solution &#123;    public int[] twoSum(int[] nums, int target) &#123;        for(int i=0;i&lt;nums.length;i++)&#123;            for(int j=i+1;j&lt;nums.length;j++)&#123;                int sum = nums[i]+nums[j];                if(target == sum)&#123;                    int[] result = new int[]&#123;i,j&#125;;                    return result;                &#125;            &#125;        &#125;        return null;    &#125;&#125;
+Accepted，但是我知道，这不是最优方案。先这样吧，有了更好的解法再补上。
+源码地址https://github.com/voidking/leetcode/tree/master/src/com/voidking/leetcode/question001
+书签LeetCode Online Judgehttps://leetcode.com/
+LeetCode 解题报告 | 书影博客http://bookshadow.com/leetcode/
+LintCode - 主页http://www.lintcode.com/zh-cn/
 ]]></content>
       <categories>
         <category>专业</category>
@@ -23417,8 +23417,8 @@ deploy:  type: git  repository: git@gitcafe.com:voidking/voidking.git  branch: g
         <category>hexo</category>
       </categories>
       <tags>
-        <tag>hexo</tag>
         <tag>网站</tag>
+        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -24402,6 +24402,25 @@ alter table userbase add constraint fk_username foreign key(username) references
       </tags>
   </entry>
   <entry>
+    <title>坐功入静</title>
+    <url>/love-dhyana-meditation/</url>
+    <content><![CDATA[作者：那秋生
+
+坐功是静功里最要紧的一个环节，坐功是入静的第一步。坐功有静坐功和动静兼修两种。
+
+李渔《闲情偶寄·颐养》曰：“益寿之方，全凭导引；安生之计，惟赖坐功。”儒家提倡“静坐”。王阳明说：“静坐要省察克治，静坐能使心清静收敛，从而克服自我私欲产生，通过静坐能顿悟明心见性，得道成真。”
+道家主张“坐忘”。《庄子·大宗师》：“堕肢体，黜聪明，离形去知，同于大通，此谓坐忘。”即摆脱现实形体的束缚，与自然融为一体，两两相忘。佛家的功夫是“坐禅”。音译“禅那”，简称“禅”，意谓思维修或静虑，就是趺坐而修禅，是佛教修持的主要方法之一。
+现代人就是坐不住，成天跑东跑西、忙这忙那，就像丢了魂似的，悲乎！
+]]></content>
+      <categories>
+        <category>爱好</category>
+        <category>读书</category>
+      </categories>
+      <tags>
+        <tag>笔记</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>自由与理想</title>
     <url>/love-freedom-and-ideal/</url>
     <content><![CDATA[作者：吴晓波
@@ -24440,25 +24459,6 @@ alter table userbase add constraint fk_username foreign key(username) references
       </categories>
       <tags>
         <tag>读者</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>坐功入静</title>
-    <url>/love-dhyana-meditation/</url>
-    <content><![CDATA[作者：那秋生
-
-坐功是静功里最要紧的一个环节，坐功是入静的第一步。坐功有静坐功和动静兼修两种。
-
-李渔《闲情偶寄·颐养》曰：“益寿之方，全凭导引；安生之计，惟赖坐功。”儒家提倡“静坐”。王阳明说：“静坐要省察克治，静坐能使心清静收敛，从而克服自我私欲产生，通过静坐能顿悟明心见性，得道成真。”
-道家主张“坐忘”。《庄子·大宗师》：“堕肢体，黜聪明，离形去知，同于大通，此谓坐忘。”即摆脱现实形体的束缚，与自然融为一体，两两相忘。佛家的功夫是“坐禅”。音译“禅那”，简称“禅”，意谓思维修或静虑，就是趺坐而修禅，是佛教修持的主要方法之一。
-现代人就是坐不住，成天跑东跑西、忙这忙那，就像丢了魂似的，悲乎！
-]]></content>
-      <categories>
-        <category>爱好</category>
-        <category>读书</category>
-      </categories>
-      <tags>
-        <tag>笔记</tag>
       </tags>
   </entry>
   <entry>
@@ -27150,10 +27150,10 @@ wordpress非常强大的一个博客系统，主题非常多，总有一款适�
         <category>hexo</category>
       </categories>
       <tags>
-        <tag>hexo</tag>
         <tag>网站</tag>
         <tag>域名</tag>
         <tag>服务器</tag>
+        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -29201,8 +29201,8 @@ Flex源码 Flex 08年底刚刚开源后，我就用它做过一个中型项目�
         <category>随笔</category>
       </categories>
       <tags>
-        <tag>hexo</tag>
         <tag>网站</tag>
+        <tag>hexo</tag>
         <tag>wordpress</tag>
       </tags>
   </entry>
