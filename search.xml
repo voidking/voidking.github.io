@@ -34,7 +34,7 @@ hexo cleanhexo ggulphexo d
 travis配置对应的，修改.travis.yml配置为：
 sudo: falselanguage: node_jsnode_js:  - 10.16.3cache: npmbranches:  only:    - master # build master branch onlyenv: global:   - HEXO_BACKUP_REPO: github.com/voidking/hexo-backup.git   - HEXO_THEME_REPO: github.com/voidking/hexo-theme-next.git   - GITHUB_PAGES_REPO: github.com/voidking/voidking.github.io.git   - VOIDKING_REPO: github.com/voidking/voidking.gitbefore_install:  - npm install hexo -g  - npm install gulp-cli -ginstall:  - npm installscript:  - git clone https://$&#123;HEXO_THEME_REPO&#125; themes/next  - git clone https://$&#123;GITHUB_TOKEN&#125;@$&#123;HEXO_BACKUP_REPO&#125; hexo-backup  - mv hexo-backup/source .  - rm -rf source/private  - npm run buildafter_success:  - git config --global user.name "voidking"  - git config --global user.email "voidking@qq.com"  - git clone https://$&#123;GITHUB_TOKEN&#125;@$&#123;GITHUB_PAGES_REPO&#125; voidking  - unalias cp  - cp -rf public/* voidking  - cd voidking  - git add .  - git commit -m "Travis CI Auto Builder"  - git push --force --quiet "https://$&#123;GITHUB_TOKEN&#125;@$&#123;GITHUB_PAGES_REPO&#125;" master:master
 
-精简search.xmlhtml、css和js都压缩了，很开心。但是，还有一个大文件没有压缩，就是本地搜索的DB文件search.xml。我的博客有接近400篇文章，这个search.xml文件的大小为7.5M，很大。打开search.xml文件，发现里面不止包含文章内容，还包含html标签。参考hexo-generator-searchdb，发现可以设置不生成标签。
+精简search.xmlhtml、css和js都压缩了，很开心。但是，还有一个大文件没有压缩，就是本地搜索的DB文件search.xml。我的博客有接近600篇文章，这个search.xml文件的大小为7.5M，很大。打开search.xml文件，发现里面不止包含文章内容，还包含html标签。参考hexo-generator-searchdb，发现可以设置不生成标签。
 修改localsearch配置1、修改hexo/_config.yml的localsearch配置为：
 # local searchsearch:  path: search.xml  field: post  format: striptags  limit: 10000
 
@@ -410,6 +410,44 @@ crond日志1、查看crond日志tail /var/log/cron报错没有这个文件，这
       <tags>
         <tag>docker</tag>
         <tag>crontab</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用Docker安装配置Tomcat</title>
+    <url>/dev-docker-tomcat/</url>
+    <content><![CDATA[前言《CentOS7设置tomcat开机自启动》一文中，学习了常规的tomcat安装配置方法；《Docker安装tomcat服务》一文中，学习了在Docker容器中安装配置tomcat的方法；《Dockerfile构建Tomcat》一文中，学习了使用Dockerfile安装配置tomcat的方法。本文是对前三种方法的升级，更加简单。不需要自己制作tomcat镜像，而是使用dockerhub提供的tomcat镜像。
+前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。已知docker宿主机IP为192.168.56.130。
+
+
+安装Tomcat安装Tomcat1、登录dockerhub查看需要的tomcat版本。
+2、下载tomcat镜像（以tomcat8.5.51为例）docker pull tomcat:8.5.51-jdk8-openjdk
+3、启动tomcat服务
+docker run --name vk-tomcat -d \-p 8080:8080 \-v /opt/tomcat/webapps:/usr/local/tomcat/webapps \tomcat:8.5.51-jdk8-openjdk
+
+以上命令：
+
+命名容器为vk-tomcat，后台运行
+映射宿主机8080端口到容器8080端口
+映射宿主机/opt/tomcat/webapps目录（不需要提前创建目录）到容器/usr/local/tomcat/webapps目录
+
+更高级的启动命令参考How to use this image。
+4、验证安装docker pstomcat启动正常的话就可以看到vk-tomcat容器。如果启动失败，可以使用docker logs vk-tomcat查看失败原因并进行解决。
+使用nc命令验证：
+yum install ncnc -v localhost 8080
+
+使用curl命令验证：curl localhost:8080
+开放端口firewall-cmd --add-port=8080/tcp --permanentsystemctl reload firewalld# 或者systemctl stop firewalld
+
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>后端</category>
+        <category>运维</category>
+        <category>docker</category>
+        <category>tomcat</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
       </tags>
   </entry>
   <entry>
@@ -2068,8 +2106,8 @@ Https原理及流程
         <category>centos</category>
       </categories>
       <tags>
-        <tag>centos</tag>
         <tag>linux</tag>
+        <tag>centos</tag>
         <tag>git</tag>
         <tag>https</tag>
       </tags>
@@ -2151,8 +2189,8 @@ filebeat收集日志常见问题
         <category>centos</category>
       </categories>
       <tags>
-        <tag>centos</tag>
         <tag>linux</tag>
+        <tag>centos</tag>
         <tag>elk</tag>
       </tags>
   </entry>
@@ -2289,8 +2327,8 @@ ELK部署安装以及配置
         <category>centos</category>
       </categories>
       <tags>
-        <tag>centos</tag>
         <tag>linux</tag>
+        <tag>centos</tag>
         <tag>elk</tag>
       </tags>
   </entry>
@@ -2320,8 +2358,8 @@ yum clean allyum makecache
         <category>centos</category>
       </categories>
       <tags>
-        <tag>centos</tag>
         <tag>linux</tag>
+        <tag>centos</tag>
       </tags>
   </entry>
   <entry>
@@ -2362,8 +2400,8 @@ ansible-playbook tomcat-install.yml --syntax-checkansible-playbook tomcat-instal
         <category>centos</category>
       </categories>
       <tags>
-        <tag>centos</tag>
         <tag>linux</tag>
+        <tag>centos</tag>
         <tag>ansible</tag>
       </tags>
   </entry>
@@ -7671,8 +7709,8 @@ mail -s &#39;Hello VoidKing&#39; voidking@qq.com提示Cc，这里不需要抄送
         <category>基础</category>
       </categories>
       <tags>
-        <tag>centos</tag>
         <tag>linux</tag>
+        <tag>centos</tag>
         <tag>ubuntu</tag>
       </tags>
   </entry>
@@ -7818,8 +7856,8 @@ cron.*                         /var/log/cron.log
         <category>基础</category>
       </categories>
       <tags>
-        <tag>centos</tag>
         <tag>linux</tag>
+        <tag>centos</tag>
         <tag>ubuntu</tag>
         <tag>crontab</tag>
       </tags>
@@ -8479,8 +8517,8 @@ ubuntu配置静态路由及重启生效
         <category>基础</category>
       </categories>
       <tags>
-        <tag>centos</tag>
         <tag>linux</tag>
+        <tag>centos</tag>
         <tag>ubuntu</tag>
         <tag>iptables</tag>
         <tag>snat</tag>
@@ -9167,7 +9205,7 @@ PS：查看mysql版本mysql -V
 
 4、测试访问curl localhost:8080至此，遇到一个大坑。curl命令卡在那里不动了，浏览器访问也是一直转圈，转啊转，十几分钟了还在转。。。莫非，tomcat版本有问题？换了8.5.29，不行；换了7.0.85，不行。莫非是jdk版本有问题？毕竟第一次是使用yum命令安装的。换了1.8.0_161，依然不行。
 好在，最终找到了答案：Centos7+Tomcat8配置javaweb环境，tomcat启动巨慢的问题，安装rng服务。
-（1）安装熵服务yum install rng-tools（2）启动熵服务systemctl start rngd然后，tomcat就启动成功了。（3）赶紧把rng服务放进开机自启动systemctl enable rngd
+（1）安装熵服务yum install rng-tools（2）启动服务systemctl start rngd然后，tomcat就启动成功了。（3）赶紧把rng服务放进开机自启动systemctl enable rngd
 5、关闭tomcat。./shutdown.sh
 设置开机自启动参考《在CentOS7中设置Tomcat开机自启动》，设置步骤如下：
 假设tomcat目录为/opt/apache-tomcat-8.0.50
@@ -12503,8 +12541,8 @@ PS1变量中提示符各项含义:
         <category>基础</category>
       </categories>
       <tags>
-        <tag>centos</tag>
         <tag>linux</tag>
+        <tag>centos</tag>
       </tags>
   </entry>
   <entry>
@@ -13963,6 +14001,9 @@ systemctl daemon-reloadsystemctl restart docker
 systemctl daemon-reloadsystemctl restart docker
 
 4、验证配置docker info
+腾讯云修改 /etc/docker/daemon.json 配置为：
+&#123;   "registry-mirrors": [       "https://mirror.ccs.tencentyun.com"  ]&#125;
+其他步骤同上。
 docker使用基本命令# 查看版本docker version# 查看帮助docker# 查看docker start帮助docker start --helpdocker help start
 
 镜像查找下载在docker的镜像索引网站上面，镜像都是按照 用户名/镜像名 的方式来存储的。有一组比较特殊的镜像，比如ubuntu这类基础镜像，经过官方的验证，值得信任，可以直接用镜像名来检索到。
@@ -14289,8 +14330,8 @@ javajavacjava -version
       </categories>
       <tags>
         <tag>java</tag>
-        <tag>centos</tag>
         <tag>linux</tag>
+        <tag>centos</tag>
         <tag>ubuntu</tag>
         <tag>windows</tag>
       </tags>
@@ -18085,26 +18126,20 @@ gif动态图局部加马赛克模糊广告文字http://www.leawo.cn/space-138176
       </tags>
   </entry>
   <entry>
-    <title>leetcode刷题记录001-Two Sum</title>
-    <url>/dev-leetcode-001/</url>
-    <content><![CDATA[前言leetcode开刷，采用java。
-题目题目链接：https://leetcode.com/problems/two-sum/
-概要Given an array of integers, return indices of the two numbers such that they add up to a specific target.
-You may assume that each input would have exactly one solution.
-Example:Given nums = [2, 7, 11, 15], target = 9,Because nums[0] + nums[1] = 2 + 7 = 9,return [0, 1].
+    <title>leetcode刷题记录007-Reverse Integer</title>
+    <url>/dev-leetcode-007/</url>
+    <content><![CDATA[题目题目链接：https://leetcode.com/problems/reverse-integer/
+Reverse digits of an integer.
+Example1: x = 123, return 321Example2: x = -123, return -321
 
 
-
-解题过程第一次思路两次循环，遍历数组内的数字，两两相加。如果两两相加的和等于target，则把两个数对应的下标放入结果数组内。
-public class Solution &#123;    public int[] twoSum(int[] nums, int target) &#123;        for(int i=0;i&lt;nums.length;i++)&#123;            for(int j=0;j&lt;nums.length;j++)&#123;                if(i!=j)&#123;                    int sum = nums[i]+nums[j];                    if(target == sum)&#123;                        int[] result = new int[]&#123;i,j&#125;;                        return result;                    &#125;                &#125;            &#125;        &#125;        return null;    &#125;&#125;
-未通过，Time Limit Exceeded。leetcode对代码有效率要求，迫使我们优化代码，nice。
-第二次思路第二层循环，从i+1开始。
-public class Solution &#123;    public int[] twoSum(int[] nums, int target) &#123;        for(int i=0;i&lt;nums.length;i++)&#123;            for(int j=i+1;j&lt;nums.length;j++)&#123;                int sum = nums[i]+nums[j];                if(target == sum)&#123;                    int[] result = new int[]&#123;i,j&#125;;                    return result;                &#125;            &#125;        &#125;        return null;    &#125;&#125;
-Accepted，但是我知道，这不是最优方案。先这样吧，有了更好的解法再补上。
-源码地址https://github.com/voidking/leetcode/tree/master/src/com/voidking/leetcode/question001
-书签LeetCode Online Judgehttps://leetcode.com/
-LeetCode 解题报告 | 书影博客http://bookshadow.com/leetcode/
-LintCode - 主页http://www.lintcode.com/zh-cn/
+解题过程第一次思路1、循环内x不断除以10，直到变成0，跳出循环。2、循环内x不断除以10求余，并把求得的余数添加到结果字符串上。3、强制转换结果字符串为int类型。
+public class Solution &#123;    public int reverse(int x) &#123;        String resultStr = "";        if(x==0)&#123;            resultStr = "0";        &#125;else if(x&gt;0)&#123;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );        &#125;else&#123;            x=-x;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );            resultStr = "-"+resultStr;        &#125;        return Integer.parseInt(resultStr);       &#125;&#125;
+报错Line 26: java.lang.NumberFormatException: For input string: “9646324351”。
+第二次思路单击click to show spoilers.，发现还需要处理int溢出的问题。那就加上int超出范围的错误处理。
+public class Solution &#123;    public int reverse(int x) &#123;        String resultStr = "";        if(x==0)&#123;            resultStr = "0";        &#125;else if(x&gt;0)&#123;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );        &#125;else&#123;            x=-x;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );            resultStr = "-"+resultStr;        &#125;        try &#123;            return Integer.parseInt(resultStr);        &#125; catch (Exception e) &#123;            return 0;        &#125;            &#125;&#125;
+Accepted。
+源码地址https://github.com/voidking/leetcode/tree/master/src/com/voidking/leetcode/question007
 ]]></content>
       <categories>
         <category>专业</category>
@@ -18147,20 +18182,26 @@ class Solution &#123;    public boolean isPalindrome(int x) &#123;        if(x &
       </tags>
   </entry>
   <entry>
-    <title>leetcode刷题记录007-Reverse Integer</title>
-    <url>/dev-leetcode-007/</url>
-    <content><![CDATA[题目题目链接：https://leetcode.com/problems/reverse-integer/
-Reverse digits of an integer.
-Example1: x = 123, return 321Example2: x = -123, return -321
+    <title>leetcode刷题记录001-Two Sum</title>
+    <url>/dev-leetcode-001/</url>
+    <content><![CDATA[前言leetcode开刷，采用java。
+题目题目链接：https://leetcode.com/problems/two-sum/
+概要Given an array of integers, return indices of the two numbers such that they add up to a specific target.
+You may assume that each input would have exactly one solution.
+Example:Given nums = [2, 7, 11, 15], target = 9,Because nums[0] + nums[1] = 2 + 7 = 9,return [0, 1].
 
 
-解题过程第一次思路1、循环内x不断除以10，直到变成0，跳出循环。2、循环内x不断除以10求余，并把求得的余数添加到结果字符串上。3、强制转换结果字符串为int类型。
-public class Solution &#123;    public int reverse(int x) &#123;        String resultStr = "";        if(x==0)&#123;            resultStr = "0";        &#125;else if(x&gt;0)&#123;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );        &#125;else&#123;            x=-x;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );            resultStr = "-"+resultStr;        &#125;        return Integer.parseInt(resultStr);       &#125;&#125;
-报错Line 26: java.lang.NumberFormatException: For input string: “9646324351”。
-第二次思路单击click to show spoilers.，发现还需要处理int溢出的问题。那就加上int超出范围的错误处理。
-public class Solution &#123;    public int reverse(int x) &#123;        String resultStr = "";        if(x==0)&#123;            resultStr = "0";        &#125;else if(x&gt;0)&#123;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );        &#125;else&#123;            x=-x;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );            resultStr = "-"+resultStr;        &#125;        try &#123;            return Integer.parseInt(resultStr);        &#125; catch (Exception e) &#123;            return 0;        &#125;            &#125;&#125;
-Accepted。
-源码地址https://github.com/voidking/leetcode/tree/master/src/com/voidking/leetcode/question007
+
+解题过程第一次思路两次循环，遍历数组内的数字，两两相加。如果两两相加的和等于target，则把两个数对应的下标放入结果数组内。
+public class Solution &#123;    public int[] twoSum(int[] nums, int target) &#123;        for(int i=0;i&lt;nums.length;i++)&#123;            for(int j=0;j&lt;nums.length;j++)&#123;                if(i!=j)&#123;                    int sum = nums[i]+nums[j];                    if(target == sum)&#123;                        int[] result = new int[]&#123;i,j&#125;;                        return result;                    &#125;                &#125;            &#125;        &#125;        return null;    &#125;&#125;
+未通过，Time Limit Exceeded。leetcode对代码有效率要求，迫使我们优化代码，nice。
+第二次思路第二层循环，从i+1开始。
+public class Solution &#123;    public int[] twoSum(int[] nums, int target) &#123;        for(int i=0;i&lt;nums.length;i++)&#123;            for(int j=i+1;j&lt;nums.length;j++)&#123;                int sum = nums[i]+nums[j];                if(target == sum)&#123;                    int[] result = new int[]&#123;i,j&#125;;                    return result;                &#125;            &#125;        &#125;        return null;    &#125;&#125;
+Accepted，但是我知道，这不是最优方案。先这样吧，有了更好的解法再补上。
+源码地址https://github.com/voidking/leetcode/tree/master/src/com/voidking/leetcode/question001
+书签LeetCode Online Judgehttps://leetcode.com/
+LeetCode 解题报告 | 书影博客http://bookshadow.com/leetcode/
+LintCode - 主页http://www.lintcode.com/zh-cn/
 ]]></content>
       <categories>
         <category>专业</category>
@@ -21947,6 +21988,9 @@ git config --global http.sslVerify false
 开启代理如果克隆项目特别慢，自己又有科学上网的ssr，那么可以开启代理。
 git config --global http.proxy 'socks5://127.0.0.1:1080' git config --global https.proxy 'socks5://127.0.0.1:1080'
 
+关闭代理：
+git config --global --unset http.proxygit config --global --unset https.proxy
+
 拉取项目.git/config文件里，配置了remote和branch，以下为例。
 [core]	repositoryformatversion = 0	filemode = false	bare = false	logallrefupdates = true	symlinks = false	ignorecase = true[remote "origin"]	url = https://github.com/voidking/voidking.git	fetch = +refs/heads/*:refs/remotes/origin/*[branch "master"]	remote = origin	merge = refs/heads/master
 拉取项目的时候，会根据这个配置来拉取。
@@ -24402,6 +24446,25 @@ alter table userbase add constraint fk_username foreign key(username) references
       </tags>
   </entry>
   <entry>
+    <title>坐功入静</title>
+    <url>/hobby-dhyana-meditation/</url>
+    <content><![CDATA[作者：那秋生
+
+坐功是静功里最要紧的一个环节，坐功是入静的第一步。坐功有静坐功和动静兼修两种。
+
+李渔《闲情偶寄·颐养》曰：“益寿之方，全凭导引；安生之计，惟赖坐功。”儒家提倡“静坐”。王阳明说：“静坐要省察克治，静坐能使心清静收敛，从而克服自我私欲产生，通过静坐能顿悟明心见性，得道成真。”
+道家主张“坐忘”。《庄子·大宗师》：“堕肢体，黜聪明，离形去知，同于大通，此谓坐忘。”即摆脱现实形体的束缚，与自然融为一体，两两相忘。佛家的功夫是“坐禅”。音译“禅那”，简称“禅”，意谓思维修或静虑，就是趺坐而修禅，是佛教修持的主要方法之一。
+现代人就是坐不住，成天跑东跑西、忙这忙那，就像丢了魂似的，悲乎！
+]]></content>
+      <categories>
+        <category>爱好</category>
+        <category>读书</category>
+      </categories>
+      <tags>
+        <tag>笔记</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>自由与理想</title>
     <url>/hobby-freedom-and-ideal/</url>
     <content><![CDATA[作者：吴晓波
@@ -24440,25 +24503,6 @@ alter table userbase add constraint fk_username foreign key(username) references
       </categories>
       <tags>
         <tag>读者</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>坐功入静</title>
-    <url>/hobby-dhyana-meditation/</url>
-    <content><![CDATA[作者：那秋生
-
-坐功是静功里最要紧的一个环节，坐功是入静的第一步。坐功有静坐功和动静兼修两种。
-
-李渔《闲情偶寄·颐养》曰：“益寿之方，全凭导引；安生之计，惟赖坐功。”儒家提倡“静坐”。王阳明说：“静坐要省察克治，静坐能使心清静收敛，从而克服自我私欲产生，通过静坐能顿悟明心见性，得道成真。”
-道家主张“坐忘”。《庄子·大宗师》：“堕肢体，黜聪明，离形去知，同于大通，此谓坐忘。”即摆脱现实形体的束缚，与自然融为一体，两两相忘。佛家的功夫是“坐禅”。音译“禅那”，简称“禅”，意谓思维修或静虑，就是趺坐而修禅，是佛教修持的主要方法之一。
-现代人就是坐不住，成天跑东跑西、忙这忙那，就像丢了魂似的，悲乎！
-]]></content>
-      <categories>
-        <category>爱好</category>
-        <category>读书</category>
-      </categories>
-      <tags>
-        <tag>笔记</tag>
       </tags>
   </entry>
   <entry>
@@ -32809,8 +32853,8 @@ U盘安装最近要给服务器重装系统，由于使用dvd安装刻盘比较�
         <category>centos</category>
       </categories>
       <tags>
-        <tag>centos</tag>
         <tag>linux</tag>
+        <tag>centos</tag>
       </tags>
   </entry>
   <entry>
