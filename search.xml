@@ -18126,20 +18126,26 @@ gif动态图局部加马赛克模糊广告文字http://www.leawo.cn/space-138176
       </tags>
   </entry>
   <entry>
-    <title>leetcode刷题记录007-Reverse Integer</title>
-    <url>/dev-leetcode-007/</url>
-    <content><![CDATA[题目题目链接：https://leetcode.com/problems/reverse-integer/
-Reverse digits of an integer.
-Example1: x = 123, return 321Example2: x = -123, return -321
+    <title>leetcode刷题记录001-Two Sum</title>
+    <url>/dev-leetcode-001/</url>
+    <content><![CDATA[前言leetcode开刷，采用java。
+题目题目链接：https://leetcode.com/problems/two-sum/
+概要Given an array of integers, return indices of the two numbers such that they add up to a specific target.
+You may assume that each input would have exactly one solution.
+Example:Given nums = [2, 7, 11, 15], target = 9,Because nums[0] + nums[1] = 2 + 7 = 9,return [0, 1].
 
 
-解题过程第一次思路1、循环内x不断除以10，直到变成0，跳出循环。2、循环内x不断除以10求余，并把求得的余数添加到结果字符串上。3、强制转换结果字符串为int类型。
-public class Solution &#123;    public int reverse(int x) &#123;        String resultStr = "";        if(x==0)&#123;            resultStr = "0";        &#125;else if(x&gt;0)&#123;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );        &#125;else&#123;            x=-x;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );            resultStr = "-"+resultStr;        &#125;        return Integer.parseInt(resultStr);       &#125;&#125;
-报错Line 26: java.lang.NumberFormatException: For input string: “9646324351”。
-第二次思路单击click to show spoilers.，发现还需要处理int溢出的问题。那就加上int超出范围的错误处理。
-public class Solution &#123;    public int reverse(int x) &#123;        String resultStr = "";        if(x==0)&#123;            resultStr = "0";        &#125;else if(x&gt;0)&#123;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );        &#125;else&#123;            x=-x;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );            resultStr = "-"+resultStr;        &#125;        try &#123;            return Integer.parseInt(resultStr);        &#125; catch (Exception e) &#123;            return 0;        &#125;            &#125;&#125;
-Accepted。
-源码地址https://github.com/voidking/leetcode/tree/master/src/com/voidking/leetcode/question007
+
+解题过程第一次思路两次循环，遍历数组内的数字，两两相加。如果两两相加的和等于target，则把两个数对应的下标放入结果数组内。
+public class Solution &#123;    public int[] twoSum(int[] nums, int target) &#123;        for(int i=0;i&lt;nums.length;i++)&#123;            for(int j=0;j&lt;nums.length;j++)&#123;                if(i!=j)&#123;                    int sum = nums[i]+nums[j];                    if(target == sum)&#123;                        int[] result = new int[]&#123;i,j&#125;;                        return result;                    &#125;                &#125;            &#125;        &#125;        return null;    &#125;&#125;
+未通过，Time Limit Exceeded。leetcode对代码有效率要求，迫使我们优化代码，nice。
+第二次思路第二层循环，从i+1开始。
+public class Solution &#123;    public int[] twoSum(int[] nums, int target) &#123;        for(int i=0;i&lt;nums.length;i++)&#123;            for(int j=i+1;j&lt;nums.length;j++)&#123;                int sum = nums[i]+nums[j];                if(target == sum)&#123;                    int[] result = new int[]&#123;i,j&#125;;                    return result;                &#125;            &#125;        &#125;        return null;    &#125;&#125;
+Accepted，但是我知道，这不是最优方案。先这样吧，有了更好的解法再补上。
+源码地址https://github.com/voidking/leetcode/tree/master/src/com/voidking/leetcode/question001
+书签LeetCode Online Judgehttps://leetcode.com/
+LeetCode 解题报告 | 书影博客http://bookshadow.com/leetcode/
+LintCode - 主页http://www.lintcode.com/zh-cn/
 ]]></content>
       <categories>
         <category>专业</category>
@@ -18182,26 +18188,20 @@ class Solution &#123;    public boolean isPalindrome(int x) &#123;        if(x &
       </tags>
   </entry>
   <entry>
-    <title>leetcode刷题记录001-Two Sum</title>
-    <url>/dev-leetcode-001/</url>
-    <content><![CDATA[前言leetcode开刷，采用java。
-题目题目链接：https://leetcode.com/problems/two-sum/
-概要Given an array of integers, return indices of the two numbers such that they add up to a specific target.
-You may assume that each input would have exactly one solution.
-Example:Given nums = [2, 7, 11, 15], target = 9,Because nums[0] + nums[1] = 2 + 7 = 9,return [0, 1].
+    <title>leetcode刷题记录007-Reverse Integer</title>
+    <url>/dev-leetcode-007/</url>
+    <content><![CDATA[题目题目链接：https://leetcode.com/problems/reverse-integer/
+Reverse digits of an integer.
+Example1: x = 123, return 321Example2: x = -123, return -321
 
 
-
-解题过程第一次思路两次循环，遍历数组内的数字，两两相加。如果两两相加的和等于target，则把两个数对应的下标放入结果数组内。
-public class Solution &#123;    public int[] twoSum(int[] nums, int target) &#123;        for(int i=0;i&lt;nums.length;i++)&#123;            for(int j=0;j&lt;nums.length;j++)&#123;                if(i!=j)&#123;                    int sum = nums[i]+nums[j];                    if(target == sum)&#123;                        int[] result = new int[]&#123;i,j&#125;;                        return result;                    &#125;                &#125;            &#125;        &#125;        return null;    &#125;&#125;
-未通过，Time Limit Exceeded。leetcode对代码有效率要求，迫使我们优化代码，nice。
-第二次思路第二层循环，从i+1开始。
-public class Solution &#123;    public int[] twoSum(int[] nums, int target) &#123;        for(int i=0;i&lt;nums.length;i++)&#123;            for(int j=i+1;j&lt;nums.length;j++)&#123;                int sum = nums[i]+nums[j];                if(target == sum)&#123;                    int[] result = new int[]&#123;i,j&#125;;                    return result;                &#125;            &#125;        &#125;        return null;    &#125;&#125;
-Accepted，但是我知道，这不是最优方案。先这样吧，有了更好的解法再补上。
-源码地址https://github.com/voidking/leetcode/tree/master/src/com/voidking/leetcode/question001
-书签LeetCode Online Judgehttps://leetcode.com/
-LeetCode 解题报告 | 书影博客http://bookshadow.com/leetcode/
-LintCode - 主页http://www.lintcode.com/zh-cn/
+解题过程第一次思路1、循环内x不断除以10，直到变成0，跳出循环。2、循环内x不断除以10求余，并把求得的余数添加到结果字符串上。3、强制转换结果字符串为int类型。
+public class Solution &#123;    public int reverse(int x) &#123;        String resultStr = "";        if(x==0)&#123;            resultStr = "0";        &#125;else if(x&gt;0)&#123;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );        &#125;else&#123;            x=-x;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );            resultStr = "-"+resultStr;        &#125;        return Integer.parseInt(resultStr);       &#125;&#125;
+报错Line 26: java.lang.NumberFormatException: For input string: “9646324351”。
+第二次思路单击click to show spoilers.，发现还需要处理int溢出的问题。那就加上int超出范围的错误处理。
+public class Solution &#123;    public int reverse(int x) &#123;        String resultStr = "";        if(x==0)&#123;            resultStr = "0";        &#125;else if(x&gt;0)&#123;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );        &#125;else&#123;            x=-x;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );            resultStr = "-"+resultStr;        &#125;        try &#123;            return Integer.parseInt(resultStr);        &#125; catch (Exception e) &#123;            return 0;        &#125;            &#125;&#125;
+Accepted。
+源码地址https://github.com/voidking/leetcode/tree/master/src/com/voidking/leetcode/question007
 ]]></content>
       <categories>
         <category>专业</category>
