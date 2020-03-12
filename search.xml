@@ -1,6 +1,190 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>SSL和TLS</title>
+    <url>/dev-ssl-tls/</url>
+    <content><![CDATA[SSL和TLS简介《Hexo启用https加密连接》和《CentOS7安装配置GitLab》中都涉及到了SSL/TLS，SSL和TLS是啥？
+
+传输层安全性协议（英语：Transport Layer Security，缩写：TLS）及其前身安全套接层（英语：Secure Sockets Layer，缩写：SSL）是一种安全协议，目的是为互联网通信提供安全及数据完整性保障。SSL包含记录层（Record Layer）和传输层，记录层协议确定传输层数据的封装格式。传输层安全协议使用X.509认证，之后利用非对称加密演算来对通信方做身份认证，之后交换对称密钥作为会谈密钥（Session key）。这个会谈密钥是用来将通信两方交换的数据做加密，保证两个应用间通信的保密性和可靠性，使客户与服务器应用之间的通信不被攻击者窃听。
+
+更多内容参考维基百科-传输层安全性协议
+
+
+相关概念PKI
+公开密钥基础建设（英语：Public Key Infrastructure，缩写：PKI），又称公开密钥基础架构、公钥基础建设、公钥基础设施、公开密码匙基础建设或公钥基础架构，是一组由硬件、软件、参与者、管理政策与流程组成的基础架构，其目的在于创造、管理、分配、使用、存储以及撤销数字证书。密码学上，公开密钥基础建设借着数字证书认证机构（CA）将用户的个人身份跟公开密钥链接在一起。对每个证书中心用户的身份必须是唯一的。链接关系通过注册和发布过程创建，取决于担保级别，链接关系可能由CA的各种软件或在人为监督下完成。PKI的确定链接关系的这一角色称为注册管理中心（Registration Authority，RA）。RA确保公开密钥和个人身份链接，可以防欺诈。在微软的公开密钥基础建设之下，注册管理中心（RA）又被叫做从属数字证书认证机构（Subordinate CA）。
+
+更多内容参考维基百科-公开密钥基础架构
+CA
+数字证书认证机构（英语：Certificate Authority，缩写为CA），也称为电子商务认证中心、电子商务认证授权机构，是负责发放和管理数字证书的权威机构，并作为电子商务交易中受信任的第三方，承担公钥体系中公钥的合法性检验的责任。
+
+更多内容参考维基百科-证书颁发机构
+数字证书
+公钥证书（英语：Public key certificate），又称数字证书（digital certificate）或身份证书（identity certificate）。是用于公开密钥基础建设的电子文件，用来证明公开密钥拥有者的身份。此文件包含了公钥信息、拥有者身份信息（主体）、以及数字证书认证机构（发行者）对这份文件的数字签名，以保证这个文件的整体内容正确无误。拥有者凭着此文件，可向电脑系统或其他用户表明身份，从而对方获得信任并授权访问或使用某些敏感的电脑服务。电脑系统或其他用户可以透过一定的程序核实证书上的内容，包括证书有否过期、数字签名是否有效，如果你信任签发的机构，就可以信任证书上的密钥，凭公钥加密与拥有者进行可靠的通信。
+
+
+公钥证书包括自签证书、根证书、中介证书、授权证书、终端实体证书（TLS服务器证书和TLS客户端证书）。
+
+更多内容参考维基百科-公钥证书
+加密原理TLS/SSL 的功能实现主要依赖于三类基本算法：散列函数 Hash、对称加密和非对称加密。其利用非对称加密实现身份认证和密钥协商，对称加密算法采用协商的密钥对数据加密，基于散列函数验证信息的完整性。
+TLS 的基本工作方式是，客户端使用非对称加密与服务器进行通信，实现身份验证并协商对称加密使用的密钥，然后对称加密算法采用协商密钥对信息以及信息摘要进行加密通信，不同的节点之间采用的对称密钥不同，从而可以保证信息只能通信双方获取。例如，在 HTTPS 协议中，客户端发出请求，服务端会将公钥发给客户端，客户端验证过后生成一个密钥再用公钥加密后发送给服务端（非对称加密），双方会在 TLS 握手过程中生成一个协商密钥（对称密钥），成功后建立加密连接。通信过程中客户端将请求数据用协商密钥加密后发送，服务端也用协商密钥解密，响应也用相同的协商密钥。后续的通信使用对称加密是因为对称加解密快，而握手过程中非对称加密可以保证加密的有效性，但是过程复杂，计算量相对来说也大。
+更多内容参考SSL/TLS 详解
+自建CA并签发证书《CentOS7安装配置GitLab》一文中，添加SSL一节详细描述了自建CA并签发SSL证书的过程。更多内容，可以参考基于OpenSSL自建CA和颁发SSL证书和使用 OpenSSL 自建 CA 并签发证书。
+k8s中证书管理查看证书1、查看证书位置
+ps aux | grep kubelet# find config filecat /var/lib/kubelet/config.yaml | grep staticPodPathcd /etc/kubernetes/manifestscat kube-apiserver.yaml
+
+2、查看证书详情
+openssl x509 -in /etc/kubernetes/pki/apiserver.crt -text
+
+签名签名，或者签名过期后重新签名
+openssl x509 -req -in /etc/kubernetes/pki/apiserver-etcd-client.csr -CA /etc/kubernetes/pki/etcd/ca.crt -CAkey /etc/kubernetes/pki/etcd/ca.key -CAcreateserial -out /etc/kubernetes/pki/apiserver-etcd-client.crt
+
+通过API签名1、为新用户创建证书
+openssl genrsa -out jane.key 2048openssl req -new -key jane.key -subj  "/CN=jane" -out jane.csrcat jane.csr | base64
+
+2、创建jane-csr.yaml文件
+apiVersion: certificates.k8s.io/v1beta1kind: CertificateSigningRequestmetadata:  name: janespec:  groups:  - system:authenticated  usages:  - digital signature  - key encipherment  - server auth  request: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURSBSRVFVRVNULS0tLS0KTUlJQ1ZqQ0NBVDRDQVFBd0VURVBNQTBHQTFVRUF3d0dZV3R6YUdGNU1JSUJJakFOQmdrcWhraUc5dzBCQVFFRgpBQU9DQVE4QU1JSUJDZ0tDQVFFQTBSWHVUZnhzRDFVaHlVTUlGa1Y0aFVKZUV0QUQ2bzVFVnkzV1laU2JqejhyCmNBamRKVUlNZDV1TFdHb25FMzdoWWpwRnl4ckNzVTJKd2JyMlRTa3hJd3c1T3N6V0ZlS3AxN0RYZ3RUSjNBbXgKTkExQWx5dmMwVE03VlMxSDRpcEQxbXlBWFE3YXNKWVNCeFRKd0V5VHNnMlB6TXY0bHlicThqeVNWYXRlUFJRawpsZWlZWXFnSXdUSk1HakxRVGhOdW9BWlpiZ1lyLytydUZMQUdBWUg0UXRvRjVmNHFUUTFmTTN1ejVDS2xVb2t3CnpFcWdRUzV5eCs3M0xncSthT2xzYVAzWFhZQkdCV1dCeWFYRjhpMitSZkc0VEhCVm51L2R2Y0hiTmZ6cTY3OGEKZ0k3T1VjTnRDaE0rSHRBZkVkME95dGZnTzc1bFlvVEtRUTJMZjdaUlZRSURBUUFCb0FBd0RRWUpLb1pJaHZjTgpBUUVMQlFBRGdnRUJBSk8vM2FkV2cvR0w5Z3lBaHdCZDluSzBzUFVBc0JhU3JIUHNud2pPNjlFbTVWYWRCekh2CjM2NXQzeUMwbWdiRmtZUFNFWWRsYkwzVk8vSGxOTmZGd1NQOGF4azh4M25ZZHNpdjN1U3BzbUY2NEkyYkphMnEKUDZkNDNmVGcrTjY2UGorQmRvQmRaUXhmY3Z4TUlYa3NwZGhwS1c3Umh3UTNuV1ZFTXNCZmFodmczdHRLNks1UApUeWNRSVp5SXgwTURxTTR3R2ppR2cyTVpGUzdQTTRWTHZjbGVoQTFIS1JkZVBCWnh3b092YWdOcEdYSmNEZDgzCmJmNXRjNitGeGJZQ29DaWt4VXBiVXBucU80NTJqVDZ4YUNkZFlkdkpJVS9HL3B6TjhnYU5lN092OWY3NUlWTFUKVFhJZzhGSnZzdjFZSE4zUUE1M0VBNmw5NVFxcjdXdndZRU09Ci0tLS0tRU5EIENFUlRJRklDQVRFIFJFUVVFU1QtLS0tLQo=
+
+3、签名请求并通过
+kubectl apply -f jane-csr.yamlkubectl get csr kubectl certificate approve janekubectl get csr jane -o yaml
+
+PS：查看签名用的CA
+cat /etc/kubernetes/manifests/kube-controller-manager.yaml | grep ca.crtcat /etc/kubernetes/manifests/kube-controller-manager.yaml | grep ca.key
+
+书签OpenSSL 与 SSL 数字证书概念贴SSL/TLS 原理详解
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>基础</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>k8s</tag>
+        <tag>tls</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>K8S集群中etcd备份和恢复</title>
+    <url>/dev-k8s-etcd-backup-restore/</url>
+    <content><![CDATA[前言就像备份数据库一样，很多时候，我们也想对k8s资源配置进行备份。
+kubectl get all --all-namespaces -o yaml &gt; all-deploy-services.yaml
+上面的方法，可以实现对k8s资源配置的备份。但是更好的办法，是对etcd进行备份。本文就学习一下k8s中etcd的备份和恢复方法。
+
+
+备份1、查看配置
+kubectl describe pod etcd-master -n kube-system
+看到Command字段为：
+Command:  etcd  --advertise-client-urls=https://172.17.0.10:2379  --cert-file=/etc/kubernetes/pki/etcd/server.crt  --client-cert-auth=true  --data-dir=/var/lib/etcd  --initial-advertise-peer-urls=https://172.17.0.10:2380  --initial-cluster=master=https://172.17.0.10:2380  --key-file=/etc/kubernetes/pki/etcd/server.key  --listen-client-urls=https://127.0.0.1:2379,https://172.17.0.10:2379  --listen-metrics-urls=http://127.0.0.1:2381  --listen-peer-urls=https://172.17.0.10:2380  --name=master  --peer-cert-file=/etc/kubernetes/pki/etcd/peer.crt  --peer-client-cert-auth=true  --peer-key-file=/etc/kubernetes/pki/etcd/peer.key  --peer-trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt  --snapshot-count=10000  --trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt
+
+2、执行备份
+ETCDCTL_API=3 etcdctl \--endpoints=https://[127.0.0.1]:2379 \--cacert=/etc/kubernetes/pki/etcd/ca.crt \--cert=/etc/kubernetes/pki/etcd/server.crt \--key=/etc/kubernetes/pki/etcd/server.key \snapshot save /tmp/snapshot-pre-boot.db
+
+恢复1、恢复etcd数据
+ETCDCTL_API=3 etcdctl \--endpoints=https://[127.0.0.1]:2379 \--cacert=/etc/kubernetes/pki/etcd/ca.crt \--cert=/etc/kubernetes/pki/etcd/server.crt \--key=/etc/kubernetes/pki/etcd/server.key \--initial-cluster=master=https://127.0.0.1:2380 \--initial-cluster-token etcd-cluster-1 \--initial-advertise-peer-urls=https://127.0.0.1:2380 \--name=master \--data-dir /var/lib/etcd-from-backup \snapshot restore /tmp/snapshot-pre-boot.db
+
+2、修改etcd.yamlvim /etc/kubernetes/manifests/etcd.yaml，如下修改：
+# Update --data-dir to use new target location--data-dir=/var/lib/etcd-from-backup# Update new initial-cluster-token to specify new cluster--initial-cluster-token=etcd-cluster-1# Update volumes and volume mounts to point to new path    volumeMounts:    - mountPath: /var/lib/etcd-from-backup      name: etcd-data    - mountPath: /etc/kubernetes/pki/etcd      name: etcd-certs  hostNetwork: true  priorityClassName: system-cluster-critical  volumes:  - hostPath:      path: /var/lib/etcd-from-backup      type: DirectoryOrCreate    name: etcd-data  - hostPath:      path: /etc/kubernetes/pki/etcd      type: DirectoryOrCreate    name: etcd-certs]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>docker</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>k8s</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用kubeadm升级K8S集群</title>
+    <url>/dev-kubeadm-upgrade/</url>
+    <content><![CDATA[K8S组件版本说明k8s集群中的常见组件包括：A类：kube-apiserverB类：controller-manager、kube-schedulerC类：kubelet、kube-proxyD类：etcd cluster、CoreDNSE类：kubectl
+组件的版本号一般表示为 major.minor.patch，比如v1.10.3。其中，A类组件是主要组件，以它为版本基准。比如，A类组件版本的minor号为x，那么B类组件版本必须为x或者x-1，C类组件版本必须为x、x-1或者x-2，E类组件版本必须为x、x-1或者x+1。而D类组件，和A类组件不是同一版本体系，版本兼容行需要查看文档。
+本文学习使用kubeadm进行k8s集群的升级。
+
+
+升级顺序推荐的升级方法，是根据minor版本号逐级进行升级。比如v1.10.0想要升级到v1.13.0，不应该直接升级到v1.13.0，而是应该v1.10.0-&gt;v1.11.0-&gt;v1.12.0-&gt;v1.13.0。
+升级顺序一般为：1、升级kubeadm2、升级master node3、升级worker node4、升级kubelet
+升级操作以v1.11.0升级v1.12.0为例。
+master节点1、查看升级帮助kubeadm upgrade plan
+2、升级kubeadm
+apt-get upgrade -y kubeadm=1.12.0-00# orapt install kubeadm=1.12.0-00
+
+3、升级k8s的AB类组件
+kubeadm upgrade apply v1.12.0
+此时使用kubectl get nodes，看到的version依然是v1.11.0，因为这里显示的是kubelet的版本，而不是kube-apiserver的版本。
+4、升级master节点的kubelet
+apt install kubelet=1.12.0-00systemctl restart kubelet
+
+worker节点1、驱逐worker节点的pods，封锁节点
+kubectl drain node-1kubectl cordon node-1
+
+2、升级kubeadm和kubectl
+apt-get install kubeadm=1.12.0-00apt-get install kubelet=1.12.0-00kubeadm upgrade node config --kubelet-version v1.12.0systemctl restart kubelet
+
+3、解除节点封锁kubectl uncordon node-1
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>docker</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>k8s</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用Docker安装配置GateOne</title>
+    <url>/dev-docker-gateone/</url>
+    <content><![CDATA[GateOne简介
+Gate One is a web-based Terminal Emulator and SSH client that brings the power of the command line to the web. It requires no browser plugins and is built on top of a powerful plugin system that allows every aspect of its appearance and functionality to be customized.
+
+本文使用Docker安装配置GateOne，搭建一个Web Shell环境。前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。已知docker宿主机IP为192.168.56.130。
+
+
+安装GateOne1、登录dockerhub查看需要的liftoff/gateone版本，实际上只有一个版本。
+2、下载gateone镜像docker pull liftoff/gateone
+3、启动gateone服务
+docker run --name=vk-gateone -d \-p 8000:8000 \liftoff/gateone gateone
+
+以上命令：命名容器为vk-gateone，后台运行；映射宿主机8000端口到容器8000端口。
+更多命令参考Using this Image。
+4、验证安装docker psgateone启动正常的话就可以看到vk-gateone容器。如果启动失败，可以使用docker logs vk-gateone查看失败原因并进行解决。
+使用nc命令验证：
+yum install ncnc -v localhost 8000
+
+浏览器访问： https://192.168.56.130:8000
+5、使用点击 Terminal:SSH ，输入主机IP、端口号、用户名和密码，即可登录主机。
+如果想要添加鉴权验证，参考archlinux-Gateone和API Authentication。
+开放端口如果浏览器无法访问8000端口，那么需要对防火墙进行设置。
+firewall-cmd --add-port=8000/tcp --permanentsystemctl reload firewalld# 或者systemctl stop firewalld
+
+安装openssh-server1、进入vk-gateonedocker exec -it vk-gateone /bin/bash
+2、安装openssh-server
+apt updateapt install openssh-server
+
+3、vim /etc/ssh/sshd_config，如下修改：
+PasswordAuthentication yes
+
+4、重启sshservice ssh restart
+5、添加用户
+useradd -m voidking -s /bin/bashpasswd voidkingadduser voidking sudo# 安装sudo命令（该容器内没有sudo）apt install sudo
+
+6、登录vk-gateone容器点击 Terminal:SSH ，主机名和端口使用默认，输入用户名voidking和密码，即可登录vk-gateone。
+小技巧在gateone shell里，可以使用 ctrl+insert 进行复制，使用 shift+insert 进行粘贴。如果在界面无法使用鼠标光标选中一些区域，那么可以在任意位置进行双击，即可激活光标选择。
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>docker</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>ssh</tag>
+        <tag>shell</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hexo使用Gulp压缩静态资源</title>
     <url>/dev-hexo-gulp/</url>
     <content><![CDATA[Gulp简介gulp是一个自动化构建工具，能够强化我们的前端工作流。
@@ -1386,41 +1570,57 @@ kubectl [command] [TYPE] [NAME] [flags]
 
 
 
-常用命令指定配置文件# 指定默认配置文件export KUBECONFIG=~/.kube/config# 查看kubectl配置kubectl config view# 指定单次运行配置文件kubectl get deployments --kubeconfig=/root/.kube/configkubectl get deployments --kubeconfig /root/.kube/config
+环境准备指定配置文件# 指定默认配置文件export KUBECONFIG=~/.kube/config# 查看kubectl配置kubectl config view# 指定单次运行配置文件kubectl get deployments --kubeconfig=/root/.kube/configkubectl get deployments --kubeconfig /root/.kube/config# 指定默认namespacekubectl config set-context $(kubectl config current-context) --namespace=voidking
 
+使用别名缩写# kubectl缩写为kalias k="/usr/local/bin/kubectl"
+建议把配置写入 .bashrc ，登录后别名自动生效。
 命令自动补全yum install -y bash-completionsource /usr/share/bash-completion/bash_completionsource &lt;(kubectl completion bash)echo "source /usr/share/bash-completion/bash_completion" &gt;&gt; ~/.bashrcecho "source &lt;(kubectl completion bash)" &gt;&gt; ~/.bashrc
 
-查看资源缩写kubectl describekubectl api-resources
+查看集群信息# 查看集群信息kubectl cluster-infokubectl cluster-info dump# 查看集群状态kubectl get cs# 查看node资源使用kubectl top node# 查看集群事件kubectl get ev
 
-输出结果为：
-NAME                              SHORTNAMES   APIGROUP                       NAMESPACED   KINDbindings                                                                      true         Bindingcomponentstatuses                 cs                                          false        ComponentStatusconfigmaps                        cm                                          true         ConfigMapendpoints                         ep                                          true         Endpointsevents                            ev                                          true         Eventlimitranges                       limits                                      true         LimitRangenamespaces                        ns                                          false        Namespacenodes                             no                                          false        Nodepersistentvolumeclaims            pvc                                         true         PersistentVolumeClaimpersistentvolumes                 pv                                          false        PersistentVolumepods                              po                                          true         Podpodtemplates                                                                  true         PodTemplatereplicationcontrollers            rc                                          true         ReplicationControllerresourcequotas                    quota                                       true         ResourceQuotasecrets                                                                       true         Secretserviceaccounts                   sa                                          true         ServiceAccountservices                          svc                                         true         Servicemutatingwebhookconfigurations                  admissionregistration.k8s.io   false        MutatingWebhookConfigurationvalidatingwebhookconfigurations                admissionregistration.k8s.io   false        ValidatingWebhookConfigurationbatchreleases                                  alicloud.com                   true         BatchReleasecustomresourcedefinitions         crd,crds     apiextensions.k8s.io           false        CustomResourceDefinitionapiservices                                    apiregistration.k8s.io         false        APIServicecontrollerrevisions                            apps                           true         ControllerRevisiondaemonsets                        ds           apps                           true         DaemonSetdeployments                       deploy       apps                           true         Deploymentreplicasets                       rs           apps                           true         ReplicaSetstatefulsets                      sts          apps                           true         StatefulSettokenreviews                                   authentication.k8s.io          false        TokenReviewlocalsubjectaccessreviews                      authorization.k8s.io           true         LocalSubjectAccessReviewselfsubjectaccessreviews                       authorization.k8s.io           false        SelfSubjectAccessReviewselfsubjectrulesreviews                        authorization.k8s.io           false        SelfSubjectRulesReviewsubjectaccessreviews                           authorization.k8s.io           false        SubjectAccessReviewhorizontalpodautoscalers          hpa          autoscaling                    true         HorizontalPodAutoscalercronjobs                          cj           batch                          true         CronJobjobs                                           batch                          true         Jobcertificatesigningrequests        csr          certificates.k8s.io            false        CertificateSigningRequestleases                                         coordination.k8s.io            true         Leaseevents                            ev           events.k8s.io                  true         Eventdaemonsets                        ds           extensions                     true         DaemonSetdeployments                       deploy       extensions                     true         Deploymentingresses                         ing          extensions                     true         Ingressnetworkpolicies                   netpol       extensions                     true         NetworkPolicypodsecuritypolicies               psp          extensions                     false        PodSecurityPolicyreplicasets                       rs           extensions                     true         ReplicaSetglobaljobs                        globaljob    jobs.aliyun.com                true         GlobalJobnodes                                          metrics.k8s.io                 false        NodeMetricspods                                           metrics.k8s.io                 true         PodMetricsingresses                         ing          networking.k8s.io              true         Ingressnetworkpolicies                   netpol       networking.k8s.io              true         NetworkPolicyruntimeclasses                                 node.k8s.io                    false        RuntimeClasspoddisruptionbudgets              pdb          policy                         true         PodDisruptionBudgetpodsecuritypolicies               psp          policy                         false        PodSecurityPolicyclusterrolebindings                            rbac.authorization.k8s.io      false        ClusterRoleBindingclusterroles                                   rbac.authorization.k8s.io      false        ClusterRolerolebindings                                   rbac.authorization.k8s.io      true         RoleBindingroles                                          rbac.authorization.k8s.io      true         Rolepriorityclasses                   pc           scheduling.k8s.io              false        PriorityClasscsidrivers                                     storage.k8s.io                 false        CSIDrivercsinodes                                       storage.k8s.io                 false        CSINodestorageclasses                    sc           storage.k8s.io                 false        StorageClassvolumeattachments                              storage.k8s.io                 false        VolumeAttachment
+查看帮助查看资源缩写kubectl describekubectl api-resources
+建议记住常用资源的SHORTNAMES，可以提升输入效率。此外，记住常用资源的APIGROUP，可以提高编写yaml文件时的效率。
+查看可用api版本kubectl api-versions
+yaml帮助yaml文件分成四部分，apiVersion、kind、metadata和spec。apiVersion和kind是关联的，参考kubectl api-resources。metadata必填name、namespace、labels。pod.spec主要填containers的name和image；deployment.spec主要填replicas、template和selector；service.spec主要填selector、ports和type。
+编写yaml文件的过程中，如果忘记了某些结构和字段，可以使用kubectl explain命令来获取帮助。
+1、查看资源包含哪些字段以查看deployment的yaml包含哪些字段为例：
+kubectl explain deploymentkubectl explain deployment --api-version=apps/v1
 
-查看资源1、查看集群的所有资源
-kubectl get allkubectl get all -o wide
+2、查看子字段以查看节点亲和性字段为例：
+kubectl explain deployment.spec.template.spec.affinitykubectl explain deployment.spec.template.spec.affinity.nodeAffinity...kubectl explain deployment.spec.template.spec.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms.matchExpressions
+
+资源相关查看资源1、查看集群的所有资源
+kubectl get allkubectl get all -o wide# 根据label筛选所有资源kubectl get all -l 'env=dev'
 
 2、查看deployment
-# 查看deploymentkubectl get deploykubectl get deploy -n ratel -o wide# 查看deployment实时变化kubectl get deploy --watch# 查看指定deploymentkubectl get deploy/deployment-namekubectl get deploy deployment-name# 指定namespacekubectl get deploy -n voidking# 根据label选择deploymentkubectl get deploy --selector="name=nginx,type=frontend"# 查看deployment详细信息kubectl describe deploy
+# 查看deploymentkubectl get deploykubectl get deploy -n voidking -o widekubectl get deploy -l 'env=dev'kubectl get deploy --selector='env=dev'kubectl get deploy --all-namespaces# 查看deployment实时变化kubectl get deploy --watch# 查看指定deploymentkubectl get deploy/deployment-namekubectl get deploy deployment-name# 指定namespacekubectl get deploy -n voidking# 根据label选择deploymentkubectl get deploy --selector="name=nginx,type=frontend"# 查看deployment详细信息kubectl describe deploy
 pod、service、node的查看方法和deployment相同。
-导出yaml或json文件# 导出deployment的yaml文件kubectl get deploy -o yaml &gt; deploy.yaml# 导出deployment的json文件kubectl get deploy -o json &gt; deploy.json# 导出指定deployment的yaml文件kubectl get deploy/deployment-name -o yaml &gt; deploy-name.yaml# 导出指定deployment的json文件kubectl get deploy/deployment-name -o json &gt; deploy-name.json
+创建资源kubectl create -f deploy.yamlkubectl apply -f deploy.yaml
+
+更新资源kubectl edit deployment deployment-namekubectl replace -f deploy.yamlkubectl apply -f deploy.yaml
+
+删除资源kubectl delete deployment deployment-name
+
+扩缩容方法一：通过扩缩容命令。
+kubectl scale --replicas=2 deployment deployment-name
+
+方法二：通过更新yaml文件。
+暴露服务# 为deployment创建clusterip，暴露clusterip的80端口kubectl expose deployment deployment-name --port=80 --name svc-name# 为deployment创建clusterip，暴露clusterip的6789端口kubectl expose deployment deployment-name --target-port=80 --port=6789kubectl expose -f vk-deploy.yaml --target-port=80 --port=6789# 创建nodeport，暴露clusterip的80端口，暴露node的随机端口kubectl expose deployment deployment-name --port=80 --type=NodePort --name svc-name# 创建clusterip，暴露clusterip的80端口kubectl create service clusterip svc-name --tcp=80:80# 创建nodeport，暴露clusterip的80端口，暴露node的30080端口kubectl create service nodeport svc-name --tcp=80:80 --node-port=30080
+
+版本回退# 查看发布历史kubectl rollout history deployment deployment-name# 查看发布状态kubectl rollout status deployment deployment-name# 回退到上一个版本kubectl rollout undo deployment deployment-name
+
+cm和secret1、创建configmap
+kubectl create configmap special-config --from-literal=special.how=very --from-literal=special.type=charmkubectl create configmap game-config-3 --from-file=&lt;my-key-name&gt;=&lt;path-to-file&gt;
+
+2、创建secret
+# 在命令中指定key和valuekubectl create secret generic db-user-pass --from-literal=username=voidking --from-literal=password='vkpassword'kubectl get secret db-user-pass -o yaml# 在文件中指定valueecho -n 'voidking' &gt; ./username.txtecho -n 'vkpassword' &gt; ./password.txtkubectl create secret generic db-user-pass --from-file=./username.txt --from-file=./password.txtkubectl create secret generic db-user-pass --from-file=username=./username.txt --from-file=password=./password.txtkubectl get secret db-user-pass -o yaml
+在yaml文件中看到的username和password，都是经过base64加密的字符串。
+# 加密echo -n 'voidking' | base64# 解密echo 'dm9pZGtpbmc=' | base64 --decode
+
+yaml相关导出yaml或json文件# 导出deployment的yaml文件kubectl get deploy -o yaml &gt; deploy.yaml# 导出deployment的json文件kubectl get deploy -o json &gt; deploy.json# 导出指定deployment的yaml文件kubectl get deploy/deployment-name -o yaml &gt; deploy-name.yaml# 导出指定deployment的json文件kubectl get deploy/deployment-name -o json &gt; deploy-name.json
 pod、service、node的yaml/json文件的导出方法和deployment相同。
-node封锁# 封锁node，不允许分配podkubectl cordon nodename# 从指定node驱除podkubectl drain nodename --ignore-daemonsets# 解除node的封锁，允许分配podkubectl uncordon nodename
-
-事件相关# 查看集群事件kubectl get ev
-
-故障排查故障排查的第一步是先给问题分下类。这个问题是什么？Pods，Replication Controller或者Service？1、Pods排查
-# 查看pod详细信息kubectl describe pods $&#123;POD_NAME&#125;# 查看容器日志kubectl logs $&#123;POD_NAME&#125; $&#123;CONTAINER_NAME&#125;# 查看crashed容器日志kubectl logs --previous $&#123;POD_NAME&#125; $&#123;CONTAINER_NAME&#125;# 查看运行的容器内部日志kubectl exec $&#123;POD_NAME&#125; -c $&#123;CONTAINER_NAME&#125; -- cat /var/log/cassandra/system.log# 查看运行的容器内部日志（pod只有一个容器）# kubectl exec $&#123;POD_NAME&#125; -- cat /var/log/cassandra/system.log
-
-2、Replication Controllers排查
-# 监控rc相关事件kubectl describe rc $&#123;CONTROLLER_NAME&#125;
-
-3、Services排查
-# 查看endpoints资源，service选择到了哪些pod和端口kubectl get endpoints $&#123;SERVICE_NAME&#125;
-
-更多内容参考应用故障排查。
-自动生成yamlpod yaml生成pod的yaml文件模板：
-kubectl run vk-pod --image=nginx --generator=run-pod/v1 --dry-run -o yaml
-生成内容为：
-apiVersion: v1kind: Podmetadata:  creationTimestamp: null  labels:    run: vk-pod  name: vk-podspec:  containers:  - image: nginx    name: vk-pod    resources: &#123;&#125;  dnsPolicy: ClusterFirst  restartPolicy: Alwaysstatus: &#123;&#125;
+pod yaml生成pod的yaml文件模板：
+kubectl run vk-pod --image=nginx --generator=run-pod/v1 -l 'name=vk-pod,env=dev' --dry-run -o yamlkubectl run vk-pod --image=nginx --generator=run-pod/v1 --labels='name=vk-pod,env=dev' --dry-run -o yamlkubectl run vk-pod --image=busybox --generator=run-pod/v1 --dry-run -o yaml --command -- sleep 1000
 
 更多内容，参考Kubernetes kubectl run 命令详解。
 deployment yaml1、生成deployment的yaml文件模板（历史方法）：
@@ -1431,23 +1631,49 @@ kubectl get deploy/deployment-name -o yaml --export &gt; deploy-name.yaml
 也会出现提示：Flag –export has been deprecated, This flag is deprecated and will be removed in future.很尴尬，–export 也要弃用了，且用且珍惜吧。
 3、生成deployment的yaml文件模板（推荐方法）：
 kubectl create deployment vk-deploy --image=nginx --dry-run -o yaml
-生成内容为：
-apiVersion: apps/v1kind: Deploymentmetadata:  creationTimestamp: null  labels:    app: vk-deploy  name: vk-deployspec:  replicas: 1  selector:    matchLabels:      app: vk-deploy  strategy: &#123;&#125;  template:    metadata:      creationTimestamp: null      labels:        app: vk-deploy    spec:      containers:      - image: nginx        name: nginx        resources: &#123;&#125;status: &#123;&#125;
 
 更多内容，参考Kubernetes kubectl create deployment 命令详解。
+注意，我们并不需要在deployment中指定容器对外暴露的ports，因为该字段只是一个提示作用。
+
+List of ports to expose from the container. Exposing a port here gives the system additional information about the network connections a container uses, but is primarily informational. Not specifying a port here DOES NOT prevent that port from being exposed. Any port which is listening on the default “0.0.0.0” address inside a container will be accessible from the network. Cannot be updated.
+
 service yaml生成service的yaml文件模板（推荐方法）：
-kubectl create service clusterip vk-svc --tcp="5678:8080" --dry-run -o yaml
-生成内容为：
-apiVersion: v1kind: Servicemetadata:  creationTimestamp: null  labels:    app: vk-svc  name: vk-svcspec:  ports:  - name: 5678-8080    port: 5678    protocol: TCP    targetPort: 8080  selector:    app: vk-svc  type: ClusterIPstatus:  loadBalancer: &#123;&#125;
+kubectl create service clusterip vk-svc --tcp="5678:80" --dry-run -o yaml
 
 更多内容，参考Kubernetes kubectl create service 命令详解和Service。
-编辑yaml生成了模板，很多字段依然不记得怎么办？比如要添加节点亲和性，那么可以查看相关解释：
-kubectl explain deployment.spec.template.spec.affinitykubectl explain deployment.spec.template.spec.affinity.nodeAffinity...kubectl explain deployment.spec.template.spec.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms.matchExpressions
-然后，根据层级关系和解释编辑yaml文件模板。
 yaml验证kubectl create --validate -f deployment.yaml
 
-徒手写yaml首先把yaml文件分成四部分，typeMeta、objectMeta、spec和status，其中status部分可以不写。typeMeta包括apiVersion和kind；metadata必填name、namespace、labels；pod.spec主要填containers的name和image，deployment.spec主要填replicas、selector的matchLabels、template，service.spec主要填selector、ports和type。
-拷贝文件# 拷贝pod内容到宿主机kubectl cp podname-564949c96c-m986n:/path/filename .]]></content>
+node相关taint和tolerations# 添加taintkubectl taint nodes node1 key1=value1:NoSchedulekubectl taint nodes node1 key2=value2:PreferNoSchedulekubectl taint nodes node1 key3=value3:NoExecute# 删除taintkubectl taint nodes node1 value1:NoSchedule-
+
+同时，要在pod yaml的spec下添加tolerations字段：
+spec:  tolerations:  - key: "key1"    operator: "Equal"    value: "value1"    effect: "NoSchedule"  - key: "key2"    operator: "Exists"    effect: "PreferNoSchedule"  - key: "key3"    operator: "Equal"    value: "value3"    effect: "NoExecute"
+
+label和affinity# 添加labelkubectl label nodes node1 key1=value1,key2=value2# 删除labelkubectl label nodes node1 key1-
+
+同时，要在pod yaml中添加tolerations字段：
+nodeSelector:  disktype: ssd
+或者，使用：
+spec:  affinity:    nodeAffinity:      requiredDuringSchedulingIgnoredDuringExecution:        nodeSelectorTerms:        - matchExpressions:          - key: key1            operator: In            values:            - value1            - valuex      preferredDuringSchedulingIgnoredDuringExecution:      - weight: 1        preference:          matchExpressions:          - key: key2            operator: In            values:            - value2            - valuey
+
+node封锁如果node存在问题，或者node需要升级维护，这时需要对node进行封锁，并且驱除pod。
+# 封锁node，不允许分配podkubectl cordon nodename# 从指定node驱除podkubectl drain nodename --ignore-daemonsets# 解除node的封锁，允许分配podkubectl uncordon nodename
+
+容器交互登录容器kubectl get podskubectl exec -it pod-name /bin/bashkubectl exec -it pod-name -c container-name /bin/bash
+
+拷贝文件# 拷贝pod内容到宿主机kubectl cp podname-564949c96c-m986n:/path/filename .
+
+故障排查故障排查的第一步是先给问题分下类。这个问题是什么？Pods，Replication Controller或者Service？更多内容参考应用故障排查。
+Pods排查# 查看pod详细信息kubectl describe pods $&#123;POD_NAME&#125;# 查看容器日志kubectl logs $&#123;POD_NAME&#125; $&#123;CONTAINER_NAME&#125;# 查看crashed容器日志kubectl logs --previous $&#123;POD_NAME&#125; $&#123;CONTAINER_NAME&#125;# 查看运行的容器内部日志kubectl exec $&#123;POD_NAME&#125; -c $&#123;CONTAINER_NAME&#125; -- cat /var/log/cassandra/system.log# 查看运行的容器内部日志（pod只有一个容器）# kubectl exec $&#123;POD_NAME&#125; -- cat /var/log/cassandra/system.log
+
+RC排查Replication Controllers排查
+# 监控rc相关事件kubectl describe rc $&#123;CONTROLLER_NAME&#125;
+
+Services排查# 查看endpoints资源，service选择到了哪些pod和端口kubectl get endpoints $&#123;SERVICE_NAME&#125;
+
+k8s工具箱voidking/k8s-tool
+书签Overview of kubectl
+Kubernetes kubectl 命令表
+]]></content>
       <categories>
         <category>专业</category>
         <category>运维</category>
@@ -12669,7 +12895,8 @@ To justify a decision, action, or idea means to show or prove that it is reasona
 对大多数中国同学而言，主动回避“文字”更十分必要。因为大多数中国同学，只要上到大学程度的，多半是“视觉学习型”（Visual Learning Style）。而“听觉学习型”(Audio Learning Style)和“动作学习型” (Kinesthetic Learning Style)的同学，一般会被我国这种教育体制淘汰掉。“视觉学习型”的同学，建立英语思维时，很容易受到“文字”的干扰，忍不住看文字，甚至先想一下文字，再过度到含义。成了“声音”—“字型”—“含义”的路线。应该避免想到字型，直接将“声音”和“含义”建立联系。
 “听”的原则和方法：1）千万不要着急学文字，语言掌握的关键是解决“声音”。2）不依赖语法知识和中文翻译，重点是“猜测”着听。3）在后期能听懂简单段落和简单对话时，可以模仿和重复一些句子并尝试自己说。4）最后，可以开始阅读一些与听到的对话有关的文字。注意一定要在听之后才能读，千万不能一发现听不懂马上去翻看文字来帮忙。 
 背单词方法原则：建立连接，加强连接。
-1、多维，可以背单词，可以背句子，可以听ESLPod，可以阅读，不排斥任何一种记忆方法。2、重复，按照艾宾浩斯遗忘曲线也好，按照早晚也好，按照循环也好，一定要重复。3、欧陆词典法，使用分类词典，三秒过一个单词。4、联想法，同类词 实物 拆词 近义词 反义词 父词 解释 造句。5、英英记忆法，使用英文解释英文单词。
+1、多维，可以背单词，可以背句子，可以听ESLPod，可以阅读，不排斥任何一种记忆方法。2、重复，按照艾宾浩斯遗忘曲线也好，按照早晚也好，按照循环也好，一定要重复。3、欧陆词典法，使用分类词典，闭目听选，三秒过一个单词。4、联想法，同类词 实物 拆词 近义词 反义词 父词 解释 造句。5、英英记忆法，使用英文解释英文单词。
+心态对于说英语，像玩游戏一样放松，一样自信，脸皮要厚，不要怕犯错。英语是交流的工具，能听懂别人说什么，能表达出自己的思想，这才是目的。把关注点放在倾听，放在表达，而不是语法错误和词法错误。交流不是考试，有错误又怎样？别人能听明白就够了！
 听说听写听写，or听抄，顾名思义，就是一边放听力段子，一边写下听到的内容。听写并非考验诸位的记忆，所以放完一句，暂停掉，写下你能够听到的每一个词的全拼，如果不能听出来所有内容，就重新放一遍刚才这一句话，再听不出来就再放一遍，以此循环往复直到完整写下原文，然后再放下一句。当然，如果5遍以上还是听不出来，直接看原文，不要继续纠结了，我们的学习过程要遵循人性啊。那么5遍还没有听出来是什么原因呢？有生词？那么查之。有语音现象导致认识的词也听不出来？那说明还没有练到火候啊。语速过快？那么先从比较慢的材料开始吧。一步一步训练耳朵的熟悉度，然后再换比较快的材料。
 听读一篇新的听力材料，头2、3遍一定要从头到尾连贯着听，不要逐字逐句听，这个时候不求听懂绝大部分内容，而只求听懂一个大概。这样2、3遍连贯着听下来，哪怕你只懂了几个单词，也没关系，这在听力的新手来说完全正常，根本不必责难自己（哪怕你觉得自己阅读理解的水平已经达到了《新概念》第四册都已经学完的水平、但从没练过听力）。
 第二步，逐字逐句听。一开始，把一个比较长的句子一次全部听下来，可能会有困难：听到句尾，早就已经忘了开头说什么了。逐字逐句听的时候，可以把一句话拆成几个部分来听，听完一小部分，立刻口头重复，说一遍。
@@ -12819,9 +13046,9 @@ Ubuntu14.04下载地址2
       </categories>
       <tags>
         <tag>ubuntu</tag>
+        <tag>ssh</tag>
         <tag>openstack</tag>
         <tag>virtualbox</tag>
-        <tag>ssh</tag>
       </tags>
   </entry>
   <entry>
@@ -13064,9 +13291,15 @@ staruml逆向问题使用staruml逆向生成类图的时候，提示错误：“
     <content><![CDATA[前言好多shell脚本，写过就扔了，感觉很可惜。本文会不断更新，用于记录自我感觉良好的脚本。以后再遇到相似的需求，方便进行参考查找。
 
 
-短脚本过滤空行过滤hostlist.txt中的空行（linux和windows空行都进行过滤）：
+短脚本创建用户创建voidking用户，并添加sudo权限：
+useradd -m voidking -s /bin/bashpasswd voidkingadduser voidking sudo
+
+过滤空行过滤hostlist.txt中的空行（linux和windows空行都进行过滤）：
 grep -v -e '^[[:space:]]*$' ng.txt
 
+过滤windows换行符在windows里编辑好的文件，上传到linux后发现多了^M。以过滤hostlist.txt中的^M为例：
+sed -i 's/^M//g' hostlist.txt
+注意，直接复制粘贴上面的命令是无效的。^M的输入方式是 Ctrl + V ，然后 Ctrl + M 。
 循环读取单列文本已知hostlist.txt为：
 www.baidu.comwww.voidking.com
 
@@ -18126,6 +18359,33 @@ gif动态图局部加马赛克模糊广告文字http://www.leawo.cn/space-138176
       </tags>
   </entry>
   <entry>
+    <title>leetcode刷题记录007-Reverse Integer</title>
+    <url>/dev-leetcode-007/</url>
+    <content><![CDATA[题目题目链接：https://leetcode.com/problems/reverse-integer/
+Reverse digits of an integer.
+Example1: x = 123, return 321Example2: x = -123, return -321
+
+
+解题过程第一次思路1、循环内x不断除以10，直到变成0，跳出循环。2、循环内x不断除以10求余，并把求得的余数添加到结果字符串上。3、强制转换结果字符串为int类型。
+public class Solution &#123;    public int reverse(int x) &#123;        String resultStr = "";        if(x==0)&#123;            resultStr = "0";        &#125;else if(x&gt;0)&#123;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );        &#125;else&#123;            x=-x;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );            resultStr = "-"+resultStr;        &#125;        return Integer.parseInt(resultStr);       &#125;&#125;
+报错Line 26: java.lang.NumberFormatException: For input string: “9646324351”。
+第二次思路单击click to show spoilers.，发现还需要处理int溢出的问题。那就加上int超出范围的错误处理。
+public class Solution &#123;    public int reverse(int x) &#123;        String resultStr = "";        if(x==0)&#123;            resultStr = "0";        &#125;else if(x&gt;0)&#123;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );        &#125;else&#123;            x=-x;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );            resultStr = "-"+resultStr;        &#125;        try &#123;            return Integer.parseInt(resultStr);        &#125; catch (Exception e) &#123;            return 0;        &#125;            &#125;&#125;
+Accepted。
+源码地址https://github.com/voidking/leetcode/tree/master/src/com/voidking/leetcode/question007
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>算法</category>
+        <category>java</category>
+      </categories>
+      <tags>
+        <tag>java</tag>
+        <tag>leetcode</tag>
+        <tag>算法</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>leetcode刷题记录001-Two Sum</title>
     <url>/dev-leetcode-001/</url>
     <content><![CDATA[前言leetcode开刷，采用java。
@@ -18175,33 +18435,6 @@ class Solution &#123;    public boolean isPalindrome(int x) &#123;        if(x &
 
 思路二略。
 源码地址https://github.com/voidking/leetcode/tree/master/src/com/voidking/leetcode/question009
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>算法</category>
-        <category>java</category>
-      </categories>
-      <tags>
-        <tag>java</tag>
-        <tag>leetcode</tag>
-        <tag>算法</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>leetcode刷题记录007-Reverse Integer</title>
-    <url>/dev-leetcode-007/</url>
-    <content><![CDATA[题目题目链接：https://leetcode.com/problems/reverse-integer/
-Reverse digits of an integer.
-Example1: x = 123, return 321Example2: x = -123, return -321
-
-
-解题过程第一次思路1、循环内x不断除以10，直到变成0，跳出循环。2、循环内x不断除以10求余，并把求得的余数添加到结果字符串上。3、强制转换结果字符串为int类型。
-public class Solution &#123;    public int reverse(int x) &#123;        String resultStr = "";        if(x==0)&#123;            resultStr = "0";        &#125;else if(x&gt;0)&#123;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );        &#125;else&#123;            x=-x;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );            resultStr = "-"+resultStr;        &#125;        return Integer.parseInt(resultStr);       &#125;&#125;
-报错Line 26: java.lang.NumberFormatException: For input string: “9646324351”。
-第二次思路单击click to show spoilers.，发现还需要处理int溢出的问题。那就加上int超出范围的错误处理。
-public class Solution &#123;    public int reverse(int x) &#123;        String resultStr = "";        if(x==0)&#123;            resultStr = "0";        &#125;else if(x&gt;0)&#123;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );        &#125;else&#123;            x=-x;            do&#123;                resultStr = resultStr + x%10 ;                x = x/10;                if(x&gt;=1 &amp;&amp; x&lt;= 9)&#123;                    resultStr = resultStr + x%10 ;                &#125;            &#125;while(x/10 !=0 );            resultStr = "-"+resultStr;        &#125;        try &#123;            return Integer.parseInt(resultStr);        &#125; catch (Exception e) &#123;            return 0;        &#125;            &#125;&#125;
-Accepted。
-源码地址https://github.com/voidking/leetcode/tree/master/src/com/voidking/leetcode/question007
 ]]></content>
       <categories>
         <category>专业</category>
@@ -30473,10 +30706,10 @@ struts.xml：配置Action。
       <tags>
         <tag>java</tag>
         <tag>eclipse</tag>
+        <tag>ssh</tag>
         <tag>spring</tag>
         <tag>hibernate</tag>
         <tag>struts2</tag>
-        <tag>ssh</tag>
       </tags>
   </entry>
   <entry>
