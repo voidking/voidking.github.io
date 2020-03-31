@@ -1,6 +1,397 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Harbor入门篇</title>
+    <url>/dev-harbor-start/</url>
+    <content><![CDATA[Harbor简介
+Harbor is an open source container image registry that secures images with role-based access control, scans images for vulnerabilities, and signs images as trusted. As a CNCF Incubating project, Harbor delivers compliance, performance, and interoperability to help you consistently and securely manage images across cloud native compute platforms like Kubernetes and Docker.
+
+更多内容参考Harbor官网。
+
+
+安装Harbor前置条件参考Harbor Installation Prerequisites
+1、硬件需求硬件最小需求：2C4G40G。硬件推荐需求：4C8G160G。
+2、软件需求Docker engine，Version 17.06.0-ce+ or higherDocker Compose，Version 1.18.0 or higherOpenssl，Latest is preferred
+3、网络端口444、4443和80
+下载安装Harbor1、访问Harbor releases page，下载需要的harbor版本，这里选择下载 harbor-offline-installer-v1.10.1.tgz
+或者使用curl命令下载：
+curl -C - -O -L https://github.com/goharbor/harbor/releases/download/v1.10.1/harbor-offline-installer-v1.10.1.tgz
+
+2、解压
+tar -xzvf harbor-offline-installer-v1.10.1.tgzcd harbor
+
+3、配置harbor.yml安装前修改harbor.yaml，参考Configure the Harbor YML File，按需要如下几个字段：
+# The IP address or hostname to access admin UI and registry service.# DO NOT use localhost or 127.0.0.1, because Harbor needs to be accessed by external clients.hostname: harbor.voidking.com# http related confighttp:  # port for http, default is 80. If https enabled, this port will redirect to https port  port: 80# https related config# https:  # https port for harbor, default is 443  #port: 443  # The path of cert and key files for nginx  #certificate: /your/certificate/path  #private_key: /your/private/key/path# The initial password of Harbor admin# It only works in first time to install harbor# Remember Change the admin password from UI after launching Harbor.harbor_admin_password: Harbor12345# The default data volumedata_volume: /data# Harbor DB configurationdatabase:  # The password for the root user of Harbor DB. Change this before any production use.  password: root123  # The maximum number of connections in the idle connection pool. If it &lt;=0, no idle connections are retained.  max_idle_conns: 50  # The maximum number of open connections to the database. If it &lt;= 0, then there is no limit on the number of open connections.  # Note: the default number of connections is 100 for postgres.  max_open_conns: 100# Log configurationslog:  # options are debug, info, warning, error, fatal  level: info  # configs for logs in local storage  local:    # Log files are rotated log_rotate_count times before being removed. If count is 0, old versions are removed rather than rotated.    rotate_count: 50    # Log files are rotated only if they grow bigger than log_rotate_size bytes. If size is followed by k, the size is assumed to be in kilobytes.    # If the M is used, the size is in megabytes, and if G is used, the size is in gigabytes. So size 100, size 100k, size 100M and size 100G    # are all valid.    rotate_size: 200M    # The directory on your host that store log    location: /var/log/harbor
+
+4、执行安装./install.sh如果安装完成发现配置错误，可以修改配置后再次执行脚本。如果报错 ERROR: Failed to Setup IP tables: Unable to enable SKIP DNAT rule ，那么重启docker后再次执行脚本。
+至此，harbor安装完成，没有配置https。
+验证安装浏览器验证浏览器访问 http://192.168.56.200 ，可以看到harbor登录页面。输入用户名密码，admin和Harbor12345，登录harbor控制台。
+命令行验证docker psdocker login 192.168.56.200
+
+输入用户名密码，admin和Harbor12345，登录报错：Error response from daemon: Get https://192.168.56.200/v2/: dial tcp 192.168.56.200:443: connect: connection refused。
+这是因为，docker1.3.x之后与registry交互，默认使用https协议。修改/etc/docker/daemon.json，添加insecure-registries参数：
+&#123;  "registry-mirrors": [    "https://mirror.ccs.tencentyun.com"  ],  "insecure-registries": [    "http://192.168.56.200",    "http://harbor.voidking.com"  ]&#125;
+然后重启docker：
+systemctl daemon-reloadsystemctl restart docker
+重新登录，成功。
+使用启动和停止1、停止docker-compose down -v
+2、修改配置修改harbor.yml后，执行./prepare
+3、启动docker-compose up -d
+上传镜像docker pull busybox:1.31docker tag busybox:1.31 harbor.voidking.com/voidking/busybox:1.31docker tag busybox:1.31 harbor.voidking.com/voidking/subpath/busybox:1.31docker push harbor.voidking.com/voidking/busybox:1.31
+报错：The push refers to repository [harbor.voidking.com/voidking/busybox]a6d503001157: Preparingdenied: requested access to the resource is denied
+这是因为，需要先创建项目。在web控制台创建项目 voidking，再次上传，成功。带有subpath的镜像，同样可以上传成功。
+下载镜像docker pull harbor.voidking.com/voidking/busybox:1.31
+
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>k8s</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>k8s</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>K8S中的RBAC鉴权</title>
+    <url>/dev-k8s-rbac-auth/</url>
+    <content><![CDATA[RBAC Authorization
+Role-based access control (RBAC) is a method of regulating access to computer or network resources based on the roles of individual users within your organization.
+
+更多内容，参考Using RBAC Authorization。
+《SSL和TLS》文中，通过API签名一节，创建了新用户jane，并且给该用户的证书进行签名。现在我们有了jane.crt和jane.key，本文中会配置jane能够创建和查看default空间下的pods。
+
+
+配置文件kubeconfig1、查看配置kubectl config view记录当前的server地址。
+2、保存ca.crt
+cat .kube/config | grep certificate-authority-data | awk '&#123;print $2&#125;' | base64 --decode &gt; ca.crt
+
+jane.kubeconfig1、设置集群参数
+kubectl config set-cluster kubernetes \--server="https://172.17.0.69:6443" \--certificate-authority=/root/ca.crt \--embed-certs=true \--kubeconfig=jane.kubeconfig
+当前目录生成jane.kubeconfig文件。
+2、设置客户端认证参数
+kubectl config set-credentials jane \--client-certificate=/root/jane.crt \--client-key=/root/jane.key \--embed-certs=true \--kubeconfig=jane.kubeconfig
+
+3、设置上下文参数
+kubectl config set-context jane@kubernetes \--cluster=kubernetes \--user=jane \--namespace=default \--kubeconfig=jane.kubeconfig
+
+4、查看配置
+cat jane.kubeconfigkubectl config view --kubeconfig jane.kubeconfig
+
+5、设置默认上下文
+export KUBECONFIG=/root/jane.kubeconfigkubectl config use-context jane@kubernetes --kubeconfig=jane.kubeconfig
+
+6、测试使用kubectl get pods正常的话，比如使用minikube或者katacoda，会输出：
+Error from server (Forbidden): pods is forbidden: User "jane" cannot list resource "pods" in API group "" in the namespace "default"
+
+但是，如果使用kodekloud或者阿里云k8s集群，会报错：
+error: You must be logged in to the server (Unauthorized)
+研究了四个多小时，才发现是平台的问题，服气了。。。
+角色和绑定命令实现1、创建角色
+kubectl create role --helpkubectl create role developer --resource=pods --verb=list,create
+
+2、角色绑定
+kubectl create rolebinding dev-user-binding --role=developer --user=jane
+
+3、验证权限
+kubectl auth can-i list pods --as janekubectl get pods --as jane
+
+4、使用jane用户验证
+export KUBECONFIG=/root/jane.kubeconfigkubectl get pods
+这次，就可以正常看到pods信息了。
+manifest实现---kind: RoleapiVersion: rbac.authorization.k8s.io/v1metadata:  namespace: default  name: developerrules:- apiGroups: [""]  resources: ["pods"]  verbs: ["list", "create"]---kind: RoleBindingapiVersion: rbac.authorization.k8s.io/v1metadata:  name: dev-user-bindingsubjects:- kind: User  name: jane  apiGroup: rbac.authorization.k8s.ioroleRef:  kind: Role  name: developer  apiGroup: rbac.authorization.k8s.iomaster
+
+集群角色和绑定以上，给jane授权，是在namespace范围内的。当我们想给jane授权cluster范围的权限时，就需要clusterroles。
+比如，我们想给jane授权node相关的权限，可以如下实现。
+命令实现1、创建集群角色
+kubectl create clusterrole node-reader --verb=get,list,watch --resource=nodes
+
+2、绑定集群角色
+kubectl create clusterrolebinding node-reader-binding --user=jane --clusterrole=node-reader
+
+manifest实现---apiVersion: rbac.authorization.k8s.io/v1kind: ClusterRolemetadata:  creationTimestamp: null  name: node-readerrules:- apiGroups:  - ""  resources:  - nodes  verbs:  - get  - list  - watch---apiVersion: rbac.authorization.k8s.io/v1beta1kind: ClusterRoleBindingmetadata:  creationTimestamp: null  name: node-reader-bindingroleRef:  apiGroup: rbac.authorization.k8s.io  kind: ClusterRole  name: node-readersubjects:- apiGroup: rbac.authorization.k8s.io  kind: User  name: jane
+
+其他如果使用clusterrole指定的资源是pods这种namespace级别的资源，该集群角色绑定给jane后会有什么效果？答：jane对所有namespace中的pods资源拥有clusterrole中定义的操作权限。
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>docker</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>k8s</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>JSONPath</title>
+    <url>/dev-jsonpath/</url>
+    <content><![CDATA[JSONPath简介
+JSON (JavaScript Object Notation) allows for easy interchange of data, often between a program and a database.JSONPath is a query language for JSON, similar to XPath for XML. 
+
+如上，json是一种常用的数据格式，jsonpath是json的查询语言，类似于XPath和SQL。
+
+
+JSONPath语法摘自 json-path/JsonPath
+操作符
+
+
+Operator
+Description
+
+
+
+$
+The root element to query. This starts all path expressions.
+
+
+@
+The current node being processed by a filter predicate.
+
+
+*
+Wildcard. Available anywhere a name or numeric are required.
+
+
+..
+Deep scan. Available anywhere a name is required.
+
+
+.&lt;name&gt;
+Dot-notated child
+
+
+[&#39;&lt;name&gt;&#39; (, &#39;&lt;name&gt;&#39;)]
+Bracket-notated child or children
+
+
+[&lt;number&gt; (, &lt;number&gt;)]
+Array index or indexes
+
+
+[start:end]
+Array slice operator
+
+
+[?(&lt;expression&gt;)]
+Filter expression. Expression must evaluate to a boolean value.
+
+
+函数Functions can be invoked at the tail end of a path - the input to a function is the output of the path expression.The function output is dictated by the function itself.
+
+
+
+Function
+Description
+Output
+
+
+
+min()
+Provides the min value of an array of numbers
+Double
+
+
+max()
+Provides the max value of an array of numbers
+Double
+
+
+avg()
+Provides the average value of an array of numbers
+Double
+
+
+stddev()
+Provides the standard deviation value of an array of numbers
+Double
+
+
+length()
+Provides the length of an array
+Integer
+
+
+sum()
+Provides the sum value of an array of numbers
+Double
+
+
+过滤器Filters are logical expressions used to filter arrays. A typical filter would be [?(@.age &gt; 18)] where @ represents the current item being processed. More complex filters can be created with logical operators &amp;&amp; and ||. String literals must be enclosed by single or double quotes ([?(@.color == &#39;blue&#39;)] or [?(@.color == &quot;blue&quot;)]).   
+
+
+
+Operator
+Description
+
+
+
+==
+left is equal to right (note that 1 is not equal to ‘1’)
+
+
+!=
+left is not equal to right
+
+
+&lt;
+left is less than right
+
+
+&lt;=
+left is less or equal to right
+
+
+&gt;
+left is greater than right
+
+
+&gt;=
+left is greater than or equal to right
+
+
+=~
+left matches regular expression  [?(@.name =~ /foo.*?/i)]
+
+
+in
+left exists in right [?(@.size in [‘S’, ‘M’])]
+
+
+nin
+left does not exists in right
+
+
+subsetof
+left is a subset of right [?(@.sizes subsetof [‘S’, ‘M’, ‘L’])]
+
+
+anyof
+left has an intersection with right [?(@.sizes anyof [‘M’, ‘L’])]
+
+
+noneof
+left has no intersection with right [?(@.sizes noneof [‘M’, ‘L’])]
+
+
+size
+size of left (array or string) should match right
+
+
+empty
+left (array or string) should be empty
+
+
+demoGiven the json
+&#123;    "store": &#123;        "book": [            &#123;                "category": "reference",                "author": "Nigel Rees",                "title": "Sayings of the Century",                "price": 8.95            &#125;,            &#123;                "category": "fiction",                "author": "Evelyn Waugh",                "title": "Sword of Honour",                "price": 12.99            &#125;,            &#123;                "category": "fiction",                "author": "Herman Melville",                "title": "Moby Dick",                "isbn": "0-553-21311-3",                "price": 8.99            &#125;,            &#123;                "category": "fiction",                "author": "J. R. R. Tolkien",                "title": "The Lord of the Rings",                "isbn": "0-395-19395-8",                "price": 22.99            &#125;        ],        "bicycle": &#123;            "color": "red",            "price": 19.95        &#125;    &#125;,    "expensive": 10&#125;
+
+
+
+
+JsonPath (click link to try)
+Result
+
+
+
+$.store.book[*].author
+The authors of all books
+
+
+$..author
+All authors
+
+
+$.store.*
+All things, both books and bicycles
+
+
+$.store..price
+The price of everything
+
+
+$..book[2]
+The third book
+
+
+$..book[-2]
+The second to last book
+
+
+$..book[0,1]
+The first two books
+
+
+$..book[:2]
+All books from index 0 (inclusive) until index 2 (exclusive)
+
+
+$..book[1:2]
+All books from index 1 (inclusive) until index 2 (exclusive)
+
+
+$..book[-2:]
+Last two books
+
+
+$..book[2:]
+Book number two from tail
+
+
+$..book[?(@.isbn)]
+All books with an ISBN number
+
+
+$.store.book[?(@.price &lt; 10)]
+All books in store cheaper than 10
+
+
+$..book[?(@.price &lt;= $[‘expensive’])]
+All books in store that are not “expensive”
+
+
+$..book[?(@.author =~ /.*REES/i)]
+All books matching regex (ignore case)
+
+
+$..*
+Give me every thing
+
+
+$..book.length()
+The number of books
+
+
+在线测试JSONPath Online Evaluator
+kubectl + JSONPathkubelet支持JSONPath，具体参考JSONPath 支持。除了标准jsonpath语法外,kubernetes jsonpath模板还额外支持以下语法:
+
+用””双引号来引用JSONPath表达式中的文本
+使用range和end来遍历集合
+使用负数来从尾部索引集合
+
+查看node的cpu信息：
+kubectl get nodes -o=jsonpath='&#123;.items[*].metadata.name&#125;'kubectl get nodes -o=jsonpath='&#123;.items[*].status.capacity.cpu&#125;'kubectl get nodes -o=jsonpath='&#123;.items[*].metadata.name&#125;&#123;.items[*].status.capacity.cpu&#125;'kubectl get nodes -o=jsonpath='&#123;.items[*].metadata.name&#125;&#123;"\n"&#125;&#123;.items[*].status.capacity.cpu&#125;'kubectl get nodes -o=jsonpath='&#123;range .items[*]&#125;&#123;.metadata.name&#125;&#123;"\t"&#125;&#123;.status.capacity.cpu&#125;&#123;end&#125;'kubectl get nodes -o=custom-columns=NODE:.metadata.name,CPU:.status.capacity.cpukubectl get nodes --sort-by=.metadata.namekubectl get nodes --sort-by=.status.capacity.cpu
+
+json2yamljson和yaml可以相互转化，这里推荐一个在线工具JSON to YAML。
+如果有python3环境，还可以使用python-json2yaml工具。
+pip install PyYAML==5.1pip install python-json2yamlcat a.json | json2yaml &gt; a.yamlcat a.yaml | yaml2json
+
+
+
+
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>docker</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>k8s</tag>
+        <tag>json</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>使用kubeadm安装部署K8S集群</title>
     <url>/dev-kubeadm-install-k8s/</url>
     <content><![CDATA[kubeadm简介《使用kubeadm升级K8S集群》一文中，了解了k8s集群中常见组件，并且使用kubeadm对k8s集群进行了升级。本文中，会学习使用kubeadm安装部署k8s集群。
@@ -15,6 +406,7 @@ Kubeadm is a tool built to provide kubeadm init and kubeadm join as best-practic
 2、在两个节点上安装kubeadm。
 3、使用kubeadm初始化节点。
 4、安装网络插件。
+5、验证安装。
 环境准备1、配置主机名
 2、配置IP地址
 3、参考Letting iptables see bridged traffic，配置iptables
@@ -46,6 +438,17 @@ kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl versio
 
 2、验证结果kubectl get nodes -w等待一会，可以看到master节点和node01节点，变化为Ready的状态，nice。
 以上，k8s集群安装部署完成。
+验证安装手动验证kubectl get nodeskubectl get pods --all-namespacesservice kube-apiserver statusservice kube-controller-manager statusservice kube-scheduler statusservice kubelet statusservice kube-proxy status
+
+kubectl run nginxkubectl get podskubectl scale --replicas=3 deploy/nginxkubectl get podskubectl expose deployment nginx --port=80 --type=NodePortkubectl get servicecurl http://node01:31850
+
+test-infra源码地址：kubernetes/test-infra
+1、拉取源码go get -u k8s.io/test-infra/kubetest
+2、执行kubetest
+kubetest --extract=v1.11.3cd kubernetesexport KUBE_MASTER_IP="172.17.0.53:6443"export KUBE_MASTER=kube-masterkubetest --test --provider=skeleton &gt; testout.txtkubetest --test --provider=skeleton --test_args="ginkgo.focus=Secrets" &gt; testout.txtcat testout.txt
+
+Smoke Test按照Smoke Test文档操作一遍。
+sonobuoy官网地址：sonobuoy源码地址：vmware-tanzu/sonobuoy
 ]]></content>
       <categories>
         <category>专业</category>
@@ -150,23 +553,27 @@ openssl x509 -in /etc/kubernetes/pki/apiserver.crt -text
 openssl x509 -req -in /etc/kubernetes/pki/apiserver-etcd-client.csr -CA /etc/kubernetes/pki/etcd/ca.crt -CAkey /etc/kubernetes/pki/etcd/ca.key -CAcreateserial -out /etc/kubernetes/pki/apiserver-etcd-client.crt
 
 通过API签名1、为新用户创建证书
-openssl genrsa -out jane.key 2048openssl req -new -key jane.key -subj  "/CN=jane" -out jane.csrcat jane.csr | base64
+openssl genrsa -out jane.key 2048openssl req -new -key jane.key -subj  "/CN=jane" -out jane.csrcat jane.csr | base64 | tr -d '\n'
 
 2、创建jane-csr.yaml文件
-apiVersion: certificates.k8s.io/v1beta1kind: CertificateSigningRequestmetadata:  name: janespec:  groups:  - system:authenticated  usages:  - digital signature  - key encipherment  - server auth  request: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURSBSRVFVRVNULS0tLS0KTUlJQ1ZqQ0NBVDRDQVFBd0VURVBNQTBHQTFVRUF3d0dZV3R6YUdGNU1JSUJJakFOQmdrcWhraUc5dzBCQVFFRgpBQU9DQVE4QU1JSUJDZ0tDQVFFQTBSWHVUZnhzRDFVaHlVTUlGa1Y0aFVKZUV0QUQ2bzVFVnkzV1laU2JqejhyCmNBamRKVUlNZDV1TFdHb25FMzdoWWpwRnl4ckNzVTJKd2JyMlRTa3hJd3c1T3N6V0ZlS3AxN0RYZ3RUSjNBbXgKTkExQWx5dmMwVE03VlMxSDRpcEQxbXlBWFE3YXNKWVNCeFRKd0V5VHNnMlB6TXY0bHlicThqeVNWYXRlUFJRawpsZWlZWXFnSXdUSk1HakxRVGhOdW9BWlpiZ1lyLytydUZMQUdBWUg0UXRvRjVmNHFUUTFmTTN1ejVDS2xVb2t3CnpFcWdRUzV5eCs3M0xncSthT2xzYVAzWFhZQkdCV1dCeWFYRjhpMitSZkc0VEhCVm51L2R2Y0hiTmZ6cTY3OGEKZ0k3T1VjTnRDaE0rSHRBZkVkME95dGZnTzc1bFlvVEtRUTJMZjdaUlZRSURBUUFCb0FBd0RRWUpLb1pJaHZjTgpBUUVMQlFBRGdnRUJBSk8vM2FkV2cvR0w5Z3lBaHdCZDluSzBzUFVBc0JhU3JIUHNud2pPNjlFbTVWYWRCekh2CjM2NXQzeUMwbWdiRmtZUFNFWWRsYkwzVk8vSGxOTmZGd1NQOGF4azh4M25ZZHNpdjN1U3BzbUY2NEkyYkphMnEKUDZkNDNmVGcrTjY2UGorQmRvQmRaUXhmY3Z4TUlYa3NwZGhwS1c3Umh3UTNuV1ZFTXNCZmFodmczdHRLNks1UApUeWNRSVp5SXgwTURxTTR3R2ppR2cyTVpGUzdQTTRWTHZjbGVoQTFIS1JkZVBCWnh3b092YWdOcEdYSmNEZDgzCmJmNXRjNitGeGJZQ29DaWt4VXBiVXBucU80NTJqVDZ4YUNkZFlkdkpJVS9HL3B6TjhnYU5lN092OWY3NUlWTFUKVFhJZzhGSnZzdjFZSE4zUUE1M0VBNmw5NVFxcjdXdndZRU09Ci0tLS0tRU5EIENFUlRJRklDQVRFIFJFUVVFU1QtLS0tLQo=
+apiVersion: certificates.k8s.io/v1beta1kind: CertificateSigningRequestmetadata:  name: janespec:  groups:  - system:authenticated  usages:  - digital signature  - key encipherment  - server auth  - client auth  request: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURSBSRVFVRVNULS0tLS0KTUlJQ1ZEQ0NBVHdDQVFBd0R6RU5NQXNHQTFVRUF3d0VhbUZ1WlRDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRApnZ0VQQURDQ0FRb0NnZ0VCQUtxbWFIa3BJeE94dDN2UmxJT1FnSUFxSUFsekhQcTRRVTBDTDVhS04xbmY4NXRzCi9LU3o0eml1a1hEQ1NOSVNIT1pWbTY5NzVJa3RXcGFySmhaTXptc1B2eUFSeXFWbWY2L1h0bmwyeE0xblhaUzAKZGc0b0E1dXFuR0w2dHpaQzF3VFY4RVFIZnRlcWYzbUpTN2JtdlppaXFlak12a2UzVkk5RTNFK0xsUUttNnVXRwprS2RDZ2ZHNUszRGJFczR1VzR6M0lMdTdEa1BlamJodWFtYzlxYVZNRVpLSGZ0bnlBYlFITkZVLzhvWVYvR1VzCnRFVWZMRXBBTmlqUFc5U0pPWHJtNUg1NXhOdExXVHMwenU3YlRSZWE0ZjFVaDFCbkZuUkhWYUJqNysydHpITTgKaklJS01KakdWOS9rUVltRmo3UTJZUW1wYzdXWGpPZEFWcHBSc1kwQ0F3RUFBYUFBTUEwR0NTcUdTSWIzRFFFQgpDd1VBQTRJQkFRQUZ2ZUxrUmYxd0xDQmN6cWdMVkJIUGZBa0MzeU1CTDA3VXl0QUlCcVhkR3h1QWtyL3NQT1dkClNxTkhIRkNzQVNmU0lNVC96djBrQS9yN3Fnd25BMCtZREZJSjNzUlBKZkJmNm1Ic3FrbjlPd1htR1E3d0orNFQKWXVCc1lJSllnNWtzVWJoQVhiQkVZekk2OUY0Uk52U0d0K1ZLOHBBdUQzcXRvejJsd3liV0cvaUo4V3FESTZNegpuMURBeDBkRDZmRWhIKy9DTWdSREY5OExCL1ZqMWZOUUlqZ2k3Rmc1aTByU1NtZUdUMllOblJldERZYWN4aWlzCjNFN1B4STdYWDd2QjRjY3pITlUrTG92N3JnSkVXM3lRMXZRTXRCNTZlbWJaNGVnL01XZEhkeWliVXo2aDQ1ZW8KUGN5b3QxaW1wdFRyK3kwSkt0SmJ1YllQOGd2RG5FeFYKLS0tLS1FTkQgQ0VSVElGSUNBVEUgUkVRVUVTVC0tLS0tCg==
 
 3、签名请求并通过
-kubectl apply -f jane-csr.yamlkubectl get csr kubectl certificate approve janekubectl get csr jane -o yaml
+kubectl apply -f jane-csr.yamlkubectl get csr kubectl certificate approve janekubectl get csr jane -o yamlkubectl get csr jane -o jsonpath='&#123;.status.certificate&#125;' | base64 --decode &gt; jane.crt
+
+或者，直接使用openssl命令进行签名：
+openssl x509 -req -in /root/jane.csr -CA /etc/kubernetes/pki/etcd/ca.crt -CAkey /etc/kubernetes/pki/etcd/ca.key -CAcreateserial -out /root/jane.crt
 
 PS：查看签名用的CA
 cat /etc/kubernetes/manifests/kube-controller-manager.yaml | grep ca.crtcat /etc/kubernetes/manifests/kube-controller-manager.yaml | grep ca.key
 
+更多内容，参考Manage TLS Certificates in a Cluster。
 书签OpenSSL 与 SSL 数字证书概念贴SSL/TLS 原理详解
 ]]></content>
       <categories>
         <category>专业</category>
         <category>运维</category>
-        <category>基础</category>
+        <category>k8s</category>
       </categories>
       <tags>
         <tag>docker</tag>
@@ -183,12 +590,16 @@ kubectl get all --all-namespaces -o yaml &gt; all-deploy-services.yaml
 
 
 备份1、查看配置
-kubectl describe pod etcd-master -n kube-system
+kubectl describe pod etcd-master -n kube-system | grep Command -i -A 20
 看到Command字段为：
 Command:  etcd  --advertise-client-urls=https://172.17.0.10:2379  --cert-file=/etc/kubernetes/pki/etcd/server.crt  --client-cert-auth=true  --data-dir=/var/lib/etcd  --initial-advertise-peer-urls=https://172.17.0.10:2380  --initial-cluster=master=https://172.17.0.10:2380  --key-file=/etc/kubernetes/pki/etcd/server.key  --listen-client-urls=https://127.0.0.1:2379,https://172.17.0.10:2379  --listen-metrics-urls=http://127.0.0.1:2381  --listen-peer-urls=https://172.17.0.10:2380  --name=master  --peer-cert-file=/etc/kubernetes/pki/etcd/peer.crt  --peer-client-cert-auth=true  --peer-key-file=/etc/kubernetes/pki/etcd/peer.key  --peer-trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt  --snapshot-count=10000  --trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt
 
+或者查看/etc/kubernetes/manifests/etcd.yaml。
 2、执行备份
 ETCDCTL_API=3 etcdctl \--endpoints=https://[127.0.0.1]:2379 \--cacert=/etc/kubernetes/pki/etcd/ca.crt \--cert=/etc/kubernetes/pki/etcd/server.crt \--key=/etc/kubernetes/pki/etcd/server.key \snapshot save /tmp/snapshot-pre-boot.db
+
+3、查看备份
+ETCDCTL_API=3 etcdctl \--endpoints=https://[127.0.0.1]:2379 \--cacert=/etc/kubernetes/pki/etcd/ca.crt \--cert=/etc/kubernetes/pki/etcd/server.crt \--key=/etc/kubernetes/pki/etcd/server.key \snapshot status /tmp/snapshot-pre-boot.db -w table
 
 恢复1、恢复etcd数据
 ETCDCTL_API=3 etcdctl \--endpoints=https://[127.0.0.1]:2379 \--cacert=/etc/kubernetes/pki/etcd/ca.crt \--cert=/etc/kubernetes/pki/etcd/server.crt \--key=/etc/kubernetes/pki/etcd/server.key \--initial-cluster=master=https://127.0.0.1:2380 \--initial-cluster-token etcd-cluster-1 \--initial-advertise-peer-urls=https://127.0.0.1:2380 \--name=master \--data-dir /var/lib/etcd-from-backup \snapshot restore /tmp/snapshot-pre-boot.db
@@ -1715,12 +2126,12 @@ kubectl [command] [TYPE] [NAME] [flags]
 
 
 
-环境准备指定配置文件# 指定默认配置文件export KUBECONFIG=~/.kube/config# 查看kubectl配置kubectl config view# 指定配置文件和contextkubectl config --kubeconfig=/root/vk-kube-config use-context voidking@kubenertes# 指定单次运行配置文件kubectl get deployments --kubeconfig=/root/.kube/configkubectl get deployments --kubeconfig /root/.kube/config# 指定默认namespacekubectl config set-context $(kubectl config current-context) --namespace=voidking
+环境准备指定配置文件# 指定默认配置文件export KUBECONFIG=~/.kube/config# 查看kubectl配置kubectl config view# 指定配置文件和contextkubectl config --kubeconfig=/root/vk-kube-config use-context voidking@kubenertes# 指定单次运行配置文件kubectl get deployments --kubeconfig=/root/.kube/configkubectl get deployments --kubeconfig /root/.kube/config# 指定默认namespacekubectl config set-context --current --namespace=voidkingkubectl config set-context $(kubectl config current-context) --namespace=voidking
 
-使用别名缩写# kubectl缩写为kalias k="/usr/local/bin/kubectl"
-建议把配置写入 .bashrc ，登录后别名自动生效。
 命令自动补全yum install -y bash-completionsource /usr/share/bash-completion/bash_completionsource &lt;(kubectl completion bash)echo "source /usr/share/bash-completion/bash_completion" &gt;&gt; ~/.bashrcecho "source &lt;(kubectl completion bash)" &gt;&gt; ~/.bashrc
 
+使用别名缩写# kubectl缩写为k# alias k=kubectlalias k="/usr/local/bin/kubectl"complete -F __start_kubectl k# 可选aliasalias kg="kubectl get"alisa kd="kubectl describe"
+建议把配置写入 .bashrc ，登录后别名自动生效。
 查看集群信息# 查看集群信息kubectl cluster-infokubectl cluster-info dump# 查看集群状态kubectl get cs# 查看node资源使用kubectl top node# 查看集群事件kubectl get ev
 
 查看帮助查看资源缩写kubectl describekubectl api-resources
@@ -1738,11 +2149,11 @@ kubectl explain deployment.spec.template.spec.affinitykubectl explain deployment
 kubectl get allkubectl get all -o wide# 根据label筛选所有资源kubectl get all -l 'env=dev'
 
 2、查看deployment
-# 查看deploymentkubectl get deploykubectl get deploy -n voidking -o widekubectl get deploy -l 'env=dev'kubectl get deploy --selector='env=dev'kubectl get deploy --all-namespaces# 查看deployment实时变化kubectl get deploy --watch# 查看指定deploymentkubectl get deploy/deployment-namekubectl get deploy deployment-name# 指定namespacekubectl get deploy -n voidking# 根据label选择deploymentkubectl get deploy --selector="name=nginx,type=frontend"# 查看deployment详细信息kubectl describe deploy
+# 查看deploymentkubectl get deploykubectl get deploy -n voidking -o widekubectl get deploy -l 'env=dev'kubectl get deploy --selector='env=dev'kubectl get deploy --all-namespaceskubectl get deploy --show-labels# 查看deployment实时变化kubectl get deploy --watch# 查看指定deploymentkubectl get deploy/deployment-namekubectl get deploy deployment-name# 指定namespacekubectl get deploy -n voidking# 根据label选择deploymentkubectl get deploy --selector="name=nginx,type=frontend"# 查看deployment详细信息kubectl describe deploy
 pod、service、node的查看方法和deployment相同。
 创建资源kubectl create -f deploy.yamlkubectl apply -f deploy.yaml
 
-更新资源kubectl edit deployment deployment-namekubectl replace -f deploy.yamlkubectl apply -f deploy.yaml
+更新资源# 编辑集群中的资源kubectl edit deployment deployment-name# 比较manifest与集群中当前资源的不同kubectl diff -f deploy.yaml# 应用最新定义kubectl replace -f deploy.yamlkubectl apply -f deploy.yaml# 添加labelkubectl label deployment deployment-name new-label=awesome# 添加annotationkubectl annotate deployment deployment-name icon-url=http://goo.gl/XXBTWq # 部分修改deploymentkubectl patch deployment deployment-name --type json -p='[&#123;"op": "remove", "path": "/spec/template/spec/containers/0/livenessProbe"&#125;]'
 
 删除资源kubectl delete deployment deployment-name
 
@@ -1803,7 +2214,11 @@ spec:  affinity:    nodeAffinity:      requiredDuringSchedulingIgnoredDuringExec
 node封锁如果node存在问题，或者node需要升级维护，这时需要对node进行封锁，并且驱除pod。
 # 封锁node，不允许分配podkubectl cordon nodename# 从指定node驱除podkubectl drain nodename --ignore-daemonsets# 解除node的封锁，允许分配podkubectl uncordon nodename
 
-容器交互登录容器kubectl get podskubectl exec -it pod-name /bin/bashkubectl exec -it pod-name -c container-name /bin/bash
+容器交互执行命令1、登录容器
+kubectl exec -it pod-name /bin/bashkubectl exec -it pod-name -c container-name /bin/bashkubectl exec -it pod-name -c container-name sh
+
+2、直接执行命令
+kubectl exec pod-name envkubectl exec pod-name -- envkubectl exec pod-name -it -- envkubectl exec -n default pod-name -it -- env# 命令带参数时必须加双横线kubectl exec pod-name -- sh -c 'echo $&#123;LANG&#125;'
 
 拷贝文件# 拷贝pod内容到宿主机kubectl cp podname-564949c96c-m986n:/path/filename .
 
@@ -1815,8 +2230,18 @@ RC排查Replication Controllers排查
 
 Services排查# 查看endpoints资源，service选择到了哪些pod和端口kubectl get endpoints $&#123;SERVICE_NAME&#125;
 
+小技巧service cidr怎样查看一个k8s集群的service ip范围？
+kubeadm config view | grep Subnetkubectl get pods -n kube-system kube-apiserver-master -oyaml | grep service-cluster-ip-range
+
+pod cidr怎样查看一个k8s集群的pod ip范围？
+kubeadm config view | grep Subnetkubectl cluster-info dump | grep -i cidr
+
+如果上面两个方法都找不到，那么还可以通过网络组件的日志来查看，以weave为例。
+docker ps | grep weavedocker logs &lt;weave-container-id&gt; | grep ipalloc-range
+
 k8s工具箱voidking/k8s-tool
-书签Overview of kubectl
+书签kubectl Cheat Sheet
+Overview of kubectl
 Kubernetes kubectl 命令表
 ]]></content>
       <categories>
@@ -13445,6 +13870,9 @@ grep -v -e '^[[:space:]]*$' ng.txt
 过滤windows换行符在windows里编辑好的文件，上传到linux后发现多了^M。以过滤hostlist.txt中的^M为例：
 sed -i 's/^M//g' hostlist.txt
 注意，直接复制粘贴上面的命令是无效的。^M的输入方式是 Ctrl + V ，然后 Ctrl + M 。
+空格转换行把test.txt文本中的空格变成换行符。
+cat test.txt | tr ' ' '\n'cat test.txt | sed 's/ /\n/g'
+
 循环读取单列文本已知hostlist.txt为：
 www.baidu.comwww.voidking.com
 
@@ -13472,6 +13900,8 @@ curl -H "Content-type: application/json" -X POST -d '&#123;"id":"'$&#123;id&#125
 3、multipart/form-data请求：
 curl -F "id=$&#123;id&#125;" -F "filename=@file.tar.gz" http://rap2api.taobao.org/app/mock/241888/updateip
 
+EPEL源EPEL（ExtraPackagesforEnterpriseLinux）是基于Fedora的一个项目，为RedHat系的操作系统提供额外的高质量软件包。yum install epel-release
+安装epel源之后，可以安装很多原本 No package xxx available 的软件，比如jq：yum install jq
 长脚本循环读取多列文本已知mobile.txt为：
 haojin 17625160000voidking 17625160001
 
@@ -18531,6 +18961,35 @@ Accepted。
       </tags>
   </entry>
   <entry>
+    <title>leetcode刷题记录009-Palindrome Number</title>
+    <url>/dev-leetcode-009/</url>
+    <content><![CDATA[题目题目链接：https://leetcode.com/problems/palindrome-number/description/
+Determine whether an integer is a palindrome. Do this without extra space.
+
+
+提示：Could negative integers be palindromes? (ie, -1)
+If you are thinking of converting the integer to string, note the restriction of using extra space.
+You could also try reversing an integer. However, if you have solved the problem “Reverse Integer”, you know that the reversed integer might overflow. How would you handle such case?
+There is a more generic way of solving this problem.
+题目分析负数不是回文数字；不能使用额外的空间，即只能使用空间复杂度 O(1) 的方法。思路一：生成反转整数，对比反转前和反转后的整数。思路二：循环剥离首数字和尾数字，对比是否收尾数字是否相等。
+解题过程下面是思路一的实现：
+class Solution &#123;    public boolean isPalindrome(int x) &#123;        if(x &lt; 0)&#123;            return false;        &#125;                int y = 0;        int tmp = x;        while(tmp &gt; 0)&#123;            y = y*10 + tmp%10;            tmp = tmp/10;        &#125;        return x == y;    &#125;&#125;
+
+思路二略。
+源码地址https://github.com/voidking/leetcode/tree/master/src/com/voidking/leetcode/question009
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>算法</category>
+        <category>java</category>
+      </categories>
+      <tags>
+        <tag>java</tag>
+        <tag>leetcode</tag>
+        <tag>算法</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>leetcode刷题记录001-Two Sum</title>
     <url>/dev-leetcode-001/</url>
     <content><![CDATA[前言leetcode开刷，采用java。
@@ -18551,35 +19010,6 @@ Accepted，但是我知道，这不是最优方案。先这样吧，有了更好
 书签LeetCode Online Judgehttps://leetcode.com/
 LeetCode 解题报告 | 书影博客http://bookshadow.com/leetcode/
 LintCode - 主页http://www.lintcode.com/zh-cn/
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>算法</category>
-        <category>java</category>
-      </categories>
-      <tags>
-        <tag>java</tag>
-        <tag>leetcode</tag>
-        <tag>算法</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>leetcode刷题记录009-Palindrome Number</title>
-    <url>/dev-leetcode-009/</url>
-    <content><![CDATA[题目题目链接：https://leetcode.com/problems/palindrome-number/description/
-Determine whether an integer is a palindrome. Do this without extra space.
-
-
-提示：Could negative integers be palindromes? (ie, -1)
-If you are thinking of converting the integer to string, note the restriction of using extra space.
-You could also try reversing an integer. However, if you have solved the problem “Reverse Integer”, you know that the reversed integer might overflow. How would you handle such case?
-There is a more generic way of solving this problem.
-题目分析负数不是回文数字；不能使用额外的空间，即只能使用空间复杂度 O(1) 的方法。思路一：生成反转整数，对比反转前和反转后的整数。思路二：循环剥离首数字和尾数字，对比是否收尾数字是否相等。
-解题过程下面是思路一的实现：
-class Solution &#123;    public boolean isPalindrome(int x) &#123;        if(x &lt; 0)&#123;            return false;        &#125;                int y = 0;        int tmp = x;        while(tmp &gt; 0)&#123;            y = y*10 + tmp%10;            tmp = tmp/10;        &#125;        return x == y;    &#125;&#125;
-
-思路二略。
-源码地址https://github.com/voidking/leetcode/tree/master/src/com/voidking/leetcode/question009
 ]]></content>
       <categories>
         <category>专业</category>
@@ -24824,25 +25254,6 @@ alter table userbase add constraint fk_username foreign key(username) references
       </tags>
   </entry>
   <entry>
-    <title>坐功入静</title>
-    <url>/hobby-dhyana-meditation/</url>
-    <content><![CDATA[作者：那秋生
-
-坐功是静功里最要紧的一个环节，坐功是入静的第一步。坐功有静坐功和动静兼修两种。
-
-李渔《闲情偶寄·颐养》曰：“益寿之方，全凭导引；安生之计，惟赖坐功。”儒家提倡“静坐”。王阳明说：“静坐要省察克治，静坐能使心清静收敛，从而克服自我私欲产生，通过静坐能顿悟明心见性，得道成真。”
-道家主张“坐忘”。《庄子·大宗师》：“堕肢体，黜聪明，离形去知，同于大通，此谓坐忘。”即摆脱现实形体的束缚，与自然融为一体，两两相忘。佛家的功夫是“坐禅”。音译“禅那”，简称“禅”，意谓思维修或静虑，就是趺坐而修禅，是佛教修持的主要方法之一。
-现代人就是坐不住，成天跑东跑西、忙这忙那，就像丢了魂似的，悲乎！
-]]></content>
-      <categories>
-        <category>爱好</category>
-        <category>读书</category>
-      </categories>
-      <tags>
-        <tag>笔记</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>自由与理想</title>
     <url>/hobby-freedom-and-ideal/</url>
     <content><![CDATA[作者：吴晓波
@@ -24881,6 +25292,25 @@ alter table userbase add constraint fk_username foreign key(username) references
       </categories>
       <tags>
         <tag>读者</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>坐功入静</title>
+    <url>/hobby-dhyana-meditation/</url>
+    <content><![CDATA[作者：那秋生
+
+坐功是静功里最要紧的一个环节，坐功是入静的第一步。坐功有静坐功和动静兼修两种。
+
+李渔《闲情偶寄·颐养》曰：“益寿之方，全凭导引；安生之计，惟赖坐功。”儒家提倡“静坐”。王阳明说：“静坐要省察克治，静坐能使心清静收敛，从而克服自我私欲产生，通过静坐能顿悟明心见性，得道成真。”
+道家主张“坐忘”。《庄子·大宗师》：“堕肢体，黜聪明，离形去知，同于大通，此谓坐忘。”即摆脱现实形体的束缚，与自然融为一体，两两相忘。佛家的功夫是“坐禅”。音译“禅那”，简称“禅”，意谓思维修或静虑，就是趺坐而修禅，是佛教修持的主要方法之一。
+现代人就是坐不住，成天跑东跑西、忙这忙那，就像丢了魂似的，悲乎！
+]]></content>
+      <categories>
+        <category>爱好</category>
+        <category>读书</category>
+      </categories>
+      <tags>
+        <tag>笔记</tag>
       </tags>
   </entry>
   <entry>
