@@ -3551,6 +3551,7 @@ ADD指令是COPY命令的加强版（addition）：拷贝压缩文件会自动�
 PS：构建并运行镜像
 docker build -t ubuntu-jq:16.04 .docker run ubuntu-jq:16.04
 
+从镜像还原DockerfileDockerImage="busybox-echo:1.25"docker history --format &#123;&#123;.CreatedBy&#125;&#125; --no-trunc=true $DockerImage |sed "s/\/bin\/sh\ -c\ \#(nop)\ //g"|sed "s/\/bin\/sh\ -c/RUN/g" | tac
 
 ]]></content>
       <categories>
@@ -4401,6 +4402,151 @@ gridname "Center of Cloud Computing"
       </tags>
   </entry>
   <entry>
+    <title>使用Docker安装配置Grafana</title>
+    <url>/dev-docker-grafana/</url>
+    <content><![CDATA[Grafana简介
+Grafana allows you to query, visualize, alert on and understand your metrics no matter where they are stored.
+
+本文中，我们会使用Docker来安装配置grafana，并且显示prometheus中的数据。前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。已知docker宿主机IP为192.168.56.102。
+
+
+安装Grafana1、登录dockerhub查看需要的grafana版本。
+2、下载grafana镜像（以grafana6.7.4为例）docker pull grafana/grafana:6.7.4
+3、启动grafana服务
+docker run --name=vk-grafana -d \-p 3000:3000 \grafana/grafana:6.7.4
+
+以上命令：
+
+命名容器为vk-grafana，后台运行
+映射宿主机3000端口到容器3000端口
+
+grafana的配置文件为 /etc/grafana/grafana.ini ，可以进入容器进行修改，或者挂出到宿主机。
+更高级的启动命令参考How to use the container。
+4、验证安装docker psmysql启动正常的话就可以看到vk-grafana容器。如果启动失败，可以使用docker logs vk-grafana查看失败原因并进行解决。
+开放端口firewall-cmd --add-port=3000/tcp --permanentsystemctl reload firewalld# 或者systemctl stop firewalld
+
+测试服务1、本机测试curl localhost:3000
+2、浏览器测试访问 http://192.168.56.102:3000用户名密码默认都是admin，第一次登录会提示修改。
+配置Prometheus数据假设我们已经安装配置好了prometheus，参考《使用Docker安装配置Prometheus》。
+1、添加数据资源
+2、配置Prometheus数据Name填入 Prometheus ，URL填入 http://192.168.56.102:9090，其他不用变。Save&amp;Test。
+3、选择dashboard点击Dashboards，点击三个Import，引入三个dashboard。
+4、引入其他dashboard比如可以填入URL https://grafana.com/grafana/dashboards/405 ，点击Load，就可以下载Node Exporter的dashboard。选择Folder，选择Prometheus数据源，Import。
+5、查看dashboard左上角HOME，出现下拉框，即可选择dashboard。
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>docker</category>
+        <category>监控</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>centos</tag>
+        <tag>监控</tag>
+        <tag>grafana</tag>
+        <tag>prometheus</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用Docker安装配置GitLab</title>
+    <url>/dev-docker-gitlab/</url>
+    <content><![CDATA[前言《CentOS7安装配置GitLab》一文中学习了GitLab的安装方法，如果使用Docker来安装GitLab，可以简单很多。
+前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。已知docker宿主机IP为192.168.56.130。
+
+
+安装GitLab1、登录dockerhub查看需要的GitLab Docker images。
+2、下载gitlab镜像（以12.6.1-ce.0版本为例）docker pull gitlab/gitlab-ce:12.6.1-ce.0
+3、启动gitlab服务
+docker run --name vk-gitlab -d  \-p 80:80 -p 443:443 -p 3422:22  \--restart always \-v /opt/gitlab/config:/etc/gitlab \-v /opt/gitlab/logs:/var/log/gitlab \-v /opt/gitlab/data:/var/opt/gitlab \gitlab/gitlab-ce:12.6.1-ce.0
+以上命令：
+
+命名容器为vk-gitlab，后台运行
+映射宿主机80、443、3422端口到容器80、443、22端口
+意外关闭后自动重启
+挂载三个宿主机目录到容器
+
+4、验证安装docker psgitlab启动正常的话就可以看到vk-gitlab容器。如果启动失败，可以使用docker logs vk-gitlab查看失败原因并进行解决。
+验证GitLab开放端口firewall-cmd --add-port=80/tcp --permanentfirewall-cmd --add-port=443/tcp --permanentfirewall-cmd --add-port=3422/tcp --permanentsystemctl reload firewalld# 或者systemctl stop firewalld
+
+端口验证nc -v localhost 22nc -v localhost 3422
+可以看到两个端口的返回结果不同：SSH-2.0-OpenSSH_7.4SSH-2.0-OpenSSH_7.2p2 Ubuntu-4ubuntu2.8
+服务验证宿主机测试：curl localhost -L浏览器测试：http://192.168.56.130
+配置GitLabhttp域名访问1、配置url和ssh协议端口vim /opt/gitlab/config/gitlab.rb，如下修改：
+# line 23, uncomment and changeexternal_url 'http://gitlab.voidking.com'# line 56, uncomment and changegitlab_rails['gitlab_ssh_host'] = 'gitlab.voidking.com'# line 456, uncomment and changegitlab_rails['gitlab_shell_ssh_port'] = 3422
+
+该配置的效果是，当用户在gitlab项目页面点击Clone时，Clone with HTTP和Clone with SSH的结果类似于：
+http://gitlab.voidking.com/root/voidking.gitssh://git@gitlab.voidking.com:3422/root/voidking.git
+
+2、重启vk-gitlabdocker restart vk-gitlab
+3、修改主机hosts
+192.168.56.130  gitlab.voidking.com
+
+4、测试访问浏览器访问：http://gitlab.voidking.com
+https域名访问参考《CentOS7安装配置GitLab》添加SSL一节，生成证书，配置gitlab使用证书，并且添加到浏览器。
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>docker</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用Docker安装配置GateOne</title>
+    <url>/dev-docker-gateone/</url>
+    <content><![CDATA[GateOne简介
+Gate One is a web-based Terminal Emulator and SSH client that brings the power of the command line to the web. It requires no browser plugins and is built on top of a powerful plugin system that allows every aspect of its appearance and functionality to be customized.
+
+本文使用Docker安装配置GateOne，搭建一个Web Shell环境。前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。已知docker宿主机IP为192.168.56.130。
+
+
+安装GateOne1、登录dockerhub查看需要的liftoff/gateone版本，实际上只有一个版本。
+2、下载gateone镜像docker pull liftoff/gateone
+3、启动gateone服务
+docker run --name=vk-gateone -d \-p 8000:8000 \liftoff/gateone gateone
+
+以上命令：命名容器为vk-gateone，后台运行；映射宿主机8000端口到容器8000端口。
+更多命令参考Using this Image。
+4、验证安装docker psgateone启动正常的话就可以看到vk-gateone容器。如果启动失败，可以使用docker logs vk-gateone查看失败原因并进行解决。
+使用nc命令验证：
+yum install ncnc -v localhost 8000
+
+浏览器访问： https://192.168.56.130:8000
+5、使用点击 Terminal:SSH ，输入主机IP、端口号、用户名和密码，即可登录主机。
+如果想要添加鉴权验证，参考archlinux-Gateone和API Authentication。
+开放端口如果浏览器无法访问8000端口，那么需要对防火墙进行设置。
+firewall-cmd --add-port=8000/tcp --permanentsystemctl reload firewalld# 或者systemctl stop firewalld
+
+安装openssh-server1、进入vk-gateonedocker exec -it vk-gateone /bin/bash
+2、安装openssh-server
+apt updateapt install openssh-server
+
+3、vim /etc/ssh/sshd_config，如下修改：
+PasswordAuthentication yes
+
+4、重启sshservice ssh restart
+5、添加用户
+useradd -m voidking -s /bin/bashpasswd voidkingadduser voidking sudo# 安装sudo命令（该容器内没有sudo）apt install sudo
+
+6、登录vk-gateone容器点击 Terminal:SSH ，主机名和端口使用默认，输入用户名voidking和密码，即可登录vk-gateone。
+小技巧在gateone shell里，可以使用 ctrl+insert 进行复制，使用 shift+insert 进行粘贴。如果在界面无法使用鼠标光标选中一些区域，那么可以在任意位置进行双击，即可激活光标选择。
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>docker</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>ssh</tag>
+        <tag>shell</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>git branch</title>
     <url>/dev-git-branch/</url>
     <content><![CDATA[前言Branches in Git are incredibly lightweight as well. They are simply pointers to a specific commit – nothing more. This is why many Git enthusiasts chant the mantra:
@@ -4560,151 +4706,6 @@ commitizen参考 commitizen/cz-cli 。
       </categories>
       <tags>
         <tag>git</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>使用Docker安装配置Grafana</title>
-    <url>/dev-docker-grafana/</url>
-    <content><![CDATA[Grafana简介
-Grafana allows you to query, visualize, alert on and understand your metrics no matter where they are stored.
-
-本文中，我们会使用Docker来安装配置grafana，并且显示prometheus中的数据。前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。已知docker宿主机IP为192.168.56.102。
-
-
-安装Grafana1、登录dockerhub查看需要的grafana版本。
-2、下载grafana镜像（以grafana6.7.4为例）docker pull grafana/grafana:6.7.4
-3、启动grafana服务
-docker run --name=vk-grafana -d \-p 3000:3000 \grafana/grafana:6.7.4
-
-以上命令：
-
-命名容器为vk-grafana，后台运行
-映射宿主机3000端口到容器3000端口
-
-grafana的配置文件为 /etc/grafana/grafana.ini ，可以进入容器进行修改，或者挂出到宿主机。
-更高级的启动命令参考How to use the container。
-4、验证安装docker psmysql启动正常的话就可以看到vk-grafana容器。如果启动失败，可以使用docker logs vk-grafana查看失败原因并进行解决。
-开放端口firewall-cmd --add-port=3000/tcp --permanentsystemctl reload firewalld# 或者systemctl stop firewalld
-
-测试服务1、本机测试curl localhost:3000
-2、浏览器测试访问 http://192.168.56.102:3000用户名密码默认都是admin，第一次登录会提示修改。
-配置Prometheus数据假设我们已经安装配置好了prometheus，参考《使用Docker安装配置Prometheus》。
-1、添加数据资源
-2、配置Prometheus数据Name填入 Prometheus ，URL填入 http://192.168.56.102:9090，其他不用变。Save&amp;Test。
-3、选择dashboard点击Dashboards，点击三个Import，引入三个dashboard。
-4、引入其他dashboard比如可以填入URL https://grafana.com/grafana/dashboards/405 ，点击Load，就可以下载Node Exporter的dashboard。选择Folder，选择Prometheus数据源，Import。
-5、查看dashboard左上角HOME，出现下拉框，即可选择dashboard。
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>docker</category>
-        <category>监控</category>
-      </categories>
-      <tags>
-        <tag>docker</tag>
-        <tag>centos</tag>
-        <tag>监控</tag>
-        <tag>grafana</tag>
-        <tag>prometheus</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>使用Docker安装配置GitLab</title>
-    <url>/dev-docker-gitlab/</url>
-    <content><![CDATA[前言《CentOS7安装配置GitLab》一文中学习了GitLab的安装方法，如果使用Docker来安装GitLab，可以简单很多。
-前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。已知docker宿主机IP为192.168.56.130。
-
-
-安装GitLab1、登录dockerhub查看需要的GitLab Docker images。
-2、下载gitlab镜像（以12.6.1-ce.0版本为例）docker pull gitlab/gitlab-ce:12.6.1-ce.0
-3、启动gitlab服务
-docker run --name vk-gitlab -d  \-p 80:80 -p 443:443 -p 3422:22  \--restart always \-v /opt/gitlab/config:/etc/gitlab \-v /opt/gitlab/logs:/var/log/gitlab \-v /opt/gitlab/data:/var/opt/gitlab \gitlab/gitlab-ce:12.6.1-ce.0
-以上命令：
-
-命名容器为vk-gitlab，后台运行
-映射宿主机80、443、3422端口到容器80、443、22端口
-意外关闭后自动重启
-挂载三个宿主机目录到容器
-
-4、验证安装docker psgitlab启动正常的话就可以看到vk-gitlab容器。如果启动失败，可以使用docker logs vk-gitlab查看失败原因并进行解决。
-验证GitLab开放端口firewall-cmd --add-port=80/tcp --permanentfirewall-cmd --add-port=443/tcp --permanentfirewall-cmd --add-port=3422/tcp --permanentsystemctl reload firewalld# 或者systemctl stop firewalld
-
-端口验证nc -v localhost 22nc -v localhost 3422
-可以看到两个端口的返回结果不同：SSH-2.0-OpenSSH_7.4SSH-2.0-OpenSSH_7.2p2 Ubuntu-4ubuntu2.8
-服务验证宿主机测试：curl localhost -L浏览器测试：http://192.168.56.130
-配置GitLabhttp域名访问1、配置url和ssh协议端口vim /opt/gitlab/config/gitlab.rb，如下修改：
-# line 23, uncomment and changeexternal_url 'http://gitlab.voidking.com'# line 56, uncomment and changegitlab_rails['gitlab_ssh_host'] = 'gitlab.voidking.com'# line 456, uncomment and changegitlab_rails['gitlab_shell_ssh_port'] = 3422
-
-该配置的效果是，当用户在gitlab项目页面点击Clone时，Clone with HTTP和Clone with SSH的结果类似于：
-http://gitlab.voidking.com/root/voidking.gitssh://git@gitlab.voidking.com:3422/root/voidking.git
-
-2、重启vk-gitlabdocker restart vk-gitlab
-3、修改主机hosts
-192.168.56.130  gitlab.voidking.com
-
-4、测试访问浏览器访问：http://gitlab.voidking.com
-https域名访问参考《CentOS7安装配置GitLab》添加SSL一节，生成证书，配置gitlab使用证书，并且添加到浏览器。
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>docker</category>
-      </categories>
-      <tags>
-        <tag>docker</tag>
-        <tag>git</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>使用Docker安装配置GateOne</title>
-    <url>/dev-docker-gateone/</url>
-    <content><![CDATA[GateOne简介
-Gate One is a web-based Terminal Emulator and SSH client that brings the power of the command line to the web. It requires no browser plugins and is built on top of a powerful plugin system that allows every aspect of its appearance and functionality to be customized.
-
-本文使用Docker安装配置GateOne，搭建一个Web Shell环境。前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。已知docker宿主机IP为192.168.56.130。
-
-
-安装GateOne1、登录dockerhub查看需要的liftoff/gateone版本，实际上只有一个版本。
-2、下载gateone镜像docker pull liftoff/gateone
-3、启动gateone服务
-docker run --name=vk-gateone -d \-p 8000:8000 \liftoff/gateone gateone
-
-以上命令：命名容器为vk-gateone，后台运行；映射宿主机8000端口到容器8000端口。
-更多命令参考Using this Image。
-4、验证安装docker psgateone启动正常的话就可以看到vk-gateone容器。如果启动失败，可以使用docker logs vk-gateone查看失败原因并进行解决。
-使用nc命令验证：
-yum install ncnc -v localhost 8000
-
-浏览器访问： https://192.168.56.130:8000
-5、使用点击 Terminal:SSH ，输入主机IP、端口号、用户名和密码，即可登录主机。
-如果想要添加鉴权验证，参考archlinux-Gateone和API Authentication。
-开放端口如果浏览器无法访问8000端口，那么需要对防火墙进行设置。
-firewall-cmd --add-port=8000/tcp --permanentsystemctl reload firewalld# 或者systemctl stop firewalld
-
-安装openssh-server1、进入vk-gateonedocker exec -it vk-gateone /bin/bash
-2、安装openssh-server
-apt updateapt install openssh-server
-
-3、vim /etc/ssh/sshd_config，如下修改：
-PasswordAuthentication yes
-
-4、重启sshservice ssh restart
-5、添加用户
-useradd -m voidking -s /bin/bashpasswd voidkingadduser voidking sudo# 安装sudo命令（该容器内没有sudo）apt install sudo
-
-6、登录vk-gateone容器点击 Terminal:SSH ，主机名和端口使用默认，输入用户名voidking和密码，即可登录vk-gateone。
-小技巧在gateone shell里，可以使用 ctrl+insert 进行复制，使用 shift+insert 进行粘贴。如果在界面无法使用鼠标光标选中一些区域，那么可以在任意位置进行双击，即可激活光标选择。
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>docker</category>
-      </categories>
-      <tags>
-        <tag>docker</tag>
-        <tag>ssh</tag>
-        <tag>shell</tag>
       </tags>
   </entry>
   <entry>
@@ -6342,45 +6343,6 @@ https://www.baidu.com
       </tags>
   </entry>
   <entry>
-    <title>IDEA的常用配置</title>
-    <url>/dev-idea-config/</url>
-    <content><![CDATA[前言一直使用eclipse开发Java Web项目，如今换成了idea，各种不习惯。记录下idea的常用配置，方便以后复习。
-
-
-maven安装maven下载地址： http://maven.apache.org/download.cgi
-1、解压到自己喜欢的目录（这里小编放到D:\Server路径下）。2、添加环境变量M2_HOME，值为D:\Server\apache-maven-3.3.93、在Path中添加;%M2_HOME%\bin;。
-打开命令提示符，输入mvn -v，如果能够看到maven版本号，说明安装成功。
-idea配置maven1、打开idea，File，Settings，搜索“maven”。2、Maven home directory选择D:\Server\apache-maven-3.3.9。3、User settings file选择D:\Server\apache-maven-3.3.9\conf\settings.xml。
-tomcat安装jdk参考《全平台安装JDK》。
-安装tomcat1、tomcat下载地址：http://tomcat.apache.org/download-80.cgi
-2、假设解压目录为D:\Server\apache-tomcat-8.5.9。
-3、进入目录D:\Server\apache-tomcat-8.5.9\bin，双击startup.bat。
-4、浏览器访问http://localhost:8080，启动成功则显示tomcat管理页面。
-idea配置tomcat1、打开idea，View，勾选Toolbar，显示工具栏。
-2、单击工具栏上的下三角（Select Run/Debug Configuration），Edit Configurations。
-3、单击打开窗口的“+”号，Add New Configuration，Tomcat Server，Local。
-4、Name修改为Tomcat8.5，JRE选择C:\Program Files\Java\jdk1.8.0_111\jre。
-5、勾选Show this page，单击Fix，选择project_name:war exploded，OK。
-6、单击工具栏的绿色三角，启动tomcat。
-自动导包打开idea，File，Settings，Editor，General，Auto Import，界面上能勾选的全部勾选。
-自动补全函数返回值windows: ctrl+alt+vmacos: option+command+v
-查看快捷键：1、菜单栏，IntelliJ IDEA，Preferences…。2、Keymap，Main menu，Refactor，Extract，Introduce Variable…。
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>后端</category>
-        <category>java</category>
-        <category>工具</category>
-        <category>idea</category>
-      </categories>
-      <tags>
-        <tag>tomcat</tag>
-        <tag>java</tag>
-        <tag>maven</tag>
-        <tag>idea</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>使用IDEA开发Golang和Python</title>
     <url>/dev-idea-golang-python/</url>
     <content><![CDATA[前言突然发现，自己安装了三款 JetBrains 的产品：IDEA、GoLand和PyCharm。这三款软件大小差不多，长得差不多，用起来也差不多。唯一的差别，就是自己在使用不同的编程语言写代码时，需要在它们之间来回切换。能不能，只保留其中一款呢？一个IDE，所有编程语言通用，或者至少能够保证Java、Golang、Python通用。这个需求是合理的，而且是很简单的配置就可以实现的，本文就来总结一下IDEA配置开发Golang和Python的方法。
@@ -6433,6 +6395,46 @@ Python项目Debug的配置方法，参考《PyCharm调试》。不同的是，�
         <category>idea</category>
       </categories>
       <tags>
+        <tag>java</tag>
+        <tag>maven</tag>
+        <tag>idea</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>IDEA快捷键和配置</title>
+    <url>/dev-idea-shortcut-and-config/</url>
+    <content><![CDATA[前言一直使用eclipse开发Java Web项目，如今换成了idea，各种不习惯。记录下idea的快捷键和常用配置，方便以后复习。
+
+
+快捷键查看快捷键1、菜单栏，IntelliJ IDEA，Preferences…。2、Keymap，Main menu，Refactor，Extract，Introduce Variable…。
+自动补全函数返回值windows: ctrl+alt+v，回车macos: option+command+v，回车
+函数跳转command+左键，command+]，command+[
+Java相关环境安装jdk参考《全平台安装JDK》。
+安装maven下载地址： http://maven.apache.org/download.cgi
+1、解压到自己喜欢的目录（这里小编放到D:\Server路径下）。2、添加环境变量M2_HOME，值为D:\Server\apache-maven-3.3.93、在Path中添加;%M2_HOME%\bin;。
+打开命令提示符，输入mvn -v，如果能够看到maven版本号，说明安装成功。
+安装tomcat1、tomcat下载地址：http://tomcat.apache.org/download-80.cgi
+2、假设解压目录为D:\Server\apache-tomcat-8.5.9。
+3、进入目录D:\Server\apache-tomcat-8.5.9\bin，双击startup.bat。
+4、浏览器访问http://localhost:8080，启动成功则显示tomcat管理页面。
+配置idea配置maven1、打开idea，File，Settings，搜索“maven”。2、Maven home directory选择D:\Server\apache-maven-3.3.9。3、User settings file选择D:\Server\apache-maven-3.3.9\conf\settings.xml。
+idea配置tomcat1、打开idea，View，勾选Toolbar，显示工具栏。
+2、单击工具栏上的下三角（Select Run/Debug Configuration），Edit Configurations。
+3、单击打开窗口的“+”号，Add New Configuration，Tomcat Server，Local。
+4、Name修改为Tomcat8.5，JRE选择C:\Program Files\Java\jdk1.8.0_111\jre。
+5、勾选Show this page，单击Fix，选择project_name:war exploded，OK。
+6、单击工具栏的绿色三角，启动tomcat。
+自动导包打开idea，File，Settings，Editor，General，Auto Import，界面上能勾选的全部勾选。
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>后端</category>
+        <category>java</category>
+        <category>工具</category>
+        <category>idea</category>
+      </categories>
+      <tags>
+        <tag>tomcat</tag>
         <tag>java</tag>
         <tag>maven</tag>
         <tag>idea</tag>
@@ -7143,67 +7145,6 @@ def func1(a,b):    return a/bdef func2(x):    a=x    b=x-1    return func1(a,b)%
       </tags>
   </entry>
   <entry>
-    <title>K8S中的网络策略</title>
-    <url>/dev-k8s-network-policy/</url>
-    <content><![CDATA[怎样限制Pod中的网络流量？已知pod名为 webapp ，label为 name=webapp 。现在想要模拟无法访问数据库，限制它的流量，禁止它访问 10.0.0.0/24 网段的所有3306端口，该怎么实现？
-方法一：使用NetworkPolicy限流方法二：开启pod特权模式，在pod内部使用iptables限流方法三：登录pod所在宿主机，在pod所在ns中使用iptables限流
-
-
-NetworkPolicy网络策略（NetworkPolicy）是一种关于 Pod 间及与其他网络端点间所允许的通信规则的规范。NetworkPolicy 资源使用 标签 选择 Pod，并定义选定 Pod 所允许的通信规则。
-网络策略通过网络插件来实现。要使用网络策略，用户必须使用支持 NetworkPolicy 的网络解决方案。创建一个资源对象，而没有控制器来使它生效的话，是没有任何作用的。
-默认情况下，Pod 是非隔离的，它们接受任何来源的流量。Pod 可以通过相关的网络策略进行隔离。一旦命名空间中有网络策略选择了特定的 Pod，该 Pod 会拒绝网络策略所不允许的连接。 (命名空间下其他未被网络策略所选择的 Pod 会继续接收所有的流量)网络策略不会冲突，它们是附加的。如果任何一个或多个策略选择了一个 Pod, 则该 Pod 受限于这些策略的 ingress/egress 规则的并集。因此评估的顺序并不会影响策略的结果。
-更多内容参考网络策略和NetworkPolicy最佳实践。
-基础规则：
-
-如果 Pod 没有被 NetworkPolicy 匹配到，那么它的流量是被允许的 
-如果 Pod 被 NetworkPolicy 匹配到，但是没有出口/入口规则被匹配到，那么它的出口/入口流量是被禁止的
-只能指定规则来允许流量通行，而不能直接禁止流量通行
-NetworkPolicy 中的 Rule 之间的匹配逻辑是 OR
-NetworkPolicy 默认的作用域是 Pod 所在的 Namespace
-
-1、创建np.yaml
-apiVersion: networking.k8s.io/v1kind: NetworkPolicymetadata:  name: webapp-network-policy  namespace: defaultspec:  podSelector:    matchLabels:      name: webapp  policyTypes:  - Ingress  - Egress  ingress:  - &#123;&#125;  egress:  - to:    - ipBlock:        cidr: 0.0.0.0/0        except:         - 10.0.0.0/24
-
-这种实现方式，其实有一个问题，就是限流时不止限制了3306端口，还限制了 10.0.0.0/24 网段的所有端口。能不能只限制 10.0.0.0/24 网段的 3306 端口呢？理论上可以实现，然而我不会。。。
-2、执行限流
-kubectl apply -f np.yaml
-
-3、解除限流
-kubectl delete -f np.yaml
-
-pod特权模式限流1、在pod定义中添加：
-securityContext:  privileged: true  #runAsUser: 0
-
-2、在pod内部执行限流
-iptables -A OUTPUT -p tcp --dport 3306 -j DROP
-
-3、解除限流
-iptables -t nat -nL --line-numberiptables -D OUTPUT 1
-
-宿主机限流1、登录宿主机
-2、查找容器pid
-docker ps | grep webappdocker inspect &lt;container_id&gt; | grep pid -i
-
-3、执行限流
-nsenter -t &lt;pid&gt; -n iptables -A OUTPUT -p tcp --dport 3306 -j DROP
-
-4、解除限流
-nsenter -t &lt;pid&gt; -n iptables -t nat -nL --line-numbernsenter -t 8993 -n iptables -D OUTPUT 1
-
-
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>k8s</category>
-        <category>网络</category>
-      </categories>
-      <tags>
-        <tag>k8s</tag>
-        <tag>网络</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>使用client-go操作K8S</title>
     <url>/dev-k8s-client-go/</url>
     <content><![CDATA[client-go简介直观上看，用户可以使用kubectl、客户端库或者REST请求来访问K8S API。而实际上，无论是kubectl还是客户端库，都是封装了REST请求的工具。client-go作为一个客户端库，能够调用K8S API，实现对K8S集群中资源对象（包括deployment、service、ingress、replicaSet、pod、namespace、node等）的增删改查等操作。源码地址：kubernetes/client-go接口文档：kubernetes - GoDoc
@@ -7876,52 +7817,35 @@ How to Put a KVM Guest Domain on a Bridged Network
       </tags>
   </entry>
   <entry>
-    <title>Kubernetes Operator</title>
-    <url>/dev-k8s-operator/</url>
-    <content><![CDATA[Kubernetes Operator是啥？
-Operators are software extensions to Kubernetes that make use of custom resources to manage applications and their components. Operators follow Kubernetes principles, notably the control loop.
+    <title>Linux修改命令提示符信息(PS1)</title>
+    <url>/dev-linux-ps1/</url>
+    <content><![CDATA[问题如何将 root@izwz94j3dpfuv8pcrn1qitz 修改成 root@voidking-ali？
+解决办法1、查看原PS1，echo $PS1，显示结果为：
+[\u@\h \W]\$
 
-Operator 是 Kubernetes 的扩展软件，通过自定义资源，管理应用及其组件。 Operator 遵循 Kubernetes 的理念，特别是在控制回路方面。
-Kubernetes自定义资源包括Custom resources 和 Custom controllers。
-Operator 模式旨在捕获（正在管理一个或一组服务的）运维人员的关键目标。负责特定应用和service的运维人员，在系统应该如何运行、如何部署以及出现问题时如何处理等方面有深入的了解。在 Kubernetes 上运行工作负载的人们都喜欢通过自动化来处理重复的任务。Operator 模式会封装我们编写的（Kubernetes 本身提供功能以外的）任务自动化代码。
-Operator可以自动化的事情包括：
+2、编辑.bashrc，vi ~/.bashrc
+3、添加
+export PS1='[\u@voidking-ali \W]\$'
+或者
+export PS1="[\u@voidking-ali \W]\\$"
 
-按需部署应用
-获取/还原应用状态的备份
-处理应用代码的升级以及相关改动。例如，数据库 schema 或额外的配置设置
-发布一个 service，要求不支持 Kubernetes API 的应用也能发现它
-模拟整个或部分集群中的故障以测试其稳定性
-在没有内部成员选举程序的情况下，为分布式应用选择首领角色
-
-简单来说，Kubernetes实际是期望状态管理器，如果Kubernetes本身提供的功能无法达到期望状态，特别是对于有状态应用，那么就需要手动处理，而Operator可以使这种处理自动化。
-更多内容，参考Operator 模式。
-本文中，将会学习编写一个Operator，并应用到k8s集群。
+4、立即生效，source ~/.bashrc
 
 
-工具Operator的yaml文件和go文件，可以纯手写，没毛病。但是使用工具能够提高我们的编写效率。编写Operator的工具有：
+扩展一般情况下，Linux 的命令提示信息类似于以下样子，显示为[当前用户名@短主机名  当前短路径]提示符，例如 [root@voidking-ali ~]#。
+不过，有时候我们可能想自定义命令提示符的显示信息，比如显示完整的主机名和完整的路径。
+PS1变量中提示符各项含义:
+\d ：代表日期，格式为weekday month date，例如："Mon Aug 1"\H ：完整的主机名称。例如：我的机器名称为：voidking.linux，则这个名称就是voidking.linux\h ：仅取主机的第一个名字，如上例，则为voidking，.linux则被省略\t ：显示时间为24小时格式，如：HH：MM：SS\T ：显示时间为12小时格式\A ：显示时间为24小时格式：HH：MM\u ：当前用户的账号名称\v ：BASH的版本信息\w ：完整的工作目录名称。家目录会以 ~代替\W ：利用basename取得工作目录名称，所以只会列出最后一个目录\$ ：提示字符，如果是root时，提示符为：# ，普通用户则为：$
 
-KUDO，Kubernetes 通用声明式 Operator)
-kubebuilder
-Metacontroller，可与 Webhook 结合使用，以实现自己的功能。
-Operator Framework
 
-查找和分享Operator：OperatorHub
-Operator FrameworkOperator Framework是一个开源工具包，用来管理被称为operators的k8s应用程序，高效、自动化、可扩展。它的两个核心部分是Operator SDK 和 Operator Lifecycle Manager 。
-Operator SDK：允许开发人员根据专业知识来构建Operator，而无需了解Kubernetes API的复杂性。Operator Lifecycle Manager：帮助用户安装、更新和总体管理跨集群运行的所有Operators（及其相关服务）的生命周期。
-在开发机上安装Operator SDK，在集群中安装Operator Operator Lifecycle Manager。
-对于这两个组件，可以在katacoda上试玩，熟悉它们的安装和使用，Building Operators on OpenShift。
-第一个Operator参考Kubernetes Operator 快速入门教程，使用Operator Framework开发一个Operator应用，代码仓库cnych/opdemo。
-书签Introducing Operators: Putting Operational Knowledge into SoftwareBest practices for building Kubernetes Operators and stateful apps揭秘Kubernetes Operator（一）第一次玩 operator-sdk 就上手
 ]]></content>
       <categories>
         <category>专业</category>
         <category>运维</category>
-        <category>k8s</category>
+        <category>linux</category>
       </categories>
       <tags>
-        <tag>k8s</tag>
-        <tag>源码</tag>
-        <tag>golang</tag>
+        <tag>linux</tag>
       </tags>
   </entry>
   <entry>
@@ -7984,137 +7908,6 @@ mail -s 'Hello VoidKing' voidking@qq.com &lt;&lt;&lt; 'Welcome to mail world!'ec
 后记至此，大功告成！《Linux设置定时任务》配合《Linux设置邮件提醒》，简直完美！两篇文章完成了一个小系统：定时生成ganglia日志，定时审阅ganglia日志，并且把审阅结果通过邮件发送给管理员。
 书签Linux命令大全——LMNOPQ
 如何在Ubuntu环境下搭建邮件服务器（一）
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>linux</category>
-      </categories>
-      <tags>
-        <tag>linux</tag>
-        <tag>shell</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Linux修改命令提示符信息(PS1)</title>
-    <url>/dev-linux-ps1/</url>
-    <content><![CDATA[问题如何将 root@izwz94j3dpfuv8pcrn1qitz 修改成 root@voidking-ali？
-解决办法1、查看原PS1，echo $PS1，显示结果为：
-[\u@\h \W]\$
-
-2、编辑.bashrc，vi ~/.bashrc
-3、添加
-export PS1='[\u@voidking-ali \W]\$'
-或者
-export PS1="[\u@voidking-ali \W]\\$"
-
-4、立即生效，source ~/.bashrc
-
-
-扩展一般情况下，Linux 的命令提示信息类似于以下样子，显示为[当前用户名@短主机名  当前短路径]提示符，例如 [root@voidking-ali ~]#。
-不过，有时候我们可能想自定义命令提示符的显示信息，比如显示完整的主机名和完整的路径。
-PS1变量中提示符各项含义:
-\d ：代表日期，格式为weekday month date，例如："Mon Aug 1"\H ：完整的主机名称。例如：我的机器名称为：voidking.linux，则这个名称就是voidking.linux\h ：仅取主机的第一个名字，如上例，则为voidking，.linux则被省略\t ：显示时间为24小时格式，如：HH：MM：SS\T ：显示时间为12小时格式\A ：显示时间为24小时格式：HH：MM\u ：当前用户的账号名称\v ：BASH的版本信息\w ：完整的工作目录名称。家目录会以 ~代替\W ：利用basename取得工作目录名称，所以只会列出最后一个目录\$ ：提示字符，如果是root时，提示符为：# ，普通用户则为：$
-
-
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>linux</category>
-      </categories>
-      <tags>
-        <tag>linux</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Linux的一些技巧</title>
-    <url>/dev-linux-skill/</url>
-    <content><![CDATA[软件推荐linux下的图片处理软件，号称linux下的photoshop：gimp
-linux下可用的qq：pidgin-lwqq
-linux下的翻译软件：stardict
-linux下查看chm文件：chmsee
-安装windows软件：wine
-
-
-查看系统位数1、uname -a
-2、file /bin/ls
-3、getconf LONG_BIT
-PS：查询CPU信息cat /proc/cpuinfo
-查看系统版本适用所有系统：lsb_release -a
-适用centos和redhat：cat /etc/redhat-release
-适用ubuntu：cat /etc/issue
-修改默认shell1、输入which tcsh，找到tcsh所存放路径。（或which ash 找到ash存放路径）
-这里假设tcsh的路径为/bin/tcsh。
-2、输入chsh -s /bin/tcsh，即可变更默认shell为tcsh。
-3、重启，即可发现默认shell已经更改。
-粘贴位要删除一个文件，你不一定要有这个文件的写权限，但你一定要有这个文件的上级目录的写权限。也就是说，你即使没有一个文件的写权限，但你有这个文件的上级目录的写权限，你也可以把这个文件给删除，而如果没有一个目录的写权限，也就不能在这个目录下创建文件。
-如何才能使一个目录既可以让任何用户写入文件，又不让用户删除这个目录下他人的文件，sticky就是能起到这个作用。stciky一般只用在目录上，用在文件上起不到什么作用。在一个目录上设了sticky位后，（如/home，权限为1777)所有的用户都可以在这个目录下创建文件，但只能删除自己创建的文件(root除外)，这就对所有用户能写的目录下的用户文件启到了保护的作用。chmod 777 abc + chmod +t abc ，等价于 chmod 1777 abc 。
-块大小对于单一文件，若块大小=1024，最大容量为16GB；若块大小=4096，最大容量为2TB。（根据inode的格式来看(12个直接块指针,1个间接块指针,1个二次间接块指针,1个三次间接块指针),假设磁盘块尺寸为n的话,单个文件尺寸应该是:12n + (1/4)n^2 + (1/16)n^3 + (1/64)n^4
-任务前后台
-CTRL+Z停止进程并放入后台     
-jobs显示当前暂停的进程     
-bg %N使第N个任务在后台运行(%前有空格)     
-fg %N使第N个任务在前台运行     
-默认bg,fg不带%N时表示对最后一个进程操作
-
-编码格式执行sh脚本时报错：/bin/sh^M: bad interpreter: No such file or directory
-1、添加执行权限chmod a+x filename
-2、然后修改文件格式vi filename
-3、利用如下命令查看文件格式
-:set ff 或 :set fileformat
-可以看到 fileformat=dos 或 fileformat=unix。
-4、利用如下命令修改文件格式
-:set ff=unix 或 :set fileformat=unix
-5、保存文件:wq
-6、最后再执行文件./filename
-ubuntu端口开放1、安装iptablessudo apt-get install iptables
-2、创建配置文件sudo iptables-save
-3、添加规则sudo iptables -I INPUT -p tcp --dport 22 -j ACCEPT
-4、保存规则sudo iptables-save
-5、查看规则sudo iptables -L
-以上只是暂时保存了开放端口的信息，如果服务器重启，保存的信息就掉了，所以我们需要持久化一下端口信息，这里我们使用 iptables-persistent。
-1、安装iptables-persistentsudo apt-get install iptables-persistent
-2、持久化信息sudo service iptables-persistent save
-硬盘挂载优雅方法1、查看硬盘fdisk -l
-2、格式化并创建挂载目录
-# mkfs -t ext4 /dev/sdbmkfs.ext4 /dev/sdbmkdir /sdbblkid /dev/sdb
-
-3、添加自动挂载，编辑 /etc/fstab ，添加
-# /dev/sdb1 /sdb ext4 defaults 0 0&lt;blkid&gt; /sdb ext4 defaults 0 0
-
-4、执行挂载mount -a
-常规方法1、查看硬盘fdisk -l
-2、硬盘分区（可选）fdisk /dev/sdb
-按照提示，依次输入p，n，回车（Partition number），回车（First sector），回车（Last sector），w。
-3、格式化
-# mkfs -t ext4 /dev/sdb1mkfs.ext4 /dev/sdb1
-
-4、挂载
-mkdir /sdbmount /dev/sdb1 /sdbdf -h
-
-5、自动挂载，编辑 /etc/fstab ，添加
-/dev/sdb1 /sdb ext4 defaults 0 0
-
-rm垃圾桶rm命令杀伤力很大，如果误删了系统文件，会很麻烦。所以，给linux系统建立一个垃圾桶，是很有必要的，详情参考Make “rm” Command To Move The Files To “Trash Can”。
-1、下载安装saferm.sh
-git clone https://github.com/lagerspetz/linux-stuffsudo mv linux-stuff/scripts/saferm.sh /binrm -Rf linux-stuff
-
-2、编辑.bashrc文件，末尾添加
-alias rm=saferm.shalias sudo='sudo '
-
-3、使环境生效source .bashrc之后，再使用rm或者sudo rm命令，实际上执行的是mv操作，移动文件到Trash目录。
-书签linux核心下载
-linux软件包下载
-手把手教你如何建立自己的Linux系统
-CROSS LFS
-Linux From Scratch
-LFS linux的安装过程
-Linuxsir
-Gentoo Linux文档
-Unix技术网
-IT技术认证考试
-自动生成Makefile官方教程
 ]]></content>
       <categories>
         <category>专业</category>
@@ -8547,6 +8340,105 @@ MAVEN安装JAR文件到本地仓库http://www.blogjava.net/paulwong/archive/4154
       <tags>
         <tag>java</tag>
         <tag>maven</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux的一些技巧</title>
+    <url>/dev-linux-skill/</url>
+    <content><![CDATA[软件推荐linux下的图片处理软件，号称linux下的photoshop：gimp
+linux下可用的qq：pidgin-lwqq
+linux下的翻译软件：stardict
+linux下查看chm文件：chmsee
+安装windows软件：wine
+
+
+查看系统位数1、uname -a
+2、file /bin/ls
+3、getconf LONG_BIT
+PS：查询CPU信息cat /proc/cpuinfo
+查看系统版本适用所有系统：lsb_release -a
+适用centos和redhat：cat /etc/redhat-release
+适用ubuntu：cat /etc/issue
+修改默认shell1、输入which tcsh，找到tcsh所存放路径。（或which ash 找到ash存放路径）
+这里假设tcsh的路径为/bin/tcsh。
+2、输入chsh -s /bin/tcsh，即可变更默认shell为tcsh。
+3、重启，即可发现默认shell已经更改。
+粘贴位要删除一个文件，你不一定要有这个文件的写权限，但你一定要有这个文件的上级目录的写权限。也就是说，你即使没有一个文件的写权限，但你有这个文件的上级目录的写权限，你也可以把这个文件给删除，而如果没有一个目录的写权限，也就不能在这个目录下创建文件。
+如何才能使一个目录既可以让任何用户写入文件，又不让用户删除这个目录下他人的文件，sticky就是能起到这个作用。stciky一般只用在目录上，用在文件上起不到什么作用。在一个目录上设了sticky位后，（如/home，权限为1777)所有的用户都可以在这个目录下创建文件，但只能删除自己创建的文件(root除外)，这就对所有用户能写的目录下的用户文件启到了保护的作用。chmod 777 abc + chmod +t abc ，等价于 chmod 1777 abc 。
+块大小对于单一文件，若块大小=1024，最大容量为16GB；若块大小=4096，最大容量为2TB。（根据inode的格式来看(12个直接块指针,1个间接块指针,1个二次间接块指针,1个三次间接块指针),假设磁盘块尺寸为n的话,单个文件尺寸应该是:12n + (1/4)n^2 + (1/16)n^3 + (1/64)n^4
+任务前后台
+CTRL+Z停止进程并放入后台     
+jobs显示当前暂停的进程     
+bg %N使第N个任务在后台运行(%前有空格)     
+fg %N使第N个任务在前台运行     
+默认bg,fg不带%N时表示对最后一个进程操作
+
+编码格式执行sh脚本时报错：/bin/sh^M: bad interpreter: No such file or directory
+1、添加执行权限chmod a+x filename
+2、然后修改文件格式vi filename
+3、利用如下命令查看文件格式
+:set ff 或 :set fileformat
+可以看到 fileformat=dos 或 fileformat=unix。
+4、利用如下命令修改文件格式
+:set ff=unix 或 :set fileformat=unix
+5、保存文件:wq
+6、最后再执行文件./filename
+ubuntu端口开放1、安装iptablessudo apt-get install iptables
+2、创建配置文件sudo iptables-save
+3、添加规则sudo iptables -I INPUT -p tcp --dport 22 -j ACCEPT
+4、保存规则sudo iptables-save
+5、查看规则sudo iptables -L
+以上只是暂时保存了开放端口的信息，如果服务器重启，保存的信息就掉了，所以我们需要持久化一下端口信息，这里我们使用 iptables-persistent。
+1、安装iptables-persistentsudo apt-get install iptables-persistent
+2、持久化信息sudo service iptables-persistent save
+硬盘挂载优雅方法1、查看硬盘fdisk -l
+2、格式化并创建挂载目录
+# mkfs -t ext4 /dev/sdbmkfs.ext4 /dev/sdbmkdir /sdbblkid /dev/sdb
+
+3、添加自动挂载，编辑 /etc/fstab ，添加
+# /dev/sdb1 /sdb ext4 defaults 0 0&lt;blkid&gt; /sdb ext4 defaults 0 0
+
+4、执行挂载mount -a
+常规方法1、查看硬盘fdisk -l
+2、硬盘分区（可选）fdisk /dev/sdb
+按照提示，依次输入p，n，回车（Partition number），回车（First sector），回车（Last sector），w。
+3、格式化
+# mkfs -t ext4 /dev/sdb1mkfs.ext4 /dev/sdb1
+
+4、挂载
+mkdir /sdbmount /dev/sdb1 /sdbdf -h
+
+5、自动挂载，编辑 /etc/fstab ，添加
+/dev/sdb1 /sdb ext4 defaults 0 0
+
+rm垃圾桶rm命令杀伤力很大，如果误删了系统文件，会很麻烦。所以，给linux系统建立一个垃圾桶，是很有必要的，详情参考Make “rm” Command To Move The Files To “Trash Can”。
+1、下载安装saferm.sh
+git clone https://github.com/lagerspetz/linux-stuffsudo mv linux-stuff/scripts/saferm.sh /binrm -Rf linux-stuff
+
+2、编辑.bashrc文件，末尾添加
+alias rm=saferm.shalias sudo='sudo '
+
+3、使环境生效source .bashrc之后，再使用rm或者sudo rm命令，实际上执行的是mv操作，移动文件到Trash目录。
+书签linux核心下载
+linux软件包下载
+手把手教你如何建立自己的Linux系统
+CROSS LFS
+Linux From Scratch
+LFS linux的安装过程
+Linuxsir
+Gentoo Linux文档
+Unix技术网
+IT技术认证考试
+自动生成Makefile官方教程
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>shell</tag>
       </tags>
   </entry>
   <entry>
@@ -9011,44 +8903,6 @@ Documentation of Your WorkDocument the work you’ve done by answering (in about
       </tags>
   </entry>
   <entry>
-    <title>K8S集群中etcd备份和恢复</title>
-    <url>/dev-k8s-etcd-backup-restore/</url>
-    <content><![CDATA[前言就像备份数据库一样，很多时候，我们也想对k8s资源配置进行备份。
-kubectl get all --all-namespaces -o yaml &gt; all-deploy-services.yaml
-上面的方法，可以实现对k8s资源配置的备份。但是更好的办法，是对etcd进行备份。本文就学习一下k8s中etcd的备份和恢复方法。
-
-
-etcd集群状态HOST_1=10.240.0.17HOST_2=10.240.0.18HOST_3=10.240.0.19ENDPOINTS=$HOST_1:2379,$HOST_2:2379,$HOST_3:2379etcdctl --endpoints=$ENDPOINTS member listetcdctl --write-out=table --endpoints=$ENDPOINTS endpoint statusetcdctl --endpoints=$ENDPOINTS endpoint health
-
-备份1、查看配置
-kubectl describe pod etcd-master -n kube-system | grep Command -i -A 20
-看到Command字段为：
-Command:  etcd  --advertise-client-urls=https://172.17.0.10:2379  --cert-file=/etc/kubernetes/pki/etcd/server.crt  --client-cert-auth=true  --data-dir=/var/lib/etcd  --initial-advertise-peer-urls=https://172.17.0.10:2380  --initial-cluster=master=https://172.17.0.10:2380  --key-file=/etc/kubernetes/pki/etcd/server.key  --listen-client-urls=https://127.0.0.1:2379,https://172.17.0.10:2379  --listen-metrics-urls=http://127.0.0.1:2381  --listen-peer-urls=https://172.17.0.10:2380  --name=master  --peer-cert-file=/etc/kubernetes/pki/etcd/peer.crt  --peer-client-cert-auth=true  --peer-key-file=/etc/kubernetes/pki/etcd/peer.key  --peer-trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt  --snapshot-count=10000  --trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt
-
-或者查看/etc/kubernetes/manifests/etcd.yaml。
-2、执行备份
-ETCDCTL_API=3 etcdctl \--endpoints=https://[127.0.0.1]:2379 \--cacert=/etc/kubernetes/pki/etcd/ca.crt \--cert=/etc/kubernetes/pki/etcd/server.crt \--key=/etc/kubernetes/pki/etcd/server.key \snapshot save /tmp/snapshot-pre-boot.db
-
-3、查看备份
-ETCDCTL_API=3 etcdctl \--endpoints=https://[127.0.0.1]:2379 \--cacert=/etc/kubernetes/pki/etcd/ca.crt \--cert=/etc/kubernetes/pki/etcd/server.crt \--key=/etc/kubernetes/pki/etcd/server.key \snapshot status /tmp/snapshot-pre-boot.db -w table
-
-恢复1、恢复etcd数据
-ETCDCTL_API=3 etcdctl \--endpoints=https://[127.0.0.1]:2379 \--cacert=/etc/kubernetes/pki/etcd/ca.crt \--cert=/etc/kubernetes/pki/etcd/server.crt \--key=/etc/kubernetes/pki/etcd/server.key \--initial-cluster=master=https://127.0.0.1:2380 \--initial-cluster-token etcd-cluster-1 \--initial-advertise-peer-urls=https://127.0.0.1:2380 \--name=master \--data-dir /var/lib/etcd-from-backup \snapshot restore /tmp/snapshot-pre-boot.db
-
-2、修改etcd.yamlvim /etc/kubernetes/manifests/etcd.yaml，如下修改：
-# Update --data-dir to use new target location--data-dir=/var/lib/etcd-from-backup# Update new initial-cluster-token to specify new cluster--initial-cluster-token=etcd-cluster-1# Update volumes and volume mounts to point to new path    volumeMounts:    - mountPath: /var/lib/etcd-from-backup      name: etcd-data    - mountPath: /etc/kubernetes/pki/etcd      name: etcd-certs  hostNetwork: true  priorityClassName: system-cluster-critical  volumes:  - hostPath:      path: /var/lib/etcd-from-backup      type: DirectoryOrCreate    name: etcd-data  - hostPath:      path: /etc/kubernetes/pki/etcd      type: DirectoryOrCreate    name: etcd-certs]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>k8s</category>
-        <category>docker</category>
-      </categories>
-      <tags>
-        <tag>k8s</tag>
-        <tag>docker</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>K-均值聚类迷你项目</title>
     <url>/dev-ml-k-means/</url>
     <content><![CDATA[项目简介在此项目中，我们会将 k-均值聚类应用于安然财务数据。当然，我们最终的目标是识别相关人员；既然我们有了已标记数据，调用 k-均值聚类这种非监督式方法就不成问题。
@@ -9351,45 +9205,113 @@ reg.fit(feature_test, target_test)plt.plot(feature_train, reg.predict(feature_tr
       </tags>
   </entry>
   <entry>
-    <title>文本学习迷你项目</title>
-    <url>/dev-ml-text-learning/</url>
-    <content><![CDATA[项目简介本节课开始，你使用大量监督式分类算法，根据作者来识别邮件。 在这些项目中，我们为你做了预处理，将输入邮件转换到 TfIdf 中，这样你就能向算法提供这些邮件了。 现在，你将自行完成预处理工作，以便你能从原始数据直接得到经过处理的特征。
-你将得到两个文本文件：一个包含来自 Sara 的所有邮件，一个包含 Chris 的邮件。 你还将访问 parseOutText() 函数，该函数接受作为参数的已读邮件，并且返回包含邮件中所有（被词干化的）单词的字符串。
+    <title>Kubernetes Operator</title>
+    <url>/dev-k8s-operator/</url>
+    <content><![CDATA[Kubernetes Operator是啥？
+Operators are software extensions to Kubernetes that make use of custom resources to manage applications and their components. Operators follow Kubernetes principles, notably the control loop.
+
+Operator 是 Kubernetes 的扩展软件，通过自定义资源，管理应用及其组件。 Operator 遵循 Kubernetes 的理念，特别是在控制回路方面。
+Kubernetes自定义资源包括Custom resources 和 Custom controllers。
+Operator 模式旨在捕获（正在管理一个或一组服务的）运维人员的关键目标。负责特定应用和service的运维人员，在系统应该如何运行、如何部署以及出现问题时如何处理等方面有深入的了解。在 Kubernetes 上运行工作负载的人们都喜欢通过自动化来处理重复的任务。Operator 模式会封装我们编写的（Kubernetes 本身提供功能以外的）任务自动化代码。
+Operator可以自动化的事情包括：
+
+按需部署应用
+获取/还原应用状态的备份
+处理应用代码的升级以及相关改动。例如，数据库 schema 或额外的配置设置
+发布一个 service，要求不支持 Kubernetes API 的应用也能发现它
+模拟整个或部分集群中的故障以测试其稳定性
+在没有内部成员选举程序的情况下，为分布式应用选择首领角色
+
+简单来说，Kubernetes实际是期望状态管理器，如果Kubernetes本身提供的功能无法达到期望状态，特别是对于有状态应用，那么就需要手动处理，而Operator可以使这种处理自动化。
+更多内容，参考Operator 模式。
+本文中，将会学习编写一个Operator，并应用到k8s集群。
 
 
-项目准备# 下载语料库import nltknltk.download()# 停止词from nltk.corpus import stopwordssw = stopwords.words('english')print len(sw)# 词干化from nltk.stem.snowball import SnowballStemmerstemmer = SnowballStemmer('english')stemmer.stem('responsiveness')stemmer.stem('responsivity')stemmer.stem('unresponsive')
+工具Operator的yaml文件和go文件，可以纯手写，没毛病。但是使用工具能够提高我们的编写效率。编写Operator的工具有：
 
-parseOutText()你将从热身习题开始了解 parseOutText()。 前往工具目录并运行 parse_out_email_text.py，该程序包含 parseOutText() 和一封测试邮件，用以运行此函数。
-parseOutText() 获得被打开的邮件，然后仅返回文字部分，除去了可能出现在邮件开头的元数据，接下来就是邮件正文了。 我们现在已经设置好了这一脚本，这样它就能将邮件正文打印到屏幕上，你运行 parseOutText() 时会得到怎样的正文？答：Hi Everyone  If you can read this message youre properly using parseOutText  Please proceed to the next part of the project
-在 parseOutText() 中，添加以下注释： 
-# words = text_string
+KUDO，Kubernetes 通用声明式 Operator)
+kubebuilder
+Metacontroller，可与 Webhook 结合使用，以实现自己的功能。
+Operator Framework
 
-增强 parseOutText() ，这样返回的字符串就有了所有因使用 SnowballStemmer（使用 nltk 包，可在 http://www.nltk.org/howto/stem.html 找到我发现有用的一些示例）而获得的词干化单词。
-重新运行 parse_out_email_text.py，该程序将使用你更新的 parseOutText() 函数。你现在的输出是什么？答：hi everyon if you can read this messag your proper use parseouttext pleas proceed to the next part of the project
-提示：你需要将字符串分解成单个单词，词干化每个单词，然后再将所有单词重新组合成一个字符串。
-清除“签名文字”在 text_learning/vectorize_text.py 中，你将迭代所有来自 Chris 和 Sara 的邮件。 将每封已读邮件提供给 parseOutText() 并返回词干化的文本字符串。然后做以下两件事：
-
-删除签名文字（“sara”、“shackleton”、“chris”、“germani”——如果你知道为什么是“germani”而不是“germany”，你将获得加分）
-向 word_data 添加更新的文本字符串——如果邮件来自 Sara，向 from_data 添加 0（零），如果是 Chris 写的邮件，则添加 1。
-
-完成此步骤后，你应该有两个列表：一个包含了每封邮件被词干化的正文，第二个应该包含用来编码（通过 0 或 1）谁是邮件作者的标签。
-对所有邮件运行程序需要花一些时间（5 分钟或更长时间），所以我们添加了一个 temp_counter，将第 200 封之后的邮件切割掉。 当然，一切就绪后，你会希望对整个数据集运行程序。
-在以下方框中，放入你得到的 word_data[152] 字符串。答：tjonesnsf stephani and sam need nymex calendar
-进行 TfIdf使用 sklearn TfIdf 转换将 word_data 转换为 tf-idf 矩阵。删除英文停止词。
-你可以使用 get_feature_names() 访问单词和特征数字之间的映射，该函数返回一个包含词汇表所有单词的列表。有多少不同的单词？答：
-你 TfId 中的单词编号 34597 是什么？答：stephen
-需要说明的是，如果问题是“单词编号 100 是什么”，我们肯定会查找对应 vocab_list[100] 的单词。有时候，零索引数组谈论起来非常不好理解。
-源码分享https://github.com/voidking/ud120-projects
-书签机器学习入门https://cn.udacity.com/course/intro-to-machine-learning--ud120
+查找和分享Operator：OperatorHub
+Operator FrameworkOperator Framework是一个开源工具包，用来管理被称为operators的k8s应用程序，高效、自动化、可扩展。它的两个核心部分是Operator SDK 和 Operator Lifecycle Manager 。
+Operator SDK：允许开发人员根据专业知识来构建Operator，而无需了解Kubernetes API的复杂性。Operator Lifecycle Manager：帮助用户安装、更新和总体管理跨集群运行的所有Operators（及其相关服务）的生命周期。
+在开发机上安装Operator SDK，在集群中安装Operator Operator Lifecycle Manager。
+对于这两个组件，可以在katacoda上试玩，熟悉它们的安装和使用，Building Operators on OpenShift。
+第一个Operator参考Kubernetes Operator 快速入门教程，使用Operator Framework开发一个Operator应用，代码仓库cnych/opdemo。
+书签Introducing Operators: Putting Operational Knowledge into SoftwareBest practices for building Kubernetes Operators and stateful apps揭秘Kubernetes Operator（一）第一次玩 operator-sdk 就上手
 ]]></content>
       <categories>
         <category>专业</category>
-        <category>机器学习</category>
-        <category>udacity</category>
+        <category>运维</category>
+        <category>k8s</category>
       </categories>
       <tags>
-        <tag>转载</tag>
-        <tag>机器学习</tag>
+        <tag>k8s</tag>
+        <tag>源码</tag>
+        <tag>golang</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>K8S中的网络策略</title>
+    <url>/dev-k8s-network-policy/</url>
+    <content><![CDATA[怎样限制Pod中的网络流量？已知pod名为 webapp ，label为 name=webapp 。现在想要模拟无法访问数据库，限制它的流量，禁止它访问 10.0.0.0/24 网段的所有3306端口，该怎么实现？
+方法一：使用NetworkPolicy限流方法二：开启pod特权模式，在pod内部使用iptables限流方法三：登录pod所在宿主机，在pod所在ns中使用iptables限流
+
+
+NetworkPolicy网络策略（NetworkPolicy）是一种关于 Pod 间及与其他网络端点间所允许的通信规则的规范。NetworkPolicy 资源使用 标签 选择 Pod，并定义选定 Pod 所允许的通信规则。
+网络策略通过网络插件来实现。要使用网络策略，用户必须使用支持 NetworkPolicy 的网络解决方案。创建一个资源对象，而没有控制器来使它生效的话，是没有任何作用的。
+默认情况下，Pod 是非隔离的，它们接受任何来源的流量。Pod 可以通过相关的网络策略进行隔离。一旦命名空间中有网络策略选择了特定的 Pod，该 Pod 会拒绝网络策略所不允许的连接。 (命名空间下其他未被网络策略所选择的 Pod 会继续接收所有的流量)网络策略不会冲突，它们是附加的。如果任何一个或多个策略选择了一个 Pod, 则该 Pod 受限于这些策略的 ingress/egress 规则的并集。因此评估的顺序并不会影响策略的结果。
+更多内容参考网络策略和NetworkPolicy最佳实践。
+基础规则：
+
+如果 Pod 没有被 NetworkPolicy 匹配到，那么它的流量是被允许的 
+如果 Pod 被 NetworkPolicy 匹配到，但是没有出口/入口规则被匹配到，那么它的出口/入口流量是被禁止的
+只能指定规则来允许流量通行，而不能直接禁止流量通行
+NetworkPolicy 中的 Rule 之间的匹配逻辑是 OR
+NetworkPolicy 默认的作用域是 Pod 所在的 Namespace
+
+1、创建np.yaml
+apiVersion: networking.k8s.io/v1kind: NetworkPolicymetadata:  name: webapp-network-policy  namespace: defaultspec:  podSelector:    matchLabels:      name: webapp  policyTypes:  - Ingress  - Egress  ingress:  - &#123;&#125;  egress:  - to:    - ipBlock:        cidr: 0.0.0.0/0        except:         - 10.0.0.0/24
+
+这种实现方式，其实有一个问题，就是限流时不止限制了3306端口，还限制了 10.0.0.0/24 网段的所有端口。能不能只限制 10.0.0.0/24 网段的 3306 端口呢？理论上可以实现，然而我不会。。。
+2、执行限流
+kubectl apply -f np.yaml
+
+3、解除限流
+kubectl delete -f np.yaml
+
+pod特权模式限流1、在pod定义中添加：
+securityContext:  privileged: true  #runAsUser: 0
+
+2、在pod内部执行限流
+iptables -A OUTPUT -p tcp --dport 3306 -j DROP
+
+3、解除限流
+iptables -t nat -nL --line-numberiptables -D OUTPUT 1
+
+宿主机限流1、登录宿主机
+2、查找容器pid
+docker ps | grep webappdocker inspect &lt;container_id&gt; | grep pid -i
+
+3、执行限流
+nsenter -t &lt;pid&gt; -n iptables -A OUTPUT -p tcp --dport 3306 -j DROP
+
+4、解除限流
+nsenter -t &lt;pid&gt; -n iptables -t nat -nL --line-numbernsenter -t 8993 -n iptables -D OUTPUT 1
+
+
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>k8s</category>
+        <category>网络</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
+        <tag>网络</tag>
       </tags>
   </entry>
   <entry>
@@ -9442,6 +9364,86 @@ training time: 137.599 s877
 
 部署SVM最后提醒希望 Sebastian 在说朴素贝叶斯非常适合文本时，更清楚地表达了他的意思。对于这一具体问题，朴素贝叶斯不仅更快，而且通常比 SVM 更出色。当然，SVM 更适合许多其他问题。你在第一次求解问题时就知道该尝试哪个算法，这是机器学习艺术和科学性的一个体现。除了选择算法外，视你尝试的算法而定，你还需要考虑相应的参数调整以及过拟合的可能性（特别是在你没有大量训练数据的情况下）。
 我们通常建议你尝试一些不同的算法来求解每个问题。调整参数的工作量很大，但你现在只需要听完这堂课，我们将向你介绍 GridCV，一种几乎能自动查找最优参数调整的优秀 sklearn 工具。
+源码分享https://github.com/voidking/ud120-projects
+书签机器学习入门https://cn.udacity.com/course/intro-to-machine-learning--ud120
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>机器学习</category>
+        <category>udacity</category>
+      </categories>
+      <tags>
+        <tag>转载</tag>
+        <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>K8S集群中etcd备份和恢复</title>
+    <url>/dev-k8s-etcd-backup-restore/</url>
+    <content><![CDATA[前言就像备份数据库一样，很多时候，我们也想对k8s资源配置进行备份。
+kubectl get all --all-namespaces -o yaml &gt; all-deploy-services.yaml
+上面的方法，可以实现对k8s资源配置的备份。但是更好的办法，是对etcd进行备份。本文就学习一下k8s中etcd的备份和恢复方法。
+
+
+etcd集群状态HOST_1=10.240.0.17HOST_2=10.240.0.18HOST_3=10.240.0.19ENDPOINTS=$HOST_1:2379,$HOST_2:2379,$HOST_3:2379etcdctl --endpoints=$ENDPOINTS member listetcdctl --write-out=table --endpoints=$ENDPOINTS endpoint statusetcdctl --endpoints=$ENDPOINTS endpoint health
+
+备份1、查看配置
+kubectl describe pod etcd-master -n kube-system | grep Command -i -A 20
+看到Command字段为：
+Command:  etcd  --advertise-client-urls=https://172.17.0.10:2379  --cert-file=/etc/kubernetes/pki/etcd/server.crt  --client-cert-auth=true  --data-dir=/var/lib/etcd  --initial-advertise-peer-urls=https://172.17.0.10:2380  --initial-cluster=master=https://172.17.0.10:2380  --key-file=/etc/kubernetes/pki/etcd/server.key  --listen-client-urls=https://127.0.0.1:2379,https://172.17.0.10:2379  --listen-metrics-urls=http://127.0.0.1:2381  --listen-peer-urls=https://172.17.0.10:2380  --name=master  --peer-cert-file=/etc/kubernetes/pki/etcd/peer.crt  --peer-client-cert-auth=true  --peer-key-file=/etc/kubernetes/pki/etcd/peer.key  --peer-trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt  --snapshot-count=10000  --trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt
+
+或者查看/etc/kubernetes/manifests/etcd.yaml。
+2、执行备份
+ETCDCTL_API=3 etcdctl \--endpoints=https://[127.0.0.1]:2379 \--cacert=/etc/kubernetes/pki/etcd/ca.crt \--cert=/etc/kubernetes/pki/etcd/server.crt \--key=/etc/kubernetes/pki/etcd/server.key \snapshot save /tmp/snapshot-pre-boot.db
+
+3、查看备份
+ETCDCTL_API=3 etcdctl \--endpoints=https://[127.0.0.1]:2379 \--cacert=/etc/kubernetes/pki/etcd/ca.crt \--cert=/etc/kubernetes/pki/etcd/server.crt \--key=/etc/kubernetes/pki/etcd/server.key \snapshot status /tmp/snapshot-pre-boot.db -w table
+
+恢复1、恢复etcd数据
+ETCDCTL_API=3 etcdctl \--endpoints=https://[127.0.0.1]:2379 \--cacert=/etc/kubernetes/pki/etcd/ca.crt \--cert=/etc/kubernetes/pki/etcd/server.crt \--key=/etc/kubernetes/pki/etcd/server.key \--initial-cluster=master=https://127.0.0.1:2380 \--initial-cluster-token etcd-cluster-1 \--initial-advertise-peer-urls=https://127.0.0.1:2380 \--name=master \--data-dir /var/lib/etcd-from-backup \snapshot restore /tmp/snapshot-pre-boot.db
+
+2、修改etcd.yamlvim /etc/kubernetes/manifests/etcd.yaml，如下修改：
+# Update --data-dir to use new target location--data-dir=/var/lib/etcd-from-backup# Update new initial-cluster-token to specify new cluster--initial-cluster-token=etcd-cluster-1# Update volumes and volume mounts to point to new path    volumeMounts:    - mountPath: /var/lib/etcd-from-backup      name: etcd-data    - mountPath: /etc/kubernetes/pki/etcd      name: etcd-certs  hostNetwork: true  priorityClassName: system-cluster-critical  volumes:  - hostPath:      path: /var/lib/etcd-from-backup      type: DirectoryOrCreate    name: etcd-data  - hostPath:      path: /etc/kubernetes/pki/etcd      type: DirectoryOrCreate    name: etcd-certs]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>k8s</category>
+        <category>docker</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
+        <tag>docker</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>文本学习迷你项目</title>
+    <url>/dev-ml-text-learning/</url>
+    <content><![CDATA[项目简介本节课开始，你使用大量监督式分类算法，根据作者来识别邮件。 在这些项目中，我们为你做了预处理，将输入邮件转换到 TfIdf 中，这样你就能向算法提供这些邮件了。 现在，你将自行完成预处理工作，以便你能从原始数据直接得到经过处理的特征。
+你将得到两个文本文件：一个包含来自 Sara 的所有邮件，一个包含 Chris 的邮件。 你还将访问 parseOutText() 函数，该函数接受作为参数的已读邮件，并且返回包含邮件中所有（被词干化的）单词的字符串。
+
+
+项目准备# 下载语料库import nltknltk.download()# 停止词from nltk.corpus import stopwordssw = stopwords.words('english')print len(sw)# 词干化from nltk.stem.snowball import SnowballStemmerstemmer = SnowballStemmer('english')stemmer.stem('responsiveness')stemmer.stem('responsivity')stemmer.stem('unresponsive')
+
+parseOutText()你将从热身习题开始了解 parseOutText()。 前往工具目录并运行 parse_out_email_text.py，该程序包含 parseOutText() 和一封测试邮件，用以运行此函数。
+parseOutText() 获得被打开的邮件，然后仅返回文字部分，除去了可能出现在邮件开头的元数据，接下来就是邮件正文了。 我们现在已经设置好了这一脚本，这样它就能将邮件正文打印到屏幕上，你运行 parseOutText() 时会得到怎样的正文？答：Hi Everyone  If you can read this message youre properly using parseOutText  Please proceed to the next part of the project
+在 parseOutText() 中，添加以下注释： 
+# words = text_string
+
+增强 parseOutText() ，这样返回的字符串就有了所有因使用 SnowballStemmer（使用 nltk 包，可在 http://www.nltk.org/howto/stem.html 找到我发现有用的一些示例）而获得的词干化单词。
+重新运行 parse_out_email_text.py，该程序将使用你更新的 parseOutText() 函数。你现在的输出是什么？答：hi everyon if you can read this messag your proper use parseouttext pleas proceed to the next part of the project
+提示：你需要将字符串分解成单个单词，词干化每个单词，然后再将所有单词重新组合成一个字符串。
+清除“签名文字”在 text_learning/vectorize_text.py 中，你将迭代所有来自 Chris 和 Sara 的邮件。 将每封已读邮件提供给 parseOutText() 并返回词干化的文本字符串。然后做以下两件事：
+
+删除签名文字（“sara”、“shackleton”、“chris”、“germani”——如果你知道为什么是“germani”而不是“germany”，你将获得加分）
+向 word_data 添加更新的文本字符串——如果邮件来自 Sara，向 from_data 添加 0（零），如果是 Chris 写的邮件，则添加 1。
+
+完成此步骤后，你应该有两个列表：一个包含了每封邮件被词干化的正文，第二个应该包含用来编码（通过 0 或 1）谁是邮件作者的标签。
+对所有邮件运行程序需要花一些时间（5 分钟或更长时间），所以我们添加了一个 temp_counter，将第 200 封之后的邮件切割掉。 当然，一切就绪后，你会希望对整个数据集运行程序。
+在以下方框中，放入你得到的 word_data[152] 字符串。答：tjonesnsf stephani and sam need nymex calendar
+进行 TfIdf使用 sklearn TfIdf 转换将 word_data 转换为 tf-idf 矩阵。删除英文停止词。
+你可以使用 get_feature_names() 访问单词和特征数字之间的映射，该函数返回一个包含词汇表所有单词的列表。有多少不同的单词？答：
+你 TfId 中的单词编号 34597 是什么？答：stephen
+需要说明的是，如果问题是“单词编号 100 是什么”，我们肯定会查找对应 vocab_list[100] 的单词。有时候，零索引数组谈论起来非常不好理解。
 源码分享https://github.com/voidking/ud120-projects
 书签机器学习入门https://cn.udacity.com/course/intro-to-machine-learning--ud120
 ]]></content>
@@ -17394,6 +17396,180 @@ A：嘿 //是什么意思啊？B：嘿.A：呃 我问你//是什么意思？B：
       </tags>
   </entry>
   <entry>
+    <title>考研计划表（第二版）</title>
+    <url>/essay-kaoyan-plan-2/</url>
+    <content><![CDATA[前言寒假里，没怎么学习，计划形同于无；开学之后，一直到4月中旬，大部分时间都在学车；之后，休息娱乐，作业实验，生病挂水，转眼到了5月。是时候全力准备考研了，根据现在的生活学习状态，更新一下考研计划表。
+2016年考研时间为：12月26日和12月27日，距离今天还有237天。
+237天，分成了几个阶段。每个阶段，以周为单位轮回。每周，周日到周五，学习日；周六，休息日。学习日，7:00起床，整天学习一门课，直到18:00；18:00到20:30，写日记和学习专业课；20:30开始健身，一小时左右；之后是自由时间；22:30到23:00关机上床。休息日，自由时间。
+
+
+规定休息时间：无论什么时候，睡觉都是头等大事，可以抢占其他计划的时间。
+学习时间：周日到周五的7:00到21:30。使用手机只可以背单词，使用平板只可以阅读专业书籍，使用电脑只可以写代码写博客。（PS：学习时间包括上课时间）
+上课时间：背单词、阅读专业书籍、写代码写博客、听课、复习考研，视心情而定。
+自由时间：周日到周五的21:30到22:30，周六全天。洗漱、洗澡、洗衣服、打电话、阅读纸质书籍、听歌、飞车、睡觉，视心情而定。
+
+5月3~6月20
+
+
+政
+英
+数
+
+
+
+0
+3
+3
+
+
+
+
+
+周日
+周一
+周二
+周三
+周四
+周五
+周六
+
+
+
+数
+英
+数
+英
+数
+英
+休
+
+
+
+6月21~8月30
+
+
+政
+英
+数
+
+
+
+1
+2
+3
+
+
+
+
+
+周日
+周一
+周二
+周三
+周四
+周五
+周六
+
+
+
+数
+英
+数
+英
+数
+政
+休
+
+
+
+8月31~10月30
+
+
+政
+英
+数
+
+
+
+2
+2
+2
+
+
+
+
+
+周日
+周一
+周二
+周三
+周四
+周五
+周六
+
+
+
+数
+英
+数
+英
+政
+政
+休
+
+
+
+11月1~12月20
+
+
+政
+英
+数
+弱
+
+
+
+1
+1
+1
+3
+
+
+
+
+
+周日
+周一
+周二
+周三
+周四
+周五
+周六
+
+
+
+数
+英
+政
+弱
+弱
+弱
+休
+
+
+
+12月21~12月26考前调整，自由复习。
+
+后记备考过程中，2016年6月20日，六级考试，顺路考过！计划不是限制，执行过程中根据情况调整，效率至上。
+]]></content>
+      <categories>
+        <category>随笔</category>
+      </categories>
+      <tags>
+        <tag>考研</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>考研计划表</title>
     <url>/essay-kaoyan-plan-1/</url>
     <content><![CDATA[前言2016年考研时间为：12月26日和12月27日，距离今天还有312天。
@@ -17679,180 +17855,6 @@ A：嘿 //是什么意思啊？B：嘿.A：呃 我问你//是什么意思？B：
       </categories>
       <tags>
         <tag>随笔</tag>
-        <tag>考研</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>考研计划表（第二版）</title>
-    <url>/essay-kaoyan-plan-2/</url>
-    <content><![CDATA[前言寒假里，没怎么学习，计划形同于无；开学之后，一直到4月中旬，大部分时间都在学车；之后，休息娱乐，作业实验，生病挂水，转眼到了5月。是时候全力准备考研了，根据现在的生活学习状态，更新一下考研计划表。
-2016年考研时间为：12月26日和12月27日，距离今天还有237天。
-237天，分成了几个阶段。每个阶段，以周为单位轮回。每周，周日到周五，学习日；周六，休息日。学习日，7:00起床，整天学习一门课，直到18:00；18:00到20:30，写日记和学习专业课；20:30开始健身，一小时左右；之后是自由时间；22:30到23:00关机上床。休息日，自由时间。
-
-
-规定休息时间：无论什么时候，睡觉都是头等大事，可以抢占其他计划的时间。
-学习时间：周日到周五的7:00到21:30。使用手机只可以背单词，使用平板只可以阅读专业书籍，使用电脑只可以写代码写博客。（PS：学习时间包括上课时间）
-上课时间：背单词、阅读专业书籍、写代码写博客、听课、复习考研，视心情而定。
-自由时间：周日到周五的21:30到22:30，周六全天。洗漱、洗澡、洗衣服、打电话、阅读纸质书籍、听歌、飞车、睡觉，视心情而定。
-
-5月3~6月20
-
-
-政
-英
-数
-
-
-
-0
-3
-3
-
-
-
-
-
-周日
-周一
-周二
-周三
-周四
-周五
-周六
-
-
-
-数
-英
-数
-英
-数
-英
-休
-
-
-
-6月21~8月30
-
-
-政
-英
-数
-
-
-
-1
-2
-3
-
-
-
-
-
-周日
-周一
-周二
-周三
-周四
-周五
-周六
-
-
-
-数
-英
-数
-英
-数
-政
-休
-
-
-
-8月31~10月30
-
-
-政
-英
-数
-
-
-
-2
-2
-2
-
-
-
-
-
-周日
-周一
-周二
-周三
-周四
-周五
-周六
-
-
-
-数
-英
-数
-英
-政
-政
-休
-
-
-
-11月1~12月20
-
-
-政
-英
-数
-弱
-
-
-
-1
-1
-1
-3
-
-
-
-
-
-周日
-周一
-周二
-周三
-周四
-周五
-周六
-
-
-
-数
-英
-政
-弱
-弱
-弱
-休
-
-
-
-12月21~12月26考前调整，自由复习。
-
-后记备考过程中，2016年6月20日，六级考试，顺路考过！计划不是限制，执行过程中根据情况调整，效率至上。
-]]></content>
-      <categories>
-        <category>随笔</category>
-      </categories>
-      <tags>
         <tag>考研</tag>
       </tags>
   </entry>
@@ -24387,9 +24389,9 @@ mv ns.yaml 00-ns.yamlmv cm.yaml 01-cm.yamlmv deploy.yaml 02-deploy.yamlkubectl a
 yaml相关导出yaml或json文件# 导出deployment的yaml文件kubectl get deploy -o yaml &gt; deploy.yaml# 导出deployment的json文件kubectl get deploy -o json &gt; deploy.json# 导出指定deployment的yaml文件kubectl get deploy/deployment-name -o yaml &gt; deploy-name.yaml# 导出指定deployment的json文件kubectl get deploy/deployment-name -o json &gt; deploy-name.json
 pod、service、node的yaml/json文件的导出方法和deployment相同。
 pod yaml生成pod的yaml文件模板：
-kubectl run vk-pod --image=nginx --generator=run-pod/v1 -l 'name=vk-pod,env=dev' --dry-run -o yamlkubectl run vk-pod --image=nginx --generator=run-pod/v1 --labels='name=vk-pod,env=dev' --dry-run -o yamlkubectl run vk-pod --image=busybox --generator=run-pod/v1 --dry-run -o yaml --command -- sleep 1000
+kubectl run vkpod --image=nginx --restart=Never --dry-run=client -oyamlkubectl run vk-pod --image=nginx --generator=run-pod/v1 -l 'name=vk-pod,env=dev' --dry-run -o yamlkubectl run vk-pod --image=nginx --generator=run-pod/v1 --labels='name=vk-pod,env=dev' --dry-run -o yamlkubectl run vk-pod --image=busybox --generator=run-pod/v1 --dry-run -o yaml --command -- sleep 1000
 
-更多内容，参考Kubernetes kubectl run 命令详解。
+更多内容，参考Kubernetes kubectl run 命令详解和kubectl 的用法约定。
 deployment yaml1、生成deployment的yaml文件模板（历史方法）：
 kubectl run vk-deploy --image=nginx --dry-run -o yaml
 会出现提示：kubectl run –generator=deployment/apps.v1 is DEPRECATED and will be removed in a future version. Use kubectl run –generator=run-pod/v1 or kubectl create instead.因为官方不推荐使用 run-pod/v1 以外的其他生成器，其他生成器不久后就会弃用。更多内容参考kubectl run。
@@ -25587,121 +25589,6 @@ cron.*                         /var/log/cron.log
       </tags>
   </entry>
   <entry>
-    <title>Linux配置SNAT上网</title>
-    <url>/dev-linux-snat/</url>
-    <content><![CDATA[前言一个局域网中，主机之间互联，其中只有一台主机可以上网，其他主机想要上网怎么办？答：使用SNAT。
-情景模拟有主机A，eth0的IP为内网IP：192.168.56.101，eth1为公网IP：120.77.36.222。有主机B，eth0的IP为内网IP：192.168.56.102。
-主机A可以访问外网，主机B和主机A在同一个局域网。下面我们进行配置，让主机B也可以上网。
-
-
-数据包流向发送数据包B发送数据包时，A也就是NAT主机，分析数据包表头，将此数据包转到可以连接公网的IP上去。由于私有IP与公有IP不能互通，A会通过iptables的NAT table内的Postrounting链将数据包表头伪装成A的公网IP，并且将这两个不同来源的数据包对应关系写入暂存内存中，然后将数据包传送出去。此时传到互联网的这个数据包，已经表现为来自公网IP，而非来自局域网。
-接收响应包当互联网把数据响应给B时，会首先进入NAT主机A，A分析数据包的序号，对比刚刚记录到内存中的数据，由于发现该数据包为后端主机之前传送出去的，因此在NAT Prerouting链中，会将目标IP修改成为后端主机，即B的IP，然后发现目标已经不是A的公网IP，开始通过路由分析，将数据包传送到A的局域网接口，再传送到最终目标192.168.56.102上去。
-iptables小班snat的配置，主要用到iptables命令，之前在《CentOS7中firewall的使用》简单提过iptables，今天再认真学习一下。
-主要参考文档：Basic iptables howtoiptables详解ipatebles详解（1）：iptales概念iptables命令25个iptables常用示例Linux防火墙iptables学习笔记（三）iptables命令详解和举例 
-历史防火墙，其实说白了讲，就是用于实现Linux下访问控制的功能的，它分为硬件的或者软件的防火墙两种。无论是在哪个网络中，防火墙工作的地方一定是在网络的边缘。而我们的任务就是需要去定义到底防火墙如何工作，这就是防火墙的策略，规则，以达到让它对出入网络的IP、数据进行检测。
-iptables的前身叫ipfirewall （内核1.x时代），这是一个作者从freeBSD上移植过来的，能够工作在内核当中的，对数据包进行检测的一款简易访问控制工具。但是ipfirewall工作功能极其有限（它需要将所有的规则都放进内核当中，这样规则才能够运行起来，而放进内核，这个做法一般是极其困难的）。当内核发展到2.x系列的时候，软件更名为ipchains，它可以定义多条规则，将他们串起来，共同发挥作用，而现在，它叫做iptables，可以将规则组成一个列表，实现绝对详细的访问控制功能。
-原理五个关卡iptables工作在用户空间中，是定义规则的工具，本身并不算是防火墙。它定义的规则，可以让内核空间中的netfilter来读取，并且实现让防火墙工作。netfilter的架构就是在整个网络流程的若干位置设置一些关卡（HOOK），而在每个关卡上登记了一些规则，所以这些关卡的术语规则链。
-在内核空间中，netfilter选择了5个位置，来作为控制的关卡，专业点叫做规则链。朱双印大神的博客中给出了直观的图像：
-根据上图，我们能够想象出某些常用场景中，报文的流向：到本机某进程的报文：PREROUTING –&gt; INPUT由本机转发的报文：PREROUTING –&gt; FORWARD –&gt; POSTROUTING由本机的某进程发出报文（通常为响应报文）：OUTPUT –&gt; POSTROUTING
-五个规则链的作用如下：INPUT链：处理输入数据包。OUTPUT链：处理输出数据包。PORWARD链：处理转发数据包。PREROUTING链：用于目标地址转换（DNAT）。POSTOUTING链：用于源地址转换（SNAT）。
-表的概念我们再想想另外一个问题，我们对每个”链”上都放置了一串规则，但是这些规则有些很相似，比如，A类规则都是对IP或者端口的过滤，B类规则是修改报文，那么这个时候，我们是不是能把实现相同功能的规则放在一起呢，必须能的。
-我们把具有相同功能的规则的集合叫做”表”，所以说，不同功能的规则，我们可以放置在不同的表中进行管理，而iptables已经为我们定义了4种表，每种表对应了不同的功能，而我们定义的规则也都逃脱不了这4种功能的范围，所以，学习iptables之前，我们必须先搞明白每种表的作用。iptables为我们提供了如下规则的分类，或者说，iptables为我们提供了如下”表”：
-
-filter表：负责过滤功能，防火墙；内核模块：iptables_filter
-nat表：network address translation，网络地址转换功能；内核模块：iptable_nat
-mangle表：拆解报文，做出修改，并重新封装的功能；iptable_mangle
-raw表：关闭nat表上启用的连接追踪机制；iptable_raw
-
-也就是说，我们自定义的所有规则，都是这四种分类中的规则，或者说，所有规则都存在于这4张”表”中。
-数据包流向可以将数据包通过防火墙的流程总结为下图：我们在写iptables规则的时候，要时刻牢记这张路由次序图，灵活配置规则。
-规则规则：根据指定的匹配条件来尝试匹配每个流经此处的报文，一旦匹配成功，则由规则后面指定的处理动作进行处理。规则由匹配条件和处理动作组成。
-匹配条件分为基本匹配条件与扩展匹配条件：基本匹配条件包括源地址Source IP和目标地址 Destination IP。
-扩展匹配条件包括源端口Source Port，目标端口Destination Port等等。
-动作也可以分为基本动作和扩展动作，此处列出一些常用动作：ACCEPT：允许数据包通过。DROP：直接丢弃数据包，不给任何回应信息，这时候客户端会感觉自己的请求泥牛入海了，过了超时时间才会有反应。REJECT：拒绝数据包通过，必要时会给数据发送端一个响应的信息，客户端刚请求就会收到拒绝的信息。SNAT：源地址转换，解决内网用户用同一个公网地址上网的问题。MASQUERADE：是SNAT的一种特殊形式，适用于动态的、临时会变的ip上。DNAT：目标地址转换，解决外网用户访问内网的问题。REDIRECT：在本机做端口映射。LOG：在/var/log/messages文件中记录日志信息，然后将数据包传递给下一条规则，也就是说除了记录以外不对数据包做任何其他操作，仍然让下一条规则去匹配。
-命令详解命令格式：iptables [选项] [参数]
-选项包括：
--t：指定要操纵的表；-A：向规则链中添加条目；-D：从规则链中删除条目；-I：向规则链中插入条目；-R：替换规则链中的条目；-L：显示规则链中已有的条目；-F：清楚规则链中已有的条目；-Z：清空规则链中的数据包计算器和字节计数器；-N：创建新的用户自定义规则链；-P：定义规则链中的默认目标；-h：显示帮助信息；-p：指定要匹配的数据包协议类型；-s：指定要匹配的数据包源ip地址；-d：指定要匹配的数据包目标ip地址；-j：指定要跳转的目标；-i：指定数据包进入本机的网络接口（网卡）；-o：指定数据包离开本机的网络接口（网卡）；--sport：匹配来源端口号；--dport：匹配目标端口号。
-
-命令选项输入顺序：iptables -t 表名 &lt;-A/I/D/R&gt; 规则链名 [规则号] &lt;-i/o 网卡名&gt; -p 协议名 &lt;-s 源IP/源子网&gt; --sport 源端口 &lt;-d 目标IP/目标子网&gt; --dport 目标端口 -j 动作
-实例1、清除已有iptables规则
-iptables -Fiptables -Xiptables -Z
-
-2、开放指定的端口
-iptables -A INPUT -s 127.0.0.1 -d 127.0.0.1 -j ACCEPT               #允许本地回环接口(即允许本机访问本机)iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT    #允许已建立的或相关连的通行iptables -A OUTPUT -j ACCEPT         #允许所有本机向外的访问iptables -A INPUT -p tcp --dport 22 -j ACCEPT    #允许访问22端口iptables -A INPUT -p tcp --dport 80 -j ACCEPT    #允许访问80端口iptables -A INPUT -p tcp --dport 21 -j ACCEPT    #允许ftp服务的21端口iptables -A INPUT -p tcp --dport 20 -j ACCEPT    #允许FTP服务的20端口iptables -A INPUT -j REJECT       #禁止其他未允许的规则访问iptables -A FORWARD -j REJECT     #禁止其他未允许的规则访问
-
-3、屏蔽IP
-iptables -I INPUT -s 123.45.6.7 -j DROP       #屏蔽单个IP的命令iptables -I INPUT -s 123.0.0.0/8 -j DROP      #封整个段即从123.0.0.1到123.255.255.254的命令iptables -I INPUT -s 124.45.0.0/16 -j DROP    #封IP段即从123.45.0.1到123.45.255.254的命令iptables -I INPUT -s 123.45.6.0/24 -j DROP    #封IP段即从123.45.6.1到123.45.6.254的命令是
-
-4、查看已添加的iptables规则iptables -L -n -v
-5、删除已添加的iptables规则将所有iptables以序号标记显示，执行：iptables -L -n --line-numbers
-比如要删除INPUT里序号为8的规则，执行：iptables -D INPUT 8
-snat具体配置主机A接收数据包允许接收局域网网卡的数据包sudo iptables -I INPUT -i eth0 -j ACCEPT
-或者sudo iptables -P INPUT ACCEPT
-开启路由功能sudo echo 1 &gt; /proc/sys/net/ipv4/ip_forward如果报错：-bash: /proc/sys/net/ipv4/ip_forward: Permission denied那就切换到root用户：sudo -iecho 1 &gt; /proc/sys/net/ipv4/ip_forward
-要想永久有效，还要把/etc/sysctl.conf文件里边的net.ipv4.ip_forward的值改为1。
-伪装数据包sudo iptables -t nat -A POSTROUTING -s 192.168.56.102 -o eth1 -j MASQUERADE
-或者用SNAT直接修改IP数据包的表头来源IPsudo iptables -t nat -A POSTROUTING -s 192.168.56.102 -o eth1 -j SNAT --to 192.168.56.101
-如果需要支持整个网段：sudo iptables -t nat -A POSTROUTING -s 192.168.56.0/24 -o eth1 -j SNAT --to 192.168.56.101
-如果需要支持连续IP：sudo iptables -t nat -A POSTROUTING -m iprange --src-range 192.168.56.102-192.168.56.104 -o eth1 -j SNAT --to 192.168.56.101
-注意：
-
-亲测以上所有命令中的-o eth1可以省略，所以，在分不清哪个网卡是内网哪个网卡是外网的情况下，直接省略即可。
-如果想要允许所有IP，-s 192.168.56.0/24也可以省略。
--j SNAT --to 192.168.56.101可以换成-j SNAT --to 120.77.36.222。
--j SNAT --to 120.77.36.222建议换成-j MASQUERADE，尤其在外网IP非固定的情况下。
-综上，最简单的万能SNAT命令为sudo iptables -t nat -A POSTROUTING -j MASQUERADE
-
-查看与删除查看NAT表链规则sudo iptables -t nat -nL --line-number
-删除POSTROUTING第一条规则sudo iptables -t nat -D POSTROUTING 1
-重启后依旧生效1、保存规则sudo chmod a+w -R /optsudo iptables-save &gt; /opt/iptables.rules
-2、手动导入规则sudo iptables-restore &lt; /opt/iptables.rules
-3、开机自动导入规则在ubuntu下要把一个程序加入开机启动，一般可以通过修改rc.local来完成，但ubuntu下有两个rc.local文件，分别是/etc/rc.local和/etc/init.d/rc.local。因为/etc/init.d/rc.local调用了/etc/rc.local，所以我们的开机脚本最好直接写入/etc/rc.local，写在exit 0之前即可。
-sudo vim /etc/rc.local在exit 0之前添加：
-/sbin/iptables-restore &lt; /opt/iptables.rules
-
-主机Bcentos如果是centos，那么配置ifcfg文件sudo vim /etc/sysconfig/network-scripts/ifcfg-eth0
-DEVICE=eth0BOOTPROTO=staticONBOOT=yesIPADDR=192.168.56.102NETMASK=255.255.255.0GATEWAY=192.168.56.101
-
-然后service network restart
-ubuntu如果是ubuntu，那么配置interfaces文件sudo vim /etc/network/interfaces
-auto loiface lo inet loopbackauto em1iface em1 inet staticaddress 192.168.56.102netmask 255.255.255.0gateway 192.168.56.101
-
-然后sudo /etc/init.d/networking restart
-总之，B主机配置的关键在于网关，网关要设置成主机A的内网IP。
-请问，网关不设置成主机A的内网IP可以吗？可以，那就是另外一种稍微复杂的设置方法了。
-此时，使用主机B，已经可以ping通外网的IP了。但是ping域名会提示“ping: unknown host”。
-DNS配置方法一1、编辑resolv.confsudo vim /etc/resolv.conf，添加nameserver的配置
-nameserver 180.76.76.76nameserver 223.6.6.6
-上面的两个IP地址，分别是百度和阿里的公共DNS。
-2、测试ping www.baidu.com
-3、不过，这种方法在重启之后会失效。想要永久生效，还需要编辑base文件。sudo vim /etc/resolvconf/resolv.conf.d/base，添加：
-nameserver 180.76.76.76nameserver 223.6.6.6
-
-
-方法二1、编辑interfacessudo vim /etc/network/interfaces
-2、添加nameserver的配置
-dns-nameserver 180.76.76.76 223.5.5.5
-
-3、重启服务器sudo reboot实际上，重启后的dns配置会写入到resolv.conf中。
-4、测试ping www.baidu.com
-结语至此，snat完美配置成功！在这个过程中，顺带学习了一下iptables，收获满满。感觉iptables和route有很大关系，但是在配置过程中没有用到route。书签中有关于route的文档，用到的时候再深入学习。
-书签Linux下配置SNAT上网
-利用iptables的SNAT功能实现局域网共享上网
-linux 路由表设置之 route 指令详解
-ubuntu配置静态路由及重启生效
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>网络</category>
-      </categories>
-      <tags>
-        <tag>网络</tag>
-        <tag>linux</tag>
-        <tag>iptables</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>matlab入门</title>
     <url>/dev-matlab-start/</url>
     <content><![CDATA[前言
@@ -25936,6 +25823,121 @@ Maven详解之聚合与继承http://blog.csdn.net/wanghantong/article/details/36
       <tags>
         <tag>java</tag>
         <tag>maven</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux配置SNAT上网</title>
+    <url>/dev-linux-snat/</url>
+    <content><![CDATA[前言一个局域网中，主机之间互联，其中只有一台主机可以上网，其他主机想要上网怎么办？答：使用SNAT。
+情景模拟有主机A，eth0的IP为内网IP：192.168.56.101，eth1为公网IP：120.77.36.222。有主机B，eth0的IP为内网IP：192.168.56.102。
+主机A可以访问外网，主机B和主机A在同一个局域网。下面我们进行配置，让主机B也可以上网。
+
+
+数据包流向发送数据包B发送数据包时，A也就是NAT主机，分析数据包表头，将此数据包转到可以连接公网的IP上去。由于私有IP与公有IP不能互通，A会通过iptables的NAT table内的Postrounting链将数据包表头伪装成A的公网IP，并且将这两个不同来源的数据包对应关系写入暂存内存中，然后将数据包传送出去。此时传到互联网的这个数据包，已经表现为来自公网IP，而非来自局域网。
+接收响应包当互联网把数据响应给B时，会首先进入NAT主机A，A分析数据包的序号，对比刚刚记录到内存中的数据，由于发现该数据包为后端主机之前传送出去的，因此在NAT Prerouting链中，会将目标IP修改成为后端主机，即B的IP，然后发现目标已经不是A的公网IP，开始通过路由分析，将数据包传送到A的局域网接口，再传送到最终目标192.168.56.102上去。
+iptables小班snat的配置，主要用到iptables命令，之前在《CentOS7中firewall的使用》简单提过iptables，今天再认真学习一下。
+主要参考文档：Basic iptables howtoiptables详解ipatebles详解（1）：iptales概念iptables命令25个iptables常用示例Linux防火墙iptables学习笔记（三）iptables命令详解和举例 
+历史防火墙，其实说白了讲，就是用于实现Linux下访问控制的功能的，它分为硬件的或者软件的防火墙两种。无论是在哪个网络中，防火墙工作的地方一定是在网络的边缘。而我们的任务就是需要去定义到底防火墙如何工作，这就是防火墙的策略，规则，以达到让它对出入网络的IP、数据进行检测。
+iptables的前身叫ipfirewall （内核1.x时代），这是一个作者从freeBSD上移植过来的，能够工作在内核当中的，对数据包进行检测的一款简易访问控制工具。但是ipfirewall工作功能极其有限（它需要将所有的规则都放进内核当中，这样规则才能够运行起来，而放进内核，这个做法一般是极其困难的）。当内核发展到2.x系列的时候，软件更名为ipchains，它可以定义多条规则，将他们串起来，共同发挥作用，而现在，它叫做iptables，可以将规则组成一个列表，实现绝对详细的访问控制功能。
+原理五个关卡iptables工作在用户空间中，是定义规则的工具，本身并不算是防火墙。它定义的规则，可以让内核空间中的netfilter来读取，并且实现让防火墙工作。netfilter的架构就是在整个网络流程的若干位置设置一些关卡（HOOK），而在每个关卡上登记了一些规则，所以这些关卡的术语规则链。
+在内核空间中，netfilter选择了5个位置，来作为控制的关卡，专业点叫做规则链。朱双印大神的博客中给出了直观的图像：
+根据上图，我们能够想象出某些常用场景中，报文的流向：到本机某进程的报文：PREROUTING –&gt; INPUT由本机转发的报文：PREROUTING –&gt; FORWARD –&gt; POSTROUTING由本机的某进程发出报文（通常为响应报文）：OUTPUT –&gt; POSTROUTING
+五个规则链的作用如下：INPUT链：处理输入数据包。OUTPUT链：处理输出数据包。PORWARD链：处理转发数据包。PREROUTING链：用于目标地址转换（DNAT）。POSTOUTING链：用于源地址转换（SNAT）。
+表的概念我们再想想另外一个问题，我们对每个”链”上都放置了一串规则，但是这些规则有些很相似，比如，A类规则都是对IP或者端口的过滤，B类规则是修改报文，那么这个时候，我们是不是能把实现相同功能的规则放在一起呢，必须能的。
+我们把具有相同功能的规则的集合叫做”表”，所以说，不同功能的规则，我们可以放置在不同的表中进行管理，而iptables已经为我们定义了4种表，每种表对应了不同的功能，而我们定义的规则也都逃脱不了这4种功能的范围，所以，学习iptables之前，我们必须先搞明白每种表的作用。iptables为我们提供了如下规则的分类，或者说，iptables为我们提供了如下”表”：
+
+filter表：负责过滤功能，防火墙；内核模块：iptables_filter
+nat表：network address translation，网络地址转换功能；内核模块：iptable_nat
+mangle表：拆解报文，做出修改，并重新封装的功能；iptable_mangle
+raw表：关闭nat表上启用的连接追踪机制；iptable_raw
+
+也就是说，我们自定义的所有规则，都是这四种分类中的规则，或者说，所有规则都存在于这4张”表”中。
+数据包流向可以将数据包通过防火墙的流程总结为下图：我们在写iptables规则的时候，要时刻牢记这张路由次序图，灵活配置规则。
+规则规则：根据指定的匹配条件来尝试匹配每个流经此处的报文，一旦匹配成功，则由规则后面指定的处理动作进行处理。规则由匹配条件和处理动作组成。
+匹配条件分为基本匹配条件与扩展匹配条件：基本匹配条件包括源地址Source IP和目标地址 Destination IP。
+扩展匹配条件包括源端口Source Port，目标端口Destination Port等等。
+动作也可以分为基本动作和扩展动作，此处列出一些常用动作：ACCEPT：允许数据包通过。DROP：直接丢弃数据包，不给任何回应信息，这时候客户端会感觉自己的请求泥牛入海了，过了超时时间才会有反应。REJECT：拒绝数据包通过，必要时会给数据发送端一个响应的信息，客户端刚请求就会收到拒绝的信息。SNAT：源地址转换，解决内网用户用同一个公网地址上网的问题。MASQUERADE：是SNAT的一种特殊形式，适用于动态的、临时会变的ip上。DNAT：目标地址转换，解决外网用户访问内网的问题。REDIRECT：在本机做端口映射。LOG：在/var/log/messages文件中记录日志信息，然后将数据包传递给下一条规则，也就是说除了记录以外不对数据包做任何其他操作，仍然让下一条规则去匹配。
+命令详解命令格式：iptables [选项] [参数]
+选项包括：
+-t：指定要操纵的表；-A：向规则链中添加条目；-D：从规则链中删除条目；-I：向规则链中插入条目；-R：替换规则链中的条目；-L：显示规则链中已有的条目；-F：清楚规则链中已有的条目；-Z：清空规则链中的数据包计算器和字节计数器；-N：创建新的用户自定义规则链；-P：定义规则链中的默认目标；-h：显示帮助信息；-p：指定要匹配的数据包协议类型；-s：指定要匹配的数据包源ip地址；-d：指定要匹配的数据包目标ip地址；-j：指定要跳转的目标；-i：指定数据包进入本机的网络接口（网卡）；-o：指定数据包离开本机的网络接口（网卡）；--sport：匹配来源端口号；--dport：匹配目标端口号。
+
+命令选项输入顺序：iptables -t 表名 &lt;-A/I/D/R&gt; 规则链名 [规则号] &lt;-i/o 网卡名&gt; -p 协议名 &lt;-s 源IP/源子网&gt; --sport 源端口 &lt;-d 目标IP/目标子网&gt; --dport 目标端口 -j 动作
+实例1、清除已有iptables规则
+iptables -Fiptables -Xiptables -Z
+
+2、开放指定的端口
+iptables -A INPUT -s 127.0.0.1 -d 127.0.0.1 -j ACCEPT               #允许本地回环接口(即允许本机访问本机)iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT    #允许已建立的或相关连的通行iptables -A OUTPUT -j ACCEPT         #允许所有本机向外的访问iptables -A INPUT -p tcp --dport 22 -j ACCEPT    #允许访问22端口iptables -A INPUT -p tcp --dport 80 -j ACCEPT    #允许访问80端口iptables -A INPUT -p tcp --dport 21 -j ACCEPT    #允许ftp服务的21端口iptables -A INPUT -p tcp --dport 20 -j ACCEPT    #允许FTP服务的20端口iptables -A INPUT -j REJECT       #禁止其他未允许的规则访问iptables -A FORWARD -j REJECT     #禁止其他未允许的规则访问
+
+3、屏蔽IP
+iptables -I INPUT -s 123.45.6.7 -j DROP       #屏蔽单个IP的命令iptables -I INPUT -s 123.0.0.0/8 -j DROP      #封整个段即从123.0.0.1到123.255.255.254的命令iptables -I INPUT -s 124.45.0.0/16 -j DROP    #封IP段即从123.45.0.1到123.45.255.254的命令iptables -I INPUT -s 123.45.6.0/24 -j DROP    #封IP段即从123.45.6.1到123.45.6.254的命令是
+
+4、查看已添加的iptables规则iptables -L -n -v
+5、删除已添加的iptables规则将所有iptables以序号标记显示，执行：iptables -L -n --line-numbers
+比如要删除INPUT里序号为8的规则，执行：iptables -D INPUT 8
+snat具体配置主机A接收数据包允许接收局域网网卡的数据包sudo iptables -I INPUT -i eth0 -j ACCEPT
+或者sudo iptables -P INPUT ACCEPT
+开启路由功能sudo echo 1 &gt; /proc/sys/net/ipv4/ip_forward如果报错：-bash: /proc/sys/net/ipv4/ip_forward: Permission denied那就切换到root用户：sudo -iecho 1 &gt; /proc/sys/net/ipv4/ip_forward
+要想永久有效，还要把/etc/sysctl.conf文件里边的net.ipv4.ip_forward的值改为1。
+伪装数据包sudo iptables -t nat -A POSTROUTING -s 192.168.56.102 -o eth1 -j MASQUERADE
+或者用SNAT直接修改IP数据包的表头来源IPsudo iptables -t nat -A POSTROUTING -s 192.168.56.102 -o eth1 -j SNAT --to 192.168.56.101
+如果需要支持整个网段：sudo iptables -t nat -A POSTROUTING -s 192.168.56.0/24 -o eth1 -j SNAT --to 192.168.56.101
+如果需要支持连续IP：sudo iptables -t nat -A POSTROUTING -m iprange --src-range 192.168.56.102-192.168.56.104 -o eth1 -j SNAT --to 192.168.56.101
+注意：
+
+亲测以上所有命令中的-o eth1可以省略，所以，在分不清哪个网卡是内网哪个网卡是外网的情况下，直接省略即可。
+如果想要允许所有IP，-s 192.168.56.0/24也可以省略。
+-j SNAT --to 192.168.56.101可以换成-j SNAT --to 120.77.36.222。
+-j SNAT --to 120.77.36.222建议换成-j MASQUERADE，尤其在外网IP非固定的情况下。
+综上，最简单的万能SNAT命令为sudo iptables -t nat -A POSTROUTING -j MASQUERADE
+
+查看与删除查看NAT表链规则sudo iptables -t nat -nL --line-number
+删除POSTROUTING第一条规则sudo iptables -t nat -D POSTROUTING 1
+重启后依旧生效1、保存规则sudo chmod a+w -R /optsudo iptables-save &gt; /opt/iptables.rules
+2、手动导入规则sudo iptables-restore &lt; /opt/iptables.rules
+3、开机自动导入规则在ubuntu下要把一个程序加入开机启动，一般可以通过修改rc.local来完成，但ubuntu下有两个rc.local文件，分别是/etc/rc.local和/etc/init.d/rc.local。因为/etc/init.d/rc.local调用了/etc/rc.local，所以我们的开机脚本最好直接写入/etc/rc.local，写在exit 0之前即可。
+sudo vim /etc/rc.local在exit 0之前添加：
+/sbin/iptables-restore &lt; /opt/iptables.rules
+
+主机Bcentos如果是centos，那么配置ifcfg文件sudo vim /etc/sysconfig/network-scripts/ifcfg-eth0
+DEVICE=eth0BOOTPROTO=staticONBOOT=yesIPADDR=192.168.56.102NETMASK=255.255.255.0GATEWAY=192.168.56.101
+
+然后service network restart
+ubuntu如果是ubuntu，那么配置interfaces文件sudo vim /etc/network/interfaces
+auto loiface lo inet loopbackauto em1iface em1 inet staticaddress 192.168.56.102netmask 255.255.255.0gateway 192.168.56.101
+
+然后sudo /etc/init.d/networking restart
+总之，B主机配置的关键在于网关，网关要设置成主机A的内网IP。
+请问，网关不设置成主机A的内网IP可以吗？可以，那就是另外一种稍微复杂的设置方法了。
+此时，使用主机B，已经可以ping通外网的IP了。但是ping域名会提示“ping: unknown host”。
+DNS配置方法一1、编辑resolv.confsudo vim /etc/resolv.conf，添加nameserver的配置
+nameserver 180.76.76.76nameserver 223.6.6.6
+上面的两个IP地址，分别是百度和阿里的公共DNS。
+2、测试ping www.baidu.com
+3、不过，这种方法在重启之后会失效。想要永久生效，还需要编辑base文件。sudo vim /etc/resolvconf/resolv.conf.d/base，添加：
+nameserver 180.76.76.76nameserver 223.6.6.6
+
+
+方法二1、编辑interfacessudo vim /etc/network/interfaces
+2、添加nameserver的配置
+dns-nameserver 180.76.76.76 223.5.5.5
+
+3、重启服务器sudo reboot实际上，重启后的dns配置会写入到resolv.conf中。
+4、测试ping www.baidu.com
+结语至此，snat完美配置成功！在这个过程中，顺带学习了一下iptables，收获满满。感觉iptables和route有很大关系，但是在配置过程中没有用到route。书签中有关于route的文档，用到的时候再深入学习。
+书签Linux下配置SNAT上网
+利用iptables的SNAT功能实现局域网共享上网
+linux 路由表设置之 route 指令详解
+ubuntu配置静态路由及重启生效
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>网络</category>
+      </categories>
+      <tags>
+        <tag>网络</tag>
+        <tag>linux</tag>
+        <tag>iptables</tag>
       </tags>
   </entry>
   <entry>
@@ -31296,7 +31298,7 @@ export NVM_DIR="$HOME/.nvm"[ -s "$NVM_DIR/nvm.sh" ] &amp;&amp; \. "$NVM_DIR/nvm.
 source .zshrcnvm
 
 4、安装使用指定版本
-nvm ls-remotenvm install v10.16.3nvm listnvm use v10.16.3
+export NVM_NODEJS_ORG_MIRROR=https://npm.taobao.org/mirrors/nodenvm ls-remotenvm install v10.16.3nvm listnvm use v10.16.3
 
 解压rarbrew install unrarunrar x package-name.rar
 
