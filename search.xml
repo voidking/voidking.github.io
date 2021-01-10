@@ -2131,45 +2131,6 @@ div&#123;    box-shadow: 10px 10px 5px #0cc;&#125;
       </tags>
   </entry>
   <entry>
-    <title>css雪碧图</title>
-    <url>/dev-css-sprite/</url>
-    <content><![CDATA[前言CSS雪碧 即CSS Sprite，也有人叫它CSS精灵，是一种CSS图像合并技术，该方法是将小图标合并到一张图片上，然后利用css的背景定位来显示需要显示的图片部分。
-优点：减少加载网页图片时对服务器的请求次数，提高页面的加载速度，减少鼠标滑过的一些bug。
-
-
-制作雪碧图的制作，可以使用PS，也可以使用专门的雪碧图制作工具。制作时，最好制作成一列或者一行，定位时会方便一些。下面这个工具挺好用，分享给大家：https://yunpan.cn/cMKygj2hnrBBe  访问密码 f516
-css雪碧图简单制作工具（源码）https://github.com/iwangx/sprite
-如果要制作svg雪碧图，推荐使用AI。
-定位位置雪碧图定位的关键，在于background-position。诀窍在于“调试”，在页面控制背景图上下左右移动，很快就定位好了。
-以上面的雪碧图为例，假设我们要显示微博的图标，那么scss代码如下：
-.icon-weibo&#123;    width: 20px;    height: 20px;    background: url(../../img/test/index/icon.png) no-repeat;    background-position: 0px -60px;&#125;
-
-大小假设我们的要显示的图标比雪碧图大，或者比雪碧图小，该怎么办？background-size。
-.icon-weibo&#123;    width: 40px;    height: 40px;    background: url(../../img/test/index/icon.png) no-repeat;    background-position: -2px -116px;    background-size: 118%;&#125;
-
-移动端很多时候，我们并不使用px作为单位，而是rem或者百分比，这时候，该怎么控制雪碧图的位置和大小？利用svg图片。
-&lt;span class="i i_menu_0"&gt;&lt;/span&gt;
-
-.i &#123;    width: 0.8rem; height: 0.8rem;    background: url(../images/ico_global.svg) no-repeat;    display: inline-block;    background-size: 1100%;&#125;.i_menu_0 &#123; background-position: 0% 0%; &#125;.i_menu_1 &#123; background-position: 10% 0%; &#125;.i_menu_2 &#123; background-position: 20% 0%; &#125;.i_menu_3 &#123; background-position: 30% 0%; &#125;.i_menu_4 &#123; background-position: 40% 0%; &#125;.i_menu_5 &#123; background-position: 50% 0%; &#125;
-
-后记至于PS和AI的使用，在慕课网和网易云课堂上有很多优秀教程，不要错过。
-书签CSS雪碧图的实现方法（即背景定位）http://www.suixin8.com/59.html
-CSS3技术-雪碧图自适应缩放http://www.imooc.com/wiki/detail/id/183
-利用动态viewport+rem制作一张自适应的svg雪碧图iconhttp://www.open-open.com/lib/view/open1452229325136.html
-SVG的用法http://www.webhek.com/svg/
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>前端</category>
-        <category>css</category>
-      </categories>
-      <tags>
-        <tag>css</tag>
-        <tag>前端</tag>
-        <tag>sprite</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>CSS实现文本溢出显示省略号</title>
     <url>/dev-css-text-overflow-omit/</url>
     <content><![CDATA[单行文本溢出显示省略号width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
@@ -2497,140 +2458,42 @@ public class ReportImpl extends Report&#123;    public void printTitle()    &#12
       </tags>
   </entry>
   <entry>
-    <title>Django开发简单Blog系统——下</title>
-    <url>/dev-django-blog-2/</url>
-    <content><![CDATA[前言博客的基本功能完成了，接下来，我们来看一下还有哪些知识点可以加入我们的系统。
+    <title>css雪碧图</title>
+    <url>/dev-css-sprite/</url>
+    <content><![CDATA[前言CSS雪碧 即CSS Sprite，也有人叫它CSS精灵，是一种CSS图像合并技术，该方法是将小图标合并到一张图片上，然后利用css的背景定位来显示需要显示的图片部分。
+优点：减少加载网页图片时对服务器的请求次数，提高页面的加载速度，减少鼠标滑过的一些bug。
 
 
-超链接template中可以使用：
-&#123;% url 'app_name: url_name' param %&#125;
+制作雪碧图的制作，可以使用PS，也可以使用专门的雪碧图制作工具。制作时，最好制作成一列或者一行，定位时会方便一些。下面这个工具挺好用，分享给大家：https://yunpan.cn/cMKygj2hnrBBe  访问密码 f516
+css雪碧图简单制作工具（源码）https://github.com/iwangx/sprite
+如果要制作svg雪碧图，推荐使用AI。
+定位位置雪碧图定位的关键，在于background-position。诀窍在于“调试”，在页面控制背景图上下左右移动，很快就定位好了。
+以上面的雪碧图为例，假设我们要显示微博的图标，那么scss代码如下：
+.icon-weibo&#123;    width: 20px;    height: 20px;    background: url(../../img/test/index/icon.png) no-repeat;    background-position: 0px -60px;&#125;
 
+大小假设我们的要显示的图标比雪碧图大，或者比雪碧图小，该怎么办？background-size。
+.icon-weibo&#123;    width: 40px;    height: 40px;    background: url(../../img/test/index/icon.png) no-repeat;    background-position: -2px -116px;    background-size: 118%;&#125;
 
-app_name：应用命名空间的名称
-url_name：链接名
-param：参数
+移动端很多时候，我们并不使用px作为单位，而是rem或者百分比，这时候，该怎么控制雪碧图的位置和大小？利用svg图片。
+&lt;span class="i i_menu_0"&gt;&lt;/span&gt;
 
-app_name和url_name都在urls.py中配置。
-djsite/djsite/urls.py中
-url(r'^blog/', include('blog.urls', namespace='blog')),
-其中namespace=&#39;blog&#39;代表的是app_name。
-djsite/blog/urls.py中
-url(r'^(?P&lt;article_id&gt;[0-9]+)$', views.detail, name='detail'),
-其中name=&#39;detail&#39;代表的是url_name。
-比如，我们想要访问views.detail方法，那么在页面中，可以使用：
-&#123;% url 'blog:detail' article.id %&#125;
+.i &#123;    width: 0.8rem; height: 0.8rem;    background: url(../images/ico_global.svg) no-repeat;    display: inline-block;    background-size: 1100%;&#125;.i_menu_0 &#123; background-position: 0% 0%; &#125;.i_menu_1 &#123; background-position: 10% 0%; &#125;.i_menu_2 &#123; background-position: 20% 0%; &#125;.i_menu_3 &#123; background-position: 30% 0%; &#125;.i_menu_4 &#123; background-position: 40% 0%; &#125;.i_menu_5 &#123; background-position: 50% 0%; &#125;
 
-实际上，这种写法并没有我们上一篇文章中的写法方便，因为ajax得到数据后无法使用这种写法，建议弃用。
-django shelldjango shell和python shell的不同，在于django shell里加入了项目的环境，这就方便了我们的调试。比如，我们在django shell输入：
-from blog.models import ArticleArticle.objects.all()Article.objects.all().values()
-即可打印出所有的文章。
-Admin进阶在之前的后台管理系统中，点击进入Articles，发现里面有很多Article Object，因为我们在blog/models.py中添加了__str__方法，所以显示的名称是文章标题。
-那么，怎样把标题、内容、发布时间都显示出来呢？答案是修改blog/admin.py：
-from django.contrib import adminfrom . import models# Register your models here.class ArticleAdmin(admin.ModelAdmin):    # 显示在admin控制台中的列名    list_display = ('title', 'content', 'pub_time')    # 时间过滤器    list_filter = ('pub_time',)admin.site.register(models.Article, ArticleAdmin)
-
-改用mysqlsqlite，做一些测试还可以，但是在实际开发中，我们通常使用mysql。
-1、假设我们的数据库用户名为root，密码为空，数据库名为djsite。
-2、安装pymysqlpip install pymysql
-3、修改djsite/djsite/settings.py：
-# Database# https://docs.djangoproject.com/en/1.11/ref/settings/#databases# DATABASES = &#123;#     'default': &#123;#         'ENGINE': 'django.db.backends.sqlite3',#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),#     &#125;# &#125;DATABASES = &#123;    'default': &#123;        'ENGINE': 'django.db.backends.mysql',        'HOST': '127.0.0.1',        'PORT': '3306',        'NAME': 'djsite',        'USER': 'root',        'PASSWORD': '',        'OPTIONS': &#123;            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",        &#125;,    &#125;&#125;
-
-4、修改djsite/djsite/__init__.py：
-import pymysqlpymysql.install_as_MySQLdb()
-
-5、数据迁移python manage.py makemigrations
-python manage.py migrate
-6、创建超级用户python manage.py createsuperuser
-源码分享https://github.com/voidking/djsite/releases/tag/v0.3.0
-书签django入门与实践
-Django 过滤器
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>后端</category>
-        <category>python</category>
-        <category>django</category>
-      </categories>
-      <tags>
-        <tag>python</tag>
-        <tag>django</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>百度搜索结果页</title>
-    <url>/dev-baidu-search-result/</url>
-    <content><![CDATA[前言1月18日，入职艾佳，办好了各种手续。从海哥那里，接到了第一个任务——周一到周三（18到20），高仿一个百度搜索结果页。小编随手挖了一个坑：“上海”，接着便开始填坑。
-
-
-界面布局浏览器，是一个长方体的不透明的可变体积的盒子，盒子上面开了一个长方形的窗口。从这个窗口，我们可以看到盒子里的内容。盒子有很多层，IE、FireFox、Safari有2147483647层，Opera有2147483584层。一般情况下，10层，就足够我们使用了。 
-界面布局，也就是在浏览器盒子里面摆放东西的方式。一般分为三种：标准文档流、浮动和定位。
-标准文档流标准文档流，就是在盒子的第一层摆放东西，按照从左到右，从上到下的方式，符合我们平时的思维习惯。
-浮动浮动会脱离标准文档流，不再按照从左到右，从上到下的方式。但是，浮动的元素，仍然处于第一层。
-对于浮动，最认同张鑫旭的看法。浮动出现的意义其实只是用来让文字环绕图片而已，仅此而已。浮动的本质为“包裹与破坏”！
-1、包裹撇开浮动的“破坏性”，浮动就是个带有方位的display:inline-block属性。
-2、破坏文字之所以会环绕含有float属性的图片，是因为浮动破坏了正常的line boxes。
-定位static元素出现在标准文档流中。
-relative生成相对定位的元素，相对于其正常位置进行定位。
-因此，”left:20” 会向元素的 LEFT 位置添加 20 像素。
-absolute生成绝对定位的元素，相对于 static 定位以外的第一个父元素进行定位。
-元素的位置通过 “left”, “top”, “right” 以及 “bottom” 属性进行规定。
-fixed生成绝对定位的元素，相对于浏览器窗口进行定位。
-元素的位置通过 “left”, “top”, “right” 以及 “bottom” 属性进行规定。
-盒子模型上面我们说，要在浏览器这个盒子里摆放东西。那么，摆放什么东西呢？盒子！没有顶的盒子。
-
-margin：盒子间的距离。
-border：盒子的板厚度。
-padding：盒子里的减震泡沫厚度。
-content：盒子里可以摆放物品的空间尺寸。
-
-全局设置排版的时候，小编发现，在内容和浏览器窗口之间，会存在缝隙。所以，一般会设置一个全局样式：
-*&#123;    margin: 0;    padding: 0;&#125;
-
-下拉菜单鼠标移动到顶部的“设置”或者“用户名”下面，会出现下拉菜单。这个效果，就需要用到定位中的“absolute”了，
-块级元素行内元素1、行内元素与块级元素直观上的区别行内元素会在一条直线上排列，都是同一行的，水平方向排列块级元素各占据一行，垂直方向排列。块级元素从新行开始结束接着一个断行。
-2、块级元素可以包含行内元素和块级元素，行内元素不能包含块级元素。
-3、行内元素与块级元素属性的不同，主要是盒模型属性上行内元素设置width无效，height无效(可以设置line-height)，margin上下无效，padding上下无效
-line-height和vertical-alignline-height适用于所有元素，设置元素中行的高度。vertical-align适用于行内元素和单元格（table-cell）元素，设置元素内容的垂直对齐方式。
-后记本次任务，遵循一个原则：能用HTML+CSS实现的，不用JavaScript；能用JavaScript实现的，不用jQuery。上面主要记录了这次任务用到的技术和原理，细节方面的东西，看代码吧，完成度80%：https://github.com/voidking/baidu-search-result.git
-参考文档如何利用 CSS 製作多級選單？https://zespia.tw/blog/css-multi-level-menu/
-网页布局基础http://www.imooc.com/learn/95
-css知多少（7）——盒子模型http://www.cnblogs.com/wangfupeng1988/p/4287292.html
-CSS+DIV定位分析http://blog.163.com/love_heartbreaking/blog/static/124561901201211334714800/
-DOM中关于脱离文档流的几种情况分析http://www.tuicool.com/articles/IBJvyy7http://www.cnblogs.com/chuaWeb/p/html_css_position_float.html
-CSS float浮动的深入研究、详解及拓展(一)
-CSS深入理解之float浮动http://www.imooc.com/view/121
-行内元素与块级元素比较全面的区别和转换http://blog.csdn.net/sykent/article/details/7738408
-line-height 和 vertical-align 行高与行对齐精解 （图文）http://www.jb51.net/css/29328.html
+后记至于PS和AI的使用，在慕课网和网易云课堂上有很多优秀教程，不要错过。
+书签CSS雪碧图的实现方法（即背景定位）http://www.suixin8.com/59.html
+CSS3技术-雪碧图自适应缩放http://www.imooc.com/wiki/detail/id/183
+利用动态viewport+rem制作一张自适应的svg雪碧图iconhttp://www.open-open.com/lib/view/open1452229325136.html
+SVG的用法http://www.webhek.com/svg/
 ]]></content>
       <categories>
         <category>专业</category>
         <category>前端</category>
+        <category>css</category>
       </categories>
       <tags>
+        <tag>css</tag>
         <tag>前端</tag>
-        <tag>艾佳生活</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>百度公共DNS</title>
-    <url>/dev-baidu-dns/</url>
-    <content><![CDATA[基本概念http://dudns.baidu.com/intro.html
-使用说明http://dudns.baidu.com/useDoc.html
-百度DNS地址主DNS服务器地址180.76.76.76辅助DNS服务器的地址114.114.114.114
-GoogleDNS地址主DNS服务器地址8.8.8.8辅助DNS服务器的地址8.8.4.4
-
-
-114DNS114.114.114.114114.114.115.115
-阿里DNS223.5.5.5223.6.6.6
-OneDNS112.124.47.27114.215.126.16
-DNS派101.226.4.6123.125.81.6
-OpenDNS208.67.222.222208.67.220.220
-小结不同的DNS，各有特点，个人感觉百度公共DNS不错。
-]]></content>
-      <categories>
-        <category>专业</category>
-      </categories>
-      <tags>
-        <tag>dns</tag>
+        <tag>sprite</tag>
       </tags>
   </entry>
   <entry>
@@ -2851,7 +2714,7 @@ ALLOWED_HOSTS = ['*']
 安装mysql当前项目还没有使用到数据库，而且默认使用sqlite3，不过后期会改成mysql，所以这里做个铺垫。mysql安装配置参考《使用Docker安装配置Mysql》。
 域名配置域名解析dnspod添加A记录，wecms记录值解析到hostip。
 配置Nginx创建 /etc/nginx/conf.d/wecms.voidking.com.conf ，内容为：
-server &#123;    server_name wecms.voidking.com;     listen 80;    location / &#123;        proxy_pass http://127.0.0.1:8000/; 		proxy_set_header X-Forward-For $remote_addr;        proxy_set_header X-Real-IP $remote_addr;    &#125;&#125;
+server &#123;    server_name wecms.voidking.com;     listen 80;    location / &#123;        proxy_set_header Host $host;        proxy_set_header X-Forward-For $remote_addr;        proxy_set_header X-Real-IP $remote_addr;        proxy_pass http://127.0.0.1:8000;     &#125;&#125;
 ]]></content>
       <categories>
         <category>专业</category>
@@ -2866,6 +2729,65 @@ server &#123;    server_name wecms.voidking.com;     listen 80;    location / &#
         <tag>django</tag>
         <tag>微信公众平台</tag>
         <tag>dokcer</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Django开发简单Blog系统——下</title>
+    <url>/dev-django-blog-2/</url>
+    <content><![CDATA[前言博客的基本功能完成了，接下来，我们来看一下还有哪些知识点可以加入我们的系统。
+
+
+超链接template中可以使用：
+&#123;% url 'app_name: url_name' param %&#125;
+
+
+app_name：应用命名空间的名称
+url_name：链接名
+param：参数
+
+app_name和url_name都在urls.py中配置。
+djsite/djsite/urls.py中
+url(r'^blog/', include('blog.urls', namespace='blog')),
+其中namespace=&#39;blog&#39;代表的是app_name。
+djsite/blog/urls.py中
+url(r'^(?P&lt;article_id&gt;[0-9]+)$', views.detail, name='detail'),
+其中name=&#39;detail&#39;代表的是url_name。
+比如，我们想要访问views.detail方法，那么在页面中，可以使用：
+&#123;% url 'blog:detail' article.id %&#125;
+
+实际上，这种写法并没有我们上一篇文章中的写法方便，因为ajax得到数据后无法使用这种写法，建议弃用。
+django shelldjango shell和python shell的不同，在于django shell里加入了项目的环境，这就方便了我们的调试。比如，我们在django shell输入：
+from blog.models import ArticleArticle.objects.all()Article.objects.all().values()
+即可打印出所有的文章。
+Admin进阶在之前的后台管理系统中，点击进入Articles，发现里面有很多Article Object，因为我们在blog/models.py中添加了__str__方法，所以显示的名称是文章标题。
+那么，怎样把标题、内容、发布时间都显示出来呢？答案是修改blog/admin.py：
+from django.contrib import adminfrom . import models# Register your models here.class ArticleAdmin(admin.ModelAdmin):    # 显示在admin控制台中的列名    list_display = ('title', 'content', 'pub_time')    # 时间过滤器    list_filter = ('pub_time',)admin.site.register(models.Article, ArticleAdmin)
+
+改用mysqlsqlite，做一些测试还可以，但是在实际开发中，我们通常使用mysql。
+1、假设我们的数据库用户名为root，密码为空，数据库名为djsite。
+2、安装pymysqlpip install pymysql
+3、修改djsite/djsite/settings.py：
+# Database# https://docs.djangoproject.com/en/1.11/ref/settings/#databases# DATABASES = &#123;#     'default': &#123;#         'ENGINE': 'django.db.backends.sqlite3',#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),#     &#125;# &#125;DATABASES = &#123;    'default': &#123;        'ENGINE': 'django.db.backends.mysql',        'HOST': '127.0.0.1',        'PORT': '3306',        'NAME': 'djsite',        'USER': 'root',        'PASSWORD': '',        'OPTIONS': &#123;            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",        &#125;,    &#125;&#125;
+
+4、修改djsite/djsite/__init__.py：
+import pymysqlpymysql.install_as_MySQLdb()
+
+5、数据迁移python manage.py makemigrations
+python manage.py migrate
+6、创建超级用户python manage.py createsuperuser
+源码分享https://github.com/voidking/djsite/releases/tag/v0.3.0
+书签django入门与实践
+Django 过滤器
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>后端</category>
+        <category>python</category>
+        <category>django</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>django</tag>
       </tags>
   </entry>
   <entry>
@@ -2974,6 +2896,151 @@ crond日志1、查看crond日志tail /var/log/cron报错没有这个文件，这
       </tags>
   </entry>
   <entry>
+    <title>使用Docker安装配置GateOne</title>
+    <url>/dev-docker-gateone/</url>
+    <content><![CDATA[GateOne简介
+Gate One is a web-based Terminal Emulator and SSH client that brings the power of the command line to the web. It requires no browser plugins and is built on top of a powerful plugin system that allows every aspect of its appearance and functionality to be customized.
+
+本文使用Docker安装配置GateOne，搭建一个Web Shell环境。前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。已知docker宿主机IP为192.168.56.130。
+
+
+安装GateOne1、登录dockerhub查看需要的liftoff/gateone版本，实际上只有一个版本。
+2、下载gateone镜像docker pull liftoff/gateone
+3、启动gateone服务
+docker run --name=vk-gateone -d \-p 8000:8000 \liftoff/gateone gateone
+
+以上命令：命名容器为vk-gateone，后台运行；映射宿主机8000端口到容器8000端口。
+更多命令参考Using this Image。
+4、验证安装docker psgateone启动正常的话就可以看到vk-gateone容器。如果启动失败，可以使用docker logs vk-gateone查看失败原因并进行解决。
+使用nc命令验证：
+yum install ncnc -v localhost 8000
+
+浏览器访问： https://192.168.56.130:8000
+5、使用点击 Terminal:SSH ，输入主机IP、端口号、用户名和密码，即可登录主机。
+如果想要添加鉴权验证，参考archlinux-Gateone和API Authentication。
+开放端口如果浏览器无法访问8000端口，那么需要对防火墙进行设置。
+firewall-cmd --add-port=8000/tcp --permanentsystemctl reload firewalld# 或者systemctl stop firewalld
+
+安装openssh-server1、进入vk-gateonedocker exec -it vk-gateone /bin/bash
+2、安装openssh-server
+apt updateapt install openssh-server
+
+3、vim /etc/ssh/sshd_config，如下修改：
+PasswordAuthentication yes
+
+4、重启sshservice ssh restart
+5、添加用户
+useradd -m voidking -s /bin/bashpasswd voidkingadduser voidking sudo# 安装sudo命令（该容器内没有sudo）apt install sudo
+
+6、登录vk-gateone容器点击 Terminal:SSH ，主机名和端口使用默认，输入用户名voidking和密码，即可登录vk-gateone。
+小技巧在gateone shell里，可以使用 ctrl+insert 进行复制，使用 shift+insert 进行粘贴。如果在界面无法使用鼠标光标选中一些区域，那么可以在任意位置进行双击，即可激活光标选择。
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>docker</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>ssh</tag>
+        <tag>shell</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用Docker安装配置GitLab</title>
+    <url>/dev-docker-gitlab/</url>
+    <content><![CDATA[前言《CentOS7安装配置GitLab》一文中学习了GitLab的安装方法，如果使用Docker来安装GitLab，可以简单很多。
+前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。已知docker宿主机IP为192.168.56.130。
+
+
+安装GitLab1、登录dockerhub查看需要的GitLab Docker images。
+2、下载gitlab镜像（以12.6.1-ce.0版本为例）docker pull gitlab/gitlab-ce:12.6.1-ce.0
+3、启动gitlab服务
+docker run --name vk-gitlab -d  \-p 80:80 -p 443:443 -p 3422:22  \--restart always \-v /opt/gitlab/config:/etc/gitlab \-v /opt/gitlab/logs:/var/log/gitlab \-v /opt/gitlab/data:/var/opt/gitlab \gitlab/gitlab-ce:12.6.1-ce.0
+以上命令：
+
+命名容器为vk-gitlab，后台运行
+映射宿主机80、443、3422端口到容器80、443、22端口
+意外关闭后自动重启
+挂载三个宿主机目录到容器
+
+4、验证安装docker psgitlab启动正常的话就可以看到vk-gitlab容器。如果启动失败，可以使用docker logs vk-gitlab查看失败原因并进行解决。
+验证GitLab开放端口firewall-cmd --add-port=80/tcp --permanentfirewall-cmd --add-port=443/tcp --permanentfirewall-cmd --add-port=3422/tcp --permanentsystemctl reload firewalld# 或者systemctl stop firewalld
+
+端口验证nc -v localhost 22nc -v localhost 3422
+可以看到两个端口的返回结果不同：SSH-2.0-OpenSSH_7.4SSH-2.0-OpenSSH_7.2p2 Ubuntu-4ubuntu2.8
+服务验证宿主机测试：curl localhost -L浏览器测试：http://192.168.56.130
+配置GitLabhttp域名访问1、配置url和ssh协议端口vim /opt/gitlab/config/gitlab.rb，如下修改：
+# line 23, uncomment and changeexternal_url 'http://gitlab.voidking.com'# line 56, uncomment and changegitlab_rails['gitlab_ssh_host'] = 'gitlab.voidking.com'# line 456, uncomment and changegitlab_rails['gitlab_shell_ssh_port'] = 3422
+
+该配置的效果是，当用户在gitlab项目页面点击Clone时，Clone with HTTP和Clone with SSH的结果类似于：
+http://gitlab.voidking.com/root/voidking.gitssh://git@gitlab.voidking.com:3422/root/voidking.git
+
+2、重启vk-gitlabdocker restart vk-gitlab
+3、修改主机hosts
+192.168.56.130  gitlab.voidking.com
+
+4、测试访问浏览器访问：http://gitlab.voidking.com
+https域名访问参考《CentOS7安装配置GitLab》添加SSL一节，生成证书，配置gitlab使用证书，并且添加到浏览器。
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>docker</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用Docker安装配置Grafana</title>
+    <url>/dev-docker-grafana/</url>
+    <content><![CDATA[Grafana简介
+Grafana allows you to query, visualize, alert on and understand your metrics no matter where they are stored.
+
+本文中，我们会使用Docker来安装配置grafana，并且显示prometheus中的数据。前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。已知docker宿主机IP为192.168.56.102。
+
+
+安装Grafana1、登录dockerhub查看需要的grafana版本。
+2、下载grafana镜像（以grafana6.7.4为例）docker pull grafana/grafana:6.7.4
+3、启动grafana服务
+docker run --name=vk-grafana -d \-p 3000:3000 \grafana/grafana:6.7.4
+
+以上命令：
+
+命名容器为vk-grafana，后台运行
+映射宿主机3000端口到容器3000端口
+
+grafana的配置文件为 /etc/grafana/grafana.ini ，可以进入容器进行修改，或者挂出到宿主机。
+更高级的启动命令参考How to use the container。
+4、验证安装docker psmysql启动正常的话就可以看到vk-grafana容器。如果启动失败，可以使用docker logs vk-grafana查看失败原因并进行解决。
+开放端口firewall-cmd --add-port=3000/tcp --permanentsystemctl reload firewalld# 或者systemctl stop firewalld
+
+测试服务1、本机测试curl localhost:3000
+2、浏览器测试访问 http://192.168.56.102:3000用户名密码默认都是admin，第一次登录会提示修改。
+配置Prometheus数据假设我们已经安装配置好了prometheus，参考《使用Docker安装配置Prometheus》。
+1、添加数据资源
+2、配置Prometheus数据Name填入 Prometheus ，URL填入 http://192.168.56.102:9090，其他不用变。Save&amp;Test。
+3、选择dashboard点击Dashboards，点击三个Import，引入三个dashboard。
+4、引入其他dashboard比如可以填入URL https://grafana.com/grafana/dashboards/405 ，点击Load，就可以下载Node Exporter的dashboard。选择Folder，选择Prometheus数据源，Import。
+5、查看dashboard左上角HOME，出现下拉框，即可选择dashboard。
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>docker</category>
+        <category>监控</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>centos</tag>
+        <tag>grafana</tag>
+        <tag>监控</tag>
+        <tag>prometheus</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>使用Docker安装配置Jenkins</title>
     <url>/dev-docker-jenkins/</url>
     <content><![CDATA[前言《CentOS7安装部署Jenkins》一文中学习了Jenkins的安装方法，如果使用Docker来安装Jenkins，同样可以简单很多。
@@ -3025,6 +3092,46 @@ wget -O default.json http://updates.jenkins-ci.org/update-center.json
 &lt;?xml version='1.0' encoding='UTF-8'?&gt;&lt;sites&gt;  &lt;site&gt;    &lt;id&gt;default&lt;/id&gt;    &lt;url&gt;http://localhost&lt;/url&gt;  &lt;/site&gt;&lt;/sites&gt;
 因为获取不到update-center.json，然后就可以跳过安装插件的步骤。
 5、更换新版jenkins镜像jenkins安装成功，但是在jenkins的系统配置页面，可以看到很多插件报错，而且无法修复，系统建议进行jenkins升级。此时，小编才意识到，官方jenkins镜像不是最新版！！！需要改用jenkins命名空间下的新版jenkins镜像，但是“安装推荐的插件”这一步依然很慢，几个小时甚至更久才能安装成功。加速方法可以参考本文 配置使用Jenkins 一节中的 加速插件安装。
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>docker</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用Docker安装配置Jupyter</title>
+    <url>/dev-docker-jupyter/</url>
+    <content><![CDATA[前言《Jupyter notebook》一文中学习了jupyter的使用，本文学习一下怎样使用docker安装jupyter，并且配置访问密码。
+前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。已知docker宿主机IP为192.168.56.130。
+
+
+安装jupyter1、登录dockerhub查看需要的Jupyter - Docker Official Images。
+2、下载jupyter镜像（以6.1.6为例）docker pull jupyter/base-notebook:notebook-6.1.6
+3、创建配置目录
+mkdir -p /opt/jupyter/jovyanchmod 777 /opt/jupyter/jovyan
+
+4、启动jupyter服务
+docker run --name vk-jupyter -d \-p 8888:8888 \-v /opt/jupyter/jovyan:/home/jovyan \jupyter/base-notebook:notebook-6.1.6
+
+以上命令：
+
+命名容器为vk-jupyter，后台运行
+映射宿主机8888端口到容器的8888端口
+挂载宿主机目录/opt/jupyter/jovyan到容器目录/home/jovyan
+
+更多启动命令参数可以参考Jupyter Docker Stacks。
+5、验证安装docker ps，jupyter启动正常的话就可以看到vk-jupyter容器。
+浏览器访问 http://192.168.56.130:8888 ，可以看到Jupyter登录页面。
+6、登录docker exec -it vk-jupyter jupyter notebook list可以查看到登录需要的token，使用token即可登录进入jupyter编辑页面。
+配置jupyter1、设置密码
+docker exec -it vk-jupyter jupyter notebook passworddocker restart vk-jupyter
+
+2、使用密码浏览器访问 http://192.168.56.130:8888此时使用自己设置的密码就可以访问jupyter了。
+3、根目录jupyter编辑器的默认根目录为 /home/jovyan ，对应宿主机目录 /opt/jupyter/jovyan ，创建的目录和文件都去这个路径下面去找。
 ]]></content>
       <categories>
         <category>专业</category>
@@ -4126,46 +4233,6 @@ CentOS 7 开放3306端口访问
       </tags>
   </entry>
   <entry>
-    <title>freemarker入门</title>
-    <url>/dev-freemarker/</url>
-    <content><![CDATA[前言昨天，小编介绍了一款前端模板引擎artTemplate。今天，介绍一款后端模板引擎freemarker。
-
-Apache FreeMarker is a template engine: a Java library to generate text output (HTML web pages, e-mails, configuration files, source code, etc.) based on templates and changing data. 
-
-
-
-基本语法定义和输出&lt;#assign answer=42/&gt;$&#123;answer&#125;
-结果为：42
-分支语句&lt;#assign age=23&gt;&lt;#if (age&gt;60)&gt;老年人&lt;#elseif (age&gt;40)&gt;中年人&lt;#elseif (age&gt;20)&gt;青年人&lt;#else&gt; 少年人&lt;/#if&gt;
-
-循环语句&lt;#list books as book&gt;    &lt;tr&gt;        &lt;td&gt;$&#123;book.name&#125;&lt;/td&gt;        &lt;td&gt;作者:$&#123;book.author&#125;&lt;/td&gt;    &lt;/tr&gt;&lt;/#list&gt;
-
-运算和函数&lt;#assign x=5&gt;$&#123; (x/2)?int &#125;$&#123; 1.1?int &#125;$&#123; 1.999?int &#125;$&#123; -1.1?int &#125;$&#123; -1.999?int &#125;
-结果为:2 1 1 -1 -1
-源码分享https://github.com/voidking/freemarker.git
-参考文档FreeMarker Java Template Enginehttp://freemarker.org/
-Download / Maven - Apache FreeMarkerhttp://freemarker.org/freemarkerdownload.html
-Index (FreeMarker 2.3.24-incubating API)http://freemarker.org/docs/api/index-all.html
-模板引擎freemarker的简单使用教程http://blog.csdn.net/stormwy/article/details/26172353
-FreeMarker使用详解http://www.open-open.com/lib/view/open1394860597743.html
-Freemarker由浅入深01-环境搭建、测试http://blog.csdn.net/it_wangxiangpan/article/details/17526869
-ftl的使用http://blog.163.com/liuweiyoung@126/blog/static/1731310452012112755018198/
-【FreeMarker】【模板文件FTL】模板自定义指令 macrohttp://blog.csdn.net/robinjwong/article/details/40427977
-freemarker的使用心得http://blog.csdn.net/walkcode/article/details/40707997
-Freemarker中Configuration的setClassForTemplateLoading方法参数问题http://www.cnblogs.com/fangjian0423/p/freemarker-templateloading-question.html
-Servlet 3.0笔记之使用Freemarker替代JSP，更快更轻更高效http://www.blogjava.net/yongboy/archive/346224.html
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>后端</category>
-        <category>java</category>
-      </categories>
-      <tags>
-        <tag>java</tag>
-        <tag>freemarker</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>前端开发常用插件</title>
     <url>/dev-front-end-plugin/</url>
     <content><![CDATA[前言最近在阅读公司官网的前端代码，使用了很多插件。挨个百度，简单记录下，看看他们都是干什么的。
@@ -4244,7 +4311,7 @@ nohup /opt/frp/frps -c /opt/frp/frps.ini &amp;
 其中nohup可以省略。
 nginx反向代理1、添加域名解析frp到公网ip。
 2、在/etc/nginx/conf.d/目录中，添加frp.voidking.com.conf，内容如下：
-server &#123;    listen 80;    server_name frp.voidking.com;    charset utf-8;    location /&#123;        proxy_set_header   Host             $host;        proxy_set_header   X-Real-IP        $remote_addr;        proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;        client_max_body_size       1024m;        client_body_buffer_size    128k;        client_body_temp_path      data/client_body_temp;        proxy_connect_timeout      90;        proxy_send_timeout         90;        proxy_read_timeout         90;        proxy_buffer_size          4k;        proxy_buffers              4 32k;        proxy_busy_buffers_size    64k;        proxy_temp_file_write_size 64k;        proxy_temp_path            data/proxy_temp;                proxy_pass http://127.0.0.1:7500;    &#125;&#125;
+server &#123;    listen 80;    server_name frp.voidking.com;    charset utf-8;    location /&#123;        proxy_set_header Host $host;        proxy_set_header X-Forward-For $remote_addr;        proxy_set_header X-Real-IP $remote_addr;        proxy_pass http://127.0.0.1:7500;    &#125;&#125;
 
 3、重启nginx/usr/sbin/nginx -t，如果提示缺少目录，那么mkdir -p创建。
 /usr/sbin/nginx -s reload
@@ -4353,8 +4420,8 @@ Alias /ganglia /usr/share/ganglia-webfrontend&lt;Directory "/usr/share/ganglia-w
       <tags>
         <tag>apache</tag>
         <tag>ubuntu</tag>
-        <tag>ganglia</tag>
         <tag>监控</tag>
+        <tag>ganglia</tag>
       </tags>
   </entry>
   <entry>
@@ -4397,153 +4464,48 @@ gridname "Center of Cloud Computing"
       </categories>
       <tags>
         <tag>ubuntu</tag>
+        <tag>监控</tag>
         <tag>ganglia</tag>
-        <tag>监控</tag>
       </tags>
   </entry>
   <entry>
-    <title>使用Docker安装配置Grafana</title>
-    <url>/dev-docker-grafana/</url>
-    <content><![CDATA[Grafana简介
-Grafana allows you to query, visualize, alert on and understand your metrics no matter where they are stored.
+    <title>freemarker入门</title>
+    <url>/dev-freemarker/</url>
+    <content><![CDATA[前言昨天，小编介绍了一款前端模板引擎artTemplate。今天，介绍一款后端模板引擎freemarker。
 
-本文中，我们会使用Docker来安装配置grafana，并且显示prometheus中的数据。前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。已知docker宿主机IP为192.168.56.102。
+Apache FreeMarker is a template engine: a Java library to generate text output (HTML web pages, e-mails, configuration files, source code, etc.) based on templates and changing data. 
 
 
-安装Grafana1、登录dockerhub查看需要的grafana版本。
-2、下载grafana镜像（以grafana6.7.4为例）docker pull grafana/grafana:6.7.4
-3、启动grafana服务
-docker run --name=vk-grafana -d \-p 3000:3000 \grafana/grafana:6.7.4
 
-以上命令：
+基本语法定义和输出&lt;#assign answer=42/&gt;$&#123;answer&#125;
+结果为：42
+分支语句&lt;#assign age=23&gt;&lt;#if (age&gt;60)&gt;老年人&lt;#elseif (age&gt;40)&gt;中年人&lt;#elseif (age&gt;20)&gt;青年人&lt;#else&gt; 少年人&lt;/#if&gt;
 
-命名容器为vk-grafana，后台运行
-映射宿主机3000端口到容器3000端口
+循环语句&lt;#list books as book&gt;    &lt;tr&gt;        &lt;td&gt;$&#123;book.name&#125;&lt;/td&gt;        &lt;td&gt;作者:$&#123;book.author&#125;&lt;/td&gt;    &lt;/tr&gt;&lt;/#list&gt;
 
-grafana的配置文件为 /etc/grafana/grafana.ini ，可以进入容器进行修改，或者挂出到宿主机。
-更高级的启动命令参考How to use the container。
-4、验证安装docker psmysql启动正常的话就可以看到vk-grafana容器。如果启动失败，可以使用docker logs vk-grafana查看失败原因并进行解决。
-开放端口firewall-cmd --add-port=3000/tcp --permanentsystemctl reload firewalld# 或者systemctl stop firewalld
-
-测试服务1、本机测试curl localhost:3000
-2、浏览器测试访问 http://192.168.56.102:3000用户名密码默认都是admin，第一次登录会提示修改。
-配置Prometheus数据假设我们已经安装配置好了prometheus，参考《使用Docker安装配置Prometheus》。
-1、添加数据资源
-2、配置Prometheus数据Name填入 Prometheus ，URL填入 http://192.168.56.102:9090，其他不用变。Save&amp;Test。
-3、选择dashboard点击Dashboards，点击三个Import，引入三个dashboard。
-4、引入其他dashboard比如可以填入URL https://grafana.com/grafana/dashboards/405 ，点击Load，就可以下载Node Exporter的dashboard。选择Folder，选择Prometheus数据源，Import。
-5、查看dashboard左上角HOME，出现下拉框，即可选择dashboard。
+运算和函数&lt;#assign x=5&gt;$&#123; (x/2)?int &#125;$&#123; 1.1?int &#125;$&#123; 1.999?int &#125;$&#123; -1.1?int &#125;$&#123; -1.999?int &#125;
+结果为:2 1 1 -1 -1
+源码分享https://github.com/voidking/freemarker.git
+参考文档FreeMarker Java Template Enginehttp://freemarker.org/
+Download / Maven - Apache FreeMarkerhttp://freemarker.org/freemarkerdownload.html
+Index (FreeMarker 2.3.24-incubating API)http://freemarker.org/docs/api/index-all.html
+模板引擎freemarker的简单使用教程http://blog.csdn.net/stormwy/article/details/26172353
+FreeMarker使用详解http://www.open-open.com/lib/view/open1394860597743.html
+Freemarker由浅入深01-环境搭建、测试http://blog.csdn.net/it_wangxiangpan/article/details/17526869
+ftl的使用http://blog.163.com/liuweiyoung@126/blog/static/1731310452012112755018198/
+【FreeMarker】【模板文件FTL】模板自定义指令 macrohttp://blog.csdn.net/robinjwong/article/details/40427977
+freemarker的使用心得http://blog.csdn.net/walkcode/article/details/40707997
+Freemarker中Configuration的setClassForTemplateLoading方法参数问题http://www.cnblogs.com/fangjian0423/p/freemarker-templateloading-question.html
+Servlet 3.0笔记之使用Freemarker替代JSP，更快更轻更高效http://www.blogjava.net/yongboy/archive/346224.html
 ]]></content>
       <categories>
         <category>专业</category>
-        <category>运维</category>
-        <category>docker</category>
-        <category>监控</category>
+        <category>后端</category>
+        <category>java</category>
       </categories>
       <tags>
-        <tag>docker</tag>
-        <tag>centos</tag>
-        <tag>监控</tag>
-        <tag>grafana</tag>
-        <tag>prometheus</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>使用Docker安装配置GitLab</title>
-    <url>/dev-docker-gitlab/</url>
-    <content><![CDATA[前言《CentOS7安装配置GitLab》一文中学习了GitLab的安装方法，如果使用Docker来安装GitLab，可以简单很多。
-前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。已知docker宿主机IP为192.168.56.130。
-
-
-安装GitLab1、登录dockerhub查看需要的GitLab Docker images。
-2、下载gitlab镜像（以12.6.1-ce.0版本为例）docker pull gitlab/gitlab-ce:12.6.1-ce.0
-3、启动gitlab服务
-docker run --name vk-gitlab -d  \-p 80:80 -p 443:443 -p 3422:22  \--restart always \-v /opt/gitlab/config:/etc/gitlab \-v /opt/gitlab/logs:/var/log/gitlab \-v /opt/gitlab/data:/var/opt/gitlab \gitlab/gitlab-ce:12.6.1-ce.0
-以上命令：
-
-命名容器为vk-gitlab，后台运行
-映射宿主机80、443、3422端口到容器80、443、22端口
-意外关闭后自动重启
-挂载三个宿主机目录到容器
-
-4、验证安装docker psgitlab启动正常的话就可以看到vk-gitlab容器。如果启动失败，可以使用docker logs vk-gitlab查看失败原因并进行解决。
-验证GitLab开放端口firewall-cmd --add-port=80/tcp --permanentfirewall-cmd --add-port=443/tcp --permanentfirewall-cmd --add-port=3422/tcp --permanentsystemctl reload firewalld# 或者systemctl stop firewalld
-
-端口验证nc -v localhost 22nc -v localhost 3422
-可以看到两个端口的返回结果不同：SSH-2.0-OpenSSH_7.4SSH-2.0-OpenSSH_7.2p2 Ubuntu-4ubuntu2.8
-服务验证宿主机测试：curl localhost -L浏览器测试：http://192.168.56.130
-配置GitLabhttp域名访问1、配置url和ssh协议端口vim /opt/gitlab/config/gitlab.rb，如下修改：
-# line 23, uncomment and changeexternal_url 'http://gitlab.voidking.com'# line 56, uncomment and changegitlab_rails['gitlab_ssh_host'] = 'gitlab.voidking.com'# line 456, uncomment and changegitlab_rails['gitlab_shell_ssh_port'] = 3422
-
-该配置的效果是，当用户在gitlab项目页面点击Clone时，Clone with HTTP和Clone with SSH的结果类似于：
-http://gitlab.voidking.com/root/voidking.gitssh://git@gitlab.voidking.com:3422/root/voidking.git
-
-2、重启vk-gitlabdocker restart vk-gitlab
-3、修改主机hosts
-192.168.56.130  gitlab.voidking.com
-
-4、测试访问浏览器访问：http://gitlab.voidking.com
-https域名访问参考《CentOS7安装配置GitLab》添加SSL一节，生成证书，配置gitlab使用证书，并且添加到浏览器。
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>docker</category>
-      </categories>
-      <tags>
-        <tag>docker</tag>
-        <tag>git</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>使用Docker安装配置GateOne</title>
-    <url>/dev-docker-gateone/</url>
-    <content><![CDATA[GateOne简介
-Gate One is a web-based Terminal Emulator and SSH client that brings the power of the command line to the web. It requires no browser plugins and is built on top of a powerful plugin system that allows every aspect of its appearance and functionality to be customized.
-
-本文使用Docker安装配置GateOne，搭建一个Web Shell环境。前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。已知docker宿主机IP为192.168.56.130。
-
-
-安装GateOne1、登录dockerhub查看需要的liftoff/gateone版本，实际上只有一个版本。
-2、下载gateone镜像docker pull liftoff/gateone
-3、启动gateone服务
-docker run --name=vk-gateone -d \-p 8000:8000 \liftoff/gateone gateone
-
-以上命令：命名容器为vk-gateone，后台运行；映射宿主机8000端口到容器8000端口。
-更多命令参考Using this Image。
-4、验证安装docker psgateone启动正常的话就可以看到vk-gateone容器。如果启动失败，可以使用docker logs vk-gateone查看失败原因并进行解决。
-使用nc命令验证：
-yum install ncnc -v localhost 8000
-
-浏览器访问： https://192.168.56.130:8000
-5、使用点击 Terminal:SSH ，输入主机IP、端口号、用户名和密码，即可登录主机。
-如果想要添加鉴权验证，参考archlinux-Gateone和API Authentication。
-开放端口如果浏览器无法访问8000端口，那么需要对防火墙进行设置。
-firewall-cmd --add-port=8000/tcp --permanentsystemctl reload firewalld# 或者systemctl stop firewalld
-
-安装openssh-server1、进入vk-gateonedocker exec -it vk-gateone /bin/bash
-2、安装openssh-server
-apt updateapt install openssh-server
-
-3、vim /etc/ssh/sshd_config，如下修改：
-PasswordAuthentication yes
-
-4、重启sshservice ssh restart
-5、添加用户
-useradd -m voidking -s /bin/bashpasswd voidkingadduser voidking sudo# 安装sudo命令（该容器内没有sudo）apt install sudo
-
-6、登录vk-gateone容器点击 Terminal:SSH ，主机名和端口使用默认，输入用户名voidking和密码，即可登录vk-gateone。
-小技巧在gateone shell里，可以使用 ctrl+insert 进行复制，使用 shift+insert 进行粘贴。如果在界面无法使用鼠标光标选中一些区域，那么可以在任意位置进行双击，即可激活光标选择。
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>docker</category>
-      </categories>
-      <tags>
-        <tag>docker</tag>
-        <tag>ssh</tag>
-        <tag>shell</tag>
+        <tag>java</tag>
+        <tag>freemarker</tag>
       </tags>
   </entry>
   <entry>
@@ -5795,6 +5757,84 @@ Hexo使用攻略：（四）Hexo的分类和标签设置
       </categories>
       <tags>
         <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>百度公共DNS</title>
+    <url>/dev-baidu-dns/</url>
+    <content><![CDATA[基本概念http://dudns.baidu.com/intro.html
+使用说明http://dudns.baidu.com/useDoc.html
+百度DNS地址主DNS服务器地址180.76.76.76辅助DNS服务器的地址114.114.114.114
+GoogleDNS地址主DNS服务器地址8.8.8.8辅助DNS服务器的地址8.8.4.4
+
+
+114DNS114.114.114.114114.114.115.115
+阿里DNS223.5.5.5223.6.6.6
+OneDNS112.124.47.27114.215.126.16
+DNS派101.226.4.6123.125.81.6
+OpenDNS208.67.222.222208.67.220.220
+小结不同的DNS，各有特点，个人感觉百度公共DNS不错。
+]]></content>
+      <categories>
+        <category>专业</category>
+      </categories>
+      <tags>
+        <tag>dns</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>百度搜索结果页</title>
+    <url>/dev-baidu-search-result/</url>
+    <content><![CDATA[前言1月18日，入职艾佳，办好了各种手续。从海哥那里，接到了第一个任务——周一到周三（18到20），高仿一个百度搜索结果页。小编随手挖了一个坑：“上海”，接着便开始填坑。
+
+
+界面布局浏览器，是一个长方体的不透明的可变体积的盒子，盒子上面开了一个长方形的窗口。从这个窗口，我们可以看到盒子里的内容。盒子有很多层，IE、FireFox、Safari有2147483647层，Opera有2147483584层。一般情况下，10层，就足够我们使用了。 
+界面布局，也就是在浏览器盒子里面摆放东西的方式。一般分为三种：标准文档流、浮动和定位。
+标准文档流标准文档流，就是在盒子的第一层摆放东西，按照从左到右，从上到下的方式，符合我们平时的思维习惯。
+浮动浮动会脱离标准文档流，不再按照从左到右，从上到下的方式。但是，浮动的元素，仍然处于第一层。
+对于浮动，最认同张鑫旭的看法。浮动出现的意义其实只是用来让文字环绕图片而已，仅此而已。浮动的本质为“包裹与破坏”！
+1、包裹撇开浮动的“破坏性”，浮动就是个带有方位的display:inline-block属性。
+2、破坏文字之所以会环绕含有float属性的图片，是因为浮动破坏了正常的line boxes。
+定位static元素出现在标准文档流中。
+relative生成相对定位的元素，相对于其正常位置进行定位。
+因此，”left:20” 会向元素的 LEFT 位置添加 20 像素。
+absolute生成绝对定位的元素，相对于 static 定位以外的第一个父元素进行定位。
+元素的位置通过 “left”, “top”, “right” 以及 “bottom” 属性进行规定。
+fixed生成绝对定位的元素，相对于浏览器窗口进行定位。
+元素的位置通过 “left”, “top”, “right” 以及 “bottom” 属性进行规定。
+盒子模型上面我们说，要在浏览器这个盒子里摆放东西。那么，摆放什么东西呢？盒子！没有顶的盒子。
+
+margin：盒子间的距离。
+border：盒子的板厚度。
+padding：盒子里的减震泡沫厚度。
+content：盒子里可以摆放物品的空间尺寸。
+
+全局设置排版的时候，小编发现，在内容和浏览器窗口之间，会存在缝隙。所以，一般会设置一个全局样式：
+*&#123;    margin: 0;    padding: 0;&#125;
+
+下拉菜单鼠标移动到顶部的“设置”或者“用户名”下面，会出现下拉菜单。这个效果，就需要用到定位中的“absolute”了，
+块级元素行内元素1、行内元素与块级元素直观上的区别行内元素会在一条直线上排列，都是同一行的，水平方向排列块级元素各占据一行，垂直方向排列。块级元素从新行开始结束接着一个断行。
+2、块级元素可以包含行内元素和块级元素，行内元素不能包含块级元素。
+3、行内元素与块级元素属性的不同，主要是盒模型属性上行内元素设置width无效，height无效(可以设置line-height)，margin上下无效，padding上下无效
+line-height和vertical-alignline-height适用于所有元素，设置元素中行的高度。vertical-align适用于行内元素和单元格（table-cell）元素，设置元素内容的垂直对齐方式。
+后记本次任务，遵循一个原则：能用HTML+CSS实现的，不用JavaScript；能用JavaScript实现的，不用jQuery。上面主要记录了这次任务用到的技术和原理，细节方面的东西，看代码吧，完成度80%：https://github.com/voidking/baidu-search-result.git
+参考文档如何利用 CSS 製作多級選單？https://zespia.tw/blog/css-multi-level-menu/
+网页布局基础http://www.imooc.com/learn/95
+css知多少（7）——盒子模型http://www.cnblogs.com/wangfupeng1988/p/4287292.html
+CSS+DIV定位分析http://blog.163.com/love_heartbreaking/blog/static/124561901201211334714800/
+DOM中关于脱离文档流的几种情况分析http://www.tuicool.com/articles/IBJvyy7http://www.cnblogs.com/chuaWeb/p/html_css_position_float.html
+CSS float浮动的深入研究、详解及拓展(一)
+CSS深入理解之float浮动http://www.imooc.com/view/121
+行内元素与块级元素比较全面的区别和转换http://blog.csdn.net/sykent/article/details/7738408
+line-height 和 vertical-align 行高与行对齐精解 （图文）http://www.jb51.net/css/29328.html
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>前端</category>
+      </categories>
+      <tags>
+        <tag>前端</tag>
+        <tag>艾佳生活</tag>
       </tags>
   </entry>
   <entry>
@@ -7145,32 +7185,42 @@ def func1(a,b):    return a/bdef func2(x):    a=x    b=x-1    return func1(a,b)%
       </tags>
   </entry>
   <entry>
-    <title>使用client-go操作K8S</title>
-    <url>/dev-k8s-client-go/</url>
-    <content><![CDATA[client-go简介直观上看，用户可以使用kubectl、客户端库或者REST请求来访问K8S API。而实际上，无论是kubectl还是客户端库，都是封装了REST请求的工具。client-go作为一个客户端库，能够调用K8S API，实现对K8S集群中资源对象（包括deployment、service、ingress、replicaSet、pod、namespace、node等）的增删改查等操作。源码地址：kubernetes/client-go接口文档：kubernetes - GoDoc
+    <title>Kubernetes Operator</title>
+    <url>/dev-k8s-operator/</url>
+    <content><![CDATA[Kubernetes Operator是啥？
+Operators are software extensions to Kubernetes that make use of custom resources to manage applications and their components. Operators follow Kubernetes principles, notably the control loop.
+
+Operator 是 Kubernetes 的扩展软件，通过自定义资源，管理应用及其组件。 Operator 遵循 Kubernetes 的理念，特别是在控制回路方面。
+Kubernetes自定义资源包括Custom resources 和 Custom controllers。
+Operator 模式旨在捕获（正在管理一个或一组服务的）运维人员的关键目标。负责特定应用和service的运维人员，在系统应该如何运行、如何部署以及出现问题时如何处理等方面有深入的了解。在 Kubernetes 上运行工作负载的人们都喜欢通过自动化来处理重复的任务。Operator 模式会封装我们编写的（Kubernetes 本身提供功能以外的）任务自动化代码。
+Operator可以自动化的事情包括：
+
+按需部署应用
+获取/还原应用状态的备份
+处理应用代码的升级以及相关改动。例如，数据库 schema 或额外的配置设置
+发布一个 service，要求不支持 Kubernetes API 的应用也能发现它
+模拟整个或部分集群中的故障以测试其稳定性
+在没有内部成员选举程序的情况下，为分布式应用选择首领角色
+
+简单来说，Kubernetes实际是期望状态管理器，如果Kubernetes本身提供的功能无法达到期望状态，特别是对于有状态应用，那么就需要手动处理，而Operator可以使这种处理自动化。
+更多内容，参考Operator 模式。
+本文中，将会学习编写一个Operator，并应用到k8s集群。
 
 
-通过REST访问K8S《K8S入门篇》一文中使用kubectl对minikube进行管理，本节中直接使用REST请求来对minikube进行管理。参考Access Clusters Using the Kubernetes API，来测试一下。
-kubectl处理API服务器的定位和身份验证。如果要使用curl或wget等http客户端或浏览器直接访问REST API，可以通过多种方式查找和验证API服务器：（1）在代理模式下运行kubectl（推荐）。建议使用此方法，因为它使用存储的apiserver位置并使用自签名证书验证API服务器的标识。使用此方法无法进行中间人（MITM）攻击。（2）直接向http客户端提供位置和凭据。这适用于被代理混淆的客户端代码。为了防止中间人攻击，需要将根证书导入浏览器。使用Go或Python客户端库可以在代理模式下访问kubectl。
-启动minikube，查看集群配置
-minikube startkubectl config view
+工具Operator的yaml文件和go文件，可以纯手写，没毛病。但是使用工具能够提高我们的编写效率。编写Operator的工具有：
 
-查看kubectl访问了什么url，获得了什么信息。
-kubectl get nodes -v=8kubectl get nodes -v=9
+KUDO，Kubernetes 通用声明式 Operator)
+kubebuilder
+Metacontroller，可与 Webhook 结合使用，以实现自己的功能。
+Operator Framework
 
-kubectl代理模式充当反向代理模式下运行kubectl，它处理定位API服务器和进行身份验证。
-kubectl proxy --port=8080 &amp;curl http://localhost:8080/api/
-此时使用浏览器进行访问，同样可以拿到数据。
-grep/cut方法# Check all possible clusters, as you .KUBECONFIG may have multiple contexts:kubectl config view -o jsonpath='&#123;"Cluster name\tServer\n"&#125;&#123;range .clusters[*]&#125;&#123;.name&#125;&#123;"\t"&#125;&#123;.cluster.server&#125;&#123;"\n"&#125;&#123;end&#125;'# Select name of cluster you want to interact with from above output:# export CLUSTER_NAME="some_server_name"export CLUSTER_NAME="minikube"# Point to the API server refering the cluster nameAPISERVER=$(kubectl config view -o jsonpath="&#123;.clusters[?(@.name==\"$CLUSTER_NAME\")].cluster.server&#125;")# Gets the token valueTOKEN=$(kubectl get secrets -o jsonpath="&#123;.items[?(@.metadata.annotations['kubernetes\.io/service-account\.name']=='default')].data.token&#125;"|base64 -d)# Explore the API with TOKENcurl -X GET $APISERVER/api --header "Authorization: Bearer $TOKEN" --insecure
-
-
-jsonpath方法APISERVER=$(kubectl config view --minify -o jsonpath='&#123;.clusters[0].cluster.server&#125;')TOKEN=$(kubectl get secret $(kubectl get serviceaccount default -o jsonpath='&#123;.secrets[0].name&#125;') -o jsonpath='&#123;.data.token&#125;' | base64 --decode )curl $APISERVER/api --header "Authorization: Bearer $TOKEN" --insecure
-
-
-client-go操作K8Sclient-go实际上是封装了REST请求的客户端库，能够简化我们的工作。
-参考k8s-client-go项目，对k8s进行一些基本操作，包括连接k8s，创建更新deployment，查看deployment状态，查看pod状态等。在使用该项目之前，需要获取k8s集群的配置信息：kubectl config view把配置信息拷贝一下，粘贴到项目中的admin.conf文件中即可。
-此外，k8s-client-go项目依赖client-go，因此需要参考《Golang包管理工具》安装好依赖。
-后记本文中学习了client-go的安装方法，然后借助k8s-client-go项目学习了client-go的基本用法。接下来，使用client-go实现在K8S集群中发布项目，go！go！go！
+查找和分享Operator：OperatorHub
+Operator FrameworkOperator Framework是一个开源工具包，用来管理被称为operators的k8s应用程序，高效、自动化、可扩展。它的两个核心部分是Operator SDK 和 Operator Lifecycle Manager 。
+Operator SDK：允许开发人员根据专业知识来构建Operator，而无需了解Kubernetes API的复杂性。Operator Lifecycle Manager：帮助用户安装、更新和总体管理跨集群运行的所有Operators（及其相关服务）的生命周期。
+在开发机上安装Operator SDK，在集群中安装Operator Operator Lifecycle Manager。
+对于这两个组件，可以在katacoda上试玩，熟悉它们的安装和使用，Building Operators on OpenShift。
+第一个Operator参考Kubernetes Operator 快速入门教程，使用Operator Framework开发一个Operator应用，代码仓库cnych/opdemo。
+书签Introducing Operators: Putting Operational Knowledge into SoftwareBest practices for building Kubernetes Operators and stateful apps揭秘Kubernetes Operator（一）第一次玩 operator-sdk 就上手
 ]]></content>
       <categories>
         <category>专业</category>
@@ -7179,10 +7229,8 @@ client-go操作K8Sclient-go实际上是封装了REST请求的客户端库，能�
       </categories>
       <tags>
         <tag>k8s</tag>
+        <tag>源码</tag>
         <tag>golang</tag>
-        <tag>docker</tag>
-        <tag>client-go</tag>
-        <tag>kubectl</tag>
       </tags>
   </entry>
   <entry>
@@ -7817,38 +7865,6 @@ How to Put a KVM Guest Domain on a Bridged Network
       </tags>
   </entry>
   <entry>
-    <title>Linux修改命令提示符信息(PS1)</title>
-    <url>/dev-linux-ps1/</url>
-    <content><![CDATA[问题如何将 root@izwz94j3dpfuv8pcrn1qitz 修改成 root@voidking-ali？
-解决办法1、查看原PS1，echo $PS1，显示结果为：
-[\u@\h \W]\$
-
-2、编辑.bashrc，vi ~/.bashrc
-3、添加
-export PS1='[\u@voidking-ali \W]\$'
-或者
-export PS1="[\u@voidking-ali \W]\\$"
-
-4、立即生效，source ~/.bashrc
-
-
-扩展一般情况下，Linux 的命令提示信息类似于以下样子，显示为[当前用户名@短主机名  当前短路径]提示符，例如 [root@voidking-ali ~]#。
-不过，有时候我们可能想自定义命令提示符的显示信息，比如显示完整的主机名和完整的路径。
-PS1变量中提示符各项含义:
-\d ：代表日期，格式为weekday month date，例如："Mon Aug 1"\H ：完整的主机名称。例如：我的机器名称为：voidking.linux，则这个名称就是voidking.linux\h ：仅取主机的第一个名字，如上例，则为voidking，.linux则被省略\t ：显示时间为24小时格式，如：HH：MM：SS\T ：显示时间为12小时格式\A ：显示时间为24小时格式：HH：MM\u ：当前用户的账号名称\v ：BASH的版本信息\w ：完整的工作目录名称。家目录会以 ~代替\W ：利用basename取得工作目录名称，所以只会列出最后一个目录\$ ：提示字符，如果是root时，提示符为：# ，普通用户则为：$
-
-
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>linux</category>
-      </categories>
-      <tags>
-        <tag>linux</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Linux下解压命令大全</title>
     <url>/dev-linux-decompress-command-all/</url>
     <content><![CDATA[.tar解包：tar xvf FileName.tar打包：tar cvf FileName.tar DirName（注：tar是打包，不是压缩！）
@@ -7908,6 +7924,137 @@ mail -s 'Hello VoidKing' voidking@qq.com &lt;&lt;&lt; 'Welcome to mail world!'ec
 后记至此，大功告成！《Linux设置定时任务》配合《Linux设置邮件提醒》，简直完美！两篇文章完成了一个小系统：定时生成ganglia日志，定时审阅ganglia日志，并且把审阅结果通过邮件发送给管理员。
 书签Linux命令大全——LMNOPQ
 如何在Ubuntu环境下搭建邮件服务器（一）
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>shell</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux修改命令提示符信息(PS1)</title>
+    <url>/dev-linux-ps1/</url>
+    <content><![CDATA[问题如何将 root@izwz94j3dpfuv8pcrn1qitz 修改成 root@voidking-ali？
+解决办法1、查看原PS1，echo $PS1，显示结果为：
+[\u@\h \W]\$
+
+2、编辑.bashrc，vi ~/.bashrc
+3、添加
+export PS1='[\u@voidking-ali \W]\$'
+或者
+export PS1="[\u@voidking-ali \W]\\$"
+
+4、立即生效，source ~/.bashrc
+
+
+扩展一般情况下，Linux 的命令提示信息类似于以下样子，显示为[当前用户名@短主机名  当前短路径]提示符，例如 [root@voidking-ali ~]#。
+不过，有时候我们可能想自定义命令提示符的显示信息，比如显示完整的主机名和完整的路径。
+PS1变量中提示符各项含义:
+\d ：代表日期，格式为weekday month date，例如："Mon Aug 1"\H ：完整的主机名称。例如：我的机器名称为：voidking.linux，则这个名称就是voidking.linux\h ：仅取主机的第一个名字，如上例，则为voidking，.linux则被省略\t ：显示时间为24小时格式，如：HH：MM：SS\T ：显示时间为12小时格式\A ：显示时间为24小时格式：HH：MM\u ：当前用户的账号名称\v ：BASH的版本信息\w ：完整的工作目录名称。家目录会以 ~代替\W ：利用basename取得工作目录名称，所以只会列出最后一个目录\$ ：提示字符，如果是root时，提示符为：# ，普通用户则为：$
+
+
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux的一些技巧</title>
+    <url>/dev-linux-skill/</url>
+    <content><![CDATA[软件推荐linux下的图片处理软件，号称linux下的photoshop：gimp
+linux下可用的qq：pidgin-lwqq
+linux下的翻译软件：stardict
+linux下查看chm文件：chmsee
+安装windows软件：wine
+
+
+查看系统位数1、uname -a
+2、file /bin/ls
+3、getconf LONG_BIT
+PS：查询CPU信息cat /proc/cpuinfo
+查看系统版本适用所有系统：lsb_release -a
+适用centos和redhat：cat /etc/redhat-release
+适用ubuntu：cat /etc/issue
+修改默认shell1、输入which tcsh，找到tcsh所存放路径。（或which ash 找到ash存放路径）
+这里假设tcsh的路径为/bin/tcsh。
+2、输入chsh -s /bin/tcsh，即可变更默认shell为tcsh。
+3、重启，即可发现默认shell已经更改。
+粘贴位要删除一个文件，你不一定要有这个文件的写权限，但你一定要有这个文件的上级目录的写权限。也就是说，你即使没有一个文件的写权限，但你有这个文件的上级目录的写权限，你也可以把这个文件给删除，而如果没有一个目录的写权限，也就不能在这个目录下创建文件。
+如何才能使一个目录既可以让任何用户写入文件，又不让用户删除这个目录下他人的文件，sticky就是能起到这个作用。stciky一般只用在目录上，用在文件上起不到什么作用。在一个目录上设了sticky位后，（如/home，权限为1777)所有的用户都可以在这个目录下创建文件，但只能删除自己创建的文件(root除外)，这就对所有用户能写的目录下的用户文件启到了保护的作用。chmod 777 abc + chmod +t abc ，等价于 chmod 1777 abc 。
+块大小对于单一文件，若块大小=1024，最大容量为16GB；若块大小=4096，最大容量为2TB。（根据inode的格式来看(12个直接块指针,1个间接块指针,1个二次间接块指针,1个三次间接块指针),假设磁盘块尺寸为n的话,单个文件尺寸应该是:12n + (1/4)n^2 + (1/16)n^3 + (1/64)n^4
+任务前后台
+CTRL+Z停止进程并放入后台     
+jobs显示当前暂停的进程     
+bg %N使第N个任务在后台运行(%前有空格)     
+fg %N使第N个任务在前台运行     
+默认bg,fg不带%N时表示对最后一个进程操作
+
+编码格式执行sh脚本时报错：/bin/sh^M: bad interpreter: No such file or directory
+1、添加执行权限chmod a+x filename
+2、然后修改文件格式vi filename
+3、利用如下命令查看文件格式
+:set ff 或 :set fileformat
+可以看到 fileformat=dos 或 fileformat=unix。
+4、利用如下命令修改文件格式
+:set ff=unix 或 :set fileformat=unix
+5、保存文件:wq
+6、最后再执行文件./filename
+ubuntu端口开放1、安装iptablessudo apt-get install iptables
+2、创建配置文件sudo iptables-save
+3、添加规则sudo iptables -I INPUT -p tcp --dport 22 -j ACCEPT
+4、保存规则sudo iptables-save
+5、查看规则sudo iptables -L
+以上只是暂时保存了开放端口的信息，如果服务器重启，保存的信息就掉了，所以我们需要持久化一下端口信息，这里我们使用 iptables-persistent。
+1、安装iptables-persistentsudo apt-get install iptables-persistent
+2、持久化信息sudo service iptables-persistent save
+硬盘挂载优雅方法1、查看硬盘fdisk -l
+2、格式化并创建挂载目录
+# mkfs -t ext4 /dev/sdbmkfs.ext4 /dev/sdbmkdir /sdbblkid /dev/sdb
+
+3、添加自动挂载，编辑 /etc/fstab ，添加
+# /dev/sdb1 /sdb ext4 defaults 0 0&lt;blkid&gt; /sdb ext4 defaults 0 0
+
+4、执行挂载mount -a
+常规方法1、查看硬盘fdisk -l
+2、硬盘分区（可选）fdisk /dev/sdb
+按照提示，依次输入p，n，回车（Partition number），回车（First sector），回车（Last sector），w。
+3、格式化
+# mkfs -t ext4 /dev/sdb1mkfs.ext4 /dev/sdb1
+
+4、挂载
+mkdir /sdbmount /dev/sdb1 /sdbdf -h
+
+5、自动挂载，编辑 /etc/fstab ，添加
+/dev/sdb1 /sdb ext4 defaults 0 0
+
+rm垃圾桶rm命令杀伤力很大，如果误删了系统文件，会很麻烦。所以，给linux系统建立一个垃圾桶，是很有必要的，详情参考Make “rm” Command To Move The Files To “Trash Can”。
+1、下载安装saferm.sh
+git clone https://github.com/lagerspetz/linux-stuffsudo mv linux-stuff/scripts/saferm.sh /binrm -Rf linux-stuff
+
+2、编辑.bashrc文件，末尾添加
+alias rm=saferm.shalias sudo='sudo '
+
+3、使环境生效source .bashrc之后，再使用rm或者sudo rm命令，实际上执行的是mv操作，移动文件到Trash目录。
+书签linux核心下载
+linux软件包下载
+手把手教你如何建立自己的Linux系统
+CROSS LFS
+Linux From Scratch
+LFS linux的安装过程
+Linuxsir
+Gentoo Linux文档
+Unix技术网
+IT技术认证考试
+自动生成Makefile官方教程
 ]]></content>
       <categories>
         <category>专业</category>
@@ -8340,105 +8487,6 @@ MAVEN安装JAR文件到本地仓库http://www.blogjava.net/paulwong/archive/4154
       <tags>
         <tag>java</tag>
         <tag>maven</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Linux的一些技巧</title>
-    <url>/dev-linux-skill/</url>
-    <content><![CDATA[软件推荐linux下的图片处理软件，号称linux下的photoshop：gimp
-linux下可用的qq：pidgin-lwqq
-linux下的翻译软件：stardict
-linux下查看chm文件：chmsee
-安装windows软件：wine
-
-
-查看系统位数1、uname -a
-2、file /bin/ls
-3、getconf LONG_BIT
-PS：查询CPU信息cat /proc/cpuinfo
-查看系统版本适用所有系统：lsb_release -a
-适用centos和redhat：cat /etc/redhat-release
-适用ubuntu：cat /etc/issue
-修改默认shell1、输入which tcsh，找到tcsh所存放路径。（或which ash 找到ash存放路径）
-这里假设tcsh的路径为/bin/tcsh。
-2、输入chsh -s /bin/tcsh，即可变更默认shell为tcsh。
-3、重启，即可发现默认shell已经更改。
-粘贴位要删除一个文件，你不一定要有这个文件的写权限，但你一定要有这个文件的上级目录的写权限。也就是说，你即使没有一个文件的写权限，但你有这个文件的上级目录的写权限，你也可以把这个文件给删除，而如果没有一个目录的写权限，也就不能在这个目录下创建文件。
-如何才能使一个目录既可以让任何用户写入文件，又不让用户删除这个目录下他人的文件，sticky就是能起到这个作用。stciky一般只用在目录上，用在文件上起不到什么作用。在一个目录上设了sticky位后，（如/home，权限为1777)所有的用户都可以在这个目录下创建文件，但只能删除自己创建的文件(root除外)，这就对所有用户能写的目录下的用户文件启到了保护的作用。chmod 777 abc + chmod +t abc ，等价于 chmod 1777 abc 。
-块大小对于单一文件，若块大小=1024，最大容量为16GB；若块大小=4096，最大容量为2TB。（根据inode的格式来看(12个直接块指针,1个间接块指针,1个二次间接块指针,1个三次间接块指针),假设磁盘块尺寸为n的话,单个文件尺寸应该是:12n + (1/4)n^2 + (1/16)n^3 + (1/64)n^4
-任务前后台
-CTRL+Z停止进程并放入后台     
-jobs显示当前暂停的进程     
-bg %N使第N个任务在后台运行(%前有空格)     
-fg %N使第N个任务在前台运行     
-默认bg,fg不带%N时表示对最后一个进程操作
-
-编码格式执行sh脚本时报错：/bin/sh^M: bad interpreter: No such file or directory
-1、添加执行权限chmod a+x filename
-2、然后修改文件格式vi filename
-3、利用如下命令查看文件格式
-:set ff 或 :set fileformat
-可以看到 fileformat=dos 或 fileformat=unix。
-4、利用如下命令修改文件格式
-:set ff=unix 或 :set fileformat=unix
-5、保存文件:wq
-6、最后再执行文件./filename
-ubuntu端口开放1、安装iptablessudo apt-get install iptables
-2、创建配置文件sudo iptables-save
-3、添加规则sudo iptables -I INPUT -p tcp --dport 22 -j ACCEPT
-4、保存规则sudo iptables-save
-5、查看规则sudo iptables -L
-以上只是暂时保存了开放端口的信息，如果服务器重启，保存的信息就掉了，所以我们需要持久化一下端口信息，这里我们使用 iptables-persistent。
-1、安装iptables-persistentsudo apt-get install iptables-persistent
-2、持久化信息sudo service iptables-persistent save
-硬盘挂载优雅方法1、查看硬盘fdisk -l
-2、格式化并创建挂载目录
-# mkfs -t ext4 /dev/sdbmkfs.ext4 /dev/sdbmkdir /sdbblkid /dev/sdb
-
-3、添加自动挂载，编辑 /etc/fstab ，添加
-# /dev/sdb1 /sdb ext4 defaults 0 0&lt;blkid&gt; /sdb ext4 defaults 0 0
-
-4、执行挂载mount -a
-常规方法1、查看硬盘fdisk -l
-2、硬盘分区（可选）fdisk /dev/sdb
-按照提示，依次输入p，n，回车（Partition number），回车（First sector），回车（Last sector），w。
-3、格式化
-# mkfs -t ext4 /dev/sdb1mkfs.ext4 /dev/sdb1
-
-4、挂载
-mkdir /sdbmount /dev/sdb1 /sdbdf -h
-
-5、自动挂载，编辑 /etc/fstab ，添加
-/dev/sdb1 /sdb ext4 defaults 0 0
-
-rm垃圾桶rm命令杀伤力很大，如果误删了系统文件，会很麻烦。所以，给linux系统建立一个垃圾桶，是很有必要的，详情参考Make “rm” Command To Move The Files To “Trash Can”。
-1、下载安装saferm.sh
-git clone https://github.com/lagerspetz/linux-stuffsudo mv linux-stuff/scripts/saferm.sh /binrm -Rf linux-stuff
-
-2、编辑.bashrc文件，末尾添加
-alias rm=saferm.shalias sudo='sudo '
-
-3、使环境生效source .bashrc之后，再使用rm或者sudo rm命令，实际上执行的是mv操作，移动文件到Trash目录。
-书签linux核心下载
-linux软件包下载
-手把手教你如何建立自己的Linux系统
-CROSS LFS
-Linux From Scratch
-LFS linux的安装过程
-Linuxsir
-Gentoo Linux文档
-Unix技术网
-IT技术认证考试
-自动生成Makefile官方教程
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>linux</category>
-      </categories>
-      <tags>
-        <tag>linux</tag>
-        <tag>shell</tag>
       </tags>
   </entry>
   <entry>
@@ -8903,6 +8951,146 @@ Documentation of Your WorkDocument the work you’ve done by answering (in about
       </tags>
   </entry>
   <entry>
+    <title>K8S中的网络策略</title>
+    <url>/dev-k8s-network-policy/</url>
+    <content><![CDATA[怎样限制Pod中的网络流量？已知pod名为 webapp ，label为 name=webapp 。现在想要模拟无法访问数据库，限制它的流量，禁止它访问 10.0.0.0/24 网段的所有3306端口，该怎么实现？
+方法一：使用NetworkPolicy限流方法二：开启pod特权模式，在pod内部使用iptables限流方法三：登录pod所在宿主机，在pod所在ns中使用iptables限流
+
+
+NetworkPolicy网络策略（NetworkPolicy）是一种关于 Pod 间及与其他网络端点间所允许的通信规则的规范。NetworkPolicy 资源使用 标签 选择 Pod，并定义选定 Pod 所允许的通信规则。
+网络策略通过网络插件来实现。要使用网络策略，用户必须使用支持 NetworkPolicy 的网络解决方案。创建一个资源对象，而没有控制器来使它生效的话，是没有任何作用的。
+默认情况下，Pod 是非隔离的，它们接受任何来源的流量。Pod 可以通过相关的网络策略进行隔离。一旦命名空间中有网络策略选择了特定的 Pod，该 Pod 会拒绝网络策略所不允许的连接。 (命名空间下其他未被网络策略所选择的 Pod 会继续接收所有的流量)网络策略不会冲突，它们是附加的。如果任何一个或多个策略选择了一个 Pod, 则该 Pod 受限于这些策略的 ingress/egress 规则的并集。因此评估的顺序并不会影响策略的结果。
+更多内容参考网络策略和NetworkPolicy最佳实践。
+基础规则：
+
+如果 Pod 没有被 NetworkPolicy 匹配到，那么它的流量是被允许的 
+如果 Pod 被 NetworkPolicy 匹配到，但是没有出口/入口规则被匹配到，那么它的出口/入口流量是被禁止的
+只能指定规则来允许流量通行，而不能直接禁止流量通行
+NetworkPolicy 中的 Rule 之间的匹配逻辑是 OR
+NetworkPolicy 默认的作用域是 Pod 所在的 Namespace
+
+1、创建np.yaml
+apiVersion: networking.k8s.io/v1kind: NetworkPolicymetadata:  name: webapp-network-policy  namespace: defaultspec:  podSelector:    matchLabels:      name: webapp  policyTypes:  - Ingress  - Egress  ingress:  - &#123;&#125;  egress:  - to:    - ipBlock:        cidr: 0.0.0.0/0        except:         - 10.0.0.0/24
+
+这种实现方式，其实有一个问题，就是限流时不止限制了3306端口，还限制了 10.0.0.0/24 网段的所有端口。能不能只限制 10.0.0.0/24 网段的 3306 端口呢？理论上可以实现，然而我不会。。。
+2、执行限流
+kubectl apply -f np.yaml
+
+3、解除限流
+kubectl delete -f np.yaml
+
+pod特权模式限流1、在pod定义中添加：
+securityContext:  privileged: true  #runAsUser: 0
+
+2、在pod内部执行限流
+iptables -A OUTPUT -p tcp --dport 3306 -j DROP
+
+3、解除限流
+iptables -t nat -nL --line-numberiptables -D OUTPUT 1
+
+宿主机限流1、登录宿主机
+2、查找容器pid
+docker ps | grep webappdocker inspect &lt;container_id&gt; | grep pid -i
+
+3、执行限流
+nsenter -t &lt;pid&gt; -n iptables -A OUTPUT -p tcp --dport 3306 -j DROP
+
+4、解除限流
+nsenter -t &lt;pid&gt; -n iptables -t nat -nL --line-numbernsenter -t 8993 -n iptables -D OUTPUT 1
+
+
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>k8s</category>
+        <category>网络</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
+        <tag>网络</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>K8S集群中etcd备份和恢复</title>
+    <url>/dev-k8s-etcd-backup-restore/</url>
+    <content><![CDATA[前言就像备份数据库一样，很多时候，我们也想对k8s资源配置进行备份。
+kubectl get all --all-namespaces -o yaml &gt; all-deploy-services.yaml
+上面的方法，可以实现对k8s资源配置的备份。但是更好的办法，是对etcd进行备份。本文就学习一下k8s中etcd的备份和恢复方法。
+
+
+etcd集群状态HOST_1=10.240.0.17HOST_2=10.240.0.18HOST_3=10.240.0.19ENDPOINTS=$HOST_1:2379,$HOST_2:2379,$HOST_3:2379etcdctl --endpoints=$ENDPOINTS member listetcdctl --write-out=table --endpoints=$ENDPOINTS endpoint statusetcdctl --endpoints=$ENDPOINTS endpoint health
+
+备份1、查看配置
+kubectl describe pod etcd-master -n kube-system | grep Command -i -A 20
+看到Command字段为：
+Command:  etcd  --advertise-client-urls=https://172.17.0.10:2379  --cert-file=/etc/kubernetes/pki/etcd/server.crt  --client-cert-auth=true  --data-dir=/var/lib/etcd  --initial-advertise-peer-urls=https://172.17.0.10:2380  --initial-cluster=master=https://172.17.0.10:2380  --key-file=/etc/kubernetes/pki/etcd/server.key  --listen-client-urls=https://127.0.0.1:2379,https://172.17.0.10:2379  --listen-metrics-urls=http://127.0.0.1:2381  --listen-peer-urls=https://172.17.0.10:2380  --name=master  --peer-cert-file=/etc/kubernetes/pki/etcd/peer.crt  --peer-client-cert-auth=true  --peer-key-file=/etc/kubernetes/pki/etcd/peer.key  --peer-trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt  --snapshot-count=10000  --trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt
+
+或者查看/etc/kubernetes/manifests/etcd.yaml。
+2、执行备份
+ETCDCTL_API=3 etcdctl \--endpoints=https://[127.0.0.1]:2379 \--cacert=/etc/kubernetes/pki/etcd/ca.crt \--cert=/etc/kubernetes/pki/etcd/server.crt \--key=/etc/kubernetes/pki/etcd/server.key \snapshot save /tmp/snapshot-pre-boot.db
+
+3、查看备份
+ETCDCTL_API=3 etcdctl \--endpoints=https://[127.0.0.1]:2379 \--cacert=/etc/kubernetes/pki/etcd/ca.crt \--cert=/etc/kubernetes/pki/etcd/server.crt \--key=/etc/kubernetes/pki/etcd/server.key \snapshot status /tmp/snapshot-pre-boot.db -w table
+
+恢复1、恢复etcd数据
+ETCDCTL_API=3 etcdctl \--endpoints=https://[127.0.0.1]:2379 \--cacert=/etc/kubernetes/pki/etcd/ca.crt \--cert=/etc/kubernetes/pki/etcd/server.crt \--key=/etc/kubernetes/pki/etcd/server.key \--initial-cluster=master=https://127.0.0.1:2380 \--initial-cluster-token etcd-cluster-1 \--initial-advertise-peer-urls=https://127.0.0.1:2380 \--name=master \--data-dir /var/lib/etcd-from-backup \snapshot restore /tmp/snapshot-pre-boot.db
+
+2、修改etcd.yamlvim /etc/kubernetes/manifests/etcd.yaml，如下修改：
+# Update --data-dir to use new target location--data-dir=/var/lib/etcd-from-backup# Update new initial-cluster-token to specify new cluster--initial-cluster-token=etcd-cluster-1# Update volumes and volume mounts to point to new path    volumeMounts:    - mountPath: /var/lib/etcd-from-backup      name: etcd-data    - mountPath: /etc/kubernetes/pki/etcd      name: etcd-certs  hostNetwork: true  priorityClassName: system-cluster-critical  volumes:  - hostPath:      path: /var/lib/etcd-from-backup      type: DirectoryOrCreate    name: etcd-data  - hostPath:      path: /etc/kubernetes/pki/etcd      type: DirectoryOrCreate    name: etcd-certs]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>k8s</category>
+        <category>docker</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
+        <tag>docker</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用client-go操作K8S</title>
+    <url>/dev-k8s-client-go/</url>
+    <content><![CDATA[client-go简介直观上看，用户可以使用kubectl、客户端库或者REST请求来访问K8S API。而实际上，无论是kubectl还是客户端库，都是封装了REST请求的工具。client-go作为一个客户端库，能够调用K8S API，实现对K8S集群中资源对象（包括deployment、service、ingress、replicaSet、pod、namespace、node等）的增删改查等操作。源码地址：kubernetes/client-go接口文档：kubernetes - GoDoc
+
+
+通过REST访问K8S《K8S入门篇》一文中使用kubectl对minikube进行管理，本节中直接使用REST请求来对minikube进行管理。参考Access Clusters Using the Kubernetes API，来测试一下。
+kubectl处理API服务器的定位和身份验证。如果要使用curl或wget等http客户端或浏览器直接访问REST API，可以通过多种方式查找和验证API服务器：（1）在代理模式下运行kubectl（推荐）。建议使用此方法，因为它使用存储的apiserver位置并使用自签名证书验证API服务器的标识。使用此方法无法进行中间人（MITM）攻击。（2）直接向http客户端提供位置和凭据。这适用于被代理混淆的客户端代码。为了防止中间人攻击，需要将根证书导入浏览器。使用Go或Python客户端库可以在代理模式下访问kubectl。
+启动minikube，查看集群配置
+minikube startkubectl config view
+
+查看kubectl访问了什么url，获得了什么信息。
+kubectl get nodes -v=8kubectl get nodes -v=9
+
+kubectl代理模式充当反向代理模式下运行kubectl，它处理定位API服务器和进行身份验证。
+kubectl proxy --port=8080 &amp;curl http://localhost:8080/api/
+此时使用浏览器进行访问，同样可以拿到数据。
+grep/cut方法# Check all possible clusters, as you .KUBECONFIG may have multiple contexts:kubectl config view -o jsonpath='&#123;"Cluster name\tServer\n"&#125;&#123;range .clusters[*]&#125;&#123;.name&#125;&#123;"\t"&#125;&#123;.cluster.server&#125;&#123;"\n"&#125;&#123;end&#125;'# Select name of cluster you want to interact with from above output:# export CLUSTER_NAME="some_server_name"export CLUSTER_NAME="minikube"# Point to the API server refering the cluster nameAPISERVER=$(kubectl config view -o jsonpath="&#123;.clusters[?(@.name==\"$CLUSTER_NAME\")].cluster.server&#125;")# Gets the token valueTOKEN=$(kubectl get secrets -o jsonpath="&#123;.items[?(@.metadata.annotations['kubernetes\.io/service-account\.name']=='default')].data.token&#125;"|base64 -d)# Explore the API with TOKENcurl -X GET $APISERVER/api --header "Authorization: Bearer $TOKEN" --insecure
+
+
+jsonpath方法APISERVER=$(kubectl config view --minify -o jsonpath='&#123;.clusters[0].cluster.server&#125;')TOKEN=$(kubectl get secret $(kubectl get serviceaccount default -o jsonpath='&#123;.secrets[0].name&#125;') -o jsonpath='&#123;.data.token&#125;' | base64 --decode )curl $APISERVER/api --header "Authorization: Bearer $TOKEN" --insecure
+
+
+client-go操作K8Sclient-go实际上是封装了REST请求的客户端库，能够简化我们的工作。
+参考k8s-client-go项目，对k8s进行一些基本操作，包括连接k8s，创建更新deployment，查看deployment状态，查看pod状态等。在使用该项目之前，需要获取k8s集群的配置信息：kubectl config view把配置信息拷贝一下，粘贴到项目中的admin.conf文件中即可。
+此外，k8s-client-go项目依赖client-go，因此需要参考《Golang包管理工具》安装好依赖。
+后记本文中学习了client-go的安装方法，然后借助k8s-client-go项目学习了client-go的基本用法。接下来，使用client-go实现在K8S集群中发布项目，go！go！go！
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>k8s</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
+        <tag>golang</tag>
+        <tag>docker</tag>
+        <tag>client-go</tag>
+        <tag>kubectl</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>K-均值聚类迷你项目</title>
     <url>/dev-ml-k-means/</url>
     <content><![CDATA[项目简介在此项目中，我们会将 k-均值聚类应用于安然财务数据。当然，我们最终的目标是识别相关人员；既然我们有了已标记数据，调用 k-均值聚类这种非监督式方法就不成问题。
@@ -9205,116 +9393,6 @@ reg.fit(feature_test, target_test)plt.plot(feature_train, reg.predict(feature_tr
       </tags>
   </entry>
   <entry>
-    <title>Kubernetes Operator</title>
-    <url>/dev-k8s-operator/</url>
-    <content><![CDATA[Kubernetes Operator是啥？
-Operators are software extensions to Kubernetes that make use of custom resources to manage applications and their components. Operators follow Kubernetes principles, notably the control loop.
-
-Operator 是 Kubernetes 的扩展软件，通过自定义资源，管理应用及其组件。 Operator 遵循 Kubernetes 的理念，特别是在控制回路方面。
-Kubernetes自定义资源包括Custom resources 和 Custom controllers。
-Operator 模式旨在捕获（正在管理一个或一组服务的）运维人员的关键目标。负责特定应用和service的运维人员，在系统应该如何运行、如何部署以及出现问题时如何处理等方面有深入的了解。在 Kubernetes 上运行工作负载的人们都喜欢通过自动化来处理重复的任务。Operator 模式会封装我们编写的（Kubernetes 本身提供功能以外的）任务自动化代码。
-Operator可以自动化的事情包括：
-
-按需部署应用
-获取/还原应用状态的备份
-处理应用代码的升级以及相关改动。例如，数据库 schema 或额外的配置设置
-发布一个 service，要求不支持 Kubernetes API 的应用也能发现它
-模拟整个或部分集群中的故障以测试其稳定性
-在没有内部成员选举程序的情况下，为分布式应用选择首领角色
-
-简单来说，Kubernetes实际是期望状态管理器，如果Kubernetes本身提供的功能无法达到期望状态，特别是对于有状态应用，那么就需要手动处理，而Operator可以使这种处理自动化。
-更多内容，参考Operator 模式。
-本文中，将会学习编写一个Operator，并应用到k8s集群。
-
-
-工具Operator的yaml文件和go文件，可以纯手写，没毛病。但是使用工具能够提高我们的编写效率。编写Operator的工具有：
-
-KUDO，Kubernetes 通用声明式 Operator)
-kubebuilder
-Metacontroller，可与 Webhook 结合使用，以实现自己的功能。
-Operator Framework
-
-查找和分享Operator：OperatorHub
-Operator FrameworkOperator Framework是一个开源工具包，用来管理被称为operators的k8s应用程序，高效、自动化、可扩展。它的两个核心部分是Operator SDK 和 Operator Lifecycle Manager 。
-Operator SDK：允许开发人员根据专业知识来构建Operator，而无需了解Kubernetes API的复杂性。Operator Lifecycle Manager：帮助用户安装、更新和总体管理跨集群运行的所有Operators（及其相关服务）的生命周期。
-在开发机上安装Operator SDK，在集群中安装Operator Operator Lifecycle Manager。
-对于这两个组件，可以在katacoda上试玩，熟悉它们的安装和使用，Building Operators on OpenShift。
-第一个Operator参考Kubernetes Operator 快速入门教程，使用Operator Framework开发一个Operator应用，代码仓库cnych/opdemo。
-书签Introducing Operators: Putting Operational Knowledge into SoftwareBest practices for building Kubernetes Operators and stateful apps揭秘Kubernetes Operator（一）第一次玩 operator-sdk 就上手
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>k8s</category>
-      </categories>
-      <tags>
-        <tag>k8s</tag>
-        <tag>源码</tag>
-        <tag>golang</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>K8S中的网络策略</title>
-    <url>/dev-k8s-network-policy/</url>
-    <content><![CDATA[怎样限制Pod中的网络流量？已知pod名为 webapp ，label为 name=webapp 。现在想要模拟无法访问数据库，限制它的流量，禁止它访问 10.0.0.0/24 网段的所有3306端口，该怎么实现？
-方法一：使用NetworkPolicy限流方法二：开启pod特权模式，在pod内部使用iptables限流方法三：登录pod所在宿主机，在pod所在ns中使用iptables限流
-
-
-NetworkPolicy网络策略（NetworkPolicy）是一种关于 Pod 间及与其他网络端点间所允许的通信规则的规范。NetworkPolicy 资源使用 标签 选择 Pod，并定义选定 Pod 所允许的通信规则。
-网络策略通过网络插件来实现。要使用网络策略，用户必须使用支持 NetworkPolicy 的网络解决方案。创建一个资源对象，而没有控制器来使它生效的话，是没有任何作用的。
-默认情况下，Pod 是非隔离的，它们接受任何来源的流量。Pod 可以通过相关的网络策略进行隔离。一旦命名空间中有网络策略选择了特定的 Pod，该 Pod 会拒绝网络策略所不允许的连接。 (命名空间下其他未被网络策略所选择的 Pod 会继续接收所有的流量)网络策略不会冲突，它们是附加的。如果任何一个或多个策略选择了一个 Pod, 则该 Pod 受限于这些策略的 ingress/egress 规则的并集。因此评估的顺序并不会影响策略的结果。
-更多内容参考网络策略和NetworkPolicy最佳实践。
-基础规则：
-
-如果 Pod 没有被 NetworkPolicy 匹配到，那么它的流量是被允许的 
-如果 Pod 被 NetworkPolicy 匹配到，但是没有出口/入口规则被匹配到，那么它的出口/入口流量是被禁止的
-只能指定规则来允许流量通行，而不能直接禁止流量通行
-NetworkPolicy 中的 Rule 之间的匹配逻辑是 OR
-NetworkPolicy 默认的作用域是 Pod 所在的 Namespace
-
-1、创建np.yaml
-apiVersion: networking.k8s.io/v1kind: NetworkPolicymetadata:  name: webapp-network-policy  namespace: defaultspec:  podSelector:    matchLabels:      name: webapp  policyTypes:  - Ingress  - Egress  ingress:  - &#123;&#125;  egress:  - to:    - ipBlock:        cidr: 0.0.0.0/0        except:         - 10.0.0.0/24
-
-这种实现方式，其实有一个问题，就是限流时不止限制了3306端口，还限制了 10.0.0.0/24 网段的所有端口。能不能只限制 10.0.0.0/24 网段的 3306 端口呢？理论上可以实现，然而我不会。。。
-2、执行限流
-kubectl apply -f np.yaml
-
-3、解除限流
-kubectl delete -f np.yaml
-
-pod特权模式限流1、在pod定义中添加：
-securityContext:  privileged: true  #runAsUser: 0
-
-2、在pod内部执行限流
-iptables -A OUTPUT -p tcp --dport 3306 -j DROP
-
-3、解除限流
-iptables -t nat -nL --line-numberiptables -D OUTPUT 1
-
-宿主机限流1、登录宿主机
-2、查找容器pid
-docker ps | grep webappdocker inspect &lt;container_id&gt; | grep pid -i
-
-3、执行限流
-nsenter -t &lt;pid&gt; -n iptables -A OUTPUT -p tcp --dport 3306 -j DROP
-
-4、解除限流
-nsenter -t &lt;pid&gt; -n iptables -t nat -nL --line-numbernsenter -t 8993 -n iptables -D OUTPUT 1
-
-
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>k8s</category>
-        <category>网络</category>
-      </categories>
-      <tags>
-        <tag>k8s</tag>
-        <tag>网络</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>SVM迷你项目</title>
     <url>/dev-ml-svm/</url>
     <content><![CDATA[项目背景在此迷你项目中，我们将解决与朴素贝叶斯迷你项目相同的电子邮件作者 ID 问题，不同的是我们将运用 SVM。我们的研究结果将阐明两种算法之间的一些实际差异。此项目还向我们提供比朴素贝叶斯更多的机会来使用参数，因此我们也将这样做。
@@ -9375,44 +9453,6 @@ training time: 137.599 s877
       <tags>
         <tag>转载</tag>
         <tag>机器学习</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>K8S集群中etcd备份和恢复</title>
-    <url>/dev-k8s-etcd-backup-restore/</url>
-    <content><![CDATA[前言就像备份数据库一样，很多时候，我们也想对k8s资源配置进行备份。
-kubectl get all --all-namespaces -o yaml &gt; all-deploy-services.yaml
-上面的方法，可以实现对k8s资源配置的备份。但是更好的办法，是对etcd进行备份。本文就学习一下k8s中etcd的备份和恢复方法。
-
-
-etcd集群状态HOST_1=10.240.0.17HOST_2=10.240.0.18HOST_3=10.240.0.19ENDPOINTS=$HOST_1:2379,$HOST_2:2379,$HOST_3:2379etcdctl --endpoints=$ENDPOINTS member listetcdctl --write-out=table --endpoints=$ENDPOINTS endpoint statusetcdctl --endpoints=$ENDPOINTS endpoint health
-
-备份1、查看配置
-kubectl describe pod etcd-master -n kube-system | grep Command -i -A 20
-看到Command字段为：
-Command:  etcd  --advertise-client-urls=https://172.17.0.10:2379  --cert-file=/etc/kubernetes/pki/etcd/server.crt  --client-cert-auth=true  --data-dir=/var/lib/etcd  --initial-advertise-peer-urls=https://172.17.0.10:2380  --initial-cluster=master=https://172.17.0.10:2380  --key-file=/etc/kubernetes/pki/etcd/server.key  --listen-client-urls=https://127.0.0.1:2379,https://172.17.0.10:2379  --listen-metrics-urls=http://127.0.0.1:2381  --listen-peer-urls=https://172.17.0.10:2380  --name=master  --peer-cert-file=/etc/kubernetes/pki/etcd/peer.crt  --peer-client-cert-auth=true  --peer-key-file=/etc/kubernetes/pki/etcd/peer.key  --peer-trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt  --snapshot-count=10000  --trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt
-
-或者查看/etc/kubernetes/manifests/etcd.yaml。
-2、执行备份
-ETCDCTL_API=3 etcdctl \--endpoints=https://[127.0.0.1]:2379 \--cacert=/etc/kubernetes/pki/etcd/ca.crt \--cert=/etc/kubernetes/pki/etcd/server.crt \--key=/etc/kubernetes/pki/etcd/server.key \snapshot save /tmp/snapshot-pre-boot.db
-
-3、查看备份
-ETCDCTL_API=3 etcdctl \--endpoints=https://[127.0.0.1]:2379 \--cacert=/etc/kubernetes/pki/etcd/ca.crt \--cert=/etc/kubernetes/pki/etcd/server.crt \--key=/etc/kubernetes/pki/etcd/server.key \snapshot status /tmp/snapshot-pre-boot.db -w table
-
-恢复1、恢复etcd数据
-ETCDCTL_API=3 etcdctl \--endpoints=https://[127.0.0.1]:2379 \--cacert=/etc/kubernetes/pki/etcd/ca.crt \--cert=/etc/kubernetes/pki/etcd/server.crt \--key=/etc/kubernetes/pki/etcd/server.key \--initial-cluster=master=https://127.0.0.1:2380 \--initial-cluster-token etcd-cluster-1 \--initial-advertise-peer-urls=https://127.0.0.1:2380 \--name=master \--data-dir /var/lib/etcd-from-backup \snapshot restore /tmp/snapshot-pre-boot.db
-
-2、修改etcd.yamlvim /etc/kubernetes/manifests/etcd.yaml，如下修改：
-# Update --data-dir to use new target location--data-dir=/var/lib/etcd-from-backup# Update new initial-cluster-token to specify new cluster--initial-cluster-token=etcd-cluster-1# Update volumes and volume mounts to point to new path    volumeMounts:    - mountPath: /var/lib/etcd-from-backup      name: etcd-data    - mountPath: /etc/kubernetes/pki/etcd      name: etcd-certs  hostNetwork: true  priorityClassName: system-cluster-critical  volumes:  - hostPath:      path: /var/lib/etcd-from-backup      type: DirectoryOrCreate    name: etcd-data  - hostPath:      path: /etc/kubernetes/pki/etcd      type: DirectoryOrCreate    name: etcd-certs]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>k8s</category>
-        <category>docker</category>
-      </categories>
-      <tags>
-        <tag>k8s</tag>
-        <tag>docker</tag>
       </tags>
   </entry>
   <entry>
@@ -11085,6 +11125,52 @@ anaconda配置使用conda config --add channels https://mirrors.tuna.tsinghua.ed
       </tags>
   </entry>
   <entry>
+    <title>Prometheus Blackbox exporter</title>
+    <url>/dev-prometheus-blackbox-exporter/</url>
+    <content><![CDATA[白盒监控和黑盒监控我们监控主机的资源用量、容器的运行状态、数据库中间件的运行数据。这些都是支持业务和服务的基础设施，通过白盒能够了解其内部的实际运行状态，通过对监控指标的观察能够预判可能出现的问题，从而对潜在的不确定因素进行优化。而从完整的监控逻辑的角度，除了大量的应用白盒监控以外，还应该添加适当的黑盒监控。黑盒监控即以用户的身份测试服务的外部可见性，常见的黑盒监控包括HTTP探针、TCP探针等用于检测站点或者服务的可访问性，以及访问效率等。
+黑盒监控相较于白盒监控最大的不同在于黑盒监控是以故障为导向当故障发生时，黑盒监控能快速发现故障，而白盒监控则侧重于主动发现或者预测潜在的问题。一个完善的监控目标是要能够从白盒的角度发现潜在问题，能够在黑盒的角度快速发现已经发生的问题。
+Prometheus Blackbox exporter允许通过HTTP，HTTPS，DNS，TCP和ICMP对端点进行黑盒探测。
+更多内容，参考网络探测：Blackbox Exporter 和 prometheus/blackbox_exporter。
+本文中，我们会安装blackbox exporter，并且使用http探针对一些接口进行探活。
+
+
+安装使用blackbox exporterblackbox exporter的常规安装使用方法有三种：直接使用二进制文件、使用docker image、编译安装。这里我们选择使用docker image的方式来进行安装，默认已经安装了docker。
+1、创建配置文件blackbox.yml
+modules:  http_2xx:    prober: http    http:      method: GET      preferred_ip_protocol: "ip4"  http_post_2xx:    prober: http    http:      method: POST      preferred_ip_protocol: "ip4"  tcp:    prober: tcp  ping:    prober: icmp    timeout: 3s    icmp:      preferred_ip_protocol: "ip4"  dns_baidu:    prober: dns    timeout: 5s    dns:      query_name: "baidu.com"      query_type: "A"      preferred_ip_protocol: "ip4"
+探测时默认使用ipv6，探测不支持ipv6的站点都会显示失败，因此在配置时改成了ipv4，更多内容参考UNDERSTANDING AND USING THE MULTI-TARGET EXPORTER PATTERN。
+2、启动blackbox exporter
+docker run --name blackbox-exporter -d \-p 9115:9115  \-v `pwd`:/config \prom/blackbox-exporter:v0.16.0 --config.file=/config/blackbox.yml
+
+3、测试
+curl "http://127.0.0.1:9115/probe?module=http_2xx&amp;target=baidu.com"curl "http://127.0.0.1:9115/probe?module=http_post_2xx&amp;target=baidu.com"curl "http://127.0.0.1:9115/probe?module=tcp&amp;target=baidu.com:80"curl "http://127.0.0.1:9115/probe?module=ping&amp;target=baidu.com"curl "http://127.0.0.1:9115/probe?module=dns_baidu&amp;target=180.76.76.76"
+从返回的样本中，可以获取站点的DNS解析耗时、站点响应时间、HTTP响应状态码等等和站点访问质量相关的监控指标，从而帮助管理员主动的发现故障和问题。
+与prometheus集成紧接着《使用Docker安装配置Prometheus》，当前prometheus.yml配置内容为：
+global:  scrape_interval: 15s #默认采集监控数据时间间隔  external_labels:    monitor: 'my-monitor'scrape_configs:  #监控对象设置  - job_name: prometheus #任务名称    scrape_interval: 5s #每隔5s获取一次监控数据    static_configs: #监控对象地址      - targets: ['127.0.0.1:9090']  # 将自己加入到监控对象中      - targets: ['192.168.56.102:9100']        labels:          group: 'client-node-exporter'      - targets: ['192.168.56.102:9091']        labels:          group: 'pushgateway'rule_files:  - /etc/prometheus/rules.yml   #告警规则文件路径alerting:   #告警管理器设置  alertmanagers:    - static_configs:      - targets: ['192.168.56.102:9093'] #告警信息会发送给alertmanager进一步处理
+
+简单配置修改prometheus.yml，添加blackbox exporter相关字段。
+- job_name: baidu_http2xx_probe  params:    module:    - http_2xx    target:    - baidu.com  metrics_path: /probe  static_configs:  - targets:    - 127.0.0.1:9115- job_name: prometheus_http2xx_probe  params:    module:    - http_2xx    target:    - prometheus.io  metrics_path: /probe  static_configs:  - targets:    - 127.0.0.1:9115
+这里分别配置了名为baidu_http2x_probe和prometheus_http2xx_probe的采集任务，并且通过params指定使用的探针（module）以及探测目标（target）。
+高级配置以上配置会有一个问题，假如我们有N个目标站点且都需要M种探测方式，那么Prometheus中将包含N * M 个采集任务，从配置管理的角度来说显然是不可接受的。这里我们利用Prometheus的Relabeling方式对这些配置进行简化，配置方式如下：
+scrape_configs:  #监控对象设置  - job_name: prometheus #任务名称    scrape_interval: 5s #每隔5s获取一次监控数据    static_configs: #监控对象地址      - targets: ['127.0.0.1:9090']  # 将自己加入到监控对象中      - targets: ['192.168.56.102:9100']        labels:          group: 'client-node-exporter'      - targets: ['192.168.56.102:9091']        labels:          group: 'pushgateway'      - targets: ['192.168.56.102:9115']  - job_name: 'blackbox'    metrics_path: /probe    params:      module: [http_2xx]    static_configs:      - targets:        - http://prometheus.io    # Target to probe with http.        - https://prometheus.io   # Target to probe with https.        - http://example.com:8080 # Target to probe with http on port 8080.    relabel_configs:      - source_labels: [__address__]        target_label: __param_target      - source_labels: [__param_target]        target_label: instance      - target_label: __address__        replacement: 192.168.56.102:9115 # The blackbox exporter's real hostname:port.
+
+这里针对每一个探针服务（如http_2xx）定义一个采集任务，并且直接将任务的采集目标定义为我们需要探测的站点。在采集样本数据之前通过relabel_configs对采集任务进行动态设置。
+上面的配置，实际上相当于：
+curl "http://192.168.56.102:9115/probe?module=http_2xx&amp;target=http://prometheus.io"curl "http://192.168.56.102:9115/probe?module=http_2xx&amp;target=https://prometheus.io"curl "http://192.168.56.102:9115/probe?module=http_2xx&amp;target=http://example.com:8080"
+
+这个配置实际上是很奇怪的，因为第一个job中 static_configs.targets 代表的是用来exporter对外暴露的接口，第二个job中 static_configs.targets 却代表blackbox要探测的站点。而且第二个job的 relabel_configs.replacement 居然用来指定blackbox的url，我也是服气了，说好的用来替换标签值的呢？
+重启prometheus，然后进行验证：（1）访问blackbox-exporter页面，可以看到探测记录的日志。（2）访问prometheus的target页面，即可看到blackbox-exporter。（3）访问prometheus的graph页面，可以查看blackbox-exporter指标。 &#123;job=~"blackbox",__name__!~"^go.*"&#125;
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>监控</category>
+      </categories>
+      <tags>
+        <tag>监控</tag>
+        <tag>prometheus</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>PostgreSQL入门篇</title>
     <url>/dev-postgresql-start/</url>
     <content><![CDATA[PostgreSQL简介
@@ -11143,52 +11229,6 @@ yum list | grep postgresqlyum install postgresql.x86_64psql -U postgres -h local
         <tag>k8s</tag>
         <tag>数据库</tag>
         <tag>docker</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Prometheus Blackbox exporter</title>
-    <url>/dev-prometheus-blackbox-exporter/</url>
-    <content><![CDATA[白盒监控和黑盒监控我们监控主机的资源用量、容器的运行状态、数据库中间件的运行数据。这些都是支持业务和服务的基础设施，通过白盒能够了解其内部的实际运行状态，通过对监控指标的观察能够预判可能出现的问题，从而对潜在的不确定因素进行优化。而从完整的监控逻辑的角度，除了大量的应用白盒监控以外，还应该添加适当的黑盒监控。黑盒监控即以用户的身份测试服务的外部可见性，常见的黑盒监控包括HTTP探针、TCP探针等用于检测站点或者服务的可访问性，以及访问效率等。
-黑盒监控相较于白盒监控最大的不同在于黑盒监控是以故障为导向当故障发生时，黑盒监控能快速发现故障，而白盒监控则侧重于主动发现或者预测潜在的问题。一个完善的监控目标是要能够从白盒的角度发现潜在问题，能够在黑盒的角度快速发现已经发生的问题。
-Prometheus Blackbox exporter允许通过HTTP，HTTPS，DNS，TCP和ICMP对端点进行黑盒探测。
-更多内容，参考网络探测：Blackbox Exporter 和 prometheus/blackbox_exporter。
-本文中，我们会安装blackbox exporter，并且使用http探针对一些接口进行探活。
-
-
-安装使用blackbox exporterblackbox exporter的常规安装使用方法有三种：直接使用二进制文件、使用docker image、编译安装。这里我们选择使用docker image的方式来进行安装，默认已经安装了docker。
-1、创建配置文件blackbox.yml
-modules:  http_2xx:    prober: http    http:      method: GET      preferred_ip_protocol: "ip4"  http_post_2xx:    prober: http    http:      method: POST      preferred_ip_protocol: "ip4"  tcp:    prober: tcp  ping:    prober: icmp    timeout: 3s    icmp:      preferred_ip_protocol: "ip4"  dns_baidu:    prober: dns    timeout: 5s    dns:      query_name: "baidu.com"      query_type: "A"      preferred_ip_protocol: "ip4"
-探测时默认使用ipv6，探测不支持ipv6的站点都会显示失败，因此在配置时改成了ipv4，更多内容参考UNDERSTANDING AND USING THE MULTI-TARGET EXPORTER PATTERN。
-2、启动blackbox exporter
-docker run --name blackbox-exporter -d \-p 9115:9115  \-v `pwd`:/config \prom/blackbox-exporter:v0.16.0 --config.file=/config/blackbox.yml
-
-3、测试
-curl "http://127.0.0.1:9115/probe?module=http_2xx&amp;target=baidu.com"curl "http://127.0.0.1:9115/probe?module=http_post_2xx&amp;target=baidu.com"curl "http://127.0.0.1:9115/probe?module=tcp&amp;target=baidu.com:80"curl "http://127.0.0.1:9115/probe?module=ping&amp;target=baidu.com"curl "http://127.0.0.1:9115/probe?module=dns_baidu&amp;target=180.76.76.76"
-从返回的样本中，可以获取站点的DNS解析耗时、站点响应时间、HTTP响应状态码等等和站点访问质量相关的监控指标，从而帮助管理员主动的发现故障和问题。
-与prometheus集成紧接着《使用Docker安装配置Prometheus》，当前prometheus.yml配置内容为：
-global:  scrape_interval: 15s #默认采集监控数据时间间隔  external_labels:    monitor: 'my-monitor'scrape_configs:  #监控对象设置  - job_name: prometheus #任务名称    scrape_interval: 5s #每隔5s获取一次监控数据    static_configs: #监控对象地址      - targets: ['127.0.0.1:9090']  # 将自己加入到监控对象中      - targets: ['192.168.56.102:9100']        labels:          group: 'client-node-exporter'      - targets: ['192.168.56.102:9091']        labels:          group: 'pushgateway'rule_files:  - /etc/prometheus/rules.yml   #告警规则文件路径alerting:   #告警管理器设置  alertmanagers:    - static_configs:      - targets: ['192.168.56.102:9093'] #告警信息会发送给alertmanager进一步处理
-
-简单配置修改prometheus.yml，添加blackbox exporter相关字段。
-- job_name: baidu_http2xx_probe  params:    module:    - http_2xx    target:    - baidu.com  metrics_path: /probe  static_configs:  - targets:    - 127.0.0.1:9115- job_name: prometheus_http2xx_probe  params:    module:    - http_2xx    target:    - prometheus.io  metrics_path: /probe  static_configs:  - targets:    - 127.0.0.1:9115
-这里分别配置了名为baidu_http2x_probe和prometheus_http2xx_probe的采集任务，并且通过params指定使用的探针（module）以及探测目标（target）。
-高级配置以上配置会有一个问题，假如我们有N个目标站点且都需要M种探测方式，那么Prometheus中将包含N * M 个采集任务，从配置管理的角度来说显然是不可接受的。这里我们利用Prometheus的Relabeling方式对这些配置进行简化，配置方式如下：
-scrape_configs:  #监控对象设置  - job_name: prometheus #任务名称    scrape_interval: 5s #每隔5s获取一次监控数据    static_configs: #监控对象地址      - targets: ['127.0.0.1:9090']  # 将自己加入到监控对象中      - targets: ['192.168.56.102:9100']        labels:          group: 'client-node-exporter'      - targets: ['192.168.56.102:9091']        labels:          group: 'pushgateway'      - targets: ['192.168.56.102:9115']  - job_name: 'blackbox'    metrics_path: /probe    params:      module: [http_2xx]    static_configs:      - targets:        - http://prometheus.io    # Target to probe with http.        - https://prometheus.io   # Target to probe with https.        - http://example.com:8080 # Target to probe with http on port 8080.    relabel_configs:      - source_labels: [__address__]        target_label: __param_target      - source_labels: [__param_target]        target_label: instance      - target_label: __address__        replacement: 192.168.56.102:9115 # The blackbox exporter's real hostname:port.
-
-这里针对每一个探针服务（如http_2xx）定义一个采集任务，并且直接将任务的采集目标定义为我们需要探测的站点。在采集样本数据之前通过relabel_configs对采集任务进行动态设置。
-上面的配置，实际上相当于：
-curl "http://192.168.56.102:9115/probe?module=http_2xx&amp;target=http://prometheus.io"curl "http://192.168.56.102:9115/probe?module=http_2xx&amp;target=https://prometheus.io"curl "http://192.168.56.102:9115/probe?module=http_2xx&amp;target=http://example.com:8080"
-
-这个配置实际上是很奇怪的，因为第一个job中 static_configs.targets 代表的是用来exporter对外暴露的接口，第二个job中 static_configs.targets 却代表blackbox要探测的站点。而且第二个job的 relabel_configs.replacement 居然用来指定blackbox的url，我也是服气了，说好的用来替换标签值的呢？
-重启prometheus，然后进行验证：（1）访问blackbox-exporter页面，可以看到探测记录的日志。（2）访问prometheus的target页面，即可看到blackbox-exporter。（3）访问prometheus的graph页面，可以查看blackbox-exporter指标。 &#123;job=~"blackbox",__name__!~"^go.*"&#125;
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>监控</category>
-      </categories>
-      <tags>
-        <tag>监控</tag>
-        <tag>prometheus</tag>
       </tags>
   </entry>
   <entry>
@@ -15164,26 +15204,171 @@ java基础看完。23种设计模式junit或者testng单元测试hudson集成测
       </tags>
   </entry>
   <entry>
-    <title>原来这才是结局</title>
-    <url>/essay-kaoyan-final-result/</url>
-    <content><![CDATA[
-生活就像盒子里的巧克力糖，你永远不知道下一颗会是什么味道。——阿甘
-
-15年02月13日，决定考研，寻找资料，制定计划。
-15年12月27日，考研失利，自知无望，找工作。
-16年01月18日，入职艾佳，满意的工作，可爱的伙伴。
-16年03月11日，兄弟告知，超过国家线16分，抓紧调剂。
-16年03月18日，最终决定，参与调剂，填下了调剂志愿，写了封自荐信。
+    <title>考研计划表（第二版）</title>
+    <url>/essay-kaoyan-plan-2/</url>
+    <content><![CDATA[前言寒假里，没怎么学习，计划形同于无；开学之后，一直到4月中旬，大部分时间都在学车；之后，休息娱乐，作业实验，生病挂水，转眼到了5月。是时候全力准备考研了，根据现在的生活学习状态，更新一下考研计划表。
+2016年考研时间为：12月26日和12月27日，距离今天还有237天。
+237天，分成了几个阶段。每个阶段，以周为单位轮回。每周，周日到周五，学习日；周六，休息日。学习日，7:00起床，整天学习一门课，直到18:00；18:00到20:30，写日记和学习专业课；20:30开始健身，一小时左右；之后是自由时间；22:30到23:00关机上床。休息日，自由时间。
 
 
-16年03月19日，收到通知，内大复试，爸妈反对，否。
-16年03月25日，收到通知，东北师大复试，决心前往。
-16年03月30日，飞往长春，陌生的天空，熟悉亲切的东北味，依稀记起某一年赵本山的小品。灰色的主色调，仿佛再次回到冬天。没有下雪，也很温暖，但是脑海忍不住浮现一句话：南国花开，北国雪飘。误打误撞，走了最实惠最舒适的路线，连高德都不知道，lucky！
-16年03月31日，专业笔试，发挥一般，很久没碰C++，忘记太多。
-16年04月01日，英语面试，专业面试，只记得当时很紧张，英语自我介绍停顿一次，翻译完跪，三个专业问题答出来两个。浑浑噩噩回到宾馆，不停回想面试的细节，最终甩甩脑袋，多想无用，静待结果吧。。。一个小时后，收到待录取通知，点击“接受”的瞬间，对世界充满感激。
-16年04月04日，回想考研，一路波折，写点什么吧，仅此纪念一年多的考研历程。
-三年研究生，比预想多一年。三年，成长为理想中的自己！
-最后，感谢江淮，一个比我自己还关心我的调剂的好兄弟！
+规定休息时间：无论什么时候，睡觉都是头等大事，可以抢占其他计划的时间。
+学习时间：周日到周五的7:00到21:30。使用手机只可以背单词，使用平板只可以阅读专业书籍，使用电脑只可以写代码写博客。（PS：学习时间包括上课时间）
+上课时间：背单词、阅读专业书籍、写代码写博客、听课、复习考研，视心情而定。
+自由时间：周日到周五的21:30到22:30，周六全天。洗漱、洗澡、洗衣服、打电话、阅读纸质书籍、听歌、飞车、睡觉，视心情而定。
+
+5月3~6月20
+
+
+政
+英
+数
+
+
+
+0
+3
+3
+
+
+
+
+
+周日
+周一
+周二
+周三
+周四
+周五
+周六
+
+
+
+数
+英
+数
+英
+数
+英
+休
+
+
+
+6月21~8月30
+
+
+政
+英
+数
+
+
+
+1
+2
+3
+
+
+
+
+
+周日
+周一
+周二
+周三
+周四
+周五
+周六
+
+
+
+数
+英
+数
+英
+数
+政
+休
+
+
+
+8月31~10月30
+
+
+政
+英
+数
+
+
+
+2
+2
+2
+
+
+
+
+
+周日
+周一
+周二
+周三
+周四
+周五
+周六
+
+
+
+数
+英
+数
+英
+政
+政
+休
+
+
+
+11月1~12月20
+
+
+政
+英
+数
+弱
+
+
+
+1
+1
+1
+3
+
+
+
+
+
+周日
+周一
+周二
+周三
+周四
+周五
+周六
+
+
+
+数
+英
+政
+弱
+弱
+弱
+休
+
+
+
+12月21~12月26考前调整，自由复习。
+
+后记备考过程中，2016年6月20日，六级考试，顺路考过！计划不是限制，执行过程中根据情况调整，效率至上。
 ]]></content>
       <categories>
         <category>随笔</category>
@@ -16784,6 +16969,324 @@ ROM是只读内存（Read-Only Memory）的简称，是一种只能读出事先�
       </tags>
   </entry>
   <entry>
+    <title>考研计划表</title>
+    <url>/essay-kaoyan-plan-1/</url>
+    <content><![CDATA[前言2016年考研时间为：12月26日和12月27日，距离今天还有312天。
+312天，分成了几个阶段。每个阶段，以周为单位轮回。每周，周一到周六，学习日；周日，休息日。学习日，早上7点起床，整天学习一门课，直到晚上8点；休息日，学习与否随意。每天晚上，8点开始背单词，半小时到一小时；之后学习与否随意；10点半到11点关机上床。
+
+2月17~3月1
+
+
+政
+英
+数
+专
+
+
+
+0
+6
+0
+0
+
+
+
+
+
+周日
+周一
+周二
+周三
+周四
+周五
+周六
+
+
+
+休
+英
+英
+英
+英
+英
+英
+
+
+
+
+
+
+
+
+
+
+
+——
+
+
+
+
+
+
+
+
+### 3月2~6月20
+
+
+
+
+
+
+
+
+政
+英
+数
+专
+
+
+
+
+
+:—-:
+:—-:
+:—-:
+:—-:
+
+
+
+
+
+0
+3
+2
+1
+
+
+
+
+
+
+
+
+周日
+周一
+周二
+周三
+周四
+周五
+周六
+
+
+
+休
+英
+数
+英
+数
+英
+专
+
+
+
+6月21~8月30
+
+
+政
+英
+数
+专
+
+
+
+1
+1
+2
+2
+
+
+
+
+
+周日
+周一
+周二
+周三
+周四
+周五
+周六
+
+
+
+休
+政
+英
+数
+专
+数
+专
+
+
+
+8月31~10月30
+
+
+政
+英
+数
+专
+
+
+
+2
+1
+1
+2
+
+
+
+
+
+周日
+周一
+周二
+周三
+周四
+周五
+周六
+
+
+
+休
+政
+专
+政
+专
+英
+数
+
+
+
+11月1~12月20
+
+
+政
+英
+数
+专
+弱
+
+
+
+1
+1
+1
+1
+2
+
+
+
+
+
+周日
+周一
+周二
+周三
+周四
+周五
+周六
+
+
+
+休
+政
+英
+数
+专
+弱
+弱
+
+
+
+12月21~12月26考前调整，自由复习。
+
+后记备考过程中，2016年6月20日，六级考试，顺路考过！计划不是限制，执行过程中根据情况调整，效率至上。
+]]></content>
+      <categories>
+        <category>随笔</category>
+      </categories>
+      <tags>
+        <tag>考研</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>考研资料</title>
+    <url>/essay-kaoyan-material/</url>
+    <content><![CDATA[前言考研资料浩如烟海，找到适合自己的资料，学习起来必定事半功倍。为了搜集信息、寻找资料，小编昨晚居然失眠了，凌晨四点左右还没有入睡。看到各位前辈的考研经验，心中升起了万丈豪情——哥也可以！！！
+
+考试科目①101 思想政治理论②204 英语二③302 数学二④842 数据结构、软件工程、操作系统和计算机网络
+复试科目:3203 复试：笔试：数据库、上机：Java程序设计上机；面试：专业综合、英语口语
+
+参考书目初试参考书目：《数据结构与算法分析：Java语言描述》（英文版），第2版，机械工业出版社；《软件工程与计算：软件开发的技术基础》，骆斌主编、丁二玉、刘钦编著，机械工业出版社；《操作系统教程》（第五版），费翔林、骆斌编著，高等教育出版社；《思科网络技术学院教程CCNA（1、2，3学期）》，人民邮电出版社。
+复试参考书目：《数据库：原理编程与性能》（影印版）（第2版）奥尼尔著，高等教育出版社；《软件工程与计算：软件开发的编程基础》，骆斌主编、邵栋、任桐炜编著，机械工业出版社。
+
+
+政治教科书：无
+辅导书：《全国硕士研究生入学统一考试:思想政治理论考试大纲解析》《肖秀荣考研政治命题人讲真题》，北京航空航天大学出版社.《肖秀荣考研政治1000题》，北京航空航天大学出版社.《肖秀荣考研政治知识点精讲精练》，北京航空航天大学出版社.《肖秀荣考研政治命题人冲刺8套卷》，北京航空航天大学出版社.《肖秀荣考研政治命题人终极预测4套卷》，北京航空航天大学出版社.《风中劲草核心考点考题》
+
+英语二教科书：无.
+辅导书：《考研英语词汇 乱序版》，俞敏洪，北京语言大学出版社.《新编考研英语阅读理解150篇》，张健，世纪高教编辑部,世界图书出版社.《历年考研英语真题解析及复习思路》，张健，世纪高教编辑部,世界图书出版社.
+
+数学二教科书：《高等数学 第六版》上下，同济大学数学系，高等教育出版社.《工程数学 线性代数 第五版》，同济大学数学系，高等教育出版社.《概率论与数理统计 第四版》，浙江大学，高等教育出版社.
+辅导书：《李永乐考研数学复习全书》，国家行政学院出版社.《李永乐数学基础过关660题》，国家行政学院出版社.《李永乐数学历年真题权威解析》，国家行政学院出版社.《张宇高等数学18讲》，北京理工大学出版社.《张宇线性代数9讲》，北京理工大学出版社.《张宇概率论与数理统计9讲》，北京理工大学出版社.《张宇考研数学题源探析经典1000题》，北京理工大学出版社.《张宇考研数学命题人终极预测8套卷》，北京理工大学出版社.《张宇考研数学命题人最后4套卷》，北京理工大学出版社.
+
+专业课教科书：《数据结构与算法分析：Java语言描述》（英文版），第2版，机械工业出版社；《软件工程与计算：软件开发的技术基础》，骆斌主编、丁二玉、刘钦编著，机械工业出版社；《操作系统教程》（第五版），费翔林、骆斌编著，高等教育出版社；《思科网络技术学院教程CCNA（1、2，3学期）》，人民邮电出版社。
+辅导书：《王道操作系统》《王道论坛真题精析》
+历年真题试题范围：南大所有专业近4-11年的考研（博）原版真题试卷（已有11年博士和硕士试卷），相关笔记，讲义和教材
+购买地点：南大鼓楼校区逸夫管理科学楼十楼图书馆复印室
+南大考研（博）试卷资料复印时间（除下面规定时间外其它时间不提供）：每周一至周六（周三除外）下午2：30—3：30；周日全天上午8：30—下午4：00（节假日不休），其他时间需要试卷可以电话联系，外地办理邮购服务。
+联系电话： 13813989681（建议短信联系）  南大陈老师
+
+小结以上的考研资料不限于数学二、英语二，其他科目同样可以参考。
+]]></content>
+      <categories>
+        <category>随笔</category>
+      </categories>
+      <tags>
+        <tag>随笔</tag>
+        <tag>考研</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>原来这才是结局</title>
+    <url>/essay-kaoyan-final-result/</url>
+    <content><![CDATA[
+生活就像盒子里的巧克力糖，你永远不知道下一颗会是什么味道。——阿甘
+
+15年02月13日，决定考研，寻找资料，制定计划。
+15年12月27日，考研失利，自知无望，找工作。
+16年01月18日，入职艾佳，满意的工作，可爱的伙伴。
+16年03月11日，兄弟告知，超过国家线16分，抓紧调剂。
+16年03月18日，最终决定，参与调剂，填下了调剂志愿，写了封自荐信。
+
+
+16年03月19日，收到通知，内大复试，爸妈反对，否。
+16年03月25日，收到通知，东北师大复试，决心前往。
+16年03月30日，飞往长春，陌生的天空，熟悉亲切的东北味，依稀记起某一年赵本山的小品。灰色的主色调，仿佛再次回到冬天。没有下雪，也很温暖，但是脑海忍不住浮现一句话：南国花开，北国雪飘。误打误撞，走了最实惠最舒适的路线，连高德都不知道，lucky！
+16年03月31日，专业笔试，发挥一般，很久没碰C++，忘记太多。
+16年04月01日，英语面试，专业面试，只记得当时很紧张，英语自我介绍停顿一次，翻译完跪，三个专业问题答出来两个。浑浑噩噩回到宾馆，不停回想面试的细节，最终甩甩脑袋，多想无用，静待结果吧。。。一个小时后，收到待录取通知，点击“接受”的瞬间，对世界充满感激。
+16年04月04日，回想考研，一路波折，写点什么吧，仅此纪念一年多的考研历程。
+三年研究生，比预想多一年。三年，成长为理想中的自己！
+最后，感谢江淮，一个比我自己还关心我的调剂的好兄弟！
+]]></content>
+      <categories>
+        <category>随笔</category>
+      </categories>
+      <tags>
+        <tag>考研</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>只需50个词</title>
     <url>/hobby-just-50-words/</url>
     <content><![CDATA[作者：连岳
@@ -17393,469 +17896,6 @@ A：嘿 //是什么意思啊？B：嘿.A：呃 我问你//是什么意思？B：
       </categories>
       <tags>
         <tag>ps</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>考研计划表（第二版）</title>
-    <url>/essay-kaoyan-plan-2/</url>
-    <content><![CDATA[前言寒假里，没怎么学习，计划形同于无；开学之后，一直到4月中旬，大部分时间都在学车；之后，休息娱乐，作业实验，生病挂水，转眼到了5月。是时候全力准备考研了，根据现在的生活学习状态，更新一下考研计划表。
-2016年考研时间为：12月26日和12月27日，距离今天还有237天。
-237天，分成了几个阶段。每个阶段，以周为单位轮回。每周，周日到周五，学习日；周六，休息日。学习日，7:00起床，整天学习一门课，直到18:00；18:00到20:30，写日记和学习专业课；20:30开始健身，一小时左右；之后是自由时间；22:30到23:00关机上床。休息日，自由时间。
-
-
-规定休息时间：无论什么时候，睡觉都是头等大事，可以抢占其他计划的时间。
-学习时间：周日到周五的7:00到21:30。使用手机只可以背单词，使用平板只可以阅读专业书籍，使用电脑只可以写代码写博客。（PS：学习时间包括上课时间）
-上课时间：背单词、阅读专业书籍、写代码写博客、听课、复习考研，视心情而定。
-自由时间：周日到周五的21:30到22:30，周六全天。洗漱、洗澡、洗衣服、打电话、阅读纸质书籍、听歌、飞车、睡觉，视心情而定。
-
-5月3~6月20
-
-
-政
-英
-数
-
-
-
-0
-3
-3
-
-
-
-
-
-周日
-周一
-周二
-周三
-周四
-周五
-周六
-
-
-
-数
-英
-数
-英
-数
-英
-休
-
-
-
-6月21~8月30
-
-
-政
-英
-数
-
-
-
-1
-2
-3
-
-
-
-
-
-周日
-周一
-周二
-周三
-周四
-周五
-周六
-
-
-
-数
-英
-数
-英
-数
-政
-休
-
-
-
-8月31~10月30
-
-
-政
-英
-数
-
-
-
-2
-2
-2
-
-
-
-
-
-周日
-周一
-周二
-周三
-周四
-周五
-周六
-
-
-
-数
-英
-数
-英
-政
-政
-休
-
-
-
-11月1~12月20
-
-
-政
-英
-数
-弱
-
-
-
-1
-1
-1
-3
-
-
-
-
-
-周日
-周一
-周二
-周三
-周四
-周五
-周六
-
-
-
-数
-英
-政
-弱
-弱
-弱
-休
-
-
-
-12月21~12月26考前调整，自由复习。
-
-后记备考过程中，2016年6月20日，六级考试，顺路考过！计划不是限制，执行过程中根据情况调整，效率至上。
-]]></content>
-      <categories>
-        <category>随笔</category>
-      </categories>
-      <tags>
-        <tag>考研</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>考研计划表</title>
-    <url>/essay-kaoyan-plan-1/</url>
-    <content><![CDATA[前言2016年考研时间为：12月26日和12月27日，距离今天还有312天。
-312天，分成了几个阶段。每个阶段，以周为单位轮回。每周，周一到周六，学习日；周日，休息日。学习日，早上7点起床，整天学习一门课，直到晚上8点；休息日，学习与否随意。每天晚上，8点开始背单词，半小时到一小时；之后学习与否随意；10点半到11点关机上床。
-
-2月17~3月1
-
-
-政
-英
-数
-专
-
-
-
-0
-6
-0
-0
-
-
-
-
-
-周日
-周一
-周二
-周三
-周四
-周五
-周六
-
-
-
-休
-英
-英
-英
-英
-英
-英
-
-
-
-
-
-
-
-
-
-
-
-——
-
-
-
-
-
-
-
-
-### 3月2~6月20
-
-
-
-
-
-
-
-
-政
-英
-数
-专
-
-
-
-
-
-:—-:
-:—-:
-:—-:
-:—-:
-
-
-
-
-
-0
-3
-2
-1
-
-
-
-
-
-
-
-
-周日
-周一
-周二
-周三
-周四
-周五
-周六
-
-
-
-休
-英
-数
-英
-数
-英
-专
-
-
-
-6月21~8月30
-
-
-政
-英
-数
-专
-
-
-
-1
-1
-2
-2
-
-
-
-
-
-周日
-周一
-周二
-周三
-周四
-周五
-周六
-
-
-
-休
-政
-英
-数
-专
-数
-专
-
-
-
-8月31~10月30
-
-
-政
-英
-数
-专
-
-
-
-2
-1
-1
-2
-
-
-
-
-
-周日
-周一
-周二
-周三
-周四
-周五
-周六
-
-
-
-休
-政
-专
-政
-专
-英
-数
-
-
-
-11月1~12月20
-
-
-政
-英
-数
-专
-弱
-
-
-
-1
-1
-1
-1
-2
-
-
-
-
-
-周日
-周一
-周二
-周三
-周四
-周五
-周六
-
-
-
-休
-政
-英
-数
-专
-弱
-弱
-
-
-
-12月21~12月26考前调整，自由复习。
-
-后记备考过程中，2016年6月20日，六级考试，顺路考过！计划不是限制，执行过程中根据情况调整，效率至上。
-]]></content>
-      <categories>
-        <category>随笔</category>
-      </categories>
-      <tags>
-        <tag>考研</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>考研资料</title>
-    <url>/essay-kaoyan-material/</url>
-    <content><![CDATA[前言考研资料浩如烟海，找到适合自己的资料，学习起来必定事半功倍。为了搜集信息、寻找资料，小编昨晚居然失眠了，凌晨四点左右还没有入睡。看到各位前辈的考研经验，心中升起了万丈豪情——哥也可以！！！
-
-考试科目①101 思想政治理论②204 英语二③302 数学二④842 数据结构、软件工程、操作系统和计算机网络
-复试科目:3203 复试：笔试：数据库、上机：Java程序设计上机；面试：专业综合、英语口语
-
-参考书目初试参考书目：《数据结构与算法分析：Java语言描述》（英文版），第2版，机械工业出版社；《软件工程与计算：软件开发的技术基础》，骆斌主编、丁二玉、刘钦编著，机械工业出版社；《操作系统教程》（第五版），费翔林、骆斌编著，高等教育出版社；《思科网络技术学院教程CCNA（1、2，3学期）》，人民邮电出版社。
-复试参考书目：《数据库：原理编程与性能》（影印版）（第2版）奥尼尔著，高等教育出版社；《软件工程与计算：软件开发的编程基础》，骆斌主编、邵栋、任桐炜编著，机械工业出版社。
-
-
-政治教科书：无
-辅导书：《全国硕士研究生入学统一考试:思想政治理论考试大纲解析》《肖秀荣考研政治命题人讲真题》，北京航空航天大学出版社.《肖秀荣考研政治1000题》，北京航空航天大学出版社.《肖秀荣考研政治知识点精讲精练》，北京航空航天大学出版社.《肖秀荣考研政治命题人冲刺8套卷》，北京航空航天大学出版社.《肖秀荣考研政治命题人终极预测4套卷》，北京航空航天大学出版社.《风中劲草核心考点考题》
-
-英语二教科书：无.
-辅导书：《考研英语词汇 乱序版》，俞敏洪，北京语言大学出版社.《新编考研英语阅读理解150篇》，张健，世纪高教编辑部,世界图书出版社.《历年考研英语真题解析及复习思路》，张健，世纪高教编辑部,世界图书出版社.
-
-数学二教科书：《高等数学 第六版》上下，同济大学数学系，高等教育出版社.《工程数学 线性代数 第五版》，同济大学数学系，高等教育出版社.《概率论与数理统计 第四版》，浙江大学，高等教育出版社.
-辅导书：《李永乐考研数学复习全书》，国家行政学院出版社.《李永乐数学基础过关660题》，国家行政学院出版社.《李永乐数学历年真题权威解析》，国家行政学院出版社.《张宇高等数学18讲》，北京理工大学出版社.《张宇线性代数9讲》，北京理工大学出版社.《张宇概率论与数理统计9讲》，北京理工大学出版社.《张宇考研数学题源探析经典1000题》，北京理工大学出版社.《张宇考研数学命题人终极预测8套卷》，北京理工大学出版社.《张宇考研数学命题人最后4套卷》，北京理工大学出版社.
-
-专业课教科书：《数据结构与算法分析：Java语言描述》（英文版），第2版，机械工业出版社；《软件工程与计算：软件开发的技术基础》，骆斌主编、丁二玉、刘钦编著，机械工业出版社；《操作系统教程》（第五版），费翔林、骆斌编著，高等教育出版社；《思科网络技术学院教程CCNA（1、2，3学期）》，人民邮电出版社。
-辅导书：《王道操作系统》《王道论坛真题精析》
-历年真题试题范围：南大所有专业近4-11年的考研（博）原版真题试卷（已有11年博士和硕士试卷），相关笔记，讲义和教材
-购买地点：南大鼓楼校区逸夫管理科学楼十楼图书馆复印室
-南大考研（博）试卷资料复印时间（除下面规定时间外其它时间不提供）：每周一至周六（周三除外）下午2：30—3：30；周日全天上午8：30—下午4：00（节假日不休），其他时间需要试卷可以电话联系，外地办理邮购服务。
-联系电话： 13813989681（建议短信联系）  南大陈老师
-
-小结以上的考研资料不限于数学二、英语二，其他科目同样可以参考。
-]]></content>
-      <categories>
-        <category>随笔</category>
-      </categories>
-      <tags>
-        <tag>随笔</tag>
-        <tag>考研</tag>
       </tags>
   </entry>
   <entry>
@@ -20849,355 +20889,6 @@ k8s-tool备考的过程中，完善自己的k8s-tool，考试的时候可以使�
       </categories>
   </entry>
   <entry>
-    <title>Django开发简单Blog系统——中</title>
-    <url>/dev-django-blog-1/</url>
-    <content><![CDATA[系统功能1、博客列表展示2、新增博客、修改博客、删除博客、搜索博客3、后台管理
-
-
-后台管理django自带后台管理系统Admin，被授权的用户可以直接在后台管理系统中操作数据库。同时，我们可以按照需求对Admin进行定制。
-1、创建超级用户python manage.py createsuperuser根据提示，输入用户名、邮箱、密码。
-2、测试访问访问地址 http://localhost:8000/admin/ ，输入用户名密码，登录后台管理系统。
-3、改成中文后台管理系统，默认是英文的，修改settings.py：
-# LANGUAGE_CODE = 'en-us'LANGUAGE_CODE = 'zh-hans'
-刷新后台管理页面，发现变成了中文。
-4、注册model此时，我们在后台管理中看不到article等表数据，要想显示数据，需要在blog/admin.py中注册model。
-from django.contrib import adminfrom . import models# Register your models here.admin.site.register(models.Article)
-刷新后台管理页面，发现article表已经出现。
-5、点击进入Articles，发现里面有很多Article Object，因为我们在blog/models.py中添加了__str__方法，所以显示的名称是文章标题。
-def __str__(self):    return self.title
-
-页面开发主页面1、在blog/urls.py中配置路由
-url(r'^$', views.index, name='index'),url(r'^index$', views.index, name='index'),
-
-2、在blog/views.py中修改index方法
-def index(request):    articles = models.Article.objects.all()    return render(request, 'blog/index.html', &#123;'articles': articles&#125;)
-
-3、修改blog/templates/blog/index.html
-&lt;!DOCTYPE html&gt;&lt;html lang="en"&gt;&lt;head&gt;    &lt;meta charset="UTF-8"&gt;    &lt;title&gt;首页&lt;/title&gt;&lt;/head&gt;&lt;body&gt;    &lt;h2&gt;博客列表&lt;/h2&gt;    &lt;div class="menu"&gt;        &lt;input class="search-input" type="text"&gt;         &lt;span class="search"&gt;搜索&lt;/span&gt;         &lt;a class="add" href="/blog/toadd"&gt;添加&lt;/a&gt;    &lt;/div&gt;    &lt;table&gt;        &lt;thead&gt;            &lt;th&gt;博客标题&lt;/th&gt;            &lt;th&gt;发布时间&lt;/th&gt;            &lt;th&gt;操作&lt;/th&gt;        &lt;/thead&gt;        &lt;tbody&gt;            &#123;% for article in articles %&#125;            &lt;tr data-id="&#123;&#123;article.id&#125;&#125;"&gt;                &lt;td&gt;&lt;a href="/blog/&#123;&#123;article.id&#125;&#125;"&gt;&#123;&#123;article.title&#125;&#125;&lt;/a&gt;&lt;/td&gt;                &lt;td&gt;&#123;&#123;article.pub_time&#125;&#125;&lt;/td&gt;                &lt;td&gt;                    &lt;span class="del"&gt;删除&lt;/span&gt;                &lt;/td&gt;            &lt;/tr&gt;            &#123;% endfor %&#125;        &lt;/tbody&gt;    &lt;/table&gt;&lt;/body&gt;&lt;/html&gt;
-
-4、测试访问访问地址 http://localhost:8000/blog 或 http://localhost:8000/blog/index
-静态资源blog/index.html中，没有添加样式。接下来，我们修改一下项目结构，把样式表放在静态资源目录中。参考DJango 1.8 配置静态资源文件可访问 和 Django 静态文件。
-1、新建djsite/static/css层级目录，在css下新建index.css，内容参见源码分享。
-2、在settings.py中添加
-# 设置STATIC_URL为存储静态文件的路径（基于根目录）STATIC_URL = '/static/' # 配置存储静态文件的路径映射值，这个值用于模版引用路径的转换 STATICFILES_DIRS = (      os.path.join(BASE_DIR, "static"),  )
-
-
-3、修改blog/index.html为：
-&lt;!DOCTYPE html&gt;&lt;html lang="en"&gt;&lt;head&gt;    &lt;meta charset="UTF-8"&gt;    &#123;% load staticfiles %&#125;    &lt;link rel="stylesheet" href="&#123;%static 'css/index.css'%&#125;"&gt;    &lt;title&gt;首页&lt;/title&gt;&lt;/head&gt;&lt;body&gt;    &lt;!--不变--&gt;&lt;/body&gt;&lt;/html&gt;
-
-查看博客页面1、在blog/urls.py中添加：
-url(r'^(?P&lt;article_id&gt;[0-9]+)$', views.detail, name='detail'),
-
-2、在blog/views.py中添加方法：
-def detail(request,article_id):    article = models.Article.objects.get(pk=article_id)    return render(request, 'blog/article.html',                  &#123;'article': article&#125;)
-
-3、在blog/templates/blog中添加article.html：
-&lt;!DOCTYPE html&gt;&lt;html lang="en"&gt;&lt;head&gt;    &lt;meta charset="UTF-8"&gt;    &#123;% load staticfiles %&#125;    &lt;link rel="stylesheet" href="&#123;%static 'css/article.css'%&#125;"&gt;    &lt;title&gt;&#123;&#123;article.title&#125;&#125;&lt;/title&gt;&lt;/head&gt;&lt;body&gt;    &lt;h2&gt;&#123;&#123;article.title&#125;&#125;&lt;/h2&gt;    &lt;div&gt;        &lt;p&gt;&#123;&#123;article.content&#125;&#125;&lt;/p&gt;    &lt;/div&gt;    &lt;div&gt;        &lt;a class="edit" href="/blog/toedit/&#123;&#123;article.id&#125;&#125;"&gt;编辑&lt;/a&gt;    &lt;/div&gt;&lt;/body&gt;&lt;/html&gt;
-
-4、测试访问访问地址 http://localhost:8000/blog/1
-添加博客页面1、在blog/urls.py中添加：
-url(r'^toadd$', views.toadd, name='toadd'),
-
-2、在blog/views.py添加方法：
-def toadd(request):    return render(request, 'blog/add.html')
-
-3、在blog/templates/blog中添加add.html：
-&lt;!DOCTYPE html&gt;&lt;html lang="en"&gt;&lt;head&gt;    &lt;meta charset="UTF-8"&gt;    &lt;title&gt;添加博客&lt;/title&gt;&lt;/head&gt;&lt;body&gt;    &lt;form action="/blog/add" method="post"&gt;        &lt;p&gt;            &lt;label for="title"&gt;标题&lt;/label&gt;            &lt;input id="title" name="title" type="text"&gt;        &lt;/p&gt;        &lt;p&gt;            &lt;label for="content"&gt;内容&lt;/label&gt;            &lt;textarea id="content" name="content" id="" cols="30" rows="10"&gt;&lt;/textarea&gt;        &lt;/p&gt;        &lt;p&gt;            &lt;input type="submit" value="确定"&gt;        &lt;/p&gt;    &lt;/form&gt;&lt;/body&gt;&lt;/html&gt;
-
-4、修改blog/views.py中的add方法为：
-@csrf_exemptdef add(request):    title = request.POST.get('title', 'defaultTitle')    content = request.POST.get('content', 'defaultContent')    pub_time = utc2local(timezone.now())    LOCAL_FORMAT = "%Y-%m-%d %H:%M:%S"    pub_time = pub_time.strftime(LOCAL_FORMAT)    models.Article.objects.create(title=title, content=content, pub_time=pub_time)    articles = models.Article.objects.all()    return render(request, 'blog/index.html',&#123;'articles': articles&#125;)
-
-5、测试访问访问地址 http://localhost:8000/blog/toadd
-修改博客页面1、在blog/urls.py中添加：
-url(r'^toedit/(?P&lt;article_id&gt;[0-9]+)$', views.toedit, name='toedit'),
-
-2、在blog/views.py添加方法：
-def toedit(request, article_id):    article = models.Article.objects.get(pk=article_id)    return render(request, 'blog/edit.html', &#123;'article': article&#125;)
-
-3、在blog/templates/blog中添加edit.html：
-&lt;!DOCTYPE html&gt;&lt;html lang="en"&gt;&lt;head&gt;    &lt;meta charset="UTF-8"&gt;    &lt;title&gt;修改博客&lt;/title&gt;&lt;/head&gt;&lt;body&gt;    &lt;form action="/blog/edit" method="post"&gt;        &lt;p style="display: none;"&gt;            &lt;input name="id" type="text" value="&#123;&#123;article.id&#125;&#125;"&gt;        &lt;/p&gt;        &lt;p&gt;            &lt;label for="title"&gt;标题&lt;/label&gt;            &lt;input id="title" name="title" type="text" value="&#123;&#123;article.title&#125;&#125;"&gt;        &lt;/p&gt;        &lt;p&gt;            &lt;label for="content"&gt;内容&lt;/label&gt;            &lt;textarea id="content" name="content" id="" cols="30" rows="10"&gt;&#123;&#123;article.content&#125;&#125;&lt;/textarea&gt;        &lt;/p&gt;        &lt;p&gt;            &lt;input type="submit" value="确定"&gt;        &lt;/p&gt;    &lt;/form&gt;&lt;/body&gt;&lt;/html&gt;
-
-4、修改blog/views.py中的edit方法：
-@csrf_exemptdef edit(request):    article_id = request.POST.get('id', 0)    title = request.POST.get('title', 'defaultTitle')    content = request.POST.get('content', 'defaultContent')    pub_time = utc2local(timezone.now())    LOCAL_FORMAT = "%Y-%m-%d %H:%M:%S"    pub_time = pub_time.strftime(LOCAL_FORMAT)    article = models.Article.objects.get(pk=article_id)    article.title = title    article.content = content    article.pub_time = pub_time    article.save()    articles = models.Article.objects.all()    return render(request, 'blog/index.html', &#123;'articles': articles&#125;)
-
-删除博客1、修改blog/templates/blog/index.html，添加js引入：
-&lt;script src="&#123;% static 'lib/jquery/jquery.min.js'%&#125;"&gt;&lt;/script&gt;&lt;script src="&#123;% static 'lib/layer/layer.js'%&#125;"&gt;&lt;/script&gt;&lt;script src="&#123;% static 'lib/art-template/dist/template-native.js'%&#125;"&gt;&lt;/script&gt;&lt;script src="&#123;% static 'js/index.js'%&#125;"&gt;&lt;/script&gt;
-
-2、创建static/js目录，js目录中新建index.js：
-$(function()&#123;    $('table').on('click','.del',function()&#123;        $that = $(this);        layer.confirm('确认删除？', &#123;            btn: ['确认','取消'] //按钮        &#125;, function()&#123;            var $tr = $that.parents('tr');            var id = $tr.attr('data-id');            $.ajax(&#123;                url: '/blog/delete',                type: 'POST',                dataType: 'json',                data: &#123;id: id&#125;,                success: function(data)&#123;                    console.log(data);                    if(data.code == '0')&#123;                        $tr.remove();                        layer.msg('删除成功');                    &#125;                &#125;,                error: function(xhr)&#123;                    console.log(xhr);                &#125;            &#125;);        &#125;, function()&#123;            // nothing        &#125;);            &#125;);&#125;);
-
-3、修改blog/views.py中的delete方法：
-@csrf_exemptdef delete(request):    article_id = request.POST.get('id', 0)    models.Article.objects.get(pk=article_id).delete()    result = &#123;'code': 0, 'ext': 'success'&#125;    return HttpResponse(json.dumps(result, ensure_ascii=False))
-
-4、测试访问访问地址 http://localhost:8000/blog/ ，点击文章后面的删除按钮即可。
-查找博客1、在blog/urls.py中添加：
-url(r'^search$', views.search, name='search')
-
-2、在blog/views.py中添加search方法：
-from django.db.models import Q@csrf_exemptdef search(request):    key = request.POST.get('key')    articles = models.Article.objects.filter(Q(title__contains=key) | Q(content__contains=key))    json_data = serializers.serialize("json", articles)    dict_data = json.loads(json_data)    result = &#123;        'code': 0,        'ext': 'success',        'articles': dict_data&#125;    return HttpResponse(json.dumps(result, ensure_ascii=False))
-
-
-3、在blog/templates/blog/index.html中添加：
-&lt;script type="text/template" id="tr_template"&gt;    &lt;% for(var i = 0 ; i &lt; articles.length ; i ++)&#123; %&gt;    &lt;% var article = articles[i]; %&gt;    &lt;tr data-id="&lt;%=article.pk%&gt;"&gt;        &lt;td&gt;&lt;a href="/blog/&lt;%=article.pk%&gt;"&gt;&lt;%=article.fields.title%&gt;&lt;/a&gt;&lt;/td&gt;        &lt;td&gt;&lt;%=article.fields.pub_time%&gt;&lt;/td&gt;        &lt;td&gt;            &lt;span class="del"&gt;删除&lt;/span&gt;        &lt;/td&gt;    &lt;/tr&gt;    &lt;% &#125; %&gt;&lt;/script&gt;
-
-4、在index.js中添加：
-$('.search').on('click',function()&#123;    var key = $('.search-input').val();    $.ajax(&#123;        url: '/blog/search',        type: 'POST',        dataType: 'json',        data: &#123;key: key&#125;,        success: function(data)&#123;            console.log(data);            if(data.code == '0')&#123;                var html = template('tr_template',&#123;articles: data.articles&#125;);                $('tbody').html(html);            &#125;        &#125;,        error: function(xhr)&#123;            console.log(xhr);        &#125;    &#125;);&#125;);$('.search-input').keypress(function(event) &#123;    var key = event.which;    // console.log(key);    if(key == 13)&#123;        //do something        $('.search').trigger('click');    &#125;&#125;);
-
-效果演示
-源码分享https://github.com/voidking/djsite/releases/tag/v0.2.0
-书签django入门与实践
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>后端</category>
-        <category>python</category>
-        <category>django</category>
-      </categories>
-      <tags>
-        <tag>python</tag>
-        <tag>django</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Django部署到线上（修改版）</title>
-    <url>/dev-django-deploy-advance/</url>
-    <content><![CDATA[前言《Django部署到线上》一文中，很多步骤不是必须的，有些部分甚至是错误的，本文就精简修改一下。目标：把djsite项目部署到/home/web目录中，并且给它分配一个域名为djsite.voidking.com。
-
-
-环境准备supervisor参考《CentOS安装配置Supervisor》，安装配置好supervisor。
-python虚拟机参考《CentOS安装配置pyenv》，安装好python3.6.1。
-项目部署代码准备1、在/home/web目录中，执行命令克隆项目git clone https://github.com/voidking/djsite.git
-2、安装djangopip install django==1.11.7
-3、安装pymysqlpip install pymysql
-数据库准备1、创建数据库
-# mysql -uroot -pmysql&gt; create database `djsite` default character set utf8 collate utf8_general_ci;
-
-2、修改mysql的binlog格式为混合模式：
-mysql&gt; set global binlog_format=mixed;mysql&gt; exit;
-
-3、修改djsite/djsite/settings.py中的数据库配置vim djsite/djsite/settings.py
-4、创建表结构
-python manage.py makemigrationspython manage.py migrate
-
-启动项目1、启动命令python manage.py runserver
-2、服务器测试访问curl localhost:8000/blog/index
-3、本地测试访问使用浏览器查看 http://ip:8000/blog/index ，无法访问。启动命令改为：python manage.py runserver 0.0.0.0:8000，此时即可在浏览器看到部署好的项目。
-如果还是不能访问，尝试先关闭防火墙：systemctl stop firewalld
-nginx配置1、首先，在万网上配置域名解析，添加A记录，解析到阿里云服务器IP。假设解析好的域名为django.voidking.com。
-2、在nginx的vhost中，添加django.voidking.com.conf，内容为：
-server &#123;    listen 80;    server_name django.voidking.com;    charset utf-8;    location /&#123;        proxy_set_header   Host             $host;        proxy_set_header   X-Real-IP        $remote_addr;        proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;        client_max_body_size       1024m;        client_body_buffer_size    128k;        client_body_temp_path      data/client_body_temp;        proxy_connect_timeout      90;        proxy_send_timeout         90;        proxy_read_timeout         90;        proxy_buffer_size          4k;        proxy_buffers              4 32k;        proxy_busy_buffers_size    64k;        proxy_temp_file_write_size 64k;        proxy_temp_path            data/proxy_temp;        proxy_pass http://127.0.0.1:8000;    &#125;&#125;
-
-3、重启nginx，./nginx -s reload
-4、测试访问服务器：curl django.voidking.com/blog/index本地浏览器：http://django.voidking.com/blog/index
-至此，django项目已经部署成功，没有用到uwsgi。如果给django添加守护进程，那么我们的部署就接近完美了。那么，uwsgi又能干什么呢，我们继续研究。
-uwsgi安装uwsgipip install uwsgi
-编写测试：
-# test.pydef application(env, start_response):    start_response('200 OK', [('Content-Type','text/html')])    return [b"Hello World"]
-
-启动测试：uwsgi --http :8001 --wsgi-file test.py
-访问 http://ip:8001 ，即可看到Hello World 。
-一般启动1、编写wsgi.py文件编写django_wsgi.py文件，将其放在与文件manage.py同一个目录下。
-#!/usr/bin/env python# coding: utf-8import os,djangofrom django.core.handlers.wsgi import WSGIHandleros.environ.setdefault("DJANGO_SETTINGS_MODULE", "djsite.settings")django.setup()application = WSGIHandler()
-
-2、启动项目uwsgi --http :8000 --chdir /home/web/djsite/ --module django_wsgi
-3、查看启动结果lsof -i :8000，ps aux | grep uwsgi
-4、测试访问http://ip:8000/blog/index此时，页面是没有样式的，也就是说静态资源加载失败。
-5、配置静态资源uwsgi --http :8000 --chdir /home/web/djsite/ --module django_wsgi --static-map=/static=static此时，页面样式就正常了。
-高级启动1、新建uwsgi.ini，与manage.py在同一级目录。
-[uwsgi]http = :8000chdir = /home/web/djsite/wsgi-file = django_wsgi.pystatic-map = /static=static
-
-2、启动uwsgiuwsgi uwsgi.ini
-3、测试访问http://ip:8000/blog/index
-使用supervisor管理守护uwsgi1、在/etc/supervisor中新建djsite.conf文件：
-[program:djsite]command=/root/.pyenv/versions/3.6.1/bin/uwsgi --http :8000 --chdir /home/web/djsite/ --module django_wsgi --static-map=/static=staticdirectory=/home/web/djsite/startsecs=0stopwaitsecs=0autostart=trueautorestart=true
-
-2、重启supervisor
-ps aux | grep supervisordsystemctl stop supervisordsystemctl start supervisord
-
-附：重启djsite命令
-supervisorctl -c /etc/supervisord.conf restart djsite
-
-3、测试访问http://ip:8000/blog/index页面显示正常，至此守护进程配置成功。
-4、djsite.conf可以精简修改为：
-[program:djsite]command=/root/.pyenv/versions/3.6.1/bin/uwsgi --ini uwsgi.inidirectory=/home/web/djsite/startsecs=0stopwaitsecs=0autostart=trueautorestart=true
-
-静态资源问题（可忽略）假设，uwsgi.ini为：
-[uwsgi]http = :8000chdir = /home/web/djsite/wsgi-file = django_wsgi.py
-
-静态资源就无法访问了。在不添加static-map的情况下，需要修改两个文件：（1）修改djsite/djsite/settings.py文件，添加：
-STATIC_ROOT = '/home/web/djsite/static/'
-（2）修改djsite/djsite/settings.py文件为：
-from django.conf.urls import url,includefrom django.contrib import adminfrom django.conf.urls.static import staticfrom django.conf import settingsurlpatterns = [    url(r'^admin/', admin.site.urls),    url(r'^blog/', include('blog.urls', namespace='blog')),] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-
-admin静态资源问题如果以python manage.py runserver启动django，那么静态资源没有问题。
-如果以uwsgi启动django，静态资源看起来没有问题，但是，如果访问 http://ip:8000/admin ，就会发现这个页面的静态资源无法获取。
-一个Django应用，一般有两类静态文件。一是应用内的静态文件，二是Django自带的静态文件。应用内的静态文件在djsite/static目录下。此外，在INSTALLED_APPS中配置了django.contrib.admin， 则还会有另外一组静态文件，在Django安装位置里。
-例如，一个root在Python 3.6版本安装的Django，admin的静态文件在： /usr/local/lib/python3.6/site-packages/django/contrib/admin/static/admin/。
-最终，在STATIC_URL里，会有两类静态文件， /static/* 与 /static/admin/* 。
-了解原理，原因就很显然了。python manage.py runserver知道静态文件的位置，而uWSGI不知道静态文件在什么位置。
-解决办法如下：（1）修改djsite/djsite/settings.py文件：
-SITE_ROOT = os.path.dirname(os.path.abspath(__file__))SITE_ROOT = os.path.abspath(os.path.join(SITE_ROOT, '../'))STATIC_ROOT = os.path.join(SITE_ROOT, 'collectedstatic')
-
-（2）收集所有静态文件到collectedstatic目录python manage.py collectstatic
-（3）修改uwsgi.ini配置
-[uwsgi]http = :8000chdir = /home/web/djsite/wsgi-file = django_wsgi.pystatic-map = /static=collectedstatic
-
-nginx+uwsgi以上，我们的djsite项目已经通过uwsgi方式启动起来，并且可以保持后台运行。nginx配置不改变的情况下，我们可以正常访问 http://django.voidking.com/blog/index 。此时，nginx作为反向代理，和uwsgi间通过http交互。
-接下来，就配置下nginx和uwsgi通过socket结合的方式。原理：用户发送http请求到nginx，nginx通过socket把请求交给uwsgi，uwsgi拿到django的处理结果，通过socket返还给nginx，nginx通过http返回结果给用户。
-1、因为nginx和uwsgi通过socket方式交互，我们需要修改uwsgi.ini的配置为：
-[uwsgi]socket = :8000chdir = /home/web/djsite/wsgi-file = django_wsgi.pystatic-map = /static=collectedstaticmaster = trueprocesses = 2enable-threads = truedaemonize = /home/web/djsite/uwsgi.log
-
-2、重启supervisorsystemctl stop supervisordsystemctl start supervisord
-3、修改nginx配置djsite.voidking.com.conf：
-server &#123;    listen      80;    server_name djsite.voidking.com;    charset     utf-8;    location / &#123;        uwsgi_pass     127.0.0.1:8000;        include        uwsgi_params;    &#125;&#125;
-
-5、重启nginx./nginx -s reload
-6、测试访问此时，访问 http://ip:8000/blog/index 失败，访问 http://django.voidking.com/blog/index 正常。因为8000端口不再提供http服务，而是一个和nginx连接的socket。
-加速静态资源1、修改nginx配置djsite.voidking.com.conf：
-server &#123;    listen      80;    server_name djsite.voidking.com;    charset     utf-8;    location / &#123;        uwsgi_pass     127.0.0.1:8000;        include        uwsgi_params;    &#125;    location /static &#123;        alias /root/djsite/collectedstatic;    &#125;&#125;
-
-2、修改nginx.conf
-user root;
-
-3、重启nginx./nginx -s reload
-小结至此，django部署完毕，我们实现了三种部署方法：
-
-nginx + django（http方式）
-nginx + uwsgi（http方式）
-nginx + uwsgi（socket方式）
-
-书签使用uWSGI提供静态文件 (更新至1.9)
-解决uWSGI里的Django静态文件丢失
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>后端</category>
-        <category>python</category>
-        <category>centos</category>
-        <category>django</category>
-      </categories>
-      <tags>
-        <tag>python</tag>
-        <tag>django</tag>
-        <tag>centos</tag>
-        <tag>supervisor</tag>
-        <tag>uwsgi</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>通过远程控制接口批量安装系统</title>
-    <url>/dev-batch-install-sys-by-mgmt/</url>
-    <content><![CDATA[前言《通过远程控制接口给服务器安装系统》一文中，我们发现通过远程控制接口给服务器安装系统很方便。《Ubuntu系统批量自动安装》一文中，我们学会了使用PXE技术进行系统的批量安装。
-这两者结合，能产生怎样的魔力？下面是见证奇迹的时刻。
-需求：机房里有40台曙光I620-G20机器需要安装Ubuntu16 Server系统，曙光供应商说需要两天的工作量，报价五千元。那么自己安装的话，需要多长时间？也需要两天吗？
-
-
-安装步骤1、进入机房，给40台机器配置远程控制接口的IP。参考《通过远程控制接口给服务器安装系统》的远程控制接口配置部分。
-2、搭建PXE服务器。参考《Ubuntu系统批量自动安装》，并且进行改进。
-3、远程控制批量安装系统。
-搭建PXE服务器基本准备1、一台服务器，已经安装好了Ubuntu16 Server版系统，IP为172.16.0.162。2、更换源列表并更新，参考《Ubuntu更换源列表》。3、切换到root用户，sudo -i4、开启路由转发，echo 1 &gt; /proc/sys/net/ipv4/ip_forward。务必开启，因为PXE服务器同时作为网关，不开启的话安装会卡住。5、在PXE服务器上安装DNS服务（可选操作，没有什么影响）。
-DHCP和FTP本节主要参考How to Install Ubuntu via PXE Server Using Local DVD Sources。
-1、安装DHCP和FTP服务apt-get install dnsmasq
-2、指定DHCP网卡ip add，看到正在使用的网卡为ens2f1（172.16.0.162）。
-3、配置dnsmasqvim /etc/dnsmasq.conf，在文件末尾添加：
-interface=ens2f1dhcp-range=172.16.0.163,172.16.0.254,24hdhcp-option=3,172.16.0.162dhcp-option=6,172.16.0.162dhcp-option=28,172.16.0.255dhcp-option=42,0.0.0.0dhcp-boot=pxelinux.0,172.16.0.162enable-tftptftp-root=/tftpboot# gateway to Internet#dhcp-option=3,172.16.0.135# real dns server#dhcp-option=6,172.20.1.4#server=8.8.4.4
-dhcp-option=3表示网关，6表示域名服务器，28表示broadcast，48表示时间服务器。server表示DNS forwarder IPs Address。
-需要注意的是，网关一定要配置，否则在使用内网镜像安装时会特别慢。在获取镜像时卡住半小时，查看安装日志如下图所示；在“Updating the list of available packages”时也会卡住半小时。而且，最好不要让服务器连接到外网，否则安装过程中会自动从网络中获取更新，安装就会很慢。就像本文中的配置，网关和域名服务器都设置为PXE服务器的IP，而不是真实的可以访问外网的网关和域名服务器。
-4、查看服务systemctl status dnsmasq
-配置netboot1、下载网络启动文件，只有43M
-wget http://ftp.ubuntu.com/ubuntu/dists/xenial/main/installer-amd64/current/images/netboot/netboot.tar.gz
-或者从ubuntu-16.04.4-server-amd64.iso镜像中拷贝，netboot.tar.gz相当于install/netboot目录的压缩文件。
-2、解压文件
-tar -xzvf netboot.tar.gz -C /tftpboot/
-解压后的文件包括：
-ldlinux.c32 -&gt; ubuntu-installer/amd64/boot-screens/ldlinux.c32pxelinux.0  -&gt; ubuntu-installer/amd64/pxelinux.0pxelinux.cfg -&gt; ubuntu-installer/amd64/pxelinux.cfg/ubuntu-installer/version.info
-
-安装系统1、远程连接需要安装系统的服务器，设置BIOS，选择从网络启动。
-2、选择Install，正常安装系统即可，不过，系统镜像需要从外网下载。这里没有连接外网，就不再往下演示。
-以上，实现了从网络安装源安装Ubuntu系统。但是存在两个问题，一个问题是系统镜像需要从外网下载，浪费带宽。另一个问题是安装过程中需要不断交互，浪费时间。
-PXE服务器升级配置内网镜像1、安装apache2apt-get install apache2 -y
-web根目录是 /var/www/html/
-2、测试apache2curl 127.0.0.1
-3、重启apache2/etc/init.d/apache2 restart
-4、上传ubuntu-16.04.4-server-amd64.iso到用户目录。scp ubuntu-16.04.4-server-amd64.iso test@172.16.0.162:~
-5、挂载ubuntu-16.04.4-server-amd64.iso到ubuntu目录。在用户目录执行：
-mkdir /var/www/html/ubuntumount ubuntu-16.04.4-server-amd64.iso /var/www/html/ubuntu
-
-6、替换netboot为镜像中的netboot，否则内核版本的差异会导致安装失败。
-rm -rf /tftpboot/*cp -r /var/www/html/ubuntu/install/netboot/* /tftpboot/
-
-7、再次安装系统，此时就可以从PXE服务器获取系统镜像了。在选择镜像界面，上拉到enter information manually，回车。archive hostname输入172.16.0.162。directory输入/ubuntu，注意，ubuntu后面不要有斜杠。如果系统安装卡住，那么Alt+F2进入控制台，tail /var/log/syslog查看系统安装日志，根据日志进行排错。查看错误后Alt+F1返回图形安装界面。
-8、安装完成的系统，启动后发现卡住。这时Alt+F2切换到第二个终端，就可以正常使用系统了。
-添加硬盘启动系统安装完成，如果依然从网络启动的话，那么每次启动依然会进入到Installer boot menu界面，除非再次修改BIOS首选启动项。不妨在Installer boot menu界面添加一个启动项，该启动项允许从本地硬盘启动。主要参考Install Ubuntu 16.04 via PXE and network boot。
-1、编辑pxelinux.cfg文件vim /tftpboot/pxelinux.cfg/default，修改为：
-# D-I config version 2.0# search path for the c32 support libraries (libcom32, libutil etc.)path ubuntu-installer/amd64/boot-screens/include ubuntu-installer/amd64/boot-screens/menu.cfgdefault ubuntu-installer/amd64/boot-screens/vesamenu.c32prompt 0# add localboot herelabel localboot    menu label Boot from Disk    localboot 0timeout 0
-此外，timeout默认是0，这里可以改为60，那么6秒后会自动选择install选项。
-2、再次通过网络启动，即可看到硬盘启动选项。选中它回车，即可启动本地硬盘上的系统。
-自动选择安装源以上安装，我们需要手动输入archive hostname和directory，能不能在安装过程中自动选择？当然可以。本方法主要参考PXEInstallServer。
-1、编辑txt.cfgvim /tftpboot/ubuntu-installer/amd64/boot-screens/txt.cfg，原内容为：
-default installlabel install    menu label ^Install    menu default    kernel ubuntu-installer/amd64/linux    append vga=788 initrd=ubuntu-installer/amd64/initrd.gz --- quiet label cli    menu label ^Command-line install    kernel ubuntu-installer/amd64/linux    append tasks=standard pkgsel/language-pack-patterns= pkgsel/install-language-support=false vga=788 initrd=ubuntu-installer/amd64/initrd.gz --- quiet
-修改为：
-default installlabel install        menu label ^Install        menu default        kernel ubuntu-installer/amd64/linux        append ks=http://172.16.0.162/ks.cfg vga=788 initrd=ubuntu-installer/amd64/initrd.gz --- quiet  label cli        menu label ^Command-line install        kernel ubuntu-installer/amd64/linux        append tasks=standard pkgsel/language-pack-patterns= pkgsel/install-language-support=false vga=788 initrd=ubuntu-installer/amd64/initrd.gz --- quiet
-
-2、在/var/www/html目录创建ks.cfg文件，内容为：
-installurl --url http://172.16.0.162/ubuntu/
-
-3、重新安装系统，即可省去设置archive hostname的步骤。
-配置无人值守既然可以自动选择安装源，那么其他交互步骤可不可以自动选择？当然可以。控制安装过程的自动交互主要有两个文件：ks.cfg和ubuntu-server.seed。
-ks.cfg1、在安装菜单添加ks.cfg和ubuntu-server.seedvim /tftpboot/ubuntu-installer/amd64/boot-screens/txt.cfg，修改为：
-default installlabel install    menu label ^Install    menu default    kernel ubuntu-installer/amd64/linux    append ks=http://172.16.0.162/ks.cfg preseed/url=http://172.16.0.162/ubuntu-server.seed vga=788 initrd=ubuntu-installer/amd64/initrd.gz --- quietlabel cli    menu label ^Command-line install    kernel ubuntu-installer/amd64/linux    append tasks=standard pkgsel/language-pack-patterns= pkgsel/install-language-support=false vga=788 initrd=ubuntu-installer/amd64/initrd.gz --- quiet
-
-2、编辑/var/www/html/ks.cfg文件参考《Ubuntu系统批量自动安装》一文中的ks.cfg。编辑后的ks.cfg文件内容如下：
-#Generated by Kickstart Configurator#platform=AMD64 or Intel EM64T#System languagelang en_US#Language modules to installlangsupport en_US#System keyboardkeyboard us#System mousemouse#System timezonetimezone Asia/Shanghai#Root passwordrootpw --disabled#Initial useruser test --fullname "test" --iscrypted --password $1$AKq0i3Yu$Tunuha7bYwq5uUV62F2nF0#Reboot after installationreboot#Use text mode installtext#Install OS instead of upgradeinstall#Use Web installationurl --url http://172.16.0.162/ubuntu/#System bootloader configurationbootloader --location=mbr #Clear the Master Boot Recordzerombr yes#Partition clearing informationclearpart --all --initlabel #System authorization infomationauth  --useshadow  --enablemd5 #Network informationnetwork --bootproto=dhcp --device=ens2f0#Firewall configuration#firewall --disabled --trust=ens2f0 --ssh #Do not configure the X Window Systemskipx
-需要注意的是网卡的配置，这里的网卡名指的是需要安装系统的网卡名。
-3、在/var/www/html目录创建ubuntu-server.seed文件，内容为空（暂时不配置）。
-4、再次安装系统，绝大部分步骤都会自动进行选择了。但是，在分区部分卡住。手动分区后，后续会全部自动安装。安装完成后，系统没有安装openssh服务。
-ubuntu-server.seed本文中，ubuntu-server.seed主要用来解决分区、选择软件等ks.cfg没有解决的问题。
-1、编辑seed文件vim /var/www/html/ubuntu-server.seed，添加：
-d-i pkgsel/include string openssh-serverd-i partman/confirm_write_new_label boolean trued-i partman/choose_partition select Finish partitioning and write changes to diskd-i partman/confirm boolean true
-其他配置可以参考/var/www/html/ubuntu/preseed/目录中的文件，不过本文中用不到其他配置了。
-2、再次安装系统，此时就会自动分区，并且安装openssh服务了。全程不需要手动帮助设置，完美。
-配置手动安装个别情况下，自动安装会失败，这时就需要手动安装，在Installer boot menu界面添加一个手动安装启动项即可。
-1、编辑pxelinux.cfg文件vim /tftpboot/pxelinux.cfg/default，修改为：
-# D-I config version 2.0# search path for the c32 support libraries (libcom32, libutil etc.)path ubuntu-installer/amd64/boot-screens/include ubuntu-installer/amd64/boot-screens/menu.cfgdefault ubuntu-installer/amd64/boot-screens/vesamenu.c32prompt 0# add localboot herelabel localboot    menu label Boot from Disk    localboot 0label manual install    menu label Manual Install    kernel ubuntu-installer/amd64/linux    append ks=http://172.16.0.162/manual.cfg vga=788 initrd=ubuntu-installer/amd64/initrd.gz --- quiettimeout 0
-
-2、在/var/www/html目录创建manual.cfg文件，内容为：
-installurl --url http://172.16.0.162/ubuntu/
-
-3、重新安装系统，Installer boot menu界面就会出现手动安装选项。
-批量安装1、远程连接需要安装系统的服务器，设置BIOS，选择从网络启动。
-2、安装正常系统，有些机器在网络部分卡住。此时，可以手动给网卡配置IP。但是，如果系统只检测到一个网卡，而这个网卡没有连接网线，那么无法完成接下来的安装。因为没有IP，所以无法通过获取ks.cfg等文件。Alt+F2进入控制台，ip add看到IP设置成功，但是无法ping通PXE服务器。Alt+F1返回图形界面。此时，最好的做法是进入机房，把网线接到可以检测到的那个网卡。然后Ctrl+Alt+Del重启服务器。
-3、再次安装系统，即可顺利安装。
-配置静态IP系统安装完成后，此时不能上网，需要给系统配置静态IP和网关，这时发现了一个小问题：系统中没有安装vim，自带的vi也有毛病。怎么办？使用nano。
-1、编辑interfacessudo nano /etc/network/interfaces
-2、保存文件编辑完成，Ctrl+X退出，系统提示是否保存，输入Y回车，然后再次回车保存。
-3、重启网络服务
-sudo /etc/init.d/networking restart# orsudo ifdown ens2f0sudo ifup ens2f0
-重启网络服务后发现，此时网卡上有两个IP地址，而且只有DHCP分配的旧的IP地址生效（第一个）。
-4、取消IP地址并重启网络服务
-sudo ip addr flush dev ens2f0sudo /etc/init.d/networking restart
-此时静态IP就配置成功了。
-后记给40台机器配置远程控制接口的IP，搭建PXE服务器，安装系统，配置静态IP，总计用时一周左右。从效率上讲不如外包找人安装，从研究上讲还是有很多收获的。还好最近清闲了一些，不然还真没时间把整个安装流程搞清楚。之所以用时很久，主要是因为有一些机器之前使用过，所以安装的时候需要手动确认remove volume data，或者disk detect报错需要手动安装，如下图所示。
-书签Netboot Install
-PXE-netboot-install
-Ubuntu 16.04 LTS (Xenial Xerus) Netboot
-How to install PXE Server on Ubuntu 16.04
-神奇的fdisk和dd命令
-PXE网络克隆图文教程
-DHCP tftp PXE实现Ghost网络克隆
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>OS</category>
-      </categories>
-      <tags>
-        <tag>操作系统</tag>
-        <tag>pxe</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Django部署到线上</title>
     <url>/dev-django-deploy/</url>
     <content><![CDATA[前言《Django开发简单Blog系统》系列中，我们已经完成了一个迷你Web项目。那么，怎么把这个项目发布到线上呢？怎样给它一个域名呢？
@@ -21372,6 +21063,116 @@ Django 部署(Nginx)
       </tags>
   </entry>
   <entry>
+    <title>Django开发简单Blog系统——中</title>
+    <url>/dev-django-blog-1/</url>
+    <content><![CDATA[系统功能1、博客列表展示2、新增博客、修改博客、删除博客、搜索博客3、后台管理
+
+
+后台管理django自带后台管理系统Admin，被授权的用户可以直接在后台管理系统中操作数据库。同时，我们可以按照需求对Admin进行定制。
+1、创建超级用户python manage.py createsuperuser根据提示，输入用户名、邮箱、密码。
+2、测试访问访问地址 http://localhost:8000/admin/ ，输入用户名密码，登录后台管理系统。
+3、改成中文后台管理系统，默认是英文的，修改settings.py：
+# LANGUAGE_CODE = 'en-us'LANGUAGE_CODE = 'zh-hans'
+刷新后台管理页面，发现变成了中文。
+4、注册model此时，我们在后台管理中看不到article等表数据，要想显示数据，需要在blog/admin.py中注册model。
+from django.contrib import adminfrom . import models# Register your models here.admin.site.register(models.Article)
+刷新后台管理页面，发现article表已经出现。
+5、点击进入Articles，发现里面有很多Article Object，因为我们在blog/models.py中添加了__str__方法，所以显示的名称是文章标题。
+def __str__(self):    return self.title
+
+页面开发主页面1、在blog/urls.py中配置路由
+url(r'^$', views.index, name='index'),url(r'^index$', views.index, name='index'),
+
+2、在blog/views.py中修改index方法
+def index(request):    articles = models.Article.objects.all()    return render(request, 'blog/index.html', &#123;'articles': articles&#125;)
+
+3、修改blog/templates/blog/index.html
+&lt;!DOCTYPE html&gt;&lt;html lang="en"&gt;&lt;head&gt;    &lt;meta charset="UTF-8"&gt;    &lt;title&gt;首页&lt;/title&gt;&lt;/head&gt;&lt;body&gt;    &lt;h2&gt;博客列表&lt;/h2&gt;    &lt;div class="menu"&gt;        &lt;input class="search-input" type="text"&gt;         &lt;span class="search"&gt;搜索&lt;/span&gt;         &lt;a class="add" href="/blog/toadd"&gt;添加&lt;/a&gt;    &lt;/div&gt;    &lt;table&gt;        &lt;thead&gt;            &lt;th&gt;博客标题&lt;/th&gt;            &lt;th&gt;发布时间&lt;/th&gt;            &lt;th&gt;操作&lt;/th&gt;        &lt;/thead&gt;        &lt;tbody&gt;            &#123;% for article in articles %&#125;            &lt;tr data-id="&#123;&#123;article.id&#125;&#125;"&gt;                &lt;td&gt;&lt;a href="/blog/&#123;&#123;article.id&#125;&#125;"&gt;&#123;&#123;article.title&#125;&#125;&lt;/a&gt;&lt;/td&gt;                &lt;td&gt;&#123;&#123;article.pub_time&#125;&#125;&lt;/td&gt;                &lt;td&gt;                    &lt;span class="del"&gt;删除&lt;/span&gt;                &lt;/td&gt;            &lt;/tr&gt;            &#123;% endfor %&#125;        &lt;/tbody&gt;    &lt;/table&gt;&lt;/body&gt;&lt;/html&gt;
+
+4、测试访问访问地址 http://localhost:8000/blog 或 http://localhost:8000/blog/index
+静态资源blog/index.html中，没有添加样式。接下来，我们修改一下项目结构，把样式表放在静态资源目录中。参考DJango 1.8 配置静态资源文件可访问 和 Django 静态文件。
+1、新建djsite/static/css层级目录，在css下新建index.css，内容参见源码分享。
+2、在settings.py中添加
+# 设置STATIC_URL为存储静态文件的路径（基于根目录）STATIC_URL = '/static/' # 配置存储静态文件的路径映射值，这个值用于模版引用路径的转换 STATICFILES_DIRS = (      os.path.join(BASE_DIR, "static"),  )
+
+
+3、修改blog/index.html为：
+&lt;!DOCTYPE html&gt;&lt;html lang="en"&gt;&lt;head&gt;    &lt;meta charset="UTF-8"&gt;    &#123;% load staticfiles %&#125;    &lt;link rel="stylesheet" href="&#123;%static 'css/index.css'%&#125;"&gt;    &lt;title&gt;首页&lt;/title&gt;&lt;/head&gt;&lt;body&gt;    &lt;!--不变--&gt;&lt;/body&gt;&lt;/html&gt;
+
+查看博客页面1、在blog/urls.py中添加：
+url(r'^(?P&lt;article_id&gt;[0-9]+)$', views.detail, name='detail'),
+
+2、在blog/views.py中添加方法：
+def detail(request,article_id):    article = models.Article.objects.get(pk=article_id)    return render(request, 'blog/article.html',                  &#123;'article': article&#125;)
+
+3、在blog/templates/blog中添加article.html：
+&lt;!DOCTYPE html&gt;&lt;html lang="en"&gt;&lt;head&gt;    &lt;meta charset="UTF-8"&gt;    &#123;% load staticfiles %&#125;    &lt;link rel="stylesheet" href="&#123;%static 'css/article.css'%&#125;"&gt;    &lt;title&gt;&#123;&#123;article.title&#125;&#125;&lt;/title&gt;&lt;/head&gt;&lt;body&gt;    &lt;h2&gt;&#123;&#123;article.title&#125;&#125;&lt;/h2&gt;    &lt;div&gt;        &lt;p&gt;&#123;&#123;article.content&#125;&#125;&lt;/p&gt;    &lt;/div&gt;    &lt;div&gt;        &lt;a class="edit" href="/blog/toedit/&#123;&#123;article.id&#125;&#125;"&gt;编辑&lt;/a&gt;    &lt;/div&gt;&lt;/body&gt;&lt;/html&gt;
+
+4、测试访问访问地址 http://localhost:8000/blog/1
+添加博客页面1、在blog/urls.py中添加：
+url(r'^toadd$', views.toadd, name='toadd'),
+
+2、在blog/views.py添加方法：
+def toadd(request):    return render(request, 'blog/add.html')
+
+3、在blog/templates/blog中添加add.html：
+&lt;!DOCTYPE html&gt;&lt;html lang="en"&gt;&lt;head&gt;    &lt;meta charset="UTF-8"&gt;    &lt;title&gt;添加博客&lt;/title&gt;&lt;/head&gt;&lt;body&gt;    &lt;form action="/blog/add" method="post"&gt;        &lt;p&gt;            &lt;label for="title"&gt;标题&lt;/label&gt;            &lt;input id="title" name="title" type="text"&gt;        &lt;/p&gt;        &lt;p&gt;            &lt;label for="content"&gt;内容&lt;/label&gt;            &lt;textarea id="content" name="content" id="" cols="30" rows="10"&gt;&lt;/textarea&gt;        &lt;/p&gt;        &lt;p&gt;            &lt;input type="submit" value="确定"&gt;        &lt;/p&gt;    &lt;/form&gt;&lt;/body&gt;&lt;/html&gt;
+
+4、修改blog/views.py中的add方法为：
+@csrf_exemptdef add(request):    title = request.POST.get('title', 'defaultTitle')    content = request.POST.get('content', 'defaultContent')    pub_time = utc2local(timezone.now())    LOCAL_FORMAT = "%Y-%m-%d %H:%M:%S"    pub_time = pub_time.strftime(LOCAL_FORMAT)    models.Article.objects.create(title=title, content=content, pub_time=pub_time)    articles = models.Article.objects.all()    return render(request, 'blog/index.html',&#123;'articles': articles&#125;)
+
+5、测试访问访问地址 http://localhost:8000/blog/toadd
+修改博客页面1、在blog/urls.py中添加：
+url(r'^toedit/(?P&lt;article_id&gt;[0-9]+)$', views.toedit, name='toedit'),
+
+2、在blog/views.py添加方法：
+def toedit(request, article_id):    article = models.Article.objects.get(pk=article_id)    return render(request, 'blog/edit.html', &#123;'article': article&#125;)
+
+3、在blog/templates/blog中添加edit.html：
+&lt;!DOCTYPE html&gt;&lt;html lang="en"&gt;&lt;head&gt;    &lt;meta charset="UTF-8"&gt;    &lt;title&gt;修改博客&lt;/title&gt;&lt;/head&gt;&lt;body&gt;    &lt;form action="/blog/edit" method="post"&gt;        &lt;p style="display: none;"&gt;            &lt;input name="id" type="text" value="&#123;&#123;article.id&#125;&#125;"&gt;        &lt;/p&gt;        &lt;p&gt;            &lt;label for="title"&gt;标题&lt;/label&gt;            &lt;input id="title" name="title" type="text" value="&#123;&#123;article.title&#125;&#125;"&gt;        &lt;/p&gt;        &lt;p&gt;            &lt;label for="content"&gt;内容&lt;/label&gt;            &lt;textarea id="content" name="content" id="" cols="30" rows="10"&gt;&#123;&#123;article.content&#125;&#125;&lt;/textarea&gt;        &lt;/p&gt;        &lt;p&gt;            &lt;input type="submit" value="确定"&gt;        &lt;/p&gt;    &lt;/form&gt;&lt;/body&gt;&lt;/html&gt;
+
+4、修改blog/views.py中的edit方法：
+@csrf_exemptdef edit(request):    article_id = request.POST.get('id', 0)    title = request.POST.get('title', 'defaultTitle')    content = request.POST.get('content', 'defaultContent')    pub_time = utc2local(timezone.now())    LOCAL_FORMAT = "%Y-%m-%d %H:%M:%S"    pub_time = pub_time.strftime(LOCAL_FORMAT)    article = models.Article.objects.get(pk=article_id)    article.title = title    article.content = content    article.pub_time = pub_time    article.save()    articles = models.Article.objects.all()    return render(request, 'blog/index.html', &#123;'articles': articles&#125;)
+
+删除博客1、修改blog/templates/blog/index.html，添加js引入：
+&lt;script src="&#123;% static 'lib/jquery/jquery.min.js'%&#125;"&gt;&lt;/script&gt;&lt;script src="&#123;% static 'lib/layer/layer.js'%&#125;"&gt;&lt;/script&gt;&lt;script src="&#123;% static 'lib/art-template/dist/template-native.js'%&#125;"&gt;&lt;/script&gt;&lt;script src="&#123;% static 'js/index.js'%&#125;"&gt;&lt;/script&gt;
+
+2、创建static/js目录，js目录中新建index.js：
+$(function()&#123;    $('table').on('click','.del',function()&#123;        $that = $(this);        layer.confirm('确认删除？', &#123;            btn: ['确认','取消'] //按钮        &#125;, function()&#123;            var $tr = $that.parents('tr');            var id = $tr.attr('data-id');            $.ajax(&#123;                url: '/blog/delete',                type: 'POST',                dataType: 'json',                data: &#123;id: id&#125;,                success: function(data)&#123;                    console.log(data);                    if(data.code == '0')&#123;                        $tr.remove();                        layer.msg('删除成功');                    &#125;                &#125;,                error: function(xhr)&#123;                    console.log(xhr);                &#125;            &#125;);        &#125;, function()&#123;            // nothing        &#125;);            &#125;);&#125;);
+
+3、修改blog/views.py中的delete方法：
+@csrf_exemptdef delete(request):    article_id = request.POST.get('id', 0)    models.Article.objects.get(pk=article_id).delete()    result = &#123;'code': 0, 'ext': 'success'&#125;    return HttpResponse(json.dumps(result, ensure_ascii=False))
+
+4、测试访问访问地址 http://localhost:8000/blog/ ，点击文章后面的删除按钮即可。
+查找博客1、在blog/urls.py中添加：
+url(r'^search$', views.search, name='search')
+
+2、在blog/views.py中添加search方法：
+from django.db.models import Q@csrf_exemptdef search(request):    key = request.POST.get('key')    articles = models.Article.objects.filter(Q(title__contains=key) | Q(content__contains=key))    json_data = serializers.serialize("json", articles)    dict_data = json.loads(json_data)    result = &#123;        'code': 0,        'ext': 'success',        'articles': dict_data&#125;    return HttpResponse(json.dumps(result, ensure_ascii=False))
+
+
+3、在blog/templates/blog/index.html中添加：
+&lt;script type="text/template" id="tr_template"&gt;    &lt;% for(var i = 0 ; i &lt; articles.length ; i ++)&#123; %&gt;    &lt;% var article = articles[i]; %&gt;    &lt;tr data-id="&lt;%=article.pk%&gt;"&gt;        &lt;td&gt;&lt;a href="/blog/&lt;%=article.pk%&gt;"&gt;&lt;%=article.fields.title%&gt;&lt;/a&gt;&lt;/td&gt;        &lt;td&gt;&lt;%=article.fields.pub_time%&gt;&lt;/td&gt;        &lt;td&gt;            &lt;span class="del"&gt;删除&lt;/span&gt;        &lt;/td&gt;    &lt;/tr&gt;    &lt;% &#125; %&gt;&lt;/script&gt;
+
+4、在index.js中添加：
+$('.search').on('click',function()&#123;    var key = $('.search-input').val();    $.ajax(&#123;        url: '/blog/search',        type: 'POST',        dataType: 'json',        data: &#123;key: key&#125;,        success: function(data)&#123;            console.log(data);            if(data.code == '0')&#123;                var html = template('tr_template',&#123;articles: data.articles&#125;);                $('tbody').html(html);            &#125;        &#125;,        error: function(xhr)&#123;            console.log(xhr);        &#125;    &#125;);&#125;);$('.search-input').keypress(function(event) &#123;    var key = event.which;    // console.log(key);    if(key == 13)&#123;        //do something        $('.search').trigger('click');    &#125;&#125;);
+
+效果演示
+源码分享https://github.com/voidking/djsite/releases/tag/v0.2.0
+书签django入门与实践
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>后端</category>
+        <category>python</category>
+        <category>django</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>django</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>使用Docker安装配置Apache和PHP环境（微擎环境）</title>
     <url>/dev-docker-apache-php/</url>
     <content><![CDATA[前言《在CentOS7上配置PHP运行环境》一文中学习了安装配置LNMP环境，《CentOS安装Apache和PHP环境》一文中学习了安装配置Apache和PHP环境。
@@ -21473,6 +21274,133 @@ docker run -it --name vk-php -d \-p 8080:80 \-v /opt/w7/mysql:/var/lib/mysql \-v
         <tag>docker</tag>
         <tag>apache</tag>
         <tag>php</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Django部署到线上（修改版）</title>
+    <url>/dev-django-deploy-advance/</url>
+    <content><![CDATA[前言《Django部署到线上》一文中，很多步骤不是必须的，有些部分甚至是错误的，本文就精简修改一下。目标：把djsite项目部署到/home/web目录中，并且给它分配一个域名为djsite.voidking.com。
+
+
+环境准备supervisor参考《CentOS安装配置Supervisor》，安装配置好supervisor。
+python虚拟机参考《CentOS安装配置pyenv》，安装好python3.6.1。
+项目部署代码准备1、在/home/web目录中，执行命令克隆项目git clone https://github.com/voidking/djsite.git
+2、安装djangopip install django==1.11.7
+3、安装pymysqlpip install pymysql
+数据库准备1、创建数据库
+# mysql -uroot -pmysql&gt; create database `djsite` default character set utf8 collate utf8_general_ci;
+
+2、修改mysql的binlog格式为混合模式：
+mysql&gt; set global binlog_format=mixed;mysql&gt; exit;
+
+3、修改djsite/djsite/settings.py中的数据库配置vim djsite/djsite/settings.py
+4、创建表结构
+python manage.py makemigrationspython manage.py migrate
+
+启动项目1、启动命令python manage.py runserver
+2、服务器测试访问curl localhost:8000/blog/index
+3、本地测试访问使用浏览器查看 http://ip:8000/blog/index ，无法访问。启动命令改为：python manage.py runserver 0.0.0.0:8000，此时即可在浏览器看到部署好的项目。
+如果还是不能访问，尝试先关闭防火墙：systemctl stop firewalld
+nginx配置1、首先，在万网上配置域名解析，添加A记录，解析到阿里云服务器IP。假设解析好的域名为django.voidking.com。
+2、在nginx的vhost中，添加django.voidking.com.conf，内容为：
+server &#123;    listen 80;    server_name django.voidking.com;    charset utf-8;    location /&#123;        proxy_set_header   Host             $host;        proxy_set_header   X-Real-IP        $remote_addr;        proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;        client_max_body_size       1024m;        client_body_buffer_size    128k;        client_body_temp_path      data/client_body_temp;        proxy_connect_timeout      90;        proxy_send_timeout         90;        proxy_read_timeout         90;        proxy_buffer_size          4k;        proxy_buffers              4 32k;        proxy_busy_buffers_size    64k;        proxy_temp_file_write_size 64k;        proxy_temp_path            data/proxy_temp;        proxy_pass http://127.0.0.1:8000;    &#125;&#125;
+
+3、重启nginx，./nginx -s reload
+4、测试访问服务器：curl django.voidking.com/blog/index本地浏览器：http://django.voidking.com/blog/index
+至此，django项目已经部署成功，没有用到uwsgi。如果给django添加守护进程，那么我们的部署就接近完美了。那么，uwsgi又能干什么呢，我们继续研究。
+uwsgi安装uwsgipip install uwsgi
+编写测试：
+# test.pydef application(env, start_response):    start_response('200 OK', [('Content-Type','text/html')])    return [b"Hello World"]
+
+启动测试：uwsgi --http :8001 --wsgi-file test.py
+访问 http://ip:8001 ，即可看到Hello World 。
+一般启动1、编写wsgi.py文件编写django_wsgi.py文件，将其放在与文件manage.py同一个目录下。
+#!/usr/bin/env python# coding: utf-8import os,djangofrom django.core.handlers.wsgi import WSGIHandleros.environ.setdefault("DJANGO_SETTINGS_MODULE", "djsite.settings")django.setup()application = WSGIHandler()
+
+2、启动项目uwsgi --http :8000 --chdir /home/web/djsite/ --module django_wsgi
+3、查看启动结果lsof -i :8000，ps aux | grep uwsgi
+4、测试访问http://ip:8000/blog/index此时，页面是没有样式的，也就是说静态资源加载失败。
+5、配置静态资源uwsgi --http :8000 --chdir /home/web/djsite/ --module django_wsgi --static-map=/static=static此时，页面样式就正常了。
+高级启动1、新建uwsgi.ini，与manage.py在同一级目录。
+[uwsgi]http = :8000chdir = /home/web/djsite/wsgi-file = django_wsgi.pystatic-map = /static=static
+
+2、启动uwsgiuwsgi uwsgi.ini
+3、测试访问http://ip:8000/blog/index
+使用supervisor管理守护uwsgi1、在/etc/supervisor中新建djsite.conf文件：
+[program:djsite]command=/root/.pyenv/versions/3.6.1/bin/uwsgi --http :8000 --chdir /home/web/djsite/ --module django_wsgi --static-map=/static=staticdirectory=/home/web/djsite/startsecs=0stopwaitsecs=0autostart=trueautorestart=true
+
+2、重启supervisor
+ps aux | grep supervisordsystemctl stop supervisordsystemctl start supervisord
+
+附：重启djsite命令
+supervisorctl -c /etc/supervisord.conf restart djsite
+
+3、测试访问http://ip:8000/blog/index页面显示正常，至此守护进程配置成功。
+4、djsite.conf可以精简修改为：
+[program:djsite]command=/root/.pyenv/versions/3.6.1/bin/uwsgi --ini uwsgi.inidirectory=/home/web/djsite/startsecs=0stopwaitsecs=0autostart=trueautorestart=true
+
+静态资源问题（可忽略）假设，uwsgi.ini为：
+[uwsgi]http = :8000chdir = /home/web/djsite/wsgi-file = django_wsgi.py
+
+静态资源就无法访问了。在不添加static-map的情况下，需要修改两个文件：（1）修改djsite/djsite/settings.py文件，添加：
+STATIC_ROOT = '/home/web/djsite/static/'
+（2）修改djsite/djsite/settings.py文件为：
+from django.conf.urls import url,includefrom django.contrib import adminfrom django.conf.urls.static import staticfrom django.conf import settingsurlpatterns = [    url(r'^admin/', admin.site.urls),    url(r'^blog/', include('blog.urls', namespace='blog')),] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+admin静态资源问题如果以python manage.py runserver启动django，那么静态资源没有问题。
+如果以uwsgi启动django，静态资源看起来没有问题，但是，如果访问 http://ip:8000/admin ，就会发现这个页面的静态资源无法获取。
+一个Django应用，一般有两类静态文件。一是应用内的静态文件，二是Django自带的静态文件。应用内的静态文件在djsite/static目录下。此外，在INSTALLED_APPS中配置了django.contrib.admin， 则还会有另外一组静态文件，在Django安装位置里。
+例如，一个root在Python 3.6版本安装的Django，admin的静态文件在： /usr/local/lib/python3.6/site-packages/django/contrib/admin/static/admin/。
+最终，在STATIC_URL里，会有两类静态文件， /static/* 与 /static/admin/* 。
+了解原理，原因就很显然了。python manage.py runserver知道静态文件的位置，而uWSGI不知道静态文件在什么位置。
+解决办法如下：（1）修改djsite/djsite/settings.py文件：
+SITE_ROOT = os.path.dirname(os.path.abspath(__file__))SITE_ROOT = os.path.abspath(os.path.join(SITE_ROOT, '../'))STATIC_ROOT = os.path.join(SITE_ROOT, 'collectedstatic')
+
+（2）收集所有静态文件到collectedstatic目录python manage.py collectstatic
+（3）修改uwsgi.ini配置
+[uwsgi]http = :8000chdir = /home/web/djsite/wsgi-file = django_wsgi.pystatic-map = /static=collectedstatic
+
+nginx+uwsgi以上，我们的djsite项目已经通过uwsgi方式启动起来，并且可以保持后台运行。nginx配置不改变的情况下，我们可以正常访问 http://django.voidking.com/blog/index 。此时，nginx作为反向代理，和uwsgi间通过http交互。
+接下来，就配置下nginx和uwsgi通过socket结合的方式。原理：用户发送http请求到nginx，nginx通过socket把请求交给uwsgi，uwsgi拿到django的处理结果，通过socket返还给nginx，nginx通过http返回结果给用户。
+1、因为nginx和uwsgi通过socket方式交互，我们需要修改uwsgi.ini的配置为：
+[uwsgi]socket = :8000chdir = /home/web/djsite/wsgi-file = django_wsgi.pystatic-map = /static=collectedstaticmaster = trueprocesses = 2enable-threads = truedaemonize = /home/web/djsite/uwsgi.log
+
+2、重启supervisorsystemctl stop supervisordsystemctl start supervisord
+3、修改nginx配置djsite.voidking.com.conf：
+server &#123;    listen      80;    server_name djsite.voidking.com;    charset     utf-8;    location / &#123;        uwsgi_pass     127.0.0.1:8000;        include        uwsgi_params;    &#125;&#125;
+
+5、重启nginx./nginx -s reload
+6、测试访问此时，访问 http://ip:8000/blog/index 失败，访问 http://django.voidking.com/blog/index 正常。因为8000端口不再提供http服务，而是一个和nginx连接的socket。
+加速静态资源1、修改nginx配置djsite.voidking.com.conf：
+server &#123;    listen      80;    server_name djsite.voidking.com;    charset     utf-8;    location / &#123;        uwsgi_pass     127.0.0.1:8000;        include        uwsgi_params;    &#125;    location /static &#123;        alias /root/djsite/collectedstatic;    &#125;&#125;
+
+2、修改nginx.conf
+user root;
+
+3、重启nginx./nginx -s reload
+小结至此，django部署完毕，我们实现了三种部署方法：
+
+nginx + django（http方式）
+nginx + uwsgi（http方式）
+nginx + uwsgi（socket方式）
+
+书签使用uWSGI提供静态文件 (更新至1.9)
+解决uWSGI里的Django静态文件丢失
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>后端</category>
+        <category>python</category>
+        <category>centos</category>
+        <category>django</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>django</tag>
+        <tag>centos</tag>
+        <tag>supervisor</tag>
+        <tag>uwsgi</tag>
       </tags>
   </entry>
   <entry>
@@ -22337,6 +22265,118 @@ git-scmhttp://git-scm.com/
         <tag>hexo</tag>
         <tag>git</tag>
         <tag>ssh</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>通过远程控制接口批量安装系统</title>
+    <url>/dev-batch-install-sys-by-mgmt/</url>
+    <content><![CDATA[前言《通过远程控制接口给服务器安装系统》一文中，我们发现通过远程控制接口给服务器安装系统很方便。《Ubuntu系统批量自动安装》一文中，我们学会了使用PXE技术进行系统的批量安装。
+这两者结合，能产生怎样的魔力？下面是见证奇迹的时刻。
+需求：机房里有40台曙光I620-G20机器需要安装Ubuntu16 Server系统，曙光供应商说需要两天的工作量，报价五千元。那么自己安装的话，需要多长时间？也需要两天吗？
+
+
+安装步骤1、进入机房，给40台机器配置远程控制接口的IP。参考《通过远程控制接口给服务器安装系统》的远程控制接口配置部分。
+2、搭建PXE服务器。参考《Ubuntu系统批量自动安装》，并且进行改进。
+3、远程控制批量安装系统。
+搭建PXE服务器基本准备1、一台服务器，已经安装好了Ubuntu16 Server版系统，IP为172.16.0.162。2、更换源列表并更新，参考《Ubuntu更换源列表》。3、切换到root用户，sudo -i4、开启路由转发，echo 1 &gt; /proc/sys/net/ipv4/ip_forward。务必开启，因为PXE服务器同时作为网关，不开启的话安装会卡住。5、在PXE服务器上安装DNS服务（可选操作，没有什么影响）。
+DHCP和FTP本节主要参考How to Install Ubuntu via PXE Server Using Local DVD Sources。
+1、安装DHCP和FTP服务apt-get install dnsmasq
+2、指定DHCP网卡ip add，看到正在使用的网卡为ens2f1（172.16.0.162）。
+3、配置dnsmasqvim /etc/dnsmasq.conf，在文件末尾添加：
+interface=ens2f1dhcp-range=172.16.0.163,172.16.0.254,24hdhcp-option=3,172.16.0.162dhcp-option=6,172.16.0.162dhcp-option=28,172.16.0.255dhcp-option=42,0.0.0.0dhcp-boot=pxelinux.0,172.16.0.162enable-tftptftp-root=/tftpboot# gateway to Internet#dhcp-option=3,172.16.0.135# real dns server#dhcp-option=6,172.20.1.4#server=8.8.4.4
+dhcp-option=3表示网关，6表示域名服务器，28表示broadcast，48表示时间服务器。server表示DNS forwarder IPs Address。
+需要注意的是，网关一定要配置，否则在使用内网镜像安装时会特别慢。在获取镜像时卡住半小时，查看安装日志如下图所示；在“Updating the list of available packages”时也会卡住半小时。而且，最好不要让服务器连接到外网，否则安装过程中会自动从网络中获取更新，安装就会很慢。就像本文中的配置，网关和域名服务器都设置为PXE服务器的IP，而不是真实的可以访问外网的网关和域名服务器。
+4、查看服务systemctl status dnsmasq
+配置netboot1、下载网络启动文件，只有43M
+wget http://ftp.ubuntu.com/ubuntu/dists/xenial/main/installer-amd64/current/images/netboot/netboot.tar.gz
+或者从ubuntu-16.04.4-server-amd64.iso镜像中拷贝，netboot.tar.gz相当于install/netboot目录的压缩文件。
+2、解压文件
+tar -xzvf netboot.tar.gz -C /tftpboot/
+解压后的文件包括：
+ldlinux.c32 -&gt; ubuntu-installer/amd64/boot-screens/ldlinux.c32pxelinux.0  -&gt; ubuntu-installer/amd64/pxelinux.0pxelinux.cfg -&gt; ubuntu-installer/amd64/pxelinux.cfg/ubuntu-installer/version.info
+
+安装系统1、远程连接需要安装系统的服务器，设置BIOS，选择从网络启动。
+2、选择Install，正常安装系统即可，不过，系统镜像需要从外网下载。这里没有连接外网，就不再往下演示。
+以上，实现了从网络安装源安装Ubuntu系统。但是存在两个问题，一个问题是系统镜像需要从外网下载，浪费带宽。另一个问题是安装过程中需要不断交互，浪费时间。
+PXE服务器升级配置内网镜像1、安装apache2apt-get install apache2 -y
+web根目录是 /var/www/html/
+2、测试apache2curl 127.0.0.1
+3、重启apache2/etc/init.d/apache2 restart
+4、上传ubuntu-16.04.4-server-amd64.iso到用户目录。scp ubuntu-16.04.4-server-amd64.iso test@172.16.0.162:~
+5、挂载ubuntu-16.04.4-server-amd64.iso到ubuntu目录。在用户目录执行：
+mkdir /var/www/html/ubuntumount ubuntu-16.04.4-server-amd64.iso /var/www/html/ubuntu
+
+6、替换netboot为镜像中的netboot，否则内核版本的差异会导致安装失败。
+rm -rf /tftpboot/*cp -r /var/www/html/ubuntu/install/netboot/* /tftpboot/
+
+7、再次安装系统，此时就可以从PXE服务器获取系统镜像了。在选择镜像界面，上拉到enter information manually，回车。archive hostname输入172.16.0.162。directory输入/ubuntu，注意，ubuntu后面不要有斜杠。如果系统安装卡住，那么Alt+F2进入控制台，tail /var/log/syslog查看系统安装日志，根据日志进行排错。查看错误后Alt+F1返回图形安装界面。
+8、安装完成的系统，启动后发现卡住。这时Alt+F2切换到第二个终端，就可以正常使用系统了。
+添加硬盘启动系统安装完成，如果依然从网络启动的话，那么每次启动依然会进入到Installer boot menu界面，除非再次修改BIOS首选启动项。不妨在Installer boot menu界面添加一个启动项，该启动项允许从本地硬盘启动。主要参考Install Ubuntu 16.04 via PXE and network boot。
+1、编辑pxelinux.cfg文件vim /tftpboot/pxelinux.cfg/default，修改为：
+# D-I config version 2.0# search path for the c32 support libraries (libcom32, libutil etc.)path ubuntu-installer/amd64/boot-screens/include ubuntu-installer/amd64/boot-screens/menu.cfgdefault ubuntu-installer/amd64/boot-screens/vesamenu.c32prompt 0# add localboot herelabel localboot    menu label Boot from Disk    localboot 0timeout 0
+此外，timeout默认是0，这里可以改为60，那么6秒后会自动选择install选项。
+2、再次通过网络启动，即可看到硬盘启动选项。选中它回车，即可启动本地硬盘上的系统。
+自动选择安装源以上安装，我们需要手动输入archive hostname和directory，能不能在安装过程中自动选择？当然可以。本方法主要参考PXEInstallServer。
+1、编辑txt.cfgvim /tftpboot/ubuntu-installer/amd64/boot-screens/txt.cfg，原内容为：
+default installlabel install    menu label ^Install    menu default    kernel ubuntu-installer/amd64/linux    append vga=788 initrd=ubuntu-installer/amd64/initrd.gz --- quiet label cli    menu label ^Command-line install    kernel ubuntu-installer/amd64/linux    append tasks=standard pkgsel/language-pack-patterns= pkgsel/install-language-support=false vga=788 initrd=ubuntu-installer/amd64/initrd.gz --- quiet
+修改为：
+default installlabel install        menu label ^Install        menu default        kernel ubuntu-installer/amd64/linux        append ks=http://172.16.0.162/ks.cfg vga=788 initrd=ubuntu-installer/amd64/initrd.gz --- quiet  label cli        menu label ^Command-line install        kernel ubuntu-installer/amd64/linux        append tasks=standard pkgsel/language-pack-patterns= pkgsel/install-language-support=false vga=788 initrd=ubuntu-installer/amd64/initrd.gz --- quiet
+
+2、在/var/www/html目录创建ks.cfg文件，内容为：
+installurl --url http://172.16.0.162/ubuntu/
+
+3、重新安装系统，即可省去设置archive hostname的步骤。
+配置无人值守既然可以自动选择安装源，那么其他交互步骤可不可以自动选择？当然可以。控制安装过程的自动交互主要有两个文件：ks.cfg和ubuntu-server.seed。
+ks.cfg1、在安装菜单添加ks.cfg和ubuntu-server.seedvim /tftpboot/ubuntu-installer/amd64/boot-screens/txt.cfg，修改为：
+default installlabel install    menu label ^Install    menu default    kernel ubuntu-installer/amd64/linux    append ks=http://172.16.0.162/ks.cfg preseed/url=http://172.16.0.162/ubuntu-server.seed vga=788 initrd=ubuntu-installer/amd64/initrd.gz --- quietlabel cli    menu label ^Command-line install    kernel ubuntu-installer/amd64/linux    append tasks=standard pkgsel/language-pack-patterns= pkgsel/install-language-support=false vga=788 initrd=ubuntu-installer/amd64/initrd.gz --- quiet
+
+2、编辑/var/www/html/ks.cfg文件参考《Ubuntu系统批量自动安装》一文中的ks.cfg。编辑后的ks.cfg文件内容如下：
+#Generated by Kickstart Configurator#platform=AMD64 or Intel EM64T#System languagelang en_US#Language modules to installlangsupport en_US#System keyboardkeyboard us#System mousemouse#System timezonetimezone Asia/Shanghai#Root passwordrootpw --disabled#Initial useruser test --fullname "test" --iscrypted --password $1$AKq0i3Yu$Tunuha7bYwq5uUV62F2nF0#Reboot after installationreboot#Use text mode installtext#Install OS instead of upgradeinstall#Use Web installationurl --url http://172.16.0.162/ubuntu/#System bootloader configurationbootloader --location=mbr #Clear the Master Boot Recordzerombr yes#Partition clearing informationclearpart --all --initlabel #System authorization infomationauth  --useshadow  --enablemd5 #Network informationnetwork --bootproto=dhcp --device=ens2f0#Firewall configuration#firewall --disabled --trust=ens2f0 --ssh #Do not configure the X Window Systemskipx
+需要注意的是网卡的配置，这里的网卡名指的是需要安装系统的网卡名。
+3、在/var/www/html目录创建ubuntu-server.seed文件，内容为空（暂时不配置）。
+4、再次安装系统，绝大部分步骤都会自动进行选择了。但是，在分区部分卡住。手动分区后，后续会全部自动安装。安装完成后，系统没有安装openssh服务。
+ubuntu-server.seed本文中，ubuntu-server.seed主要用来解决分区、选择软件等ks.cfg没有解决的问题。
+1、编辑seed文件vim /var/www/html/ubuntu-server.seed，添加：
+d-i pkgsel/include string openssh-serverd-i partman/confirm_write_new_label boolean trued-i partman/choose_partition select Finish partitioning and write changes to diskd-i partman/confirm boolean true
+其他配置可以参考/var/www/html/ubuntu/preseed/目录中的文件，不过本文中用不到其他配置了。
+2、再次安装系统，此时就会自动分区，并且安装openssh服务了。全程不需要手动帮助设置，完美。
+配置手动安装个别情况下，自动安装会失败，这时就需要手动安装，在Installer boot menu界面添加一个手动安装启动项即可。
+1、编辑pxelinux.cfg文件vim /tftpboot/pxelinux.cfg/default，修改为：
+# D-I config version 2.0# search path for the c32 support libraries (libcom32, libutil etc.)path ubuntu-installer/amd64/boot-screens/include ubuntu-installer/amd64/boot-screens/menu.cfgdefault ubuntu-installer/amd64/boot-screens/vesamenu.c32prompt 0# add localboot herelabel localboot    menu label Boot from Disk    localboot 0label manual install    menu label Manual Install    kernel ubuntu-installer/amd64/linux    append ks=http://172.16.0.162/manual.cfg vga=788 initrd=ubuntu-installer/amd64/initrd.gz --- quiettimeout 0
+
+2、在/var/www/html目录创建manual.cfg文件，内容为：
+installurl --url http://172.16.0.162/ubuntu/
+
+3、重新安装系统，Installer boot menu界面就会出现手动安装选项。
+批量安装1、远程连接需要安装系统的服务器，设置BIOS，选择从网络启动。
+2、安装正常系统，有些机器在网络部分卡住。此时，可以手动给网卡配置IP。但是，如果系统只检测到一个网卡，而这个网卡没有连接网线，那么无法完成接下来的安装。因为没有IP，所以无法通过获取ks.cfg等文件。Alt+F2进入控制台，ip add看到IP设置成功，但是无法ping通PXE服务器。Alt+F1返回图形界面。此时，最好的做法是进入机房，把网线接到可以检测到的那个网卡。然后Ctrl+Alt+Del重启服务器。
+3、再次安装系统，即可顺利安装。
+配置静态IP系统安装完成后，此时不能上网，需要给系统配置静态IP和网关，这时发现了一个小问题：系统中没有安装vim，自带的vi也有毛病。怎么办？使用nano。
+1、编辑interfacessudo nano /etc/network/interfaces
+2、保存文件编辑完成，Ctrl+X退出，系统提示是否保存，输入Y回车，然后再次回车保存。
+3、重启网络服务
+sudo /etc/init.d/networking restart# orsudo ifdown ens2f0sudo ifup ens2f0
+重启网络服务后发现，此时网卡上有两个IP地址，而且只有DHCP分配的旧的IP地址生效（第一个）。
+4、取消IP地址并重启网络服务
+sudo ip addr flush dev ens2f0sudo /etc/init.d/networking restart
+此时静态IP就配置成功了。
+后记给40台机器配置远程控制接口的IP，搭建PXE服务器，安装系统，配置静态IP，总计用时一周左右。从效率上讲不如外包找人安装，从研究上讲还是有很多收获的。还好最近清闲了一些，不然还真没时间把整个安装流程搞清楚。之所以用时很久，主要是因为有一些机器之前使用过，所以安装的时候需要手动确认remove volume data，或者disk detect报错需要手动安装，如下图所示。
+书签Netboot Install
+PXE-netboot-install
+Ubuntu 16.04 LTS (Xenial Xerus) Netboot
+How to install PXE Server on Ubuntu 16.04
+神奇的fdisk和dd命令
+PXE网络克隆图文教程
+DHCP tftp PXE实现Ghost网络克隆
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>OS</category>
+      </categories>
+      <tags>
+        <tag>操作系统</tag>
+        <tag>pxe</tag>
       </tags>
   </entry>
   <entry>
@@ -25589,6 +25629,121 @@ cron.*                         /var/log/cron.log
       </tags>
   </entry>
   <entry>
+    <title>Linux配置SNAT上网</title>
+    <url>/dev-linux-snat/</url>
+    <content><![CDATA[前言一个局域网中，主机之间互联，其中只有一台主机可以上网，其他主机想要上网怎么办？答：使用SNAT。
+情景模拟有主机A，eth0的IP为内网IP：192.168.56.101，eth1为公网IP：120.77.36.222。有主机B，eth0的IP为内网IP：192.168.56.102。
+主机A可以访问外网，主机B和主机A在同一个局域网。下面我们进行配置，让主机B也可以上网。
+
+
+数据包流向发送数据包B发送数据包时，A也就是NAT主机，分析数据包表头，将此数据包转到可以连接公网的IP上去。由于私有IP与公有IP不能互通，A会通过iptables的NAT table内的Postrounting链将数据包表头伪装成A的公网IP，并且将这两个不同来源的数据包对应关系写入暂存内存中，然后将数据包传送出去。此时传到互联网的这个数据包，已经表现为来自公网IP，而非来自局域网。
+接收响应包当互联网把数据响应给B时，会首先进入NAT主机A，A分析数据包的序号，对比刚刚记录到内存中的数据，由于发现该数据包为后端主机之前传送出去的，因此在NAT Prerouting链中，会将目标IP修改成为后端主机，即B的IP，然后发现目标已经不是A的公网IP，开始通过路由分析，将数据包传送到A的局域网接口，再传送到最终目标192.168.56.102上去。
+iptables小班snat的配置，主要用到iptables命令，之前在《CentOS7中firewall的使用》简单提过iptables，今天再认真学习一下。
+主要参考文档：Basic iptables howtoiptables详解ipatebles详解（1）：iptales概念iptables命令25个iptables常用示例Linux防火墙iptables学习笔记（三）iptables命令详解和举例 
+历史防火墙，其实说白了讲，就是用于实现Linux下访问控制的功能的，它分为硬件的或者软件的防火墙两种。无论是在哪个网络中，防火墙工作的地方一定是在网络的边缘。而我们的任务就是需要去定义到底防火墙如何工作，这就是防火墙的策略，规则，以达到让它对出入网络的IP、数据进行检测。
+iptables的前身叫ipfirewall （内核1.x时代），这是一个作者从freeBSD上移植过来的，能够工作在内核当中的，对数据包进行检测的一款简易访问控制工具。但是ipfirewall工作功能极其有限（它需要将所有的规则都放进内核当中，这样规则才能够运行起来，而放进内核，这个做法一般是极其困难的）。当内核发展到2.x系列的时候，软件更名为ipchains，它可以定义多条规则，将他们串起来，共同发挥作用，而现在，它叫做iptables，可以将规则组成一个列表，实现绝对详细的访问控制功能。
+原理五个关卡iptables工作在用户空间中，是定义规则的工具，本身并不算是防火墙。它定义的规则，可以让内核空间中的netfilter来读取，并且实现让防火墙工作。netfilter的架构就是在整个网络流程的若干位置设置一些关卡（HOOK），而在每个关卡上登记了一些规则，所以这些关卡的术语规则链。
+在内核空间中，netfilter选择了5个位置，来作为控制的关卡，专业点叫做规则链。朱双印大神的博客中给出了直观的图像：
+根据上图，我们能够想象出某些常用场景中，报文的流向：到本机某进程的报文：PREROUTING –&gt; INPUT由本机转发的报文：PREROUTING –&gt; FORWARD –&gt; POSTROUTING由本机的某进程发出报文（通常为响应报文）：OUTPUT –&gt; POSTROUTING
+五个规则链的作用如下：INPUT链：处理输入数据包。OUTPUT链：处理输出数据包。PORWARD链：处理转发数据包。PREROUTING链：用于目标地址转换（DNAT）。POSTOUTING链：用于源地址转换（SNAT）。
+表的概念我们再想想另外一个问题，我们对每个”链”上都放置了一串规则，但是这些规则有些很相似，比如，A类规则都是对IP或者端口的过滤，B类规则是修改报文，那么这个时候，我们是不是能把实现相同功能的规则放在一起呢，必须能的。
+我们把具有相同功能的规则的集合叫做”表”，所以说，不同功能的规则，我们可以放置在不同的表中进行管理，而iptables已经为我们定义了4种表，每种表对应了不同的功能，而我们定义的规则也都逃脱不了这4种功能的范围，所以，学习iptables之前，我们必须先搞明白每种表的作用。iptables为我们提供了如下规则的分类，或者说，iptables为我们提供了如下”表”：
+
+filter表：负责过滤功能，防火墙；内核模块：iptables_filter
+nat表：network address translation，网络地址转换功能；内核模块：iptable_nat
+mangle表：拆解报文，做出修改，并重新封装的功能；iptable_mangle
+raw表：关闭nat表上启用的连接追踪机制；iptable_raw
+
+也就是说，我们自定义的所有规则，都是这四种分类中的规则，或者说，所有规则都存在于这4张”表”中。
+数据包流向可以将数据包通过防火墙的流程总结为下图：我们在写iptables规则的时候，要时刻牢记这张路由次序图，灵活配置规则。
+规则规则：根据指定的匹配条件来尝试匹配每个流经此处的报文，一旦匹配成功，则由规则后面指定的处理动作进行处理。规则由匹配条件和处理动作组成。
+匹配条件分为基本匹配条件与扩展匹配条件：基本匹配条件包括源地址Source IP和目标地址 Destination IP。
+扩展匹配条件包括源端口Source Port，目标端口Destination Port等等。
+动作也可以分为基本动作和扩展动作，此处列出一些常用动作：ACCEPT：允许数据包通过。DROP：直接丢弃数据包，不给任何回应信息，这时候客户端会感觉自己的请求泥牛入海了，过了超时时间才会有反应。REJECT：拒绝数据包通过，必要时会给数据发送端一个响应的信息，客户端刚请求就会收到拒绝的信息。SNAT：源地址转换，解决内网用户用同一个公网地址上网的问题。MASQUERADE：是SNAT的一种特殊形式，适用于动态的、临时会变的ip上。DNAT：目标地址转换，解决外网用户访问内网的问题。REDIRECT：在本机做端口映射。LOG：在/var/log/messages文件中记录日志信息，然后将数据包传递给下一条规则，也就是说除了记录以外不对数据包做任何其他操作，仍然让下一条规则去匹配。
+命令详解命令格式：iptables [选项] [参数]
+选项包括：
+-t：指定要操纵的表；-A：向规则链中添加条目；-D：从规则链中删除条目；-I：向规则链中插入条目；-R：替换规则链中的条目；-L：显示规则链中已有的条目；-F：清楚规则链中已有的条目；-Z：清空规则链中的数据包计算器和字节计数器；-N：创建新的用户自定义规则链；-P：定义规则链中的默认目标；-h：显示帮助信息；-p：指定要匹配的数据包协议类型；-s：指定要匹配的数据包源ip地址；-d：指定要匹配的数据包目标ip地址；-j：指定要跳转的目标；-i：指定数据包进入本机的网络接口（网卡）；-o：指定数据包离开本机的网络接口（网卡）；--sport：匹配来源端口号；--dport：匹配目标端口号。
+
+命令选项输入顺序：iptables -t 表名 &lt;-A/I/D/R&gt; 规则链名 [规则号] &lt;-i/o 网卡名&gt; -p 协议名 &lt;-s 源IP/源子网&gt; --sport 源端口 &lt;-d 目标IP/目标子网&gt; --dport 目标端口 -j 动作
+实例1、清除已有iptables规则
+iptables -Fiptables -Xiptables -Z
+
+2、开放指定的端口
+iptables -A INPUT -s 127.0.0.1 -d 127.0.0.1 -j ACCEPT               #允许本地回环接口(即允许本机访问本机)iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT    #允许已建立的或相关连的通行iptables -A OUTPUT -j ACCEPT         #允许所有本机向外的访问iptables -A INPUT -p tcp --dport 22 -j ACCEPT    #允许访问22端口iptables -A INPUT -p tcp --dport 80 -j ACCEPT    #允许访问80端口iptables -A INPUT -p tcp --dport 21 -j ACCEPT    #允许ftp服务的21端口iptables -A INPUT -p tcp --dport 20 -j ACCEPT    #允许FTP服务的20端口iptables -A INPUT -j REJECT       #禁止其他未允许的规则访问iptables -A FORWARD -j REJECT     #禁止其他未允许的规则访问
+
+3、屏蔽IP
+iptables -I INPUT -s 123.45.6.7 -j DROP       #屏蔽单个IP的命令iptables -I INPUT -s 123.0.0.0/8 -j DROP      #封整个段即从123.0.0.1到123.255.255.254的命令iptables -I INPUT -s 124.45.0.0/16 -j DROP    #封IP段即从123.45.0.1到123.45.255.254的命令iptables -I INPUT -s 123.45.6.0/24 -j DROP    #封IP段即从123.45.6.1到123.45.6.254的命令是
+
+4、查看已添加的iptables规则iptables -L -n -v
+5、删除已添加的iptables规则将所有iptables以序号标记显示，执行：iptables -L -n --line-numbers
+比如要删除INPUT里序号为8的规则，执行：iptables -D INPUT 8
+snat具体配置主机A接收数据包允许接收局域网网卡的数据包sudo iptables -I INPUT -i eth0 -j ACCEPT
+或者sudo iptables -P INPUT ACCEPT
+开启路由功能sudo echo 1 &gt; /proc/sys/net/ipv4/ip_forward如果报错：-bash: /proc/sys/net/ipv4/ip_forward: Permission denied那就切换到root用户：sudo -iecho 1 &gt; /proc/sys/net/ipv4/ip_forward
+要想永久有效，还要把/etc/sysctl.conf文件里边的net.ipv4.ip_forward的值改为1。
+伪装数据包sudo iptables -t nat -A POSTROUTING -s 192.168.56.102 -o eth1 -j MASQUERADE
+或者用SNAT直接修改IP数据包的表头来源IPsudo iptables -t nat -A POSTROUTING -s 192.168.56.102 -o eth1 -j SNAT --to 192.168.56.101
+如果需要支持整个网段：sudo iptables -t nat -A POSTROUTING -s 192.168.56.0/24 -o eth1 -j SNAT --to 192.168.56.101
+如果需要支持连续IP：sudo iptables -t nat -A POSTROUTING -m iprange --src-range 192.168.56.102-192.168.56.104 -o eth1 -j SNAT --to 192.168.56.101
+注意：
+
+亲测以上所有命令中的-o eth1可以省略，所以，在分不清哪个网卡是内网哪个网卡是外网的情况下，直接省略即可。
+如果想要允许所有IP，-s 192.168.56.0/24也可以省略。
+-j SNAT --to 192.168.56.101可以换成-j SNAT --to 120.77.36.222。
+-j SNAT --to 120.77.36.222建议换成-j MASQUERADE，尤其在外网IP非固定的情况下。
+综上，最简单的万能SNAT命令为sudo iptables -t nat -A POSTROUTING -j MASQUERADE
+
+查看与删除查看NAT表链规则sudo iptables -t nat -nL --line-number
+删除POSTROUTING第一条规则sudo iptables -t nat -D POSTROUTING 1
+重启后依旧生效1、保存规则sudo chmod a+w -R /optsudo iptables-save &gt; /opt/iptables.rules
+2、手动导入规则sudo iptables-restore &lt; /opt/iptables.rules
+3、开机自动导入规则在ubuntu下要把一个程序加入开机启动，一般可以通过修改rc.local来完成，但ubuntu下有两个rc.local文件，分别是/etc/rc.local和/etc/init.d/rc.local。因为/etc/init.d/rc.local调用了/etc/rc.local，所以我们的开机脚本最好直接写入/etc/rc.local，写在exit 0之前即可。
+sudo vim /etc/rc.local在exit 0之前添加：
+/sbin/iptables-restore &lt; /opt/iptables.rules
+
+主机Bcentos如果是centos，那么配置ifcfg文件sudo vim /etc/sysconfig/network-scripts/ifcfg-eth0
+DEVICE=eth0BOOTPROTO=staticONBOOT=yesIPADDR=192.168.56.102NETMASK=255.255.255.0GATEWAY=192.168.56.101
+
+然后service network restart
+ubuntu如果是ubuntu，那么配置interfaces文件sudo vim /etc/network/interfaces
+auto loiface lo inet loopbackauto em1iface em1 inet staticaddress 192.168.56.102netmask 255.255.255.0gateway 192.168.56.101
+
+然后sudo /etc/init.d/networking restart
+总之，B主机配置的关键在于网关，网关要设置成主机A的内网IP。
+请问，网关不设置成主机A的内网IP可以吗？可以，那就是另外一种稍微复杂的设置方法了。
+此时，使用主机B，已经可以ping通外网的IP了。但是ping域名会提示“ping: unknown host”。
+DNS配置方法一1、编辑resolv.confsudo vim /etc/resolv.conf，添加nameserver的配置
+nameserver 180.76.76.76nameserver 223.6.6.6
+上面的两个IP地址，分别是百度和阿里的公共DNS。
+2、测试ping www.baidu.com
+3、不过，这种方法在重启之后会失效。想要永久生效，还需要编辑base文件。sudo vim /etc/resolvconf/resolv.conf.d/base，添加：
+nameserver 180.76.76.76nameserver 223.6.6.6
+
+
+方法二1、编辑interfacessudo vim /etc/network/interfaces
+2、添加nameserver的配置
+dns-nameserver 180.76.76.76 223.5.5.5
+
+3、重启服务器sudo reboot实际上，重启后的dns配置会写入到resolv.conf中。
+4、测试ping www.baidu.com
+结语至此，snat完美配置成功！在这个过程中，顺带学习了一下iptables，收获满满。感觉iptables和route有很大关系，但是在配置过程中没有用到route。书签中有关于route的文档，用到的时候再深入学习。
+书签Linux下配置SNAT上网
+利用iptables的SNAT功能实现局域网共享上网
+linux 路由表设置之 route 指令详解
+ubuntu配置静态路由及重启生效
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>网络</category>
+      </categories>
+      <tags>
+        <tag>网络</tag>
+        <tag>linux</tag>
+        <tag>iptables</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>matlab入门</title>
     <url>/dev-matlab-start/</url>
     <content><![CDATA[前言
@@ -25823,121 +25978,6 @@ Maven详解之聚合与继承http://blog.csdn.net/wanghantong/article/details/36
       <tags>
         <tag>java</tag>
         <tag>maven</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Linux配置SNAT上网</title>
-    <url>/dev-linux-snat/</url>
-    <content><![CDATA[前言一个局域网中，主机之间互联，其中只有一台主机可以上网，其他主机想要上网怎么办？答：使用SNAT。
-情景模拟有主机A，eth0的IP为内网IP：192.168.56.101，eth1为公网IP：120.77.36.222。有主机B，eth0的IP为内网IP：192.168.56.102。
-主机A可以访问外网，主机B和主机A在同一个局域网。下面我们进行配置，让主机B也可以上网。
-
-
-数据包流向发送数据包B发送数据包时，A也就是NAT主机，分析数据包表头，将此数据包转到可以连接公网的IP上去。由于私有IP与公有IP不能互通，A会通过iptables的NAT table内的Postrounting链将数据包表头伪装成A的公网IP，并且将这两个不同来源的数据包对应关系写入暂存内存中，然后将数据包传送出去。此时传到互联网的这个数据包，已经表现为来自公网IP，而非来自局域网。
-接收响应包当互联网把数据响应给B时，会首先进入NAT主机A，A分析数据包的序号，对比刚刚记录到内存中的数据，由于发现该数据包为后端主机之前传送出去的，因此在NAT Prerouting链中，会将目标IP修改成为后端主机，即B的IP，然后发现目标已经不是A的公网IP，开始通过路由分析，将数据包传送到A的局域网接口，再传送到最终目标192.168.56.102上去。
-iptables小班snat的配置，主要用到iptables命令，之前在《CentOS7中firewall的使用》简单提过iptables，今天再认真学习一下。
-主要参考文档：Basic iptables howtoiptables详解ipatebles详解（1）：iptales概念iptables命令25个iptables常用示例Linux防火墙iptables学习笔记（三）iptables命令详解和举例 
-历史防火墙，其实说白了讲，就是用于实现Linux下访问控制的功能的，它分为硬件的或者软件的防火墙两种。无论是在哪个网络中，防火墙工作的地方一定是在网络的边缘。而我们的任务就是需要去定义到底防火墙如何工作，这就是防火墙的策略，规则，以达到让它对出入网络的IP、数据进行检测。
-iptables的前身叫ipfirewall （内核1.x时代），这是一个作者从freeBSD上移植过来的，能够工作在内核当中的，对数据包进行检测的一款简易访问控制工具。但是ipfirewall工作功能极其有限（它需要将所有的规则都放进内核当中，这样规则才能够运行起来，而放进内核，这个做法一般是极其困难的）。当内核发展到2.x系列的时候，软件更名为ipchains，它可以定义多条规则，将他们串起来，共同发挥作用，而现在，它叫做iptables，可以将规则组成一个列表，实现绝对详细的访问控制功能。
-原理五个关卡iptables工作在用户空间中，是定义规则的工具，本身并不算是防火墙。它定义的规则，可以让内核空间中的netfilter来读取，并且实现让防火墙工作。netfilter的架构就是在整个网络流程的若干位置设置一些关卡（HOOK），而在每个关卡上登记了一些规则，所以这些关卡的术语规则链。
-在内核空间中，netfilter选择了5个位置，来作为控制的关卡，专业点叫做规则链。朱双印大神的博客中给出了直观的图像：
-根据上图，我们能够想象出某些常用场景中，报文的流向：到本机某进程的报文：PREROUTING –&gt; INPUT由本机转发的报文：PREROUTING –&gt; FORWARD –&gt; POSTROUTING由本机的某进程发出报文（通常为响应报文）：OUTPUT –&gt; POSTROUTING
-五个规则链的作用如下：INPUT链：处理输入数据包。OUTPUT链：处理输出数据包。PORWARD链：处理转发数据包。PREROUTING链：用于目标地址转换（DNAT）。POSTOUTING链：用于源地址转换（SNAT）。
-表的概念我们再想想另外一个问题，我们对每个”链”上都放置了一串规则，但是这些规则有些很相似，比如，A类规则都是对IP或者端口的过滤，B类规则是修改报文，那么这个时候，我们是不是能把实现相同功能的规则放在一起呢，必须能的。
-我们把具有相同功能的规则的集合叫做”表”，所以说，不同功能的规则，我们可以放置在不同的表中进行管理，而iptables已经为我们定义了4种表，每种表对应了不同的功能，而我们定义的规则也都逃脱不了这4种功能的范围，所以，学习iptables之前，我们必须先搞明白每种表的作用。iptables为我们提供了如下规则的分类，或者说，iptables为我们提供了如下”表”：
-
-filter表：负责过滤功能，防火墙；内核模块：iptables_filter
-nat表：network address translation，网络地址转换功能；内核模块：iptable_nat
-mangle表：拆解报文，做出修改，并重新封装的功能；iptable_mangle
-raw表：关闭nat表上启用的连接追踪机制；iptable_raw
-
-也就是说，我们自定义的所有规则，都是这四种分类中的规则，或者说，所有规则都存在于这4张”表”中。
-数据包流向可以将数据包通过防火墙的流程总结为下图：我们在写iptables规则的时候，要时刻牢记这张路由次序图，灵活配置规则。
-规则规则：根据指定的匹配条件来尝试匹配每个流经此处的报文，一旦匹配成功，则由规则后面指定的处理动作进行处理。规则由匹配条件和处理动作组成。
-匹配条件分为基本匹配条件与扩展匹配条件：基本匹配条件包括源地址Source IP和目标地址 Destination IP。
-扩展匹配条件包括源端口Source Port，目标端口Destination Port等等。
-动作也可以分为基本动作和扩展动作，此处列出一些常用动作：ACCEPT：允许数据包通过。DROP：直接丢弃数据包，不给任何回应信息，这时候客户端会感觉自己的请求泥牛入海了，过了超时时间才会有反应。REJECT：拒绝数据包通过，必要时会给数据发送端一个响应的信息，客户端刚请求就会收到拒绝的信息。SNAT：源地址转换，解决内网用户用同一个公网地址上网的问题。MASQUERADE：是SNAT的一种特殊形式，适用于动态的、临时会变的ip上。DNAT：目标地址转换，解决外网用户访问内网的问题。REDIRECT：在本机做端口映射。LOG：在/var/log/messages文件中记录日志信息，然后将数据包传递给下一条规则，也就是说除了记录以外不对数据包做任何其他操作，仍然让下一条规则去匹配。
-命令详解命令格式：iptables [选项] [参数]
-选项包括：
--t：指定要操纵的表；-A：向规则链中添加条目；-D：从规则链中删除条目；-I：向规则链中插入条目；-R：替换规则链中的条目；-L：显示规则链中已有的条目；-F：清楚规则链中已有的条目；-Z：清空规则链中的数据包计算器和字节计数器；-N：创建新的用户自定义规则链；-P：定义规则链中的默认目标；-h：显示帮助信息；-p：指定要匹配的数据包协议类型；-s：指定要匹配的数据包源ip地址；-d：指定要匹配的数据包目标ip地址；-j：指定要跳转的目标；-i：指定数据包进入本机的网络接口（网卡）；-o：指定数据包离开本机的网络接口（网卡）；--sport：匹配来源端口号；--dport：匹配目标端口号。
-
-命令选项输入顺序：iptables -t 表名 &lt;-A/I/D/R&gt; 规则链名 [规则号] &lt;-i/o 网卡名&gt; -p 协议名 &lt;-s 源IP/源子网&gt; --sport 源端口 &lt;-d 目标IP/目标子网&gt; --dport 目标端口 -j 动作
-实例1、清除已有iptables规则
-iptables -Fiptables -Xiptables -Z
-
-2、开放指定的端口
-iptables -A INPUT -s 127.0.0.1 -d 127.0.0.1 -j ACCEPT               #允许本地回环接口(即允许本机访问本机)iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT    #允许已建立的或相关连的通行iptables -A OUTPUT -j ACCEPT         #允许所有本机向外的访问iptables -A INPUT -p tcp --dport 22 -j ACCEPT    #允许访问22端口iptables -A INPUT -p tcp --dport 80 -j ACCEPT    #允许访问80端口iptables -A INPUT -p tcp --dport 21 -j ACCEPT    #允许ftp服务的21端口iptables -A INPUT -p tcp --dport 20 -j ACCEPT    #允许FTP服务的20端口iptables -A INPUT -j REJECT       #禁止其他未允许的规则访问iptables -A FORWARD -j REJECT     #禁止其他未允许的规则访问
-
-3、屏蔽IP
-iptables -I INPUT -s 123.45.6.7 -j DROP       #屏蔽单个IP的命令iptables -I INPUT -s 123.0.0.0/8 -j DROP      #封整个段即从123.0.0.1到123.255.255.254的命令iptables -I INPUT -s 124.45.0.0/16 -j DROP    #封IP段即从123.45.0.1到123.45.255.254的命令iptables -I INPUT -s 123.45.6.0/24 -j DROP    #封IP段即从123.45.6.1到123.45.6.254的命令是
-
-4、查看已添加的iptables规则iptables -L -n -v
-5、删除已添加的iptables规则将所有iptables以序号标记显示，执行：iptables -L -n --line-numbers
-比如要删除INPUT里序号为8的规则，执行：iptables -D INPUT 8
-snat具体配置主机A接收数据包允许接收局域网网卡的数据包sudo iptables -I INPUT -i eth0 -j ACCEPT
-或者sudo iptables -P INPUT ACCEPT
-开启路由功能sudo echo 1 &gt; /proc/sys/net/ipv4/ip_forward如果报错：-bash: /proc/sys/net/ipv4/ip_forward: Permission denied那就切换到root用户：sudo -iecho 1 &gt; /proc/sys/net/ipv4/ip_forward
-要想永久有效，还要把/etc/sysctl.conf文件里边的net.ipv4.ip_forward的值改为1。
-伪装数据包sudo iptables -t nat -A POSTROUTING -s 192.168.56.102 -o eth1 -j MASQUERADE
-或者用SNAT直接修改IP数据包的表头来源IPsudo iptables -t nat -A POSTROUTING -s 192.168.56.102 -o eth1 -j SNAT --to 192.168.56.101
-如果需要支持整个网段：sudo iptables -t nat -A POSTROUTING -s 192.168.56.0/24 -o eth1 -j SNAT --to 192.168.56.101
-如果需要支持连续IP：sudo iptables -t nat -A POSTROUTING -m iprange --src-range 192.168.56.102-192.168.56.104 -o eth1 -j SNAT --to 192.168.56.101
-注意：
-
-亲测以上所有命令中的-o eth1可以省略，所以，在分不清哪个网卡是内网哪个网卡是外网的情况下，直接省略即可。
-如果想要允许所有IP，-s 192.168.56.0/24也可以省略。
--j SNAT --to 192.168.56.101可以换成-j SNAT --to 120.77.36.222。
--j SNAT --to 120.77.36.222建议换成-j MASQUERADE，尤其在外网IP非固定的情况下。
-综上，最简单的万能SNAT命令为sudo iptables -t nat -A POSTROUTING -j MASQUERADE
-
-查看与删除查看NAT表链规则sudo iptables -t nat -nL --line-number
-删除POSTROUTING第一条规则sudo iptables -t nat -D POSTROUTING 1
-重启后依旧生效1、保存规则sudo chmod a+w -R /optsudo iptables-save &gt; /opt/iptables.rules
-2、手动导入规则sudo iptables-restore &lt; /opt/iptables.rules
-3、开机自动导入规则在ubuntu下要把一个程序加入开机启动，一般可以通过修改rc.local来完成，但ubuntu下有两个rc.local文件，分别是/etc/rc.local和/etc/init.d/rc.local。因为/etc/init.d/rc.local调用了/etc/rc.local，所以我们的开机脚本最好直接写入/etc/rc.local，写在exit 0之前即可。
-sudo vim /etc/rc.local在exit 0之前添加：
-/sbin/iptables-restore &lt; /opt/iptables.rules
-
-主机Bcentos如果是centos，那么配置ifcfg文件sudo vim /etc/sysconfig/network-scripts/ifcfg-eth0
-DEVICE=eth0BOOTPROTO=staticONBOOT=yesIPADDR=192.168.56.102NETMASK=255.255.255.0GATEWAY=192.168.56.101
-
-然后service network restart
-ubuntu如果是ubuntu，那么配置interfaces文件sudo vim /etc/network/interfaces
-auto loiface lo inet loopbackauto em1iface em1 inet staticaddress 192.168.56.102netmask 255.255.255.0gateway 192.168.56.101
-
-然后sudo /etc/init.d/networking restart
-总之，B主机配置的关键在于网关，网关要设置成主机A的内网IP。
-请问，网关不设置成主机A的内网IP可以吗？可以，那就是另外一种稍微复杂的设置方法了。
-此时，使用主机B，已经可以ping通外网的IP了。但是ping域名会提示“ping: unknown host”。
-DNS配置方法一1、编辑resolv.confsudo vim /etc/resolv.conf，添加nameserver的配置
-nameserver 180.76.76.76nameserver 223.6.6.6
-上面的两个IP地址，分别是百度和阿里的公共DNS。
-2、测试ping www.baidu.com
-3、不过，这种方法在重启之后会失效。想要永久生效，还需要编辑base文件。sudo vim /etc/resolvconf/resolv.conf.d/base，添加：
-nameserver 180.76.76.76nameserver 223.6.6.6
-
-
-方法二1、编辑interfacessudo vim /etc/network/interfaces
-2、添加nameserver的配置
-dns-nameserver 180.76.76.76 223.5.5.5
-
-3、重启服务器sudo reboot实际上，重启后的dns配置会写入到resolv.conf中。
-4、测试ping www.baidu.com
-结语至此，snat完美配置成功！在这个过程中，顺带学习了一下iptables，收获满满。感觉iptables和route有很大关系，但是在配置过程中没有用到route。书签中有关于route的文档，用到的时候再深入学习。
-书签Linux下配置SNAT上网
-利用iptables的SNAT功能实现局域网共享上网
-linux 路由表设置之 route 指令详解
-ubuntu配置静态路由及重启生效
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>网络</category>
-      </categories>
-      <tags>
-        <tag>网络</tag>
-        <tag>linux</tag>
-        <tag>iptables</tag>
       </tags>
   </entry>
   <entry>
@@ -28139,8 +28179,8 @@ gmetad.conf：gmetad配置文件（1）
       </categories>
       <tags>
         <tag>ubuntu</tag>
-        <tag>ganglia</tag>
         <tag>监控</tag>
+        <tag>ganglia</tag>
       </tags>
   </entry>
   <entry>
@@ -30695,6 +30735,62 @@ ActiveRecord
       </tags>
   </entry>
   <entry>
+    <title>域名被clienthold解封方法</title>
+    <url>/essay-clienthold/</url>
+    <content><![CDATA[前言2017年10月13日，突然收到来自阿里云的短信和邮件：
+
+尊敬的用户：您的网站voidking.com涉及违法不良信息，违反了《互联网信息服务管理办法》第十五条规定，目前阿里云已经对您域名hold处理。如果您对本通知的内容存有疑问，请及时工单或者电话联系我们。 谢谢您对阿里云的支持。阿里云计算有限公司
+
+收到这条信息时，小编一脸懵逼，马上就致电了阿里云客服，表示不服。客服告诉我需要实名认证，我说认证过了。最终客服解决不了，让我提交工单。
+
+
+工单第二天，果断提交了工单。以下是工单截图。
+从折腾到放弃工单说，必须到公安局网警办公室做申报，听起来就好麻烦。但是，为了我的域名，决心麻烦一把。因为 voidking.com 这个域名用了很多年，和小编感情深厚。
+当时身在长春，打电话给110，问到了网警中心的电话，想咨询下具体怎么处理，需要准备什么材料，然而，打电话无人接听。连续几天，打了几十个电话，依旧无人接听。
+不甘心的我，想要在网上找到网警中心的其他联系方式。意外发现了全国公安机关互联网站安全服务平台，莫非，所谓的申报就是公安备案？于是，花了一周左右完成了公安备案。但是，并没有什么用，申报和公安备案并没有任何关系。惊喜的是，公安备案成功后，给我的通知中附带了长春的网警中心联系方式。果断打电话过去，接听了，有戏！但是，接听电话的人员告诉我，网警中心搬到另外一个办公室了，给了我另外一个号码。然后，再也没有打通过。。。在微博上咨询长春网警，也没有得到回复，遂放弃。
+PS：公安备案成功后拿到了备案号，但是现在查询，居然没有备案信息，也是一头雾水，不明所以。
+从折腾到放弃2.0一直想着，很快就要去北京实习了，到时候去北京网警中心处理。这一等，就是近五个月。没有去北京，而是来到了深圳。深圳也是大城市，网警中心的服务应该很周到，我这么想着。
+给110打电话，询问网警中心的电话，警察说让我打114查询。114查询到网警中心电话后，致电网警中心，网警中心说他们只处理网络诈骗类案件，我这种网站方面的要找通信管理局。然后，从114那里拿到了深圳通信管理局的电话，致电通信管理局，空号。然后，从114那里拿到了广东省通信管理局的电话，一直忙线中，十几个电话没有打通。
+决定还是再咨询一下网警，毕竟是公安部下发的hold要求。微博关注了深圳网警，咨询域名被hold怎么处理，没收到回复。了解到他们周末不上班，决定哪天请假去一趟网警中心。
+不知道准备什么材料，因为网上的案例极少。比较靠谱的，有以下两篇文章。域名被clientHold的解封办法 和 域名被停止解析该如何恢复正常 中都提到了标准解封流程：
+1、写好整顿报告提交本地公安局
+2、公安局提交整顿报告到负责网络信息的公安部相关部门
+3、公安部相关部门经过对整顿报告的批复把解除域名锁定的通知下达给工信部。
+4、工信部接到公安部相关部门的通知把解除域名锁定的通知下达给通信管理局。
+5、通信管理局在把通知下达给新网，此时域名才可以正常。
+复杂，好复杂，但是小编还是决定搞一下。于是从网上找了网站整顿报告的模板，写了一份整顿报告。但是，该提交到哪里呢？这份报告模板是否标准，需不需要重新写？
+工单2.0带着这些疑问，小编提交了第二份工单，希望阿里云能够提供一些帮助，实在是不知道该找谁了。
+解决办法阿里云并没有提供什么有用的信息，几乎走投无路的小编，继续寻找希望。在重读域名被停止解析该如何恢复正常 这篇文章时，“域名转移”让我眼前一亮！clienthold是因为注册商hold了域名，但是在国外，注册商是没有权力hold域名的！那我能不能把域名转移到国外呢？查看了一下域名转出阿里云的条件：
+
+必须是在阿里云申请的域名。
+域名转出时距离域名申请日（域名注册日期） 60 天以上。
+域名转出时距离域名最后一次成功转移日大于 60 天。
+域名转出时距该域名到期日大于 15 天。
+域名转出时状态正常（不能是禁止转出状态），不欠费、不处于任何仲裁及法律程序中、不存在该域名持有者的身份不清楚或者存在争议。
+域名过期后完成续费/域名赎回已超过 45 天。
+
+对比了这些，发现自己符合条件，激动！于是，开始了域名转移，从阿里云到godaddy。
+具体流程百度即可，很简单，比较坑的是，在开始转移前，要先等五天！
+
+尊敬的用户：我方注册商（见下表“转出注册商”列）于北京时间2018-03-05 16:27:22收到有关您希望将域名转到其他注册商的通知。通知转出的域名列表如下：（表略）重要提示：1、如果您希望继续该转出，您不需要做任何操作，根据上述域名相关注册局的规定，域名将在5-7天后自动转出。2、如果您希望取消此次转出，请您务必在北京时间2018-03-10 15:27:22前按如下方法操作取消：登录“阿里云管理控制台” —“域名与网站—域名—域名列表”，选择域名进行“管理”，进入“域名转出万网” —“取消转出”按钮。如果登录后没有“取消转出”按钮，则意味着此域名已经转出成功，将无法取消转出。3、如果我方注册商在北京时间2018-03-10 15:27:22前未收到您的取消转出请求，该转移将继续。
+
+五天中，我很焦躁忐忑，在想会不会等了五天最后提示我转移失败。看了很多相关文章帖子，后来域名被注册商强制停止解析，域名状态 clientHold ~~怎么办？这篇帖子中找到了信心。首先，只要不是cn的域名，都可以向APNIC申请强制转出，这样转出就没问题了。其次，转移到国外，因为没有clienthold一说，也就相当于自动解封。
+就这样，等到了3月10日的15:27，没有消息。继续等待，直到3月11日13:23，终于收到了godaddy的域名转入确认邮件，感动到哭。
+赶紧设置了解析，测试能不能使用。几分钟后，www.voidking.com终于可以正常访问了！本次历时近五个月的clienthold事件，终于圆满解决。
+晚上，更换了dnspod作为dns服务器。解析正常，联通4g可以正常访问，但是中科院的网络却不可以访问。很奇怪，后来在网站域名解析之后为什么有些地方还是不能访问？这篇短文中找到了答案：有些站长在做网站域名解析的时候，会遇见这样的问题，网站域名解析之后为什么有些地方还是不能访问？这个是由于各地电信或网络提供部门的DNS刷新频率不一样，因此，全球域名刷新有8-72小时的误差，如果您刚做完解析，那么就有可能出现某些地方暂时还不能访问的情况，这是正常的。
+后记原本，在百度搜索“voidking”，基本都是小编网站上的文章。而现在，都是小编在各大博客网站上的文章，排名下降了太多，从头再来吧。早知道域名转移可以解决clienthold，就不用这么多折腾了。早知道，多好。写下本篇博客，希望能给遇到同样问题的同学提供一些帮助，少走一些弯路。
+书签域名被锁定冻结（域名被 hold）的原因及解锁
+违法违规信息处理方案
+违法信息处置FAQ
+]]></content>
+      <categories>
+        <category>随笔</category>
+      </categories>
+      <tags>
+        <tag>域名</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>B533史记</title>
     <url>/essay-b533-history/</url>
     <content><![CDATA[一天晚上，小胖发了个说说：我要改掉坏习惯！第二天，他果然改掉了上课睡觉和玩手机的坏习惯。因为他没去上课……
@@ -30751,62 +30847,6 @@ ActiveRecord
       <tags>
         <tag>随笔</tag>
         <tag>笑话</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>域名被clienthold解封方法</title>
-    <url>/essay-clienthold/</url>
-    <content><![CDATA[前言2017年10月13日，突然收到来自阿里云的短信和邮件：
-
-尊敬的用户：您的网站voidking.com涉及违法不良信息，违反了《互联网信息服务管理办法》第十五条规定，目前阿里云已经对您域名hold处理。如果您对本通知的内容存有疑问，请及时工单或者电话联系我们。 谢谢您对阿里云的支持。阿里云计算有限公司
-
-收到这条信息时，小编一脸懵逼，马上就致电了阿里云客服，表示不服。客服告诉我需要实名认证，我说认证过了。最终客服解决不了，让我提交工单。
-
-
-工单第二天，果断提交了工单。以下是工单截图。
-从折腾到放弃工单说，必须到公安局网警办公室做申报，听起来就好麻烦。但是，为了我的域名，决心麻烦一把。因为 voidking.com 这个域名用了很多年，和小编感情深厚。
-当时身在长春，打电话给110，问到了网警中心的电话，想咨询下具体怎么处理，需要准备什么材料，然而，打电话无人接听。连续几天，打了几十个电话，依旧无人接听。
-不甘心的我，想要在网上找到网警中心的其他联系方式。意外发现了全国公安机关互联网站安全服务平台，莫非，所谓的申报就是公安备案？于是，花了一周左右完成了公安备案。但是，并没有什么用，申报和公安备案并没有任何关系。惊喜的是，公安备案成功后，给我的通知中附带了长春的网警中心联系方式。果断打电话过去，接听了，有戏！但是，接听电话的人员告诉我，网警中心搬到另外一个办公室了，给了我另外一个号码。然后，再也没有打通过。。。在微博上咨询长春网警，也没有得到回复，遂放弃。
-PS：公安备案成功后拿到了备案号，但是现在查询，居然没有备案信息，也是一头雾水，不明所以。
-从折腾到放弃2.0一直想着，很快就要去北京实习了，到时候去北京网警中心处理。这一等，就是近五个月。没有去北京，而是来到了深圳。深圳也是大城市，网警中心的服务应该很周到，我这么想着。
-给110打电话，询问网警中心的电话，警察说让我打114查询。114查询到网警中心电话后，致电网警中心，网警中心说他们只处理网络诈骗类案件，我这种网站方面的要找通信管理局。然后，从114那里拿到了深圳通信管理局的电话，致电通信管理局，空号。然后，从114那里拿到了广东省通信管理局的电话，一直忙线中，十几个电话没有打通。
-决定还是再咨询一下网警，毕竟是公安部下发的hold要求。微博关注了深圳网警，咨询域名被hold怎么处理，没收到回复。了解到他们周末不上班，决定哪天请假去一趟网警中心。
-不知道准备什么材料，因为网上的案例极少。比较靠谱的，有以下两篇文章。域名被clientHold的解封办法 和 域名被停止解析该如何恢复正常 中都提到了标准解封流程：
-1、写好整顿报告提交本地公安局
-2、公安局提交整顿报告到负责网络信息的公安部相关部门
-3、公安部相关部门经过对整顿报告的批复把解除域名锁定的通知下达给工信部。
-4、工信部接到公安部相关部门的通知把解除域名锁定的通知下达给通信管理局。
-5、通信管理局在把通知下达给新网，此时域名才可以正常。
-复杂，好复杂，但是小编还是决定搞一下。于是从网上找了网站整顿报告的模板，写了一份整顿报告。但是，该提交到哪里呢？这份报告模板是否标准，需不需要重新写？
-工单2.0带着这些疑问，小编提交了第二份工单，希望阿里云能够提供一些帮助，实在是不知道该找谁了。
-解决办法阿里云并没有提供什么有用的信息，几乎走投无路的小编，继续寻找希望。在重读域名被停止解析该如何恢复正常 这篇文章时，“域名转移”让我眼前一亮！clienthold是因为注册商hold了域名，但是在国外，注册商是没有权力hold域名的！那我能不能把域名转移到国外呢？查看了一下域名转出阿里云的条件：
-
-必须是在阿里云申请的域名。
-域名转出时距离域名申请日（域名注册日期） 60 天以上。
-域名转出时距离域名最后一次成功转移日大于 60 天。
-域名转出时距该域名到期日大于 15 天。
-域名转出时状态正常（不能是禁止转出状态），不欠费、不处于任何仲裁及法律程序中、不存在该域名持有者的身份不清楚或者存在争议。
-域名过期后完成续费/域名赎回已超过 45 天。
-
-对比了这些，发现自己符合条件，激动！于是，开始了域名转移，从阿里云到godaddy。
-具体流程百度即可，很简单，比较坑的是，在开始转移前，要先等五天！
-
-尊敬的用户：我方注册商（见下表“转出注册商”列）于北京时间2018-03-05 16:27:22收到有关您希望将域名转到其他注册商的通知。通知转出的域名列表如下：（表略）重要提示：1、如果您希望继续该转出，您不需要做任何操作，根据上述域名相关注册局的规定，域名将在5-7天后自动转出。2、如果您希望取消此次转出，请您务必在北京时间2018-03-10 15:27:22前按如下方法操作取消：登录“阿里云管理控制台” —“域名与网站—域名—域名列表”，选择域名进行“管理”，进入“域名转出万网” —“取消转出”按钮。如果登录后没有“取消转出”按钮，则意味着此域名已经转出成功，将无法取消转出。3、如果我方注册商在北京时间2018-03-10 15:27:22前未收到您的取消转出请求，该转移将继续。
-
-五天中，我很焦躁忐忑，在想会不会等了五天最后提示我转移失败。看了很多相关文章帖子，后来域名被注册商强制停止解析，域名状态 clientHold ~~怎么办？这篇帖子中找到了信心。首先，只要不是cn的域名，都可以向APNIC申请强制转出，这样转出就没问题了。其次，转移到国外，因为没有clienthold一说，也就相当于自动解封。
-就这样，等到了3月10日的15:27，没有消息。继续等待，直到3月11日13:23，终于收到了godaddy的域名转入确认邮件，感动到哭。
-赶紧设置了解析，测试能不能使用。几分钟后，www.voidking.com终于可以正常访问了！本次历时近五个月的clienthold事件，终于圆满解决。
-晚上，更换了dnspod作为dns服务器。解析正常，联通4g可以正常访问，但是中科院的网络却不可以访问。很奇怪，后来在网站域名解析之后为什么有些地方还是不能访问？这篇短文中找到了答案：有些站长在做网站域名解析的时候，会遇见这样的问题，网站域名解析之后为什么有些地方还是不能访问？这个是由于各地电信或网络提供部门的DNS刷新频率不一样，因此，全球域名刷新有8-72小时的误差，如果您刚做完解析，那么就有可能出现某些地方暂时还不能访问的情况，这是正常的。
-后记原本，在百度搜索“voidking”，基本都是小编网站上的文章。而现在，都是小编在各大博客网站上的文章，排名下降了太多，从头再来吧。早知道域名转移可以解决clienthold，就不用这么多折腾了。早知道，多好。写下本篇博客，希望能给遇到同样问题的同学提供一些帮助，少走一些弯路。
-书签域名被锁定冻结（域名被 hold）的原因及解锁
-违法违规信息处理方案
-违法信息处置FAQ
-]]></content>
-      <categories>
-        <category>随笔</category>
-      </categories>
-      <tags>
-        <tag>域名</tag>
       </tags>
   </entry>
   <entry>
