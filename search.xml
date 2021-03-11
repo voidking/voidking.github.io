@@ -954,8 +954,8 @@ Install Apache, PHP And MySQL On CentOS 7 (LAMP)
         <category>专业</category>
         <category>运维</category>
         <category>开发</category>
-        <category>centos</category>
         <category>apache</category>
+        <category>centos</category>
         <category>php</category>
       </categories>
       <tags>
@@ -1389,8 +1389,8 @@ pyenv实战《Django部署到线上》《Django部署到线上（修改版）》
         <category>专业</category>
         <category>运维</category>
         <category>开发</category>
-        <category>centos</category>
         <category>python</category>
+        <category>centos</category>
       </categories>
       <tags>
         <tag>python</tag>
@@ -2470,6 +2470,98 @@ public class ReportImpl extends Report&#123;    public void printTitle()    &#12
       </tags>
   </entry>
   <entry>
+    <title>Django开发简单Blog系统——下</title>
+    <url>/dev-django-blog-2/</url>
+    <content><![CDATA[前言博客的基本功能完成了，接下来，我们来看一下还有哪些知识点可以加入我们的系统。
+
+
+超链接template中可以使用：
+&#123;% url 'app_name: url_name' param %&#125;
+
+
+app_name：应用命名空间的名称
+url_name：链接名
+param：参数
+
+app_name和url_name都在urls.py中配置。
+djsite/djsite/urls.py中
+url(r'^blog/', include('blog.urls', namespace='blog')),
+其中namespace=&#39;blog&#39;代表的是app_name。
+djsite/blog/urls.py中
+url(r'^(?P&lt;article_id&gt;[0-9]+)$', views.detail, name='detail'),
+其中name=&#39;detail&#39;代表的是url_name。
+比如，我们想要访问views.detail方法，那么在页面中，可以使用：
+&#123;% url 'blog:detail' article.id %&#125;
+
+实际上，这种写法并没有我们上一篇文章中的写法方便，因为ajax得到数据后无法使用这种写法，建议弃用。
+django shelldjango shell和python shell的不同，在于django shell里加入了项目的环境，这就方便了我们的调试。比如，我们在django shell输入：
+from blog.models import ArticleArticle.objects.all()Article.objects.all().values()
+即可打印出所有的文章。
+Admin进阶在之前的后台管理系统中，点击进入Articles，发现里面有很多Article Object，因为我们在blog/models.py中添加了__str__方法，所以显示的名称是文章标题。
+那么，怎样把标题、内容、发布时间都显示出来呢？答案是修改blog/admin.py：
+from django.contrib import adminfrom . import models# Register your models here.class ArticleAdmin(admin.ModelAdmin):    # 显示在admin控制台中的列名    list_display = ('title', 'content', 'pub_time')    # 时间过滤器    list_filter = ('pub_time',)admin.site.register(models.Article, ArticleAdmin)
+
+改用mysqlsqlite，做一些测试还可以，但是在实际开发中，我们通常使用mysql。
+1、假设我们的数据库用户名为root，密码为空，数据库名为djsite。
+2、安装pymysqlpip install pymysql
+3、修改djsite/djsite/settings.py：
+# Database# https://docs.djangoproject.com/en/1.11/ref/settings/#databases# DATABASES = &#123;#     'default': &#123;#         'ENGINE': 'django.db.backends.sqlite3',#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),#     &#125;# &#125;DATABASES = &#123;    'default': &#123;        'ENGINE': 'django.db.backends.mysql',        'HOST': '127.0.0.1',        'PORT': '3306',        'NAME': 'djsite',        'USER': 'root',        'PASSWORD': '',        'OPTIONS': &#123;            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",        &#125;,    &#125;&#125;
+
+4、修改djsite/djsite/__init__.py：
+import pymysqlpymysql.install_as_MySQLdb()
+
+5、数据迁移python manage.py makemigrations
+python manage.py migrate
+6、创建超级用户python manage.py createsuperuser
+源码分享https://github.com/voidking/djsite/releases/tag/v0.3.0
+书签django入门与实践
+Django 过滤器
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>python</category>
+        <category>django</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>django</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Axure入门篇</title>
+    <url>/dev-axure-start/</url>
+    <content><![CDATA[前言寒假，打算做一个自己使用的安卓app。那就学习安卓吧？这个是必须的，但是首先，我要明确需求。说的通俗一点，我要先明确一下，完成后的产品大概是什么样子。
+用软件工程的思想来解释，就是使用原型开发方法。利用快速开发工具构建一个系统原型，以便分析用户需求和界面需求。
+而Axure，就是一个快速开发工具。一周左右，利用Axure完成了自己的原型设计，在此总结一下。
+Axure入门这款软件的界面如下：
+菜单栏和工具栏不多解释，会使用word，这两栏一看就懂。
+
+
+页面导航页面的目录，方便我们找到页面。
+工作区每个页面对应一个工作区，我们在工作区进行设计。
+组件组件是我们进行设计的“原料”。和做菜一样，各种原料经过处理成为一道菜，各种组件经过组合成为一个页面。
+母版假设每个页面都有一个logo，上面写着“voidking”。等到完成之后，突然觉得不合适，想改成“帅哥”，这时候工作量太大了！
+那么怎么避免这个问题？很简单，把这个logo作为母版！只要修改了母版，那么，所有使用了这个母版的页面，logo内容都会被修改。
+页面交互举个例子，我们想要某个页面一闪而过。也就是说，不需要用户对这个页面进行任何操作，就跳转到下一个页面。这时候，就需要在页面交互这里进行设置。
+组件交互举个例子，我们想要通过单击操作跳转到另一个页面。这个时候，就需要在组件交互这里这里进行设置。
+Axure实践细致程度细致程度分为草图、低保真原型、高保真原型。这次原型设计，只是做了一个低保真原型。
+额外技能首先，你要学会PS。否则，你会发现，寸步难行！其次，你要学会寻找资源。无论是安卓组件，还是需要的图片素材，都是需要寻找的。所以，学会使用搜索引擎，受益一生。最后，你要学会学习。在做原型的过程中，肯定有某些功能，你不知道如何实现，这时候，就需要你去学习。
+部分成果不要认为自己不会，大胆去使用吧，用不了几个小时，你就会掌握这款工具。具体操作过程省略，给大家展示几张图片。
+Axure高级应用学会使用Axure很简单，但是，要实现某些细节的效果（高保真原型），就需要高级的技巧了。比如完全模拟iPhone发送短信的过程，比如完全模拟微信聊天的过程等等。高级的内容，还没有学习。给大家推荐几个学习教程：网易云课堂Axure教程系列多贝公开课Axure教程系列《Axure快速原型设计》，提取码 f77c
+小结类似Axure这样的工具有很多，重要的不是学会使用Axure，而是掌握设计的思路。
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>android</category>
+      </categories>
+      <tags>
+        <tag>android</tag>
+        <tag>axure</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>百度搜索结果页</title>
     <url>/dev-baidu-search-result/</url>
     <content><![CDATA[前言1月18日，入职艾佳，办好了各种手续。从海哥那里，接到了第一个任务——周一到周三（18到20），高仿一个百度搜索结果页。小编随手挖了一个坑：“上海”，接着便开始填坑。
@@ -2545,98 +2637,6 @@ OpenDNS208.67.222.222208.67.220.220
       </categories>
       <tags>
         <tag>dns</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Axure入门篇</title>
-    <url>/dev-axure-start/</url>
-    <content><![CDATA[前言寒假，打算做一个自己使用的安卓app。那就学习安卓吧？这个是必须的，但是首先，我要明确需求。说的通俗一点，我要先明确一下，完成后的产品大概是什么样子。
-用软件工程的思想来解释，就是使用原型开发方法。利用快速开发工具构建一个系统原型，以便分析用户需求和界面需求。
-而Axure，就是一个快速开发工具。一周左右，利用Axure完成了自己的原型设计，在此总结一下。
-Axure入门这款软件的界面如下：
-菜单栏和工具栏不多解释，会使用word，这两栏一看就懂。
-
-
-页面导航页面的目录，方便我们找到页面。
-工作区每个页面对应一个工作区，我们在工作区进行设计。
-组件组件是我们进行设计的“原料”。和做菜一样，各种原料经过处理成为一道菜，各种组件经过组合成为一个页面。
-母版假设每个页面都有一个logo，上面写着“voidking”。等到完成之后，突然觉得不合适，想改成“帅哥”，这时候工作量太大了！
-那么怎么避免这个问题？很简单，把这个logo作为母版！只要修改了母版，那么，所有使用了这个母版的页面，logo内容都会被修改。
-页面交互举个例子，我们想要某个页面一闪而过。也就是说，不需要用户对这个页面进行任何操作，就跳转到下一个页面。这时候，就需要在页面交互这里进行设置。
-组件交互举个例子，我们想要通过单击操作跳转到另一个页面。这个时候，就需要在组件交互这里这里进行设置。
-Axure实践细致程度细致程度分为草图、低保真原型、高保真原型。这次原型设计，只是做了一个低保真原型。
-额外技能首先，你要学会PS。否则，你会发现，寸步难行！其次，你要学会寻找资源。无论是安卓组件，还是需要的图片素材，都是需要寻找的。所以，学会使用搜索引擎，受益一生。最后，你要学会学习。在做原型的过程中，肯定有某些功能，你不知道如何实现，这时候，就需要你去学习。
-部分成果不要认为自己不会，大胆去使用吧，用不了几个小时，你就会掌握这款工具。具体操作过程省略，给大家展示几张图片。
-Axure高级应用学会使用Axure很简单，但是，要实现某些细节的效果（高保真原型），就需要高级的技巧了。比如完全模拟iPhone发送短信的过程，比如完全模拟微信聊天的过程等等。高级的内容，还没有学习。给大家推荐几个学习教程：网易云课堂Axure教程系列多贝公开课Axure教程系列《Axure快速原型设计》，提取码 f77c
-小结类似Axure这样的工具有很多，重要的不是学会使用Axure，而是掌握设计的思路。
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>android</category>
-      </categories>
-      <tags>
-        <tag>android</tag>
-        <tag>axure</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Django开发简单Blog系统——下</title>
-    <url>/dev-django-blog-2/</url>
-    <content><![CDATA[前言博客的基本功能完成了，接下来，我们来看一下还有哪些知识点可以加入我们的系统。
-
-
-超链接template中可以使用：
-&#123;% url 'app_name: url_name' param %&#125;
-
-
-app_name：应用命名空间的名称
-url_name：链接名
-param：参数
-
-app_name和url_name都在urls.py中配置。
-djsite/djsite/urls.py中
-url(r'^blog/', include('blog.urls', namespace='blog')),
-其中namespace=&#39;blog&#39;代表的是app_name。
-djsite/blog/urls.py中
-url(r'^(?P&lt;article_id&gt;[0-9]+)$', views.detail, name='detail'),
-其中name=&#39;detail&#39;代表的是url_name。
-比如，我们想要访问views.detail方法，那么在页面中，可以使用：
-&#123;% url 'blog:detail' article.id %&#125;
-
-实际上，这种写法并没有我们上一篇文章中的写法方便，因为ajax得到数据后无法使用这种写法，建议弃用。
-django shelldjango shell和python shell的不同，在于django shell里加入了项目的环境，这就方便了我们的调试。比如，我们在django shell输入：
-from blog.models import ArticleArticle.objects.all()Article.objects.all().values()
-即可打印出所有的文章。
-Admin进阶在之前的后台管理系统中，点击进入Articles，发现里面有很多Article Object，因为我们在blog/models.py中添加了__str__方法，所以显示的名称是文章标题。
-那么，怎样把标题、内容、发布时间都显示出来呢？答案是修改blog/admin.py：
-from django.contrib import adminfrom . import models# Register your models here.class ArticleAdmin(admin.ModelAdmin):    # 显示在admin控制台中的列名    list_display = ('title', 'content', 'pub_time')    # 时间过滤器    list_filter = ('pub_time',)admin.site.register(models.Article, ArticleAdmin)
-
-改用mysqlsqlite，做一些测试还可以，但是在实际开发中，我们通常使用mysql。
-1、假设我们的数据库用户名为root，密码为空，数据库名为djsite。
-2、安装pymysqlpip install pymysql
-3、修改djsite/djsite/settings.py：
-# Database# https://docs.djangoproject.com/en/1.11/ref/settings/#databases# DATABASES = &#123;#     'default': &#123;#         'ENGINE': 'django.db.backends.sqlite3',#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),#     &#125;# &#125;DATABASES = &#123;    'default': &#123;        'ENGINE': 'django.db.backends.mysql',        'HOST': '127.0.0.1',        'PORT': '3306',        'NAME': 'djsite',        'USER': 'root',        'PASSWORD': '',        'OPTIONS': &#123;            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",        &#125;,    &#125;&#125;
-
-4、修改djsite/djsite/__init__.py：
-import pymysqlpymysql.install_as_MySQLdb()
-
-5、数据迁移python manage.py makemigrations
-python manage.py migrate
-6、创建超级用户python manage.py createsuperuser
-源码分享https://github.com/voidking/djsite/releases/tag/v0.3.0
-书签django入门与实践
-Django 过滤器
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>python</category>
-        <category>django</category>
-      </categories>
-      <tags>
-        <tag>python</tag>
-        <tag>django</tag>
       </tags>
   </entry>
   <entry>
@@ -4497,6 +4497,525 @@ gridname "Center of Cloud Computing"
       </tags>
   </entry>
   <entry>
+    <title>通用缩写表</title>
+    <url>/dev-general-abbr/</url>
+    <content><![CDATA[1、本缩写表是《编码命名规范》的附录。
+2、本缩写表中列出的都是通用性缩写，不提供标准缩写，如：Win9x、COM 等。
+3、使用本缩写表里的缩写时，请对其进行必要的注释说明。
+4、除少数情况以外，大部分缩写与大小写无关。
+
+
+
+
+
+缩写
+全称
+
+
+
+addr
+Address
+
+
+adm
+Administrator
+
+
+app
+Application
+
+
+arg
+Argument
+
+
+asm
+assemble
+
+
+asyn
+asynchronization
+
+
+avg
+average
+
+
+DB
+Database
+
+
+bk
+back
+
+
+bmp
+Bitmap
+
+
+btn
+Button
+
+
+buf
+Buffer
+
+
+calc
+Calculate
+
+
+char
+Character
+
+
+chg
+Change
+
+
+clk
+Click
+
+
+clr
+color
+
+
+cmd
+Command
+
+
+cmp
+Compare
+
+
+col
+Column
+
+
+coord
+coordinates
+
+
+cpy
+copy
+
+
+ctl/ctrl
+Control
+
+
+cur
+Current
+
+
+cyl
+Cylinder
+
+
+dbg
+Debug
+
+
+dbl
+Double
+
+
+dec
+Decrease
+
+
+def
+default
+
+
+del
+Delete
+
+
+dest/dst
+Destination
+
+
+dev
+Device
+
+
+dict
+dictionary
+
+
+diff
+different
+
+
+dir
+directory
+
+
+disp
+Display
+
+
+div
+Divide
+
+
+dlg
+Dialog
+
+
+doc
+Document
+
+
+drv
+Driver
+
+
+dyna
+Dynamic
+
+
+env
+Environment
+
+
+err
+error
+
+
+ex/ext
+Extend
+
+
+exec
+execute
+
+
+flg
+flag
+
+
+frm
+Frame
+
+
+func/fn
+Function
+
+
+grp
+group
+
+
+horz
+Horizontal
+
+
+idx/ndx
+Index
+
+
+img
+Image
+
+
+impl
+Implement
+
+
+inc
+Increase
+
+
+info
+Information
+
+
+init
+Initial/Initialize/Initialization
+
+
+ins
+Insert
+
+
+inst
+Instance
+
+
+INT/intr
+Interrupt
+
+
+len
+Length
+
+
+lib
+Library
+
+
+lnk
+Link
+
+
+log
+logical
+
+
+lst
+List
+
+
+max
+maximum
+
+
+mem
+Memory
+
+
+mgr/man
+Manage/Manager
+
+
+mid
+middle
+
+
+min
+minimum
+
+
+msg
+Message
+
+
+mul
+Multiply
+
+
+num
+Number
+
+
+obj
+Object
+
+
+ofs
+Offset
+
+
+org
+Origin
+
+
+param
+Parameter
+
+
+pic
+picture
+
+
+pkg
+package
+
+
+pnt/pt
+Point
+
+
+pos
+Position
+
+
+pre/prev
+previous
+
+
+prg
+program
+
+
+prn
+Print
+
+
+proc
+Process
+
+
+prop
+Properties
+
+
+psw
+Password
+
+
+ptr
+Pointer
+
+
+pub
+Public
+
+
+rc
+rect
+
+
+ref
+Reference
+
+
+reg
+Register
+
+
+req
+request
+
+
+res
+Resource
+
+
+ret
+return
+
+
+rgn
+region
+
+
+scr
+screen
+
+
+sec
+Second
+
+
+seg
+Segment
+
+
+sel
+Select
+
+
+src
+Source
+
+
+std
+Standard
+
+
+stg
+Storage
+
+
+stm
+Stream
+
+
+str
+String
+
+
+sub
+Subtract
+
+
+sum
+summation
+
+
+svr
+Server
+
+
+sync
+Synchronization
+
+
+sys
+System
+
+
+tbl
+Table
+
+
+temp/tmp
+Temporary
+
+
+tran/trans
+translate/transation/transparent
+
+
+tst
+Test
+
+
+txt
+text
+
+
+unk
+Unknown
+
+
+upd
+Update
+
+
+upg
+Upgrade
+
+
+util
+Utility
+
+
+var
+Variable
+
+
+ver
+Version
+
+
+vert
+Vertical
+
+
+vir
+Virus
+
+
+wnd
+Window
+
+
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>python</category>
+      </categories>
+      <tags>
+        <tag>转载</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>git branch</title>
     <url>/dev-git-branch/</url>
     <content><![CDATA[前言Branches in Git are incredibly lightweight as well. They are simply pointers to a specific commit – nothing more. This is why many Git enthusiasts chant the mantra:
@@ -4659,157 +5178,6 @@ commitizen参考 commitizen/cz-cli 。
       </tags>
   </entry>
   <entry>
-    <title>git tag使用说明</title>
-    <url>/dev-git-tag/</url>
-    <content><![CDATA[打标签所谓打标签，就是对某一时间点上的版本打上标签。Git使用的标签有两种类型：轻量级的（lightweight）和含附注的（annotated）。轻量级标签就像是个不会变化的分支，实际上它就是个指向特定提交对象的引用。而含附注标签，实际上是存储在仓库中的一个独立对象，它有自身的校验和信息，包含着标签的名字，电子邮件地址和日期，以及标签说明，标签本身也允许使用 GNU Privacy Guard (GPG) 来签署或验证。一般我们都建议使用含附注型的标签，以便保留相关信息；当然，如果只是临时性加注标签，或者不需要旁注额外信息，用轻量级标签也没问题。
-
-
-
-轻量标签。创建轻量标签不需要传递参数，直接指定标签名称即可。git tag v1.0.0_light
-
-附注标签。参数a即annotated的缩写，指定标签名。参数m指定标签说明，说明信息会保存在标签对象中。git tag -a v1.0.0 -m &quot;v1.0.0&quot;
-
-
-查看本地标签git taggit tag -l &#39;v1.0.*&#39;git show v1.0.0
-删除本地标签git tag -d &lt;tagname&gt;
-切换到标签git checkout &lt;tagname&gt;
-给指定的commit打标签git log，我们看到的commit是一长串十六进制数，比如759f084c094a2e3930224b2dad389349e36ab083，我们要用到至少前4位。
-git tag -a v0.0.0 759f -m &quot;v0.0.0&quot;，而且，每个commit可以打多个标签。
-添加服务器端标签默认情况下，git push 并不会把标签传送到远端服务器上，只有通过显式命令才能分享标签到远端仓库。git push origin &lt;tagname&gt;git push origin --tag
-删除服务器端标签方法一：git push --delete origin tag &lt;tagname&gt;
-方法二：git tag -d &lt;tagname&gt;git push origin :refs/tags/&lt;tagname&gt;
-完整例子打标签的操作发生在我们commit修改到本地仓库之后。git add .git commit -m &quot;fixed some bugs&quot;git tag -a 0.1.3 -m &quot;Release version 0.1.3&quot;
-分享提交标签到远程服务器上git pushgit push --tags–tags参数表示提交所有tag至服务器端，普通的git push操作不会推送标签到服务器端。
-删除本地标签git tag -d 0.1.3
-删除远端服务器标签git push origin :refs/tags/0.1.3
-参考文档Git 基础 - 打标签http://git-scm.com/book/zh/v1/Git-%E5%9F%BA%E7%A1%80-%E6%89%93%E6%A0%87%E7%AD%BE
-git命令之git tag 给当前分支打标签http://blog.csdn.net/wangjia55/article/details/8793577
-git tag简介http://blog.csdn.net/hudashi/article/details/7664468
-tag打标签http://blog.csdn.net/wh_19910525/article/details/7470850
-git tag操作教程http://blog.csdn.net/waterforest_pang/article/details/9762863
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>工具</category>
-        <category>git</category>
-      </categories>
-      <tags>
-        <tag>git</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>gitignore用法</title>
-    <url>/dev-gitignore/</url>
-    <content><![CDATA[前言有些时候，我们必须把某些文件放到Git工作目录中，但又不能提交它们，比如保存了数据库密码的配置文件、项目运行时生成的临时文件等等，每次git status都会显示Untracked files ...，让人不爽。
-好在Git考虑到了大家的感受，在Git工作区的根目录下创建一个特殊的.gitignore文件，然后把要忽略的文件名填进去，Git就会自动忽略这些文件。
-
-
-gitignore规则基本语法
-以斜杠/开头表示目录
-以星号*通配多个字符；
-以问号?通配单个字符
-以方括号[]包含单个字符的匹配列表
-以叹号!表示不忽略(跟踪)匹配到的文件或目录
-
-示例# 这是注释行，将被忽略*.a       # 忽略所有以.a为扩展名的文件    !lib.a    # 但是名为lib.a的文件或目录不要忽略，即使前面设置了对*.a的忽略/TODO     # 只忽略根目录下的TODO文件，子目录中的TODO文件不忽略/target/ # 只忽略根目录下的target目录中的全部文件target/  # 忽略所有target目录中的文件doc/*.txt # 忽略文件如doc/notes.txt，但是文件如doc/server/arch.txt不忽略
-
-
-push之后添加gitignoregitignore只能作用于 Untracked Files，如果某些文件（add和commit过的文件）已经被纳入了版本管理中，则修改gitignore是无效的。解决方法就是先把本地缓存删除（改变成Untracked状态），然后再提交。
-git pullgit rm -r --cached .git add .git commit -m 'update .gitignore'git push
-
-如果是单个文件需要Untrack，git rm -r --cached .建议改成git rm -r --cached path/filename。
-添加gitignore后pull错误push之后添加了gitignore，也就是一部分的Tracked Files，现在不再Track。这时，其他用户在pull代码的时候，会出现错误：“The following untracked working tree files would be overwritten by merge”
-解决办法：
-git reset --hard HEAD    git clean -f -d    git pull
-
-自动生成gitignore1、访问网址：https://www.gitignore.io/
-2、输入操作系统、IDE、编程语言等，就能自动生成通用的gitignore文件。
-3、根据自己的实际需要，增删一些配置。
-书签Github使用.gitignore文件忽略不必要上传的文件http://blog.csdn.net/gjy211/article/details/51607347
-Git忽略规则http://www.cnblogs.com/qwertWZ/archive/2982231.html
-忽略特殊文件
-A collection of useful .gitignore templateshttps://github.com/github/gitignore
-解决Git在添加ignore文件之前就提交了项目无法再过滤问题http://www.2cto.com/kf/201612/571312.html
-]]></content>
-      <categories>
-        <category>专业</category>
-      </categories>
-      <tags>
-        <tag>git</tag>
-        <tag>gitignore</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Go语言入门篇</title>
-    <url>/dev-go-start/</url>
-    <content><![CDATA[Go语言简介Go（又称 Golang）是 Google 的 Robert Griesemer，Rob Pike 及 Ken Thompson 开发的一种静态强类型、编译型语言。Go 语言语法与 C 相近，但功能上有：内存安全，GC（垃圾回收），结构形态及 CSP-style 并发计算。
-本文，我们开始学习Golang，主要参考：
-
-Go 语言教程
-Go标准库中文文档
-Go程序设计语言（Go语言圣经）
-
-
-
-开发环境1、访问Go官网，下载安装Golang环境。
-2、把Golang的bin目录添加到Path环境变量。
-3、访问Jetbrains-Go，下载安装Goland。
-4、在Goland中配置好GOROOT和GOPATH。
-helloworld按照国际惯例，学习新语言，先来一个helloworld。新建test.go文件，内容为：
-package mainimport "fmt"func main() &#123;   fmt.Println("Hello, World!")&#125;
-
-Shift+右键打开Powershell，使用go run test.go，运行代码。除了使用go run命令之外，还可以使用go build命令，先对代码进行编译，然后运行生成的二进制文件。
-由上面这段代码可以看出，Go语言代码的基础组成有包声明、引入包、函数、语句和表达式。除此之外，还有注释、常量、变量、数组、结构体等。
-Go基础语法Go的语法和C很像，这里和C进行对比，指出不同之处，方便记忆。
-
-{不能单独放在一行
-表达式不需要分号结尾
-变量声明赋值，var age int = 0
-数据类型有差异
-强制类型转换时括号的位置不同
-支持多变量赋值，按顺序赋值
-:=操作符也可以声明变量，但是只能在函数体内
-const声明可以使用iota
-if和for后面不需要圆括号
-switch不需要break
-循环都用for，没有while
-函数定义，func func_name([params]) [return_types]{}
-数组声明，var arr [10] float32; var arr2 = [3]float32{1.0, 2.0, 3.4}
-结构体定义，type先行，下面有demo
-切片（动态数组），var slice1 []int = make([]int, 3, 9)
-切片append，copy
-字典map定义，var map1 map[string]string = make(map[string]string)
-字典delete条目
-for range循环切片和字典
-定义接口，下面有demo
-错误处理，error接口，下面有demo
-并发，go语句开启新线程，下面有demo
-
-结构体demo：
-package mainimport "fmt"type Books struct &#123;   title string   author string   subject string   book_id int&#125;func main() &#123;    // 创建一个新的结构体    fmt.Println(Books&#123;"Go 语言", "www.voidking.com", "Go 语言教程", 6495407&#125;)    // 也可以使用 key =&gt; value 格式    fmt.Println(Books&#123;title: "Go 语言", author: "www.voidking.com", subject: "Go 语言教程", book_id: 6495407&#125;)    // 忽略的字段为 0 或 空    fmt.Println(Books&#123;title: "Go 语言", author: "www.voidking.com"&#125;)    // 结构体声明和赋值    var Book1 Books    Book1.title = "Go语言入门篇"    Book1.author = "www.voidking.com"    Book1.subject = "Go语言"    Book1.book_id = 123456    printBook(Book1)&#125;func printBook( book Books ) &#123;   fmt.Printf( "Book title : %s\n", book.title);   fmt.Printf( "Book author : %s\n", book.author);   fmt.Printf( "Book subject : %s\n", book.subject);   fmt.Printf( "Book book_id : %d\n", book.book_id);&#125;
-
-
-接口demo：
-package mainimport (    "fmt")type Phone interface &#123;    call()&#125;type NokiaPhone struct &#123;&#125;func (nokiaPhone NokiaPhone) call() &#123;    fmt.Println("I am Nokia, I can call you!")&#125;type IPhone struct &#123;&#125;func (iPhone IPhone) call() &#123;    fmt.Println("I am iPhone, I can call you!")&#125;func main() &#123;    var phone Phone    phone = new(NokiaPhone)    phone.call()    phone = new(IPhone)    phone.call()&#125;
-
-错误处理demo：
-package mainimport (    "fmt")// 定义一个 DivideError 结构type DivideError struct &#123;    dividee int    divider int&#125;// 实现 `error` 接口func (de *DivideError) Error() string &#123;    strFormat := `    Cannot proceed, the divider is zero.    dividee: %d    divider: 0`    return fmt.Sprintf(strFormat, de.dividee)&#125;// 定义 `int` 类型除法运算的函数func Divide(varDividee int, varDivider int) (result int, errorMsg string) &#123;    if varDivider == 0 &#123;        dData := DivideError&#123;            dividee: varDividee,            divider: varDivider,        &#125;        errorMsg = dData.Error()        return    &#125; else &#123;        return varDividee / varDivider, ""    &#125;&#125;func main() &#123;    // 正常情况    if result, errorMsg := Divide(100, 10); errorMsg == "" &#123;        fmt.Println("100/10 = ", result)    &#125;    // 当被除数为零的时候会返回错误信息    if _, errorMsg := Divide(100, 0); errorMsg != "" &#123;        fmt.Println("errorMsg is: ", errorMsg)    &#125;&#125;
-
-并发demo：
-package mainimport (    "fmt"    "time")func say(s string) &#123;    for i := 0; i &lt; 5; i++ &#123;        time.Sleep(100 * time.Millisecond)        fmt.Println(s)    &#125;&#125;func main() &#123;    say("hello")    go say("world")&#125;
-
-后记Go语言入门篇，核心就是把Go语言当成C来写，和C不同的地方，留心注意即可。更多高阶的内容，用到的时候再去学习整理。
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>golang</category>
-      </categories>
-      <tags>
-        <tag>golang</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>使用Docker安装配置GitLab</title>
     <url>/dev-docker-gitlab/</url>
     <content><![CDATA[前言《CentOS7安装配置GitLab》一文中学习了GitLab的安装方法，如果使用Docker来安装GitLab，可以简单很多。
@@ -4905,6 +5273,158 @@ useradd -m voidking -s /bin/bashpasswd voidkingadduser voidking sudo# 安装sudo
         <tag>docker</tag>
         <tag>shell</tag>
         <tag>ssh</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>git tag使用说明</title>
+    <url>/dev-git-tag/</url>
+    <content><![CDATA[打标签所谓打标签，就是对某一时间点上的版本打上标签。Git使用的标签有两种类型：轻量级的（lightweight）和含附注的（annotated）。轻量级标签就像是个不会变化的分支，实际上它就是个指向特定提交对象的引用。而含附注标签，实际上是存储在仓库中的一个独立对象，它有自身的校验和信息，包含着标签的名字，电子邮件地址和日期，以及标签说明，标签本身也允许使用 GNU Privacy Guard (GPG) 来签署或验证。一般我们都建议使用含附注型的标签，以便保留相关信息；当然，如果只是临时性加注标签，或者不需要旁注额外信息，用轻量级标签也没问题。
+
+
+
+轻量标签。创建轻量标签不需要传递参数，直接指定标签名称即可。git tag v1.0.0_light
+
+附注标签。参数a即annotated的缩写，指定标签名。参数m指定标签说明，说明信息会保存在标签对象中。git tag -a v1.0.0 -m &quot;v1.0.0&quot;
+
+
+查看本地标签git taggit tag -l &#39;v1.0.*&#39;git show v1.0.0
+删除本地标签git tag -d &lt;tagname&gt;
+切换到标签git checkout &lt;tagname&gt;
+给指定的commit打标签git log，我们看到的commit是一长串十六进制数，比如759f084c094a2e3930224b2dad389349e36ab083，我们要用到至少前4位。
+git tag -a v0.0.0 759f -m &quot;v0.0.0&quot;，而且，每个commit可以打多个标签。
+添加服务器端标签默认情况下，git push 并不会把标签传送到远端服务器上，只有通过显式命令才能分享标签到远端仓库。git push origin &lt;tagname&gt;git push origin --tag
+删除服务器端标签方法一：git push --delete origin tag &lt;tagname&gt;
+方法二：git tag -d &lt;tagname&gt;git push origin :refs/tags/&lt;tagname&gt;
+完整例子打标签的操作发生在我们commit修改到本地仓库之后。git add .git commit -m &quot;fixed some bugs&quot;git tag -a 0.1.3 -m &quot;Release version 0.1.3&quot;
+分享提交标签到远程服务器上git pushgit push --tags–tags参数表示提交所有tag至服务器端，普通的git push操作不会推送标签到服务器端。
+删除本地标签git tag -d 0.1.3
+删除远端服务器标签git push origin :refs/tags/0.1.3
+参考文档Git 基础 - 打标签http://git-scm.com/book/zh/v1/Git-%E5%9F%BA%E7%A1%80-%E6%89%93%E6%A0%87%E7%AD%BE
+git命令之git tag 给当前分支打标签http://blog.csdn.net/wangjia55/article/details/8793577
+git tag简介http://blog.csdn.net/hudashi/article/details/7664468
+tag打标签http://blog.csdn.net/wh_19910525/article/details/7470850
+git tag操作教程http://blog.csdn.net/waterforest_pang/article/details/9762863
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>工具</category>
+        <category>git</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>gitignore用法</title>
+    <url>/dev-gitignore/</url>
+    <content><![CDATA[前言有些时候，我们必须把某些文件放到Git工作目录中，但又不能提交它们，比如保存了数据库密码的配置文件、项目运行时生成的临时文件等等，每次git status都会显示Untracked files ...，让人不爽。
+好在Git考虑到了大家的感受，在Git工作区的根目录下创建一个特殊的.gitignore文件，然后把要忽略的文件名填进去，Git就会自动忽略这些文件。
+
+
+gitignore规则基本语法
+以斜杠/开头表示目录
+以星号*通配多个字符；
+以问号?通配单个字符
+以方括号[]包含单个字符的匹配列表
+以叹号!表示不忽略(跟踪)匹配到的文件或目录
+
+示例# 这是注释行，将被忽略.DS_Store # 忽略所有的.DS_Store*.a       # 忽略所有以.a为扩展名的文件    !lib.a    # 但是名为lib.a的文件或目录不要忽略，即使前面设置了对*.a的忽略/TODO     # 只忽略根目录下的TODO文件，子目录中的TODO文件不忽略/target/ # 只忽略根目录下的target目录中的全部文件target/  # 忽略所有target目录中的文件doc/*.txt # 忽略文件如doc/notes.txt，但是文件如doc/server/arch.txt不忽略
+
+push之后添加gitignoregitignore只能作用于 Untracked Files，如果某些文件（add和commit过的文件）已经被纳入了版本管理中，则修改gitignore是无效的。解决方法就是先把本地缓存删除（改变成Untracked状态），然后再提交。
+git pullgit rm -r --cached .git add .git commit -m 'update .gitignore'git push
+
+如果是单个文件需要Untrack，git rm -r --cached .建议改成git rm -r --cached path/filename。
+添加gitignore后pull错误push之后添加了gitignore，也就是一部分的Tracked Files，现在不再Track。这时，其他用户在pull代码的时候，会出现错误：“The following untracked working tree files would be overwritten by merge”
+解决办法：
+git reset --hard HEAD    git clean -f -d    git pull
+
+自动生成gitignore1、访问网址：gitignore.io
+2、输入操作系统、IDE、编程语言等，就能自动生成通用的gitignore文件。
+3、根据自己的实际需要，增删一些配置。
+一个Demo### macOS #### General.DS_Store.AppleDouble.LSOverride# Thumbnails._*# Files that might appear in the root of a volume.DocumentRevisions-V100.fseventsd.Spotlight-V100.TemporaryItems.Trashes.VolumeIcon.icns.com.apple.timemachine.donotpresent# Directories potentially created on remote AFP share.AppleDB.AppleDesktopNetwork Trash FolderTemporary Items.apdisk### End of macOS ###### Intellij #### Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider# Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839# General.idea/# mpeltonen/sbt-idea plugin.idea_modules/# File-based project format*.iws# IntelliJout/# CMakecmake-build-*/# Crashlytics plugin (for Android Studio and IntelliJ)com_crashlytics_export_strings.xmlcrashlytics.propertiescrashlytics-build.propertiesfabric.properties### End of Intellij ###
+
+书签A collection of useful .gitignore templates
+Github使用.gitignore文件忽略不必要上传的文件
+Git忽略规则
+忽略特殊文件
+解决Git在添加ignore文件之前就提交了项目无法再过滤问题
+]]></content>
+      <categories>
+        <category>专业</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+        <tag>gitignore</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Go语言入门篇</title>
+    <url>/dev-go-start/</url>
+    <content><![CDATA[Go语言简介Go（又称 Golang）是 Google 的 Robert Griesemer，Rob Pike 及 Ken Thompson 开发的一种静态强类型、编译型语言。Go 语言语法与 C 相近，但功能上有：内存安全，GC（垃圾回收），结构形态及 CSP-style 并发计算。
+本文，我们开始学习Golang，主要参考：
+
+Go 语言教程
+Go标准库中文文档
+Go程序设计语言（Go语言圣经）
+
+
+
+开发环境1、访问Go官网，下载安装Golang环境。
+2、把Golang的bin目录添加到Path环境变量。
+3、访问Jetbrains-Go，下载安装Goland。
+4、在Goland中配置好GOROOT和GOPATH。
+helloworld按照国际惯例，学习新语言，先来一个helloworld。新建test.go文件，内容为：
+package mainimport "fmt"func main() &#123;   fmt.Println("Hello, World!")&#125;
+
+Shift+右键打开Powershell，使用go run test.go，运行代码。除了使用go run命令之外，还可以使用go build命令，先对代码进行编译，然后运行生成的二进制文件。
+由上面这段代码可以看出，Go语言代码的基础组成有包声明、引入包、函数、语句和表达式。除此之外，还有注释、常量、变量、数组、结构体等。
+Go基础语法Go的语法和C很像，这里和C进行对比，指出不同之处，方便记忆。
+
+{不能单独放在一行
+表达式不需要分号结尾
+变量声明赋值，var age int = 0
+数据类型有差异
+强制类型转换时括号的位置不同
+支持多变量赋值，按顺序赋值
+:=操作符也可以声明变量，但是只能在函数体内
+const声明可以使用iota
+if和for后面不需要圆括号
+switch不需要break
+循环都用for，没有while
+函数定义，func func_name([params]) [return_types]{}
+数组声明，var arr [10] float32; var arr2 = [3]float32{1.0, 2.0, 3.4}
+结构体定义，type先行，下面有demo
+切片（动态数组），var slice1 []int = make([]int, 3, 9)
+切片append，copy
+字典map定义，var map1 map[string]string = make(map[string]string)
+字典delete条目
+for range循环切片和字典
+定义接口，下面有demo
+错误处理，error接口，下面有demo
+并发，go语句开启新线程，下面有demo
+
+结构体demo：
+package mainimport "fmt"type Books struct &#123;   title string   author string   subject string   book_id int&#125;func main() &#123;    // 创建一个新的结构体    fmt.Println(Books&#123;"Go 语言", "www.voidking.com", "Go 语言教程", 6495407&#125;)    // 也可以使用 key =&gt; value 格式    fmt.Println(Books&#123;title: "Go 语言", author: "www.voidking.com", subject: "Go 语言教程", book_id: 6495407&#125;)    // 忽略的字段为 0 或 空    fmt.Println(Books&#123;title: "Go 语言", author: "www.voidking.com"&#125;)    // 结构体声明和赋值    var Book1 Books    Book1.title = "Go语言入门篇"    Book1.author = "www.voidking.com"    Book1.subject = "Go语言"    Book1.book_id = 123456    printBook(Book1)&#125;func printBook( book Books ) &#123;   fmt.Printf( "Book title : %s\n", book.title);   fmt.Printf( "Book author : %s\n", book.author);   fmt.Printf( "Book subject : %s\n", book.subject);   fmt.Printf( "Book book_id : %d\n", book.book_id);&#125;
+
+
+接口demo：
+package mainimport (    "fmt")type Phone interface &#123;    call()&#125;type NokiaPhone struct &#123;&#125;func (nokiaPhone NokiaPhone) call() &#123;    fmt.Println("I am Nokia, I can call you!")&#125;type IPhone struct &#123;&#125;func (iPhone IPhone) call() &#123;    fmt.Println("I am iPhone, I can call you!")&#125;func main() &#123;    var phone Phone    phone = new(NokiaPhone)    phone.call()    phone = new(IPhone)    phone.call()&#125;
+
+错误处理demo：
+package mainimport (    "fmt")// 定义一个 DivideError 结构type DivideError struct &#123;    dividee int    divider int&#125;// 实现 `error` 接口func (de *DivideError) Error() string &#123;    strFormat := `    Cannot proceed, the divider is zero.    dividee: %d    divider: 0`    return fmt.Sprintf(strFormat, de.dividee)&#125;// 定义 `int` 类型除法运算的函数func Divide(varDividee int, varDivider int) (result int, errorMsg string) &#123;    if varDivider == 0 &#123;        dData := DivideError&#123;            dividee: varDividee,            divider: varDivider,        &#125;        errorMsg = dData.Error()        return    &#125; else &#123;        return varDividee / varDivider, ""    &#125;&#125;func main() &#123;    // 正常情况    if result, errorMsg := Divide(100, 10); errorMsg == "" &#123;        fmt.Println("100/10 = ", result)    &#125;    // 当被除数为零的时候会返回错误信息    if _, errorMsg := Divide(100, 0); errorMsg != "" &#123;        fmt.Println("errorMsg is: ", errorMsg)    &#125;&#125;
+
+并发demo：
+package mainimport (    "fmt"    "time")func say(s string) &#123;    for i := 0; i &lt; 5; i++ &#123;        time.Sleep(100 * time.Millisecond)        fmt.Println(s)    &#125;&#125;func main() &#123;    say("hello")    go say("world")&#125;
+
+后记Go语言入门篇，核心就是把Go语言当成C来写，和C不同的地方，留心注意即可。更多高阶的内容，用到的时候再去学习整理。
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>golang</category>
+      </categories>
+      <tags>
+        <tag>golang</tag>
       </tags>
   </entry>
   <entry>
@@ -6089,6 +6609,33 @@ livere简介livere（来必力）是一个社会化评论插件，优点有：
       </tags>
   </entry>
   <entry>
+    <title>Hexo本地搜索加速</title>
+    <url>/dev-hexo-local-search-accelerate/</url>
+    <content><![CDATA[前言随着文章数量的增长，search.xml文件越来越大。因此在加载这个文件时，需要的时间很长，而且偶尔会出现加载不出来的情况。
+有没有什么办法能够加快加载速度呢？必须是有的，本文就来研究一下。
+《Hexo使用Gulp压缩静态资源》一文中，提到search.xml大小为3.5M。今天又看了一下，文件大小变成了4.3M（加载时会压缩传输，大小约为1.3M）。从文中的实验可以得出结论，在文件大小方面，没有什么优化的空间了。
+再想优化，就得从网络方面入手：CDN加速。主要参考jsDelivr+Github 使用方法。
+更多Hexo相关内容，参考Hexo系列文章。
+
+
+思路修改 search.xml 的文件链接，改成cdn的地址。
+实现1、测试jsdelivr链接，search.xml的cdn地址为https://cdn.jsdelivr.net/gh/voidking/voidking.github.io/search.xml
+2、编辑 next/source/js/local-search.js ，如下修改：
+// const path = CONFIG.root + searchPath;const jsdelivr = 'https://cdn.jsdelivr.net/gh/'const userRepo = 'voidking/voidking.github.io/'const path = jsdelivr + userRepo + searchPath;
+
+3、本地测试，提交代码，使用修改后的主题进行部署
+实测加载速度飞快，4.3M的search.xml能够稳定在2秒内加载完毕，完美。
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>hexo</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hexo中使用Mathjax的冲突问题</title>
     <url>/dev-hexo-mathjax/</url>
     <content><![CDATA[问题描述写《信息量&amp;信息熵&amp;信息增益》时，用到了一些数学公式。但是，在使用hexo生成页面后，这些数学公式并没有被正确显示。查找资料发现markdwon本身的特殊符号与latex中的符号会出现冲突:
@@ -6712,8 +7259,8 @@ Linux 守护进程的启动方法http://www.ruanyifeng.com/blog/2016/02/linux-da
         <category>专业</category>
         <category>运维</category>
         <category>开发</category>
-        <category>centos</category>
         <category>node</category>
+        <category>centos</category>
       </categories>
       <tags>
         <tag>centos</tag>
@@ -7166,31 +7713,82 @@ imagesloaded项目地址：https://github.com/desandro/imagesloaded
       </tags>
   </entry>
   <entry>
-    <title>Jupyter调试</title>
-    <url>/dev-jupyter-debug/</url>
-    <content><![CDATA[前言除了PyCharm，另一个常用的编辑器就是Jupyter了。本文研究记录一下Jupyter的调试方法。
+    <title>使用client-go操作K8S</title>
+    <url>/dev-k8s-client-go/</url>
+    <content><![CDATA[client-go简介直观上看，用户可以使用kubectl、客户端库或者REST请求来访问K8S API。而实际上，无论是kubectl还是客户端库，都是封装了REST请求的工具。client-go作为一个客户端库，能够调用K8S API，实现对K8S集群中资源对象（包括deployment、service、ingress、replicaSet、pod、namespace、node等）的增删改查等操作。源码地址：kubernetes/client-go接口文档：kubernetes - GoDoc
 
 
-使用1、在jupyter中新建文件，运行如下代码：
-def func1(a,b):    return a/bdef func2(x):    a=x    b=x-1    return func1(a,b)func2(1)
-出现报错：
-2、出错后，输入%debug，进入调试模式。调试模式会进入直接出错函数func1，我们可以在调试模式自带的对话框中输入变量名来查看函数中的变量情况，输入“quit”则退出该模式。
-同时，在调试模式下，我们也可以通过输入“up”来对外层函数进行调试，查看其中的变量情况。同样的，也可以通过“down”进入内层函数。
-3、在notebooke中执行 %pdb on 可以设置为当异常发生时自动进入调试模式，在某些特殊的情况下，这么做可能会更为方便：
-def func1(a,b):    return a/bdef func2(x):    a=x    b=x-1    return func1(a,b)%pdb onfunc2(1)
+通过REST访问K8S《K8S入门篇》一文中使用kubectl对minikube进行管理，本节中直接使用REST请求来对minikube进行管理。参考Access Clusters Using the Kubernetes API，来测试一下。
+kubectl处理API服务器的定位和身份验证。如果要使用curl或wget等http客户端或浏览器直接访问REST API，可以通过多种方式查找和验证API服务器：（1）在代理模式下运行kubectl（推荐）。建议使用此方法，因为它使用存储的apiserver位置并使用自签名证书验证API服务器的标识。使用此方法无法进行中间人（MITM）攻击。（2）直接向http客户端提供位置和凭据。这适用于被代理混淆的客户端代码。为了防止中间人攻击，需要将根证书导入浏览器。使用Go或Python客户端库可以在代理模式下访问kubectl。
+启动minikube，查看集群配置
+minikube startkubectl config view
+
+查看kubectl访问了什么url，获得了什么信息。
+kubectl get nodes -v=8kubectl get nodes -v=9
+
+kubectl代理模式充当反向代理模式下运行kubectl，它处理定位API服务器和进行身份验证。
+kubectl proxy --port=8080 &amp;curl http://localhost:8080/api/
+此时使用浏览器进行访问，同样可以拿到数据。
+grep/cut方法# Check all possible clusters, as you .KUBECONFIG may have multiple contexts:kubectl config view -o jsonpath='&#123;"Cluster name\tServer\n"&#125;&#123;range .clusters[*]&#125;&#123;.name&#125;&#123;"\t"&#125;&#123;.cluster.server&#125;&#123;"\n"&#125;&#123;end&#125;'# Select name of cluster you want to interact with from above output:# export CLUSTER_NAME="some_server_name"export CLUSTER_NAME="minikube"# Point to the API server refering the cluster nameAPISERVER=$(kubectl config view -o jsonpath="&#123;.clusters[?(@.name==\"$CLUSTER_NAME\")].cluster.server&#125;")# Gets the token valueTOKEN=$(kubectl get secrets -o jsonpath="&#123;.items[?(@.metadata.annotations['kubernetes\.io/service-account\.name']=='default')].data.token&#125;"|base64 -d)# Explore the API with TOKENcurl -X GET $APISERVER/api --header "Authorization: Bearer $TOKEN" --insecure
 
 
-书签Python Jupyter Notebook 中的错误异常与代码调试
+jsonpath方法APISERVER=$(kubectl config view --minify -o jsonpath='&#123;.clusters[0].cluster.server&#125;')TOKEN=$(kubectl get secret $(kubectl get serviceaccount default -o jsonpath='&#123;.secrets[0].name&#125;') -o jsonpath='&#123;.data.token&#125;' | base64 --decode )curl $APISERVER/api --header "Authorization: Bearer $TOKEN" --insecure
+
+
+client-go操作K8Sclient-go实际上是封装了REST请求的客户端库，能够简化我们的工作。
+参考k8s-client-go项目，对k8s进行一些基本操作，包括连接k8s，创建更新deployment，查看deployment状态，查看pod状态等。在使用该项目之前，需要获取k8s集群的配置信息：kubectl config view把配置信息拷贝一下，粘贴到项目中的admin.conf文件中即可。
+此外，k8s-client-go项目依赖client-go，因此需要参考《Golang包管理工具》安装好依赖。
+后记本文中学习了client-go的安装方法，然后借助k8s-client-go项目学习了client-go的基本用法。接下来，使用client-go实现在K8S集群中发布项目，go！go！go！
 ]]></content>
       <categories>
         <category>专业</category>
-        <category>开发</category>
-        <category>python</category>
+        <category>运维</category>
+        <category>k8s</category>
       </categories>
       <tags>
-        <tag>debug</tag>
-        <tag>jupyter</tag>
-        <tag>调试</tag>
+        <tag>k8s</tag>
+        <tag>golang</tag>
+        <tag>docker</tag>
+        <tag>client-go</tag>
+        <tag>kubectl</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>K8S集群中etcd备份和恢复</title>
+    <url>/dev-k8s-etcd-backup-restore/</url>
+    <content><![CDATA[前言就像备份数据库一样，很多时候，我们也想对k8s资源配置进行备份。
+kubectl get all --all-namespaces -o yaml &gt; all-deploy-services.yaml
+上面的方法，可以实现对k8s资源配置的备份。但是更好的办法，是对etcd进行备份。本文就学习一下k8s中etcd的备份和恢复方法。
+
+
+etcd集群状态HOST_1=10.240.0.17HOST_2=10.240.0.18HOST_3=10.240.0.19ENDPOINTS=$HOST_1:2379,$HOST_2:2379,$HOST_3:2379etcdctl --endpoints=$ENDPOINTS member listetcdctl --write-out=table --endpoints=$ENDPOINTS endpoint statusetcdctl --endpoints=$ENDPOINTS endpoint health
+
+备份1、查看配置
+kubectl describe pod etcd-master -n kube-system | grep Command -i -A 20
+看到Command字段为：
+Command:  etcd  --advertise-client-urls=https://172.17.0.10:2379  --cert-file=/etc/kubernetes/pki/etcd/server.crt  --client-cert-auth=true  --data-dir=/var/lib/etcd  --initial-advertise-peer-urls=https://172.17.0.10:2380  --initial-cluster=master=https://172.17.0.10:2380  --key-file=/etc/kubernetes/pki/etcd/server.key  --listen-client-urls=https://127.0.0.1:2379,https://172.17.0.10:2379  --listen-metrics-urls=http://127.0.0.1:2381  --listen-peer-urls=https://172.17.0.10:2380  --name=master  --peer-cert-file=/etc/kubernetes/pki/etcd/peer.crt  --peer-client-cert-auth=true  --peer-key-file=/etc/kubernetes/pki/etcd/peer.key  --peer-trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt  --snapshot-count=10000  --trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt
+
+或者查看/etc/kubernetes/manifests/etcd.yaml。
+2、执行备份
+ETCDCTL_API=3 etcdctl \--endpoints=https://[127.0.0.1]:2379 \--cacert=/etc/kubernetes/pki/etcd/ca.crt \--cert=/etc/kubernetes/pki/etcd/server.crt \--key=/etc/kubernetes/pki/etcd/server.key \snapshot save /tmp/snapshot-pre-boot.db
+
+3、查看备份
+ETCDCTL_API=3 etcdctl \--endpoints=https://[127.0.0.1]:2379 \--cacert=/etc/kubernetes/pki/etcd/ca.crt \--cert=/etc/kubernetes/pki/etcd/server.crt \--key=/etc/kubernetes/pki/etcd/server.key \snapshot status /tmp/snapshot-pre-boot.db -w table
+
+恢复1、恢复etcd数据
+ETCDCTL_API=3 etcdctl \--endpoints=https://[127.0.0.1]:2379 \--cacert=/etc/kubernetes/pki/etcd/ca.crt \--cert=/etc/kubernetes/pki/etcd/server.crt \--key=/etc/kubernetes/pki/etcd/server.key \--initial-cluster=master=https://127.0.0.1:2380 \--initial-cluster-token etcd-cluster-1 \--initial-advertise-peer-urls=https://127.0.0.1:2380 \--name=master \--data-dir /var/lib/etcd-from-backup \snapshot restore /tmp/snapshot-pre-boot.db
+
+2、修改etcd.yamlvim /etc/kubernetes/manifests/etcd.yaml，如下修改：
+# Update --data-dir to use new target location--data-dir=/var/lib/etcd-from-backup# Update new initial-cluster-token to specify new cluster--initial-cluster-token=etcd-cluster-1# Update volumes and volume mounts to point to new path    volumeMounts:    - mountPath: /var/lib/etcd-from-backup      name: etcd-data    - mountPath: /etc/kubernetes/pki/etcd      name: etcd-certs  hostNetwork: true  priorityClassName: system-cluster-critical  volumes:  - hostPath:      path: /var/lib/etcd-from-backup      type: DirectoryOrCreate    name: etcd-data  - hostPath:      path: /etc/kubernetes/pki/etcd      type: DirectoryOrCreate    name: etcd-certs]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>k8s</category>
+        <category>docker</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
+        <tag>docker</tag>
       </tags>
   </entry>
   <entry>
@@ -7827,6 +8425,33 @@ vim /etc/init/libvirt-bin.conf，如下修改：
       </tags>
   </entry>
   <entry>
+    <title>Linux的12个问题</title>
+    <url>/dev-linux-12-question/</url>
+    <content><![CDATA[问题11.下载linux2.6.18的内核2.安装阅读内核的软件soure insight3.编译内核4.写总结讲讲下载编译过程的问题和解决方式。
+问题2从内核中寻找各种数据结构的应用，每个找一个例子。从内核中寻找同步机制的应用，每个找一个例子。学习dead  line调度算法（deadline-iosched.c）中红黑树的应用,重点deadline_add_request从dead line调度算法学习双向链表、hash链表的应用。
+
+
+问题31.从内核中寻找kmalloc的例子并分析2.从内核中寻找wait_event和工作队列的例子并分析
+问题4文件系统超级块的创建过程文件系统内创建一个文件的过程
+问题5阅读文件打开的过程，重点关注dentry,inode的处理过程。
+问题6分析pci总线提供的设备属性如何应用到sys文件系统？（pci_bus_type.pci_dev_attrs）写个小程序，在sysfs文件系统中创建一个目录和文件
+问题71.如果文件起点位于硬盘物理扇区10000，那么从文件位置4096+1000字节处读7000个字节，对应的页缓存分别是那几个页面？对应块的物理块号是多少？2.如果一个进程读文件，读的数据是文件内第一个页面的内容，读尚未完成有另一个进程同时准备写第一个页面的内容，  那么内核如何保证前一个进程读到正确的内容？
+问题81.简要描述io从中断中返回，经过通用块层返回到用户态进程的函数调用关系。需要包括io的软中断处理，scsi命令的返回函数，bio的返回函数和页面的解锁。2.块设备的队列request-queu提供了一系列的调用函数，简要描述它们各自的作用。
+问题91.利用dumpe2fs把linux一个ext2(ext3也可)分区的信息dump出来，解释dump出来的信息。2.结合课程的知识和ext2的目录结构，解析文件打开的过程
+问题101.设备dma地址来自哪里？2如何读取pci设备配置空间的信息？3描述pci总线扫描设备的过程，包括桥的处理以及设备信息的获取.
+问题111.分析kobj_lookup函数如何找到字符设备的对象cdev?2.分析内核的ext2文件系统打开字符设备文件的整个过程？（假定根目录下有个字符设备文件chdev，文件系统如何读到inode信息，对设备文件赋值的过程，打开字符设备open函数的过程，打开input_handler提供的open函数）
+问题12描述物理键盘加入系统的过程分析。分为platform总线的设备和驱动匹配的过程，serio总线设备和驱动匹配的过程，input框架设备和驱动匹配的过程。
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Libvirt虚拟机网络配置</title>
     <url>/dev-libvirt-vm-network/</url>
     <content><![CDATA[前言通过《使用Libvirt创建虚拟机》一文，我们已经学会使用Libvirt创建虚拟机的方法，而且学会了虚拟机的一些基本配置方法。但是，文中创建的虚拟机只能在node0上访问，node1就无法访问，也就是说无法对外网提供服务。
@@ -7905,33 +8530,6 @@ How to Put a KVM Guest Domain on a Bridged Network
         <tag>linux</tag>
         <tag>ubuntu</tag>
         <tag>libvirt</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Linux的12个问题</title>
-    <url>/dev-linux-12-question/</url>
-    <content><![CDATA[问题11.下载linux2.6.18的内核2.安装阅读内核的软件soure insight3.编译内核4.写总结讲讲下载编译过程的问题和解决方式。
-问题2从内核中寻找各种数据结构的应用，每个找一个例子。从内核中寻找同步机制的应用，每个找一个例子。学习dead  line调度算法（deadline-iosched.c）中红黑树的应用,重点deadline_add_request从dead line调度算法学习双向链表、hash链表的应用。
-
-
-问题31.从内核中寻找kmalloc的例子并分析2.从内核中寻找wait_event和工作队列的例子并分析
-问题4文件系统超级块的创建过程文件系统内创建一个文件的过程
-问题5阅读文件打开的过程，重点关注dentry,inode的处理过程。
-问题6分析pci总线提供的设备属性如何应用到sys文件系统？（pci_bus_type.pci_dev_attrs）写个小程序，在sysfs文件系统中创建一个目录和文件
-问题71.如果文件起点位于硬盘物理扇区10000，那么从文件位置4096+1000字节处读7000个字节，对应的页缓存分别是那几个页面？对应块的物理块号是多少？2.如果一个进程读文件，读的数据是文件内第一个页面的内容，读尚未完成有另一个进程同时准备写第一个页面的内容，  那么内核如何保证前一个进程读到正确的内容？
-问题81.简要描述io从中断中返回，经过通用块层返回到用户态进程的函数调用关系。需要包括io的软中断处理，scsi命令的返回函数，bio的返回函数和页面的解锁。2.块设备的队列request-queu提供了一系列的调用函数，简要描述它们各自的作用。
-问题91.利用dumpe2fs把linux一个ext2(ext3也可)分区的信息dump出来，解释dump出来的信息。2.结合课程的知识和ext2的目录结构，解析文件打开的过程
-问题101.设备dma地址来自哪里？2如何读取pci设备配置空间的信息？3描述pci总线扫描设备的过程，包括桥的处理以及设备信息的获取.
-问题111.分析kobj_lookup函数如何找到字符设备的对象cdev?2.分析内核的ext2文件系统打开字符设备文件的整个过程？（假定根目录下有个字符设备文件chdev，文件系统如何读到inode信息，对设备文件赋值的过程，打开字符设备open函数的过程，打开input_handler提供的open函数）
-问题12描述物理键盘加入系统的过程分析。分为platform总线的设备和驱动匹配的过程，serio总线设备和驱动匹配的过程，input框架设备和驱动匹配的过程。
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>linux</category>
-      </categories>
-      <tags>
-        <tag>linux</tag>
       </tags>
   </entry>
   <entry>
@@ -9777,85 +10375,6 @@ address.json因为public文件夹的虚拟路径为网站根目录，且为静�
       </tags>
   </entry>
   <entry>
-    <title>K8S集群中etcd备份和恢复</title>
-    <url>/dev-k8s-etcd-backup-restore/</url>
-    <content><![CDATA[前言就像备份数据库一样，很多时候，我们也想对k8s资源配置进行备份。
-kubectl get all --all-namespaces -o yaml &gt; all-deploy-services.yaml
-上面的方法，可以实现对k8s资源配置的备份。但是更好的办法，是对etcd进行备份。本文就学习一下k8s中etcd的备份和恢复方法。
-
-
-etcd集群状态HOST_1=10.240.0.17HOST_2=10.240.0.18HOST_3=10.240.0.19ENDPOINTS=$HOST_1:2379,$HOST_2:2379,$HOST_3:2379etcdctl --endpoints=$ENDPOINTS member listetcdctl --write-out=table --endpoints=$ENDPOINTS endpoint statusetcdctl --endpoints=$ENDPOINTS endpoint health
-
-备份1、查看配置
-kubectl describe pod etcd-master -n kube-system | grep Command -i -A 20
-看到Command字段为：
-Command:  etcd  --advertise-client-urls=https://172.17.0.10:2379  --cert-file=/etc/kubernetes/pki/etcd/server.crt  --client-cert-auth=true  --data-dir=/var/lib/etcd  --initial-advertise-peer-urls=https://172.17.0.10:2380  --initial-cluster=master=https://172.17.0.10:2380  --key-file=/etc/kubernetes/pki/etcd/server.key  --listen-client-urls=https://127.0.0.1:2379,https://172.17.0.10:2379  --listen-metrics-urls=http://127.0.0.1:2381  --listen-peer-urls=https://172.17.0.10:2380  --name=master  --peer-cert-file=/etc/kubernetes/pki/etcd/peer.crt  --peer-client-cert-auth=true  --peer-key-file=/etc/kubernetes/pki/etcd/peer.key  --peer-trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt  --snapshot-count=10000  --trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt
-
-或者查看/etc/kubernetes/manifests/etcd.yaml。
-2、执行备份
-ETCDCTL_API=3 etcdctl \--endpoints=https://[127.0.0.1]:2379 \--cacert=/etc/kubernetes/pki/etcd/ca.crt \--cert=/etc/kubernetes/pki/etcd/server.crt \--key=/etc/kubernetes/pki/etcd/server.key \snapshot save /tmp/snapshot-pre-boot.db
-
-3、查看备份
-ETCDCTL_API=3 etcdctl \--endpoints=https://[127.0.0.1]:2379 \--cacert=/etc/kubernetes/pki/etcd/ca.crt \--cert=/etc/kubernetes/pki/etcd/server.crt \--key=/etc/kubernetes/pki/etcd/server.key \snapshot status /tmp/snapshot-pre-boot.db -w table
-
-恢复1、恢复etcd数据
-ETCDCTL_API=3 etcdctl \--endpoints=https://[127.0.0.1]:2379 \--cacert=/etc/kubernetes/pki/etcd/ca.crt \--cert=/etc/kubernetes/pki/etcd/server.crt \--key=/etc/kubernetes/pki/etcd/server.key \--initial-cluster=master=https://127.0.0.1:2380 \--initial-cluster-token etcd-cluster-1 \--initial-advertise-peer-urls=https://127.0.0.1:2380 \--name=master \--data-dir /var/lib/etcd-from-backup \snapshot restore /tmp/snapshot-pre-boot.db
-
-2、修改etcd.yamlvim /etc/kubernetes/manifests/etcd.yaml，如下修改：
-# Update --data-dir to use new target location--data-dir=/var/lib/etcd-from-backup# Update new initial-cluster-token to specify new cluster--initial-cluster-token=etcd-cluster-1# Update volumes and volume mounts to point to new path    volumeMounts:    - mountPath: /var/lib/etcd-from-backup      name: etcd-data    - mountPath: /etc/kubernetes/pki/etcd      name: etcd-certs  hostNetwork: true  priorityClassName: system-cluster-critical  volumes:  - hostPath:      path: /var/lib/etcd-from-backup      type: DirectoryOrCreate    name: etcd-data  - hostPath:      path: /etc/kubernetes/pki/etcd      type: DirectoryOrCreate    name: etcd-certs]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>k8s</category>
-        <category>docker</category>
-      </categories>
-      <tags>
-        <tag>k8s</tag>
-        <tag>docker</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>使用client-go操作K8S</title>
-    <url>/dev-k8s-client-go/</url>
-    <content><![CDATA[client-go简介直观上看，用户可以使用kubectl、客户端库或者REST请求来访问K8S API。而实际上，无论是kubectl还是客户端库，都是封装了REST请求的工具。client-go作为一个客户端库，能够调用K8S API，实现对K8S集群中资源对象（包括deployment、service、ingress、replicaSet、pod、namespace、node等）的增删改查等操作。源码地址：kubernetes/client-go接口文档：kubernetes - GoDoc
-
-
-通过REST访问K8S《K8S入门篇》一文中使用kubectl对minikube进行管理，本节中直接使用REST请求来对minikube进行管理。参考Access Clusters Using the Kubernetes API，来测试一下。
-kubectl处理API服务器的定位和身份验证。如果要使用curl或wget等http客户端或浏览器直接访问REST API，可以通过多种方式查找和验证API服务器：（1）在代理模式下运行kubectl（推荐）。建议使用此方法，因为它使用存储的apiserver位置并使用自签名证书验证API服务器的标识。使用此方法无法进行中间人（MITM）攻击。（2）直接向http客户端提供位置和凭据。这适用于被代理混淆的客户端代码。为了防止中间人攻击，需要将根证书导入浏览器。使用Go或Python客户端库可以在代理模式下访问kubectl。
-启动minikube，查看集群配置
-minikube startkubectl config view
-
-查看kubectl访问了什么url，获得了什么信息。
-kubectl get nodes -v=8kubectl get nodes -v=9
-
-kubectl代理模式充当反向代理模式下运行kubectl，它处理定位API服务器和进行身份验证。
-kubectl proxy --port=8080 &amp;curl http://localhost:8080/api/
-此时使用浏览器进行访问，同样可以拿到数据。
-grep/cut方法# Check all possible clusters, as you .KUBECONFIG may have multiple contexts:kubectl config view -o jsonpath='&#123;"Cluster name\tServer\n"&#125;&#123;range .clusters[*]&#125;&#123;.name&#125;&#123;"\t"&#125;&#123;.cluster.server&#125;&#123;"\n"&#125;&#123;end&#125;'# Select name of cluster you want to interact with from above output:# export CLUSTER_NAME="some_server_name"export CLUSTER_NAME="minikube"# Point to the API server refering the cluster nameAPISERVER=$(kubectl config view -o jsonpath="&#123;.clusters[?(@.name==\"$CLUSTER_NAME\")].cluster.server&#125;")# Gets the token valueTOKEN=$(kubectl get secrets -o jsonpath="&#123;.items[?(@.metadata.annotations['kubernetes\.io/service-account\.name']=='default')].data.token&#125;"|base64 -d)# Explore the API with TOKENcurl -X GET $APISERVER/api --header "Authorization: Bearer $TOKEN" --insecure
-
-
-jsonpath方法APISERVER=$(kubectl config view --minify -o jsonpath='&#123;.clusters[0].cluster.server&#125;')TOKEN=$(kubectl get secret $(kubectl get serviceaccount default -o jsonpath='&#123;.secrets[0].name&#125;') -o jsonpath='&#123;.data.token&#125;' | base64 --decode )curl $APISERVER/api --header "Authorization: Bearer $TOKEN" --insecure
-
-
-client-go操作K8Sclient-go实际上是封装了REST请求的客户端库，能够简化我们的工作。
-参考k8s-client-go项目，对k8s进行一些基本操作，包括连接k8s，创建更新deployment，查看deployment状态，查看pod状态等。在使用该项目之前，需要获取k8s集群的配置信息：kubectl config view把配置信息拷贝一下，粘贴到项目中的admin.conf文件中即可。
-此外，k8s-client-go项目依赖client-go，因此需要参考《Golang包管理工具》安装好依赖。
-后记本文中学习了client-go的安装方法，然后借助k8s-client-go项目学习了client-go的基本用法。接下来，使用client-go实现在K8S集群中发布项目，go！go！go！
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>k8s</category>
-      </categories>
-      <tags>
-        <tag>k8s</tag>
-        <tag>golang</tag>
-        <tag>docker</tag>
-        <tag>client-go</tag>
-        <tag>kubectl</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Node基础开发框架</title>
     <url>/dev-nodebase-framework/</url>
     <content><![CDATA[前言测试新功能，开发新项目，按照本人的懒惰程度推算，八成会在原有项目的基础上开发。既然如此，抽出来一个node基础框架，似乎是一个很好的想法。本框架保留了毕设的主体代码，删除了一些无关代码，并且会继续增减代码，逐渐完善。
@@ -9914,6 +10433,34 @@ app.get('/admin/', function(req, res)&#123;  res.render('admin',&#123;title:'adm
       </categories>
       <tags>
         <tag>node</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Jupyter调试</title>
+    <url>/dev-jupyter-debug/</url>
+    <content><![CDATA[前言除了PyCharm，另一个常用的编辑器就是Jupyter了。本文研究记录一下Jupyter的调试方法。
+
+
+使用1、在jupyter中新建文件，运行如下代码：
+def func1(a,b):    return a/bdef func2(x):    a=x    b=x-1    return func1(a,b)func2(1)
+出现报错：
+2、出错后，输入%debug，进入调试模式。调试模式会进入直接出错函数func1，我们可以在调试模式自带的对话框中输入变量名来查看函数中的变量情况，输入“quit”则退出该模式。
+同时，在调试模式下，我们也可以通过输入“up”来对外层函数进行调试，查看其中的变量情况。同样的，也可以通过“down”进入内层函数。
+3、在notebooke中执行 %pdb on 可以设置为当异常发生时自动进入调试模式，在某些特殊的情况下，这么做可能会更为方便：
+def func1(a,b):    return a/bdef func2(x):    a=x    b=x-1    return func1(a,b)%pdb onfunc2(1)
+
+
+书签Python Jupyter Notebook 中的错误异常与代码调试
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>python</category>
+      </categories>
+      <tags>
+        <tag>debug</tag>
+        <tag>jupyter</tag>
+        <tag>调试</tag>
       </tags>
   </entry>
   <entry>
@@ -10968,6 +11515,8 @@ $product_json_arr = json_decode($_POST['product_json_arr']);echo json_encode($pr
     <title>PHP调试之Xdebug+PhpStorm</title>
     <url>/dev-php-debug-xdebug/</url>
     <content><![CDATA[前言该怎么强调调试的重要性呢？我们生病的时候，要去看医生，医生会通过各种仪器对我们进行检查，定位病因，然后给我们治疗。程序也会生病，生病的时候，作为医生（开发者）的我们，就要通过各种办法定位bug，然后修改代码。定位bug并且修改代码的过程，就是调试。
+最简单直接的调试办法是摘出需要调试的部分，放入 main.php 中，然后运行脚本：php main.php前提是调试环境要安装好php，检查方法：php -v
+但是，这种方法并不适合项目的调试，因为项目中涉及到很多上下文，模拟起来会比较麻烦。这时候就需要调试工具出场了。
 PHP的调试工具有很多，本文记录一下Xdebug的使用方法。配合使用的集成环境为laragon-1.0，IDE为PhpStorm-2016.2.1。
 
 
@@ -11718,10 +12267,11 @@ import osimport jsonres = os.popen('sh main.sh')data = json.loads(res.read())res
     <title>Shell脚本之安全删除</title>
     <url>/dev-shell-saferm/</url>
     <content><![CDATA[前言很多时候，我们会误删文件，那么一个回收站就很有必要了。看了一些回收站的实现，都比较复杂，干脆自己写一个。
+思路：使用mv替换rm，把想要删除的文件暂时移动到回收站。
+
+
 安全删除脚本1、编写安全删除脚本，saferm.sh
 #!/bin/bashTRASHDIR="$&#123;HOME&#125;/.saferm/trash"[[ ! -d $&#123;TRASHDIR&#125; ]] &amp;&amp; mkdir -p $&#123;TRASHDIR&#125;function usage()&#123;    echo -e "    Brief: move directory and files to ~/.local/trash    Usage: alias rm=/path/to/saferm.sh            rm &lt;dir&gt;            rm &lt;file&gt;            rm &lt;file1&gt; &lt;file2&gt;    "&#125;function main()&#123;    local now=$(date "+%Y%m%d%H%M%S")    local destdir="$&#123;TRASHDIR&#125;/$&#123;now&#125;"    mkdir $&#123;destdir&#125;    local opt    while getopts "h" opt    do      case $opt in        h)          usage &amp;&amp; exit 0 ;;        \?)          usage &amp;&amp; exit 0 ;;      esac    done    local files="$*"    local successfiles=""    for file in $&#123;files&#125;;do        mv $&#123;file&#125; $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file&#125;    done    if [[ -z "$&#123;successfiles&#125;" ]];then        echo -e "\033[31mNothing to do! Check the source filenames please!\033[0m"    else        echo -e "$&#123;successfiles&#125; have been moved to \033[31m$&#123;destdir&#125;\033[0m"    fi&#125;main "$@"
-
-
 
 2、使用方法编辑 .bash_profile ，添加内容
 # safermalias rm="/path/to/saferm.sh"
@@ -13082,36 +13632,6 @@ youtube CS 20SI: Tensorflow for Deep Learning Research
       </tags>
   </entry>
   <entry>
-    <title>ThinkPHP开发环境搭建</title>
-    <url>/dev-thinkphp-environment/</url>
-    <content><![CDATA[前言8月12号，抵达东北师范，开启了闭关修炼模式。入手的第一个项目，小太阳，有意思的名字。这是一个物业管理系统，分为业主端、物业端、CMS端，计划使用ThinkPHP框架来开发。PHP，好久不见，倍感亲切。
-
-
-PHP运行环境PHP运行，需要两个条件，一个是Apache容器，另一个是PHP程序。很多情况下，还需要Mysql数据库。本次环境搭建中，我们使用集成环境WAMPServer，本环境包含了以上三个软件。省却了很多配置，很方便。其中，W代表Windows，A代表Apache，M代表Mysql，P代表PHP。
-下载WAMPServerWAMPSever官网：http://www.wampserver.com/不翻墙的话，可能下载不下来，这里提供一个360网盘的下载链接：https://yunpan.cn/c6CkFLeumMZVv  访问密码 38f7
-MSVCR110运行WAMPServer，报错：
-如果是64位系统，下载安装vcredist_x64.exe，即可解决该错误，32位同理下载vcredist_x86.exe。微软官网下载：http://www.microsoft.com/zh-CN/download/details.aspx?id=30679
-360网盘的下载链接：https://yunpan.cn/c6C2FxHGXTabm  访问密码 f641
-查看运行效果成功运行WAMPSever后，我们发现桌面右下角多了一个WAMPSever的logo。这时在浏览器地址栏中输入http://localhost，即可看到WAMP的一些信息。
-phpmyadmin在浏览器地址栏中输入http://localhost/phpmyadmin/，可以看到phpmyadmin的登录界面。默认用户名为root，密码为空。
-下载安装ThinkPHP下载ThinkPHP官网：http://www.thinkphp.cn/360网盘的下载链接：https://yunpan.cn/c6CvrUtM6C6X4  访问密码 ebd1
-安装1、解压到thinkphp_3.2.3_full。2、重命名thinkphp_3.2.3_full文件夹为thinkphp。3、剪切thinkphp文件夹到WAMP安装目录下的www文件夹中。比如我的WAMP安装目录为D:\Server\wamp64，那么就把thinkphp放到D:\Server\wamp64\www中。
-查看运行结果在浏览器地址栏中输入http://localhost/thinkphp，即可看到thinkphp的一些信息。
-后记至此，ThinkPHP的开发环境搭建成功，接下来可以愉快地开发了！
-附上另外几款常见的PHP集成环境：1、AppServ2、WAMPP3、ServKit（原名PHPnow）4、UPUPW
-书签PHP入门篇http://www.imooc.com/learn/54
-ThinkPHP3.2完全开发手册http://document.thinkphp.cn/manual_3_2.html
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>php</category>
-      </categories>
-      <tags>
-        <tag>php</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Android终端Termux</title>
     <url>/dev-termux/</url>
     <content><![CDATA[termux简介termux是个非常强大的终端模拟器，能够在android上模拟linux终端。接下来，小编就在自己的Honor9上尝试一下termux。
@@ -13165,6 +13685,59 @@ Touch Keyboard
       <tags>
         <tag>android</tag>
         <tag>termux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ThinkPHP开发环境搭建</title>
+    <url>/dev-thinkphp-environment/</url>
+    <content><![CDATA[前言8月12号，抵达东北师范，开启了闭关修炼模式。入手的第一个项目，小太阳，有意思的名字。这是一个物业管理系统，分为业主端、物业端、CMS端，计划使用ThinkPHP框架来开发。PHP，好久不见，倍感亲切。
+
+
+PHP运行环境PHP运行，需要两个条件，一个是Apache容器，另一个是PHP程序。很多情况下，还需要Mysql数据库。本次环境搭建中，我们使用集成环境WAMPServer，本环境包含了以上三个软件。省却了很多配置，很方便。其中，W代表Windows，A代表Apache，M代表Mysql，P代表PHP。
+下载WAMPServerWAMPSever官网：http://www.wampserver.com/不翻墙的话，可能下载不下来，这里提供一个360网盘的下载链接：https://yunpan.cn/c6CkFLeumMZVv  访问密码 38f7
+MSVCR110运行WAMPServer，报错：
+如果是64位系统，下载安装vcredist_x64.exe，即可解决该错误，32位同理下载vcredist_x86.exe。微软官网下载：http://www.microsoft.com/zh-CN/download/details.aspx?id=30679
+360网盘的下载链接：https://yunpan.cn/c6C2FxHGXTabm  访问密码 f641
+查看运行效果成功运行WAMPSever后，我们发现桌面右下角多了一个WAMPSever的logo。这时在浏览器地址栏中输入http://localhost，即可看到WAMP的一些信息。
+phpmyadmin在浏览器地址栏中输入http://localhost/phpmyadmin/，可以看到phpmyadmin的登录界面。默认用户名为root，密码为空。
+下载安装ThinkPHP下载ThinkPHP官网：http://www.thinkphp.cn/360网盘的下载链接：https://yunpan.cn/c6CvrUtM6C6X4  访问密码 ebd1
+安装1、解压到thinkphp_3.2.3_full。2、重命名thinkphp_3.2.3_full文件夹为thinkphp。3、剪切thinkphp文件夹到WAMP安装目录下的www文件夹中。比如我的WAMP安装目录为D:\Server\wamp64，那么就把thinkphp放到D:\Server\wamp64\www中。
+查看运行结果在浏览器地址栏中输入http://localhost/thinkphp，即可看到thinkphp的一些信息。
+后记至此，ThinkPHP的开发环境搭建成功，接下来可以愉快地开发了！
+附上另外几款常见的PHP集成环境：1、AppServ2、WAMPP3、ServKit（原名PHPnow）4、UPUPW
+书签PHP入门篇http://www.imooc.com/learn/54
+ThinkPHP3.2完全开发手册http://document.thinkphp.cn/manual_3_2.html
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>php</category>
+      </categories>
+      <tags>
+        <tag>php</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ThinkPHP登录状态记录</title>
+    <url>/dev-thinkphp-login-state/</url>
+    <content><![CDATA[前言登录状态的记录，两种思路：一种是在前端cookie中存一个token，每次请求都把token传给后端，用于验证用户身份；另一种是建立session，在session中保存用户信息。
+本次开发中，我们采用第二种思路，下面实现一个简单的逻辑：1、在地址栏输入后台首页地址，如果管理员未登录，则显示后台首页（登录页面）；如果管理员已登录，则跳转到内容管理页面。2、在地址栏输入内容管理页面地址，如果管理员未登录，则跳转到后台首页；如果管理员已登录，则显示内容管理页面。
+
+
+php代码// 后台首页public function index()&#123;    if(isset($_SESSION['admin']))&#123;        $url = 'http://localhost/volunteer/index.php/Admin/manage';        header("location: $url");    &#125;else&#123;        $this-&gt;display();    &#125;&#125;// 登录函数public function login($name, $password)&#123;    // $name = $_POST['name'];    // $password = $_POST['password'];    $admin = M('admin');    $data = $admin-&gt;where("name='$name' AND password='$password'")-&gt;find();    if($data)&#123;        $_SESSION['admin']=$name;        $result = array(            'code' =&gt; '0',            'ext' =&gt; '登录成功',            'adminName' =&gt; $_SESSION['admin']        );        echo json_encode($result);    &#125;else&#123;        $result = array(            'code' =&gt; '1',            'ext' =&gt; '用户名或密码错误'        );        echo json_encode($result);    &#125;&#125;// 管理页面public function manage()&#123;    if(!isset($_SESSION['admin']) || !$_SESSION['admin'])&#123;        $url = 'http://localhost/volunteer/index.php/Admin/Index';        header("location: $url");    &#125;else&#123;        $this-&gt;display();    &#125;&#125;
+
+js代码$(function()&#123;    $('#confirm').click(function(e)&#123;        e.preventDefault();        var name = $('#name').val();        var password = $('#password').val();        $.ajax(&#123;            url: '/volunteer/index.php/Admin/Index/login',            type: 'POST',            dataType: 'json',            data: &#123;                name: name,                password: password            &#125;,            success: function(data)&#123;                console.log(data);                if(data.code == 0)&#123;                    window.location = '/volunteer/index.php/Admin/Index/manage';                &#125;            &#125;,            error: function(xhr)&#123;                console.log(xhr);            &#125;        &#125;);    &#125;); &#125;);
+
+书签起步 · Bootstrap v3 中文文档http://v3.bootcss.com/getting-started/#examples
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>php</category>
+      </categories>
+      <tags>
+        <tag>php</tag>
+        <tag>thinkphp</tag>
       </tags>
   </entry>
   <entry>
@@ -13340,29 +13913,6 @@ nameserver 10.0.0.100
       <tags>
         <tag>ubuntu</tag>
         <tag>dns</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>ThinkPHP登录状态记录</title>
-    <url>/dev-thinkphp-login-state/</url>
-    <content><![CDATA[前言登录状态的记录，两种思路：一种是在前端cookie中存一个token，每次请求都把token传给后端，用于验证用户身份；另一种是建立session，在session中保存用户信息。
-本次开发中，我们采用第二种思路，下面实现一个简单的逻辑：1、在地址栏输入后台首页地址，如果管理员未登录，则显示后台首页（登录页面）；如果管理员已登录，则跳转到内容管理页面。2、在地址栏输入内容管理页面地址，如果管理员未登录，则跳转到后台首页；如果管理员已登录，则显示内容管理页面。
-
-
-php代码// 后台首页public function index()&#123;    if(isset($_SESSION['admin']))&#123;        $url = 'http://localhost/volunteer/index.php/Admin/manage';        header("location: $url");    &#125;else&#123;        $this-&gt;display();    &#125;&#125;// 登录函数public function login($name, $password)&#123;    // $name = $_POST['name'];    // $password = $_POST['password'];    $admin = M('admin');    $data = $admin-&gt;where("name='$name' AND password='$password'")-&gt;find();    if($data)&#123;        $_SESSION['admin']=$name;        $result = array(            'code' =&gt; '0',            'ext' =&gt; '登录成功',            'adminName' =&gt; $_SESSION['admin']        );        echo json_encode($result);    &#125;else&#123;        $result = array(            'code' =&gt; '1',            'ext' =&gt; '用户名或密码错误'        );        echo json_encode($result);    &#125;&#125;// 管理页面public function manage()&#123;    if(!isset($_SESSION['admin']) || !$_SESSION['admin'])&#123;        $url = 'http://localhost/volunteer/index.php/Admin/Index';        header("location: $url");    &#125;else&#123;        $this-&gt;display();    &#125;&#125;
-
-js代码$(function()&#123;    $('#confirm').click(function(e)&#123;        e.preventDefault();        var name = $('#name').val();        var password = $('#password').val();        $.ajax(&#123;            url: '/volunteer/index.php/Admin/Index/login',            type: 'POST',            dataType: 'json',            data: &#123;                name: name,                password: password            &#125;,            success: function(data)&#123;                console.log(data);                if(data.code == 0)&#123;                    window.location = '/volunteer/index.php/Admin/Index/manage';                &#125;            &#125;,            error: function(xhr)&#123;                console.log(xhr);            &#125;        &#125;);    &#125;); &#125;);
-
-书签起步 · Bootstrap v3 中文文档http://v3.bootcss.com/getting-started/#examples
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>php</category>
-      </categories>
-      <tags>
-        <tag>php</tag>
-        <tag>thinkphp</tag>
       </tags>
   </entry>
   <entry>
@@ -15300,21 +15850,44 @@ java基础看完。23种设计模式junit或者testng单元测试hudson集成测
       </tags>
   </entry>
   <entry>
-    <title>从wordpress到hexo</title>
-    <url>/essay-from-wordpress-to-hexo/</url>
-    <content><![CDATA[编程入门，看的是小甲鱼的教程。这家伙有个个人网站，很不错，我也想做一个！
-于是，大二上学期，做了一个个人网站——蜗牛小站，用于分享一些东西。没多久，就被谷歌、360、百度收录了，而且全部排名前三，吼吼！当时，作为一个没钱的穷屌丝，狠狠心、咬咬牙、跺跺脚买了域名，但是没有服务器啊！怎么破？百度！果然，解决方法还是有不少的，最终我选择了RedHat旗下的Openshift。国外的服务器，无需备案，我喜欢！Openshift，公认的有难度，不过作为一个爱折腾的程序猿，这点难度不算什么。用了大概一周，学会了定制wordpress模板，个人网站大功告成！
-
-时隔两个月，想做第二个网站时，方法和第一次一样，结果，却无法访问！好捉急好捉急，这是什么奇葩问题？居然度娘谷哥都不知道！试了各种方法，无果……心碎了一地！视线转向国内，发现国内也有不少可以使用的免费服务器，但是，无法绑定域名，都需要备案！！！回归Openshifit，重新注册账号，各种测试报错，心力憔悴，最后甩下一句：我靠！
-独学而无友，则孤陋而寡闻。几乎一年，没碰个人网站。直到前几天认识了新同学袁远，他的个人主页很不错，直接引发了我对个人网站建设的兴趣！鼓捣鼓捣，总算把框架搭建出来了，但是和大牛们相比，还是档次太低。不知足，这次我会做到极致！努力，吼吼！
+    <title>大三下第13周周五</title>
+    <url>/essay-grade-3-later-week-13-friday/</url>
+    <content><![CDATA[马上就到考试周了，压力倍增。。。
+一直在自学其他东西，结果，学校教授的课程都要预习；还有十几天考六级，但是没有复习，很难考过；下周四就到我讲Linux了，还没有准备好PPT；下周四考体育，健美操，想想就要醉了，完全不会；临近期末，好多报告要写，而且，本人写报告特别慢；说好的专心准备考研，结果一天推一天，事情层出不穷；身体欠安，咳嗽很给力，确诊为支气管炎，期待早点康复；感情问题没处理好，一直感到愧疚；第15周考三门课，时间貌似有些紧迫；好多技术要学，好多文章要写，成神之路不好走。。。。。。
+男人，这就是生活，喜怒哀乐悲恐惊，一切都会过去，没什么大不了，用心感受这一切。男人，剧情不一定按照你的猜想发展，但正是因为不确定性，生命才更显精彩！男人，做好当下的事情就够了！做完一件，再做下一件。不骄不躁，一点一滴，积跬步以至千里。男人，不要悲观，不要抱怨，相信一切都会是最好的安排！
 ]]></content>
       <categories>
         <category>随笔</category>
       </categories>
       <tags>
-        <tag>hexo</tag>
-        <tag>网站</tag>
-        <tag>wordpress</tag>
+        <tag>随笔</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>健康</title>
+    <url>/essay-health/</url>
+    <content><![CDATA[
+我每天祈祷，愿上帝让我早晨起来像婴儿一般地看这个世界。——柯罗
+
+上课，读书，考研，学车，扯淡，打游戏，写博客，看视频，敲代码。。。满满的生活，总有事情做，沾沾自喜——这就是充实？
+直到昨天，发现，扩胸的时候胸口会疼。最近没做啥缺德事啊？（好事倒是做了很多。）咋又遭报应了？且不去管它，观察两天再说。突如其来的疼痛，让我难过的同时，也促发了我对健康的思考。
+虽然挑食，但是小编的体质还是不错的。正常情况下，每年秋季感冒一次，一两周之后痊愈，然后健康一整年。
+2015，情况有变。首先是蛀牙，这是对于一个吃货最好的惩罚。很多东西不能吃，比如说麦丽素；很多东西不便吃，比如说各种肉类；很多东西不敢吃，比如说砖头（话说以前也不敢吃）。。。那段日子里，经常怀念大口吃肉大碗喝酒的日子！健康真好！
+其次是发烧，某天发烧到38度3。校诊所的妹纸开了退烧药给我，并郑重告诫：要等到38度5再吃。等啊等，等啊等，啊勒，一直只有38度3！呵呵，你在逗我吗，一气之下就直接碎觉了。那时候，啥也不想做，只想躺着休息，休息也不爽，浑身疼。无眠中，感叹健康真好！
+
+如今，再次生病，虽然不知道是什么病，但是我不喜欢它。试问苍天，健康何以换？
+总是等到生病以后，才感觉到健康的可贵。暗下决心，病好了之后要每天刷牙三次，作息规律，饮食健康，留心身边的美女（不对，风景），每天俯卧撑、举腿、引体向上、深蹲、桥、倒立。。。病终于好了，那些决心也随之而散。直到下次生病，才继而开始新一轮的检讨和决心！这也是人性的弱点吗？失去了才懂得珍惜。
+
+陈继儒《小窗幽记》中说：人常想病时，则尘心便减；人常想死时，则道念自生。
+
+健康的平常时候，偶尔想想生病的痛苦，心底难免升起几分感恩。再看这个世界，是不是更美好了一点？
+把每一次生病，当成一种恩赐，那是上帝在提醒：小伙子，放慢脚步，好好欣赏啊。
+]]></content>
+      <categories>
+        <category>随笔</category>
+      </categories>
+      <tags>
+        <tag>随笔</tag>
       </tags>
   </entry>
   <entry>
@@ -16717,16 +17290,6 @@ BIOS 修改好后保存退出，重启电脑的时候按键盘的 F12，重新�
       </tags>
   </entry>
   <entry>
-    <title>气质形容词</title>
-    <url>/hobby-describe-demeanour/</url>
-    <content><![CDATA[自信 霸气 幽默 痞气 稳重 坚毅 正直 大方 威猛 潇洒 儒雅 冷酷 豪放 朴实 绅士 睿智 阳刚 温和 结实 憨厚 精明 世故 幼稚 轻浮 脆弱 腼腆 热情 率直 沉默 婆妈 优柔 多情 大气 威武 成熟 沉稳 清新 
-]]></content>
-      <categories>
-        <category>爱好</category>
-        <category>读书</category>
-      </categories>
-  </entry>
-  <entry>
     <title>桌面美化</title>
     <url>/hobby-desktop-beautify/</url>
     <content><![CDATA[前言爱拉风的小伙伴，总喜欢把电脑鼓捣的花里胡哨。小编也研究过一段时间，美其名曰“个性”，今天和大家探讨一下（win7为例）。
@@ -16965,23 +17528,6 @@ rainmeterrainmeter（雨滴），个人比较满意的一款桌面美化工具�
       </categories>
       <tags>
         <tag>读者</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>帅哥名单</title>
-    <url>/hobby-handsome-boy-list/</url>
-    <content><![CDATA[名字                    身份
-Tim Cook（蒂姆库克）    苹果CEO马化腾                    腾讯CEO刘炽平                    腾讯总裁任宇昕                    腾讯首席运营官张朝阳                    搜狐董事长周鸿祎                    360CEO李炯明                    科瑞福克斯创始人兼CEO杨晓强                    深圳八爪网络科技有限公司CEO马杜罗                    委内瑞拉总统王俊煜                    豌豆荚联合创始人
-
-乌胡鲁·肯雅塔（Uhuru Kenyatta）    肯尼亚总统蒋涛                    CSDN创始人&amp;董事长刘军                    联想集团高级副总裁、联想Lenovo集团总裁卡尔扎伊                阿富汗总统艾什顿·库彻                乔布斯饰演者Jeff Bezos                亚马逊创始人兼CEOKen Thompson            Unix开创者Linus Torvalds            Linux开创者Richard Mathew Stallman    GNU与FSF计划的发起者Ginny Rometty            IBM CEOAndyRubin                Android系统创始人卡拉什尼科夫            AK-47之父吴海军                    神舟董事长阿米尔·汗                演员沙鲁克·汗                演员范·迪塞尔                演员尼古拉斯凯奇            演员杰森·斯坦森                演员孙红雷                    演员
-]]></content>
-      <categories>
-        <category>爱好</category>
-        <category>读书</category>
-      </categories>
-      <tags>
-        <tag>随笔</tag>
-        <tag>笔记</tag>
       </tags>
   </entry>
   <entry>
@@ -17366,33 +17912,6 @@ ROM是只读内存（Read-Only Memory）的简称，是一种只能读出事先�
       </categories>
       <tags>
         <tag>操作系统</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>IT圈装逼速成指南</title>
-    <url>/hobby-it-zb-guide/</url>
-    <content><![CDATA[本文转载自：http://litten.github.io/guide-for-zb/ ，Litten很有才，小编当前使用的yilia主题就是他写的。
-我有个朋友，春节回来了大家聚在一起，说自己买了iphone6但总觉得自己还是很low，问这是怎么回事？
-其实生活过得怎样，跟iphone是两码事。先把生活过得充实了，切莫本末倒置。当然，我们可以就“IT圈如何愉快的装X”敞开心扉谈下这个问题。
-以下几点仅供参考，实践时请注意预防雷劈。
-谈资类1、谈乔纳森。苹果设计师乔纳森。你要往死里黑他，但一定请记住，得是爱到深处自然黑那种黑。顺手拿过iphone6当惊堂木一拍（兄弟你得狠下这个心），当小伙伴因震惊不解而望着你时，你微微一笑，缓缓叹气：“彩虹山上的渐变爵士，身上却流着极简的血液…”
-2、谈亚马逊。要坚定保持亚马逊没啥黑点的观点不动摇。当别人说到界面和UI时，你整个人都要散发出一种“亚马逊的产品很牛的所以界面什么的并不重要”的气质。
-3、谈阿里IPO。这个话题面前，谈什么都会很low。但你可以很随意的说：哈哈，现场wifi信号一定很强！小伙伴们细细一品，就没人敢说话了。恰恰是这句随意的话，突显了你对整个路演格局的了然于胸！300名销售人员，主场和分场，等电梯要半小时，队伍有十八个弯…这些信息量都涵盖在这句话里了。
-
-话题类1、关于APP。[ˈæp] 念阿破（与爱破也比较像，参见音标），不能把三个字母拆开念成A P P。总的来说有三大注意事项：1、国内的，不玩。2、流行的，不玩。3、名声响的，不玩。
-2、关于手机贴膜。营造出一种“一个批判者的自我愤怒”的气氛，让人感觉你在贴与不贴之间，一定有一段不可言说的故事。然后表现出自己已超脱了挣扎，在自己这个level，跟大家再讨论现实问题已毫无意义。因而你只好微笑着说：“你们不觉得让屏幕随手机一起慢慢变老，是一件很浪漫的事情吗？”
-3、关于朋友圈。A：怎么很少见你发朋友圈？你：哦…国内的sns（一定要秀个英文）不太有意思，我回头把我ins帐号发你。当然你的朋友圈里还是可以写些东西，参考文字：脑残粉了一回，终于遇到了Trip Hawkins，从Spore开始就已喜欢上了EA…
-4、关于BAT。不谈。
-技巧类1、欲扬先抑。在赞美目标的之前，把同类产品先夸一遍。不经意间，透露出自己知识面广，却又别有追求。具体句式可参考《中国好声音》：“杨坤老师，我一直很喜欢你，但是…”
-2、回答问题。使用知乎文风，可助你吹的牛逼鹏翔万里，栩栩如生。有人会问，什么是知乎文风，难学吗？不难，记住两个词就可以了。第一个词在最开头用，“谢邀”。不管有没有人邀你，这主要是营造“我不是一个人在战斗”的氛围，以及一种“我本沉默奈何盛情难却”的傲娇。第二个词在最末尾用，“以上”。不管你以上的内容怎样，就这么一个词，有种老子发言结束了，你们该鼓掌的鼓掌该献花的献花的微妙情怀。
-以上。
-]]></content>
-      <categories>
-        <category>爱好</category>
-        <category>读书</category>
-      </categories>
-      <tags>
-        <tag>笑话</tag>
       </tags>
   </entry>
   <entry>
@@ -17793,21 +18312,6 @@ m3u8转mp4手机QQ浏览器的视频下载功能确实强大，大部分能看�
       </tags>
   </entry>
   <entry>
-    <title>南京地铁收费标准</title>
-    <url>/hobby-nanjing-charge/</url>
-    <content><![CDATA[14年，南京地铁收费标准变更，再也不能4块钱随便坐了。下面是现在的收费标准，发的有点晚，仅供查找。
-
-
-]]></content>
-      <categories>
-        <category>爱好</category>
-        <category>读书</category>
-      </categories>
-      <tags>
-        <tag>随笔</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>玫瑰与胶囊</title>
     <url>/hobby-nose-and-capsule/</url>
     <content><![CDATA[作者：沈奇岚
@@ -17974,72 +18478,6 @@ NotePad++高亮Markdown参考写了一个Notepad++的markdown插件、notepad++�
       </categories>
       <tags>
         <tag>读者</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>关于程序员的经典语录</title>
-    <url>/hobby-programmer-ana/</url>
-    <content><![CDATA[原文来自：http://geek.csdn.net/news/detail/11487
-
-关于程序员的经典语录A：借我1000块。B：拿去，1024，我给你凑了个整儿。
-
-Programming is like sex: one mistake and you’re providing support for a lifetime. –Michael Sinz编程就像做爱，你得为一个错误提供一辈子的支持。
-
-
-
-程序员对测试人员说：＂在我机器上没问题啊！＂ ＂我测试了一下，确实在我机器上没问题啊＂
-
-少壮不努力，老大写程序。
-
-世界上只有两句真理：
-
-人一定会死。
-程序一定有 Bug.
-
-
-如果你想动手开发什么全新技术，你不需要几百万美元的资金，你只需要在冰箱里面放满比萨和可乐，再有一台便宜的计算机，和为之献身的决心。——卡马克
-
-做网站就像zuoai，首先你要懂得“How To Make Love”，简称HTML；如果觉得你对HTML已经精通了，你应该学学3P（ASP，PHP，JSP) 。。。
-
-嫁人就嫁程序员，钱多话少死得早。
-
-]]></content>
-      <categories>
-        <category>爱好</category>
-        <category>读书</category>
-      </categories>
-      <tags>
-        <tag>笑话</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>程序员笑话之极品对答</title>
-    <url>/hobby-programmers-joke-answer/</url>
-    <content><![CDATA[原文来自：http://www.itjhwd.com/cxyxhdd/
-
-A：嘿 //是什么意思啊？B：嘿.A：呃 我问你//是什么意思？B：问吧.A：我刚才不是问了么？B：啊？A：你再看看记录…B：看完了.A：……所以//是啥？B：所以什么？A：你存心耍我呢吧？B：没有啊 你想问什么？……不断循环之后，A一气之下和B绝交，自己苦学程序。N年之后，A终于修成正果，回想起B，又把聊天记录翻出来看，这时，他突然发现B没有耍他……而他自己也不知道当年他问B的究竟是什么问题……
-
-
-
-程序员问禅师：“大师，我身体健康思想端正，各方面都不错，为何没有女朋友？”禅师笑答：“原因很简单，不过若想知道，需先写一段java代码。” 青年略一沉吟，写完了。“再写一段C#。” 写完了。“再写一段php。” 写完了。“这就是原因”
-
-老婆给当程序员的老公打电话：“下班顺路买一斤包子带回来，如果看到卖西瓜的，就买一个。”当晚，程序员老公手捧一个包子进了家门……老婆怒道：“你怎么就买了一个包子？！”老公答曰：“因为看到了卖西瓜的。
-
-男：第一个问题：对于我第二个问题和第三个问题可不可以用 “能 ”和 “ 不能 ”回答？女：当然可以啊！男：第二个问题：对于我第三个问题是你能不能做我的女朋友，能不能和第二个问题答案一样？女：能….男：第三个问题：你能不能做我的女朋友？女：不能啊.男：你言而无信啊.. 你对于我的第二个问题是能的.女：那好，你的第二个问题我回答 不能！！！.男：好的，我第三个问题：你能不能做我女朋友？女：不能！！！男：你又骗人，刚对于我的第二个问题回答 不能的，怎么第二个问题答案和第三个问题答案一样？
-
-昨天晚上下班回家，一民警迎面巡逻而来。突然对我大喊：站住！民警：int类型占几个字节？我：4个。民警：你可以走了。我感到很诧异。我：为什么问这样的问题？民警：深夜还在街上走，寒酸苦逼的样子，不是小偷就是程序员。
-
-面试官：知道什么叫类么？应聘者：我这人实在，工作努力，不知道什么叫累。面试官：知道什么是包？应聘者：我这人实在，平常不带包，也不用公司准备了。面试官：知道什么是接口吗？应聘者：我这个人工作认真，从来不找借口偷懒。面试官：知道什么是继承么？应聘者：我是孤儿没什么可以继承的。面试官:知道什么叫对象么？应聘者:知道，不过我工作努力，上进心强，暂时还没有打算找对象。面试官：知道多态么？应聘者：知道，我很保守的。我认为让心爱的女人为了自已一时的快乐去堕胎是不道德的行为！请问这和C#有什么关系？？
-
-街边，一对情侣在吵架。女孩对男孩说，“我们分手吧！”男孩沉默半天，开口问道，“我能再说最后一句话吗？”“说吧，婆婆妈妈的。”“我会编程……”“会编程有个屁用啊，现在到处都是会编程的人！”男孩涨红了脸，接着说道，“我会编程……我会变成……童话里,你爱的那个天使……”
-
-]]></content>
-      <categories>
-        <category>爱好</category>
-        <category>读书</category>
-      </categories>
-      <tags>
-        <tag>笑话</tag>
       </tags>
   </entry>
   <entry>
@@ -18213,69 +18651,6 @@ A：嘿 //是什么意思啊？B：嘿.A：呃 我问你//是什么意思？B：
       </tags>
   </entry>
   <entry>
-    <title>健康</title>
-    <url>/essay-health/</url>
-    <content><![CDATA[
-我每天祈祷，愿上帝让我早晨起来像婴儿一般地看这个世界。——柯罗
-
-上课，读书，考研，学车，扯淡，打游戏，写博客，看视频，敲代码。。。满满的生活，总有事情做，沾沾自喜——这就是充实？
-直到昨天，发现，扩胸的时候胸口会疼。最近没做啥缺德事啊？（好事倒是做了很多。）咋又遭报应了？且不去管它，观察两天再说。突如其来的疼痛，让我难过的同时，也促发了我对健康的思考。
-虽然挑食，但是小编的体质还是不错的。正常情况下，每年秋季感冒一次，一两周之后痊愈，然后健康一整年。
-2015，情况有变。首先是蛀牙，这是对于一个吃货最好的惩罚。很多东西不能吃，比如说麦丽素；很多东西不便吃，比如说各种肉类；很多东西不敢吃，比如说砖头（话说以前也不敢吃）。。。那段日子里，经常怀念大口吃肉大碗喝酒的日子！健康真好！
-其次是发烧，某天发烧到38度3。校诊所的妹纸开了退烧药给我，并郑重告诫：要等到38度5再吃。等啊等，等啊等，啊勒，一直只有38度3！呵呵，你在逗我吗，一气之下就直接碎觉了。那时候，啥也不想做，只想躺着休息，休息也不爽，浑身疼。无眠中，感叹健康真好！
-
-如今，再次生病，虽然不知道是什么病，但是我不喜欢它。试问苍天，健康何以换？
-总是等到生病以后，才感觉到健康的可贵。暗下决心，病好了之后要每天刷牙三次，作息规律，饮食健康，留心身边的美女（不对，风景），每天俯卧撑、举腿、引体向上、深蹲、桥、倒立。。。病终于好了，那些决心也随之而散。直到下次生病，才继而开始新一轮的检讨和决心！这也是人性的弱点吗？失去了才懂得珍惜。
-
-陈继儒《小窗幽记》中说：人常想病时，则尘心便减；人常想死时，则道念自生。
-
-健康的平常时候，偶尔想想生病的痛苦，心底难免升起几分感恩。再看这个世界，是不是更美好了一点？
-把每一次生病，当成一种恩赐，那是上帝在提醒：小伙子，放慢脚步，好好欣赏啊。
-]]></content>
-      <categories>
-        <category>随笔</category>
-      </categories>
-      <tags>
-        <tag>随笔</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>大三下第13周周五</title>
-    <url>/essay-grade-3-later-week-13-friday/</url>
-    <content><![CDATA[马上就到考试周了，压力倍增。。。
-一直在自学其他东西，结果，学校教授的课程都要预习；还有十几天考六级，但是没有复习，很难考过；下周四就到我讲Linux了，还没有准备好PPT；下周四考体育，健美操，想想就要醉了，完全不会；临近期末，好多报告要写，而且，本人写报告特别慢；说好的专心准备考研，结果一天推一天，事情层出不穷；身体欠安，咳嗽很给力，确诊为支气管炎，期待早点康复；感情问题没处理好，一直感到愧疚；第15周考三门课，时间貌似有些紧迫；好多技术要学，好多文章要写，成神之路不好走。。。。。。
-男人，这就是生活，喜怒哀乐悲恐惊，一切都会过去，没什么大不了，用心感受这一切。男人，剧情不一定按照你的猜想发展，但正是因为不确定性，生命才更显精彩！男人，做好当下的事情就够了！做完一件，再做下一件。不骄不躁，一点一滴，积跬步以至千里。男人，不要悲观，不要抱怨，相信一切都会是最好的安排！
-]]></content>
-      <categories>
-        <category>随笔</category>
-      </categories>
-      <tags>
-        <tag>随笔</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>极客大赛回顾</title>
-    <url>/essay-geek-review/</url>
-    <content><![CDATA[大众点评极客大赛，一段难忘的经历。接下来的一段时间，有了吹牛逼的材料。差一点拿到一等奖，虽有遗憾，但是二等奖的ipad air，依然令人惊喜。
-比赛之后，小编坚定了考研的信念。学历，原来可以如此重要。
-
-
-本次大赛，实际上是大众点评的一次招聘会。通过一天一夜的编程马拉松，挑选出他们看中的人才。网上海选的参赛者共有近两千，然后选出60个人在上海大众点评总部参加决赛，报销来回路费，还包吃住。全季酒店，提供自助早餐，真心好吃。
-到了酒店，我才知道，来参赛的几乎全部是985、211的研究生。一阵无语，就当长长见识吧，看看人家有多强！
-第一天上午，公司简介，就是说说大众点评的牛逼之处，吸引大家加入。第一天下午，组队，由队长上前演讲，招揽队友。一共12队，每队5个人。差点成为队长，最终耍赖赖掉了，好险。。。我们组最终成员为：张琪学长、许榕学长、熊环宇学长、李乾科和我，张琪学长为队长。第一天晚上，我们队在酒店热烈讨论了需求以及设计方案，每个人都很有激情。
-第二天早上到第三天早上，24小时，编程比赛！大致分工是许榕学长和李乾科负责后端，熊环宇学长和我负责前端，张琪学长负责支援。预期是美好的，但实际进度总要慢很多，好在大家都很乐观，嘻嘻哈哈就过来了。晚上，有点评的开发人员来帮我们解决问题，真正见识到了一些大牛！
-第三天上午，休息。第三天下午，作品展示。我们抽中了最后一组，lucky，于是，趁着其他组展示的时间修改代码，最终作品上升了一个档次！印象深刻的是，张琪学长女朋友的助攻，很强悍！张琪学长的演讲水平，也是杠杠的！第一，近在眼前！第三天晚上，颁奖。关于第一名和第二名的争论，评委团几乎吵了起来。最终，我们组拿到了第二，一个令人遗憾和惊喜并存的成绩。组内没有队员收到offer，因为三位学长还没有入职意向，因为我和乾科是本科生（应该是仅有的两个本科生）。
-期间的细节不作展开，留一份朦胧的美好记忆。
-最后，附上一些照片。
-]]></content>
-      <categories>
-        <category>随笔</category>
-      </categories>
-      <tags>
-        <tag>随笔</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>停止拍照，学着画画</title>
     <url>/hobby-stop-taking-pictures-and-learn-to-draw/</url>
     <content><![CDATA[译者：安心芮
@@ -18352,6 +18727,28 @@ Ruskin总结了这四年他尝试去做的绘画教学和写作指南，他写�
       </categories>
       <tags>
         <tag>读者</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>极客大赛回顾</title>
+    <url>/essay-geek-review/</url>
+    <content><![CDATA[大众点评极客大赛，一段难忘的经历。接下来的一段时间，有了吹牛逼的材料。差一点拿到一等奖，虽有遗憾，但是二等奖的ipad air，依然令人惊喜。
+比赛之后，小编坚定了考研的信念。学历，原来可以如此重要。
+
+
+本次大赛，实际上是大众点评的一次招聘会。通过一天一夜的编程马拉松，挑选出他们看中的人才。网上海选的参赛者共有近两千，然后选出60个人在上海大众点评总部参加决赛，报销来回路费，还包吃住。全季酒店，提供自助早餐，真心好吃。
+到了酒店，我才知道，来参赛的几乎全部是985、211的研究生。一阵无语，就当长长见识吧，看看人家有多强！
+第一天上午，公司简介，就是说说大众点评的牛逼之处，吸引大家加入。第一天下午，组队，由队长上前演讲，招揽队友。一共12队，每队5个人。差点成为队长，最终耍赖赖掉了，好险。。。我们组最终成员为：张琪学长、许榕学长、熊环宇学长、李乾科和我，张琪学长为队长。第一天晚上，我们队在酒店热烈讨论了需求以及设计方案，每个人都很有激情。
+第二天早上到第三天早上，24小时，编程比赛！大致分工是许榕学长和李乾科负责后端，熊环宇学长和我负责前端，张琪学长负责支援。预期是美好的，但实际进度总要慢很多，好在大家都很乐观，嘻嘻哈哈就过来了。晚上，有点评的开发人员来帮我们解决问题，真正见识到了一些大牛！
+第三天上午，休息。第三天下午，作品展示。我们抽中了最后一组，lucky，于是，趁着其他组展示的时间修改代码，最终作品上升了一个档次！印象深刻的是，张琪学长女朋友的助攻，很强悍！张琪学长的演讲水平，也是杠杠的！第一，近在眼前！第三天晚上，颁奖。关于第一名和第二名的争论，评委团几乎吵了起来。最终，我们组拿到了第二，一个令人遗憾和惊喜并存的成绩。组内没有队员收到offer，因为三位学长还没有入职意向，因为我和乾科是本科生（应该是仅有的两个本科生）。
+期间的细节不作展开，留一份朦胧的美好记忆。
+最后，附上一些照片。
+]]></content>
+      <categories>
+        <category>随笔</category>
+      </categories>
+      <tags>
+        <tag>随笔</tag>
       </tags>
   </entry>
   <entry>
@@ -19460,6 +19857,24 @@ linux中，通配符多用在文件名上，比如查找find、ls、cp；在文�
       </categories>
       <tags>
         <tag>读者</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>从wordpress到hexo</title>
+    <url>/essay-from-wordpress-to-hexo/</url>
+    <content><![CDATA[编程入门，看的是小甲鱼的教程。这家伙有个个人网站，很不错，我也想做一个！
+于是，大二上学期，做了一个个人网站——蜗牛小站，用于分享一些东西。没多久，就被谷歌、360、百度收录了，而且全部排名前三，吼吼！当时，作为一个没钱的穷屌丝，狠狠心、咬咬牙、跺跺脚买了域名，但是没有服务器啊！怎么破？百度！果然，解决方法还是有不少的，最终我选择了RedHat旗下的Openshift。国外的服务器，无需备案，我喜欢！Openshift，公认的有难度，不过作为一个爱折腾的程序猿，这点难度不算什么。用了大概一周，学会了定制wordpress模板，个人网站大功告成！
+
+时隔两个月，想做第二个网站时，方法和第一次一样，结果，却无法访问！好捉急好捉急，这是什么奇葩问题？居然度娘谷哥都不知道！试了各种方法，无果……心碎了一地！视线转向国内，发现国内也有不少可以使用的免费服务器，但是，无法绑定域名，都需要备案！！！回归Openshifit，重新注册账号，各种测试报错，心力憔悴，最后甩下一句：我靠！
+独学而无友，则孤陋而寡闻。几乎一年，没碰个人网站。直到前几天认识了新同学袁远，他的个人主页很不错，直接引发了我对个人网站建设的兴趣！鼓捣鼓捣，总算把框架搭建出来了，但是和大牛们相比，还是档次太低。不知足，这次我会做到极致！努力，吼吼！
+]]></content>
+      <categories>
+        <category>随笔</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+        <tag>网站</tag>
+        <tag>wordpress</tag>
       </tags>
   </entry>
   <entry>
@@ -21456,8 +21871,8 @@ nginx + uwsgi（socket方式）
         <category>专业</category>
         <category>运维</category>
         <category>开发</category>
-        <category>centos</category>
         <category>python</category>
+        <category>centos</category>
         <category>django</category>
       </categories>
       <tags>
@@ -21630,8 +22045,8 @@ Django 部署(Nginx)
         <category>专业</category>
         <category>运维</category>
         <category>开发</category>
-        <category>centos</category>
         <category>python</category>
+        <category>centos</category>
         <category>django</category>
       </categories>
       <tags>
@@ -22251,82 +22666,6 @@ git statusgit checkout --ours .git add .git rebase --continuegit rebase --skipgi
       </tags>
   </entry>
   <entry>
-    <title>Golang包管理工具</title>
-    <url>/dev-golang-gpm/</url>
-    <content><![CDATA[包管理工具简介大一点的项目，通常会依赖很多第三方包。Golang把所有的第三方包都放在GOPATH/src目录下，且每个包仅保留一个版本。如果两个项目依赖不同版本的第三方包，就会产生问题。
-为了解决这个问题，go在1.5版本引入了vendor属性（默认关闭），并在1.6版本中默认开启了vendor属性。简单来说，vendor属性就是让go编译时，优先从项目源码树根目录下的vendor目录查找代码（可以理解为切了一次GOPATH），如果vendor中有，则不再去GOPATH中去查找。
-但是vendor目录又带来了新的问题：（1）vendor目录中依赖包没有版本信息。这样依赖包脱离了版本管理，对于升级、问题追溯，会有点困难。（2）如何方便的得到本项目依赖了哪些包，并方便的将其拷贝到vendor目录下？
-为了解决这些问题，开发者在vendor基础上开发了多个管理工具，比较常用的有godep、govendor、glide，以及官方的dep和gomod。下面来学习一下godep、govendor和gomod，更多内容参考go依赖包管理工具对比、golang包管理解决之道——go modules初探、再探go modules：使用与细节。
-
-
-理论篇godepgodep的使用者众多，如docker、kubernetes、coreos等go项目很多都是使用godep来管理其依赖，当然原因可能是早期也没的工具可选。
-godep早期版本并不依赖vendor，所以对go的版本要求很松，go 1.5之前的版本也可以用，只是行为上有所不同。在vendor推出以后，godep也改为使用vendor了。
-godep使用很简单，当项目编写完成，使用GOPATH的依赖包测试没问题的时候，执行godep save，该命令会做两件事：（1）扫描项目的代码，将项目依赖的包及该包的版本号（即git commit）记录到Godeps/Godeps.json文件中。（2）将依赖的包从GOPATH/src中拷贝到vendor目录（忽略依赖包的.git目录）。对于不支持vendor的早期版本，则会拷贝到Godeps/_workspace/里。
-其他命令：
-# 安装go get -u -v github.com/tools/godep# 安装新的包go get github.com/voidking/k8s-client-goimport "github.com/voidking/k8s-client-go"godep save# 更新依赖包go get -u github.com/voidking/k8s-client-gogodep update github.com/voidking/k8s-client-go# orgodep update github.com/voidking/...# 下载godeps.json里的包到GOPATH/srcgodep restore
-
-govendorgovendor是在vendor之后出现的，功能相对godep多一点，不过就核心问题的解决来说基本是一样的。govendor生成vendor目录的时候需要2条命令：govendor init生成vendor/vendor.json，此时文件中只有本项目的信息。govendor add +external更新vendor/vendor.json，并拷贝GOPATH下的第三方包到vendor目录中。
-其他命令：
-# 安装go get -u github.com/kardianos/govendor# 获取指定版本的包govendor fetch golang.org/x/net/context@v1# 查看依赖的包govendor list# 查看哪些包使用了fmtgovendor list -v fmt
-
-gomodgo modules随着golang1.11的发布和我们见面了，这是官方提倡的新的包管理，乃至项目管理机制，可以不再需要GOPATH的存在。
-现在modules机制仍在早期阶段，所以golang提供了一个环境变量“GO111MODULE”，默认值为auto，如果当前目录里有go.mod文件，就使用go modules，否则使用旧的GOPATH和vendor机制，因为在modules机制下go get只会下载go modules，这一行为会在以后版本中成为默认值，这里我们保持auto即可，如果你想直接使用modules而不需要从GOPATH过度，那么把“GO111MODULE”设置为on。
-modules和传统的GOPATH不同，不需要包含例如src，bin这样的子目录，一个源代码目录甚至是空目录都可以作为module，只要其中包含有go.mod文件。
-1、启用modules机制
-# linux and macexport GO111MODULE=on# windows powershell$env:GO111MODULE = "on"
-
-2、初始化test项目为modulego mod init test初始化之后，目录下会自动生成go.mod文件。当我们使用go build，go test以及go list时，go会自动得更新go.mod文件，将依赖关系写入其中。
-3、整理依赖go mod tidy -v
-
-这条命令会自动下载依赖的module到cache，清除无用的module。
-生成go.mod的require部分，和go.sum文件。go.sum是一个构建状态跟踪文件，它会记录当前module所有的顶层和间接依赖，go modules根据这些记录去寻找对应的依赖。
-依赖的module下载到GOPATH/pkg/cache/和GOPATH/pkg/mod/目录下。
-
-4、Goland启用gomodFile，Settings，Go，Go Modules，勾选Enable Go Modules(vgo) integration，Apply。
-其他命令：
-# 帮助go help mod# 已有go.mod，下载依赖到cachego mod download# 拷贝依赖到vendor（没有则先下载）go mod vendor# 清空cachego clean -modcache
-
-gomod实践篇安装client-go假设一个项目依赖client-go，那么参考官方说明进行安装。
-1、查看k8s版本kubectl versionClient Version表示kubectl的版本，Server Version表示apiserver的版本（假设版本为v1.15.0）。
-2、查找对应版本的client-go在kubernetes/client-go上查找k8s v1.15.0对应的client-go版本，找到版本为12.0
-3、安装对应版本的client-gogo get k8s.io/client-go/12.0/kubernetes这里有个坑，国内无法访问k8s.io，需要科学上网（恰好我的搬瓦工服务器也访问不到k8s.io）。因此，这里使用GOPROXY的方式来解决，参考一键解决 go get golang.org/x 包失败。
-# export GOPROXY=https://goproxy.cnexport GOPROXY=https://goproxy.ioexport GO111MODULE=ongo get k8s.io/client-go/12.0/kubernetes
-
-
-失败了，返回404，猜测是12.0版本在代理服务器不存在，使用另外一种下载方式。
-go get k8s.io/client-go@kubernetes-1.15.0
-此处下载了两个版本的client-go，我们使用v0.0.0版本。
-4、安装client-go相关依赖client-go默认下载到$GOPATH/pkg/mod/k8s.io目录下，把k8s.io目录移动到$GOPATH/src目录下。然后把client-go@v0.0.0重命名为client-go，然后在client-go目录下执行安装依赖的命令：
-export GOPROXY=https://goproxy.ioexport GO111MODULE=ongo mod vendor
-完成之后，所有的依赖都下载到了client-go/vendor目录下，一个完整的client-go依赖库就准备好了。
-依赖库版本管理client-go依赖库准备好了，但是另一个问题来了：假设项目vk-project依赖client-go和库A，client-go依赖库A，两个依赖库A版本不一致，那么vk-project在编译时，会同时依赖两个不同的库A，导致编译出的二进制包有问题。
-此时，一个简单的办法是把GOPATH/src/k8s.io/client-go/vendor目录剪切覆盖vk-project/vendor目录，然后把GOPATH/src/k8s.io/client-go目录移动到vk-project/vendor/k8s.io/目录下。这么做的话，client-go就和自己的依赖是平级的存在了。
-但是，这么做有另一个问题：依赖库版本没有记录。因为没有版本记录，那么在上传vk-project项目时，就要把依赖全部上传，否则别人下载了vk-project也没办法正确安装依赖。
-这里，使用gomod进行依赖库版本管理。
-go mod init vk-projectgo mod tidy -vgo mod vendor
-
-上传代码时忽略vendor目录，在gitignore中添加：
-/vendor/
-
-安装依赖1、下载项目后，进入项目目录cd vk-project
-2、下载依赖go mod download
-3、拷贝依赖到vendor（可选）go mod vendor
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>开发</category>
-        <category>k8s</category>
-        <category>golang</category>
-      </categories>
-      <tags>
-        <tag>golang</tag>
-        <tag>client-go</tag>
-        <tag>godep</tag>
-        <tag>govendor</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Docker部署JavaWeb项目</title>
     <url>/dev-docker-deploy-javaweb/</url>
     <content><![CDATA[部署要求宿主机为CentOS7，上面安装了docker、nginx和mysql。
@@ -22437,6 +22776,82 @@ ifconfig docker0 down
         <tag>nginx</tag>
         <tag>ubuntu</tag>
         <tag>jdk</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Golang包管理工具</title>
+    <url>/dev-golang-gpm/</url>
+    <content><![CDATA[包管理工具简介大一点的项目，通常会依赖很多第三方包。Golang把所有的第三方包都放在GOPATH/src目录下，且每个包仅保留一个版本。如果两个项目依赖不同版本的第三方包，就会产生问题。
+为了解决这个问题，go在1.5版本引入了vendor属性（默认关闭），并在1.6版本中默认开启了vendor属性。简单来说，vendor属性就是让go编译时，优先从项目源码树根目录下的vendor目录查找代码（可以理解为切了一次GOPATH），如果vendor中有，则不再去GOPATH中去查找。
+但是vendor目录又带来了新的问题：（1）vendor目录中依赖包没有版本信息。这样依赖包脱离了版本管理，对于升级、问题追溯，会有点困难。（2）如何方便的得到本项目依赖了哪些包，并方便的将其拷贝到vendor目录下？
+为了解决这些问题，开发者在vendor基础上开发了多个管理工具，比较常用的有godep、govendor、glide，以及官方的dep和gomod。下面来学习一下godep、govendor和gomod，更多内容参考go依赖包管理工具对比、golang包管理解决之道——go modules初探、再探go modules：使用与细节。
+
+
+理论篇godepgodep的使用者众多，如docker、kubernetes、coreos等go项目很多都是使用godep来管理其依赖，当然原因可能是早期也没的工具可选。
+godep早期版本并不依赖vendor，所以对go的版本要求很松，go 1.5之前的版本也可以用，只是行为上有所不同。在vendor推出以后，godep也改为使用vendor了。
+godep使用很简单，当项目编写完成，使用GOPATH的依赖包测试没问题的时候，执行godep save，该命令会做两件事：（1）扫描项目的代码，将项目依赖的包及该包的版本号（即git commit）记录到Godeps/Godeps.json文件中。（2）将依赖的包从GOPATH/src中拷贝到vendor目录（忽略依赖包的.git目录）。对于不支持vendor的早期版本，则会拷贝到Godeps/_workspace/里。
+其他命令：
+# 安装go get -u -v github.com/tools/godep# 安装新的包go get github.com/voidking/k8s-client-goimport "github.com/voidking/k8s-client-go"godep save# 更新依赖包go get -u github.com/voidking/k8s-client-gogodep update github.com/voidking/k8s-client-go# orgodep update github.com/voidking/...# 下载godeps.json里的包到GOPATH/srcgodep restore
+
+govendorgovendor是在vendor之后出现的，功能相对godep多一点，不过就核心问题的解决来说基本是一样的。govendor生成vendor目录的时候需要2条命令：govendor init生成vendor/vendor.json，此时文件中只有本项目的信息。govendor add +external更新vendor/vendor.json，并拷贝GOPATH下的第三方包到vendor目录中。
+其他命令：
+# 安装go get -u github.com/kardianos/govendor# 获取指定版本的包govendor fetch golang.org/x/net/context@v1# 查看依赖的包govendor list# 查看哪些包使用了fmtgovendor list -v fmt
+
+gomodgo modules随着golang1.11的发布和我们见面了，这是官方提倡的新的包管理，乃至项目管理机制，可以不再需要GOPATH的存在。
+现在modules机制仍在早期阶段，所以golang提供了一个环境变量“GO111MODULE”，默认值为auto，如果当前目录里有go.mod文件，就使用go modules，否则使用旧的GOPATH和vendor机制，因为在modules机制下go get只会下载go modules，这一行为会在以后版本中成为默认值，这里我们保持auto即可，如果你想直接使用modules而不需要从GOPATH过度，那么把“GO111MODULE”设置为on。
+modules和传统的GOPATH不同，不需要包含例如src，bin这样的子目录，一个源代码目录甚至是空目录都可以作为module，只要其中包含有go.mod文件。
+1、启用modules机制
+# linux and macexport GO111MODULE=on# windows powershell$env:GO111MODULE = "on"
+
+2、初始化test项目为modulego mod init test初始化之后，目录下会自动生成go.mod文件。当我们使用go build，go test以及go list时，go会自动得更新go.mod文件，将依赖关系写入其中。
+3、整理依赖go mod tidy -v
+
+这条命令会自动下载依赖的module到cache，清除无用的module。
+生成go.mod的require部分，和go.sum文件。go.sum是一个构建状态跟踪文件，它会记录当前module所有的顶层和间接依赖，go modules根据这些记录去寻找对应的依赖。
+依赖的module下载到GOPATH/pkg/cache/和GOPATH/pkg/mod/目录下。
+
+4、Goland启用gomodFile，Settings，Go，Go Modules，勾选Enable Go Modules(vgo) integration，Apply。
+其他命令：
+# 帮助go help mod# 已有go.mod，下载依赖到cachego mod download# 拷贝依赖到vendor（没有则先下载）go mod vendor# 清空cachego clean -modcache
+
+gomod实践篇安装client-go假设一个项目依赖client-go，那么参考官方说明进行安装。
+1、查看k8s版本kubectl versionClient Version表示kubectl的版本，Server Version表示apiserver的版本（假设版本为v1.15.0）。
+2、查找对应版本的client-go在kubernetes/client-go上查找k8s v1.15.0对应的client-go版本，找到版本为12.0
+3、安装对应版本的client-gogo get k8s.io/client-go/12.0/kubernetes这里有个坑，国内无法访问k8s.io，需要科学上网（恰好我的搬瓦工服务器也访问不到k8s.io）。因此，这里使用GOPROXY的方式来解决，参考一键解决 go get golang.org/x 包失败。
+# export GOPROXY=https://goproxy.cnexport GOPROXY=https://goproxy.ioexport GO111MODULE=ongo get k8s.io/client-go/12.0/kubernetes
+
+
+失败了，返回404，猜测是12.0版本在代理服务器不存在，使用另外一种下载方式。
+go get k8s.io/client-go@kubernetes-1.15.0
+此处下载了两个版本的client-go，我们使用v0.0.0版本。
+4、安装client-go相关依赖client-go默认下载到$GOPATH/pkg/mod/k8s.io目录下，把k8s.io目录移动到$GOPATH/src目录下。然后把client-go@v0.0.0重命名为client-go，然后在client-go目录下执行安装依赖的命令：
+export GOPROXY=https://goproxy.ioexport GO111MODULE=ongo mod vendor
+完成之后，所有的依赖都下载到了client-go/vendor目录下，一个完整的client-go依赖库就准备好了。
+依赖库版本管理client-go依赖库准备好了，但是另一个问题来了：假设项目vk-project依赖client-go和库A，client-go依赖库A，两个依赖库A版本不一致，那么vk-project在编译时，会同时依赖两个不同的库A，导致编译出的二进制包有问题。
+此时，一个简单的办法是把GOPATH/src/k8s.io/client-go/vendor目录剪切覆盖vk-project/vendor目录，然后把GOPATH/src/k8s.io/client-go目录移动到vk-project/vendor/k8s.io/目录下。这么做的话，client-go就和自己的依赖是平级的存在了。
+但是，这么做有另一个问题：依赖库版本没有记录。因为没有版本记录，那么在上传vk-project项目时，就要把依赖全部上传，否则别人下载了vk-project也没办法正确安装依赖。
+这里，使用gomod进行依赖库版本管理。
+go mod init vk-projectgo mod tidy -vgo mod vendor
+
+上传代码时忽略vendor目录，在gitignore中添加：
+/vendor/
+
+安装依赖1、下载项目后，进入项目目录cd vk-project
+2、下载依赖go mod download
+3、拷贝依赖到vendor（可选）go mod vendor
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>开发</category>
+        <category>k8s</category>
+        <category>golang</category>
+      </categories>
+      <tags>
+        <tag>golang</tag>
+        <tag>client-go</tag>
+        <tag>godep</tag>
+        <tag>govendor</tag>
       </tags>
   </entry>
   <entry>
@@ -24268,6 +24683,84 @@ pip install PyYAML==5.1pip install python-json2yamlcat a.json | json2yaml &gt; a
         <tag>k8s</tag>
         <tag>docker</tag>
         <tag>json</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用client-go在K8S集群发布项目</title>
+    <url>/dev-k8s-client-go-deploy/</url>
+    <content><![CDATA[问题简述怎样在K8S集群中发布一个新的项目？怎样判断一个项目是发布成功了还是失败了？怎样访问一个项目？怎样实现灰度发布？怎样实现发布过程中的并发度控制、暂停、继续、取消？怎样实现回滚？
+本文中，会努力寻求这些问题的答案。
+
+
+准备镜像首先准备两个镜像，分别是nginx:v1.0和nginx:v2.0。
+1、启动并进入容器
+docker run --name nginx -d -p 80:80 voidking/nginx:latestdocker exec -it nginx /bin/bash
+
+有些小伙伴会有疑问，为什么不使用下面的命令启动并进入容器？只需要一条命令。docker run -it voidking/nginx:latest /bin/bash如果使用这种方式进入容器，修改内容后commit镜像，那么镜像无法正常启动。docker ps -a --no-trunc使用该命令可以看到，voidking/nginx:latest的默认启动命令为：nginx -g &#39;daemon off;&#39;而commit后的镜像，默认启动命令被修改为：/bin/bash看到这里就知道，因为自定义的启动命令覆盖掉了原有的启动命令，所以镜像无法正常启动。为什么会覆盖呢？因为CMD指令允许用户指定容器的默认的执行命令，此命令会在容器启动且docker run没有指定其他命令时运行。当docker run指定其他命令时，则会覆盖默认的执行命令。更多内容参考Dockerfile RUN，CMD，ENTRYPOINT命令区别。
+2、修改index.html
+cd /usr/share/nginx/htmlsed 's/nginx!/nginx!v1.0/' index.htmlsed -i 's/nginx!/nginx!v1.0/' index.htmlcat index.html
+
+3、commit/push镜像
+docker ps -ldocker commit 6efcd878d0d1 voidking/nginx:v1.0docker logindocker push voidking/nginx:v1.0
+
+kubectl在使用go-client之前，我们先来学习一下使用kubectl怎样发布项目、获取状态、访问项目、更新项目。
+发布项目以发布一个nginx项目为例。
+1、准备deployment yaml文件nginx.yaml
+apiVersion: apps/v1kind: Deploymentmetadata:  name: nginxspec:  replicas: 1  selector:    matchLabels:      app: nginx  template:    metadata:      labels:        app: nginx    spec:      containers:      - name: nginx        image: voidking/nginx:v1.0        ports:        - containerPort: 80        imagePullPolicy: Always
+
+2、发布项目kubectl apply -f nginx.yaml
+获取状态kubectl get deployments nginxkubectl get deployments nginx -o jsonkubectl get pods -l app=nginxkubectl get pods -l app=nginx -o jsonkubectl describe deployments nginxkubectl describe pods -l app=nginx
+根据获取到的信息，判断发布成功还是失败。
+访问项目1、准备service yaml文件nginx-svc.yaml
+apiVersion: v1kind: Servicemetadata:  name: nginxspec:  ports:  - port: 80    protocol: TCP    targetPort: 80  selector:    app: nginx  sessionAffinity: None  type: NodePort  #type: LoadBalancer
+
+2、查看服务IP和端口kubectl get svc nginx
+3、访问项目minikube service nginx，自动打开浏览器。或者curl http://192.168.99.100:32329/
+4、从容器内部访问项目（三种方式）
+kubectl get podskubectl exec -it hello-node-6747d458b6-d757m /bin/bash# wget -O- 10.97.151.28curl 10.97.151.28curl nginx.defaultenv | grep NGINXcurl $NGINX_SERVICE_HOST:$NGINX_SERVICE_PORT
+
+如果env命令没有显示出nginx service信息，那么可以重建pod：
+kubectl get pod hello-node-6747d458b6-d757m -n default -o yaml | kubectl replace --force -f -
+
+PS：使用kubectl进入容器的方法
+kubectl get podskubectl exec -it pod-name /bin/bashkubectl exec -it pod-name -c container-name /bin/bash
+
+更新发布1、修改nginx.yaml中的配置，升级镜像为voidking/nginx:2.0
+apiVersion: apps/v1kind: Deploymentmetadata:  name: nginxspec:  replicas: 1  selector:    matchLabels:      app: nginx  template:    metadata:      labels:        app: nginx    spec:      containers:      - name: nginx        image: voidking/nginx:v2.0        ports:        - containerPort: 80        imagePullPolicy: Always
+
+2、更新发布kubectl apply -f nginx.yaml
+3、访问项目curl http://192.168.99.100:32329/
+client-go《使用client-go操作K8S》一文中，配置好了k8s-client-go项目，可以使用这个项目对k8s集群进行一些基本操作。在此基础上，本节会实现一些更高阶的操作。
+判断发布状态根据deployment和pod的状态，怎样判断一次发布成功还是失败？首先，要知道deployment和pod都有哪些状态。
+1、通过kubectl命令获取发布数据
+kubectl get deployments hello-node -o jsonkubectl get deployments nginx -o jsonkubectl get pods -l app=hello-node -o jsonkubectl get pods -l app=nginx -o json
+
+2、获取到的发布数据发布成功的json数据：hello-node.json发布失败的json数据：nginx.json
+3、具体可用状态有哪些
+# deployment部分deployment.generationdeployment.spec.replicasdeployment.status.observedGenerationdeployment.status.replicasdeployment.status.readyReplicas/unavailableReplicasdeployment.status.updatedReplicasdeployment.status.conditions[*].type&#123;Available,Progressing&#125; &amp;&amp; deployment.status.conditions[*].status&#123;True,False&#125;# pod部分pod.status.phase&#123;Pending,Running&#125;pod.status.conditions[*].type&#123;Initialized,Ready,ContainersReady,PodScheduled&#125; &amp;&amp; pod.status.conditions[*].status&#123;True,False&#125;pod.status.containerStatuses[*].state.&#123;waiting,running&#125;
+
+4、判断条件组合参考k8s-client-go/common/deployment.go文件的GetDeploymentStatus函数。
+灰度发布常见的发布方案包括蓝绿发布、滚动发布和灰度发布（金丝雀发布），更多内容参考微服务部署：蓝绿部署、滚动部署、灰度发布、金丝雀发布。参考Spinnaker第四节-对接k8s、基于 Spinnaker 的 K8S 灰度发布、灰度发布/蓝绿发布，使用Ingress，可以很好地实现灰度发布。但是，在没有Ingress的情况下，该怎样实现灰度发布？
+最简单的方案是发布一个新的deployment，把service的流量分流到新的deployment，测试通过后删除老的deployment，流量就全部到了新的deployment。具体实现参考k8s-client-go/common/deploy.go文件的GrayDeploy和UpdateDeploy函数。
+但是，如果只允许维护一个deployment，该怎么处理？创建灰度的deployment，测试通过后删除灰度的deployment，然后正常更新原有的deployment。具体实现参考k8s-client-go/common/deploy.go文件的GrayDeploy2和UpdateDeploy2函数。
+后记并发度控制、暂停、继续、取消、回滚等等功能，未完待续。。。
+书签Pod 的生命周期
+管理资源
+Service
+10 Most Common Reasons Kubernetes Deployments Fail (Part 1)
+10 Most Common Reasons Kubernetes Deployments Fail (Part 2)
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>k8s</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
+        <tag>golang</tag>
+        <tag>docker</tag>
+        <tag>client-go</tag>
+        <tag>kubectl</tag>
       </tags>
   </entry>
   <entry>
@@ -26244,84 +26737,6 @@ Maven详解之聚合与继承
       <tags>
         <tag>java</tag>
         <tag>maven</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>使用client-go在K8S集群发布项目</title>
-    <url>/dev-k8s-client-go-deploy/</url>
-    <content><![CDATA[问题简述怎样在K8S集群中发布一个新的项目？怎样判断一个项目是发布成功了还是失败了？怎样访问一个项目？怎样实现灰度发布？怎样实现发布过程中的并发度控制、暂停、继续、取消？怎样实现回滚？
-本文中，会努力寻求这些问题的答案。
-
-
-准备镜像首先准备两个镜像，分别是nginx:v1.0和nginx:v2.0。
-1、启动并进入容器
-docker run --name nginx -d -p 80:80 voidking/nginx:latestdocker exec -it nginx /bin/bash
-
-有些小伙伴会有疑问，为什么不使用下面的命令启动并进入容器？只需要一条命令。docker run -it voidking/nginx:latest /bin/bash如果使用这种方式进入容器，修改内容后commit镜像，那么镜像无法正常启动。docker ps -a --no-trunc使用该命令可以看到，voidking/nginx:latest的默认启动命令为：nginx -g &#39;daemon off;&#39;而commit后的镜像，默认启动命令被修改为：/bin/bash看到这里就知道，因为自定义的启动命令覆盖掉了原有的启动命令，所以镜像无法正常启动。为什么会覆盖呢？因为CMD指令允许用户指定容器的默认的执行命令，此命令会在容器启动且docker run没有指定其他命令时运行。当docker run指定其他命令时，则会覆盖默认的执行命令。更多内容参考Dockerfile RUN，CMD，ENTRYPOINT命令区别。
-2、修改index.html
-cd /usr/share/nginx/htmlsed 's/nginx!/nginx!v1.0/' index.htmlsed -i 's/nginx!/nginx!v1.0/' index.htmlcat index.html
-
-3、commit/push镜像
-docker ps -ldocker commit 6efcd878d0d1 voidking/nginx:v1.0docker logindocker push voidking/nginx:v1.0
-
-kubectl在使用go-client之前，我们先来学习一下使用kubectl怎样发布项目、获取状态、访问项目、更新项目。
-发布项目以发布一个nginx项目为例。
-1、准备deployment yaml文件nginx.yaml
-apiVersion: apps/v1kind: Deploymentmetadata:  name: nginxspec:  replicas: 1  selector:    matchLabels:      app: nginx  template:    metadata:      labels:        app: nginx    spec:      containers:      - name: nginx        image: voidking/nginx:v1.0        ports:        - containerPort: 80        imagePullPolicy: Always
-
-2、发布项目kubectl apply -f nginx.yaml
-获取状态kubectl get deployments nginxkubectl get deployments nginx -o jsonkubectl get pods -l app=nginxkubectl get pods -l app=nginx -o jsonkubectl describe deployments nginxkubectl describe pods -l app=nginx
-根据获取到的信息，判断发布成功还是失败。
-访问项目1、准备service yaml文件nginx-svc.yaml
-apiVersion: v1kind: Servicemetadata:  name: nginxspec:  ports:  - port: 80    protocol: TCP    targetPort: 80  selector:    app: nginx  sessionAffinity: None  type: NodePort  #type: LoadBalancer
-
-2、查看服务IP和端口kubectl get svc nginx
-3、访问项目minikube service nginx，自动打开浏览器。或者curl http://192.168.99.100:32329/
-4、从容器内部访问项目（三种方式）
-kubectl get podskubectl exec -it hello-node-6747d458b6-d757m /bin/bash# wget -O- 10.97.151.28curl 10.97.151.28curl nginx.defaultenv | grep NGINXcurl $NGINX_SERVICE_HOST:$NGINX_SERVICE_PORT
-
-如果env命令没有显示出nginx service信息，那么可以重建pod：
-kubectl get pod hello-node-6747d458b6-d757m -n default -o yaml | kubectl replace --force -f -
-
-PS：使用kubectl进入容器的方法
-kubectl get podskubectl exec -it pod-name /bin/bashkubectl exec -it pod-name -c container-name /bin/bash
-
-更新发布1、修改nginx.yaml中的配置，升级镜像为voidking/nginx:2.0
-apiVersion: apps/v1kind: Deploymentmetadata:  name: nginxspec:  replicas: 1  selector:    matchLabels:      app: nginx  template:    metadata:      labels:        app: nginx    spec:      containers:      - name: nginx        image: voidking/nginx:v2.0        ports:        - containerPort: 80        imagePullPolicy: Always
-
-2、更新发布kubectl apply -f nginx.yaml
-3、访问项目curl http://192.168.99.100:32329/
-client-go《使用client-go操作K8S》一文中，配置好了k8s-client-go项目，可以使用这个项目对k8s集群进行一些基本操作。在此基础上，本节会实现一些更高阶的操作。
-判断发布状态根据deployment和pod的状态，怎样判断一次发布成功还是失败？首先，要知道deployment和pod都有哪些状态。
-1、通过kubectl命令获取发布数据
-kubectl get deployments hello-node -o jsonkubectl get deployments nginx -o jsonkubectl get pods -l app=hello-node -o jsonkubectl get pods -l app=nginx -o json
-
-2、获取到的发布数据发布成功的json数据：hello-node.json发布失败的json数据：nginx.json
-3、具体可用状态有哪些
-# deployment部分deployment.generationdeployment.spec.replicasdeployment.status.observedGenerationdeployment.status.replicasdeployment.status.readyReplicas/unavailableReplicasdeployment.status.updatedReplicasdeployment.status.conditions[*].type&#123;Available,Progressing&#125; &amp;&amp; deployment.status.conditions[*].status&#123;True,False&#125;# pod部分pod.status.phase&#123;Pending,Running&#125;pod.status.conditions[*].type&#123;Initialized,Ready,ContainersReady,PodScheduled&#125; &amp;&amp; pod.status.conditions[*].status&#123;True,False&#125;pod.status.containerStatuses[*].state.&#123;waiting,running&#125;
-
-4、判断条件组合参考k8s-client-go/common/deployment.go文件的GetDeploymentStatus函数。
-灰度发布常见的发布方案包括蓝绿发布、滚动发布和灰度发布（金丝雀发布），更多内容参考微服务部署：蓝绿部署、滚动部署、灰度发布、金丝雀发布。参考Spinnaker第四节-对接k8s、基于 Spinnaker 的 K8S 灰度发布、灰度发布/蓝绿发布，使用Ingress，可以很好地实现灰度发布。但是，在没有Ingress的情况下，该怎样实现灰度发布？
-最简单的方案是发布一个新的deployment，把service的流量分流到新的deployment，测试通过后删除老的deployment，流量就全部到了新的deployment。具体实现参考k8s-client-go/common/deploy.go文件的GrayDeploy和UpdateDeploy函数。
-但是，如果只允许维护一个deployment，该怎么处理？创建灰度的deployment，测试通过后删除灰度的deployment，然后正常更新原有的deployment。具体实现参考k8s-client-go/common/deploy.go文件的GrayDeploy2和UpdateDeploy2函数。
-后记并发度控制、暂停、继续、取消、回滚等等功能，未完待续。。。
-书签Pod 的生命周期
-管理资源
-Service
-10 Most Common Reasons Kubernetes Deployments Fail (Part 1)
-10 Most Common Reasons Kubernetes Deployments Fail (Part 2)
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>k8s</category>
-      </categories>
-      <tags>
-        <tag>k8s</tag>
-        <tag>golang</tag>
-        <tag>docker</tag>
-        <tag>client-go</tag>
-        <tag>kubectl</tag>
       </tags>
   </entry>
   <entry>
@@ -28326,6 +28741,83 @@ Tensorflow 的处理结构及基本使用
       </tags>
   </entry>
   <entry>
+    <title>ThinkPHP实战</title>
+    <url>/dev-thinkphp-in-action/</url>
+    <content><![CDATA[前言本着“需要什么就学习什么”的原则，花了几天时间，实践了一下thinkphp框架的使用。整理了一下必须掌握的三个部分：路由控制、模板渲染、增删改查。
+
+
+准备在《ThinkPHP开发环境搭建》中，我们已经准备好了thinkphp的开发环境。在此基础上，复制Application中的Home文件夹，重命名为Admin。然后，修改Admin/IndexController.class.php文件的namespace为：
+namespace Admin\Controller;
+好了，可以进入真正的开发了！
+路由控制路由控制，在thinkphp开发手册中对应“架构&gt;URL模式”。thinkphp提供了多种URL模式，本次开发采用标准URL格式。
+http://serverName/index.php/模块/控制器/操作
+
+比如，我们在Admin/IndexController.class.php文件中添加函数：
+public function firstFunc()&#123;    echo '第一个函数';&#125;
+那么，这个函数的访问路径为http://localhost/thinkphp/index.php/Admin/Index/firstFunc。访问该路径，我们可以在页面上看到返回值“第一个函数”。
+模板渲染模板渲染，在thinkphp开发手册中对应“视图&gt;模板赋值和模板渲染”以及“模板”。在Admin/View/Index文件夹下，新建文件template.html。在Admin/IndexController.class.php文件中添加函数：
+public function template()&#123;    $data = '测试数据';    $dataArr = array(        array('name'=&gt;'郝锦','age'=&gt;'24'),        array('name'=&gt;'小帅','age'=&gt;'22'),        array('name'=&gt;'小飞','age'=&gt;'22')    );    $dataObj = new userInfo();    $this-&gt;assign('data2',$data);    $this-&gt;assign('dataArr',$dataArr);    $this-&gt;assign('dataObj',$dataObj);    $this-&gt;display();&#125;
+同时，在文件最后添加一个userInfo类：
+class userInfo&#123;    public $name = '郝锦';    public $age = '24';    function show()&#123;        echo '一个函数';    &#125;&#125;
+那么，$data、$dataArr和$dataObj都会通过assign函数传送到template.html页面。template.html页面代码如下：
+&lt;!DOCTYPE html&gt;&lt;html lang="zh"&gt;&lt;head&gt;    &lt;meta charset="UTF-8"&gt;    &lt;title&gt;模板&lt;/title&gt;&lt;/head&gt;&lt;body&gt;    &lt;h1&gt;模板&lt;/h1&gt;    &lt;p&gt;&#123;$data2&#125;&lt;/p&gt;    &lt;p&gt;&#123;$dataObj:name&#125;&lt;/p&gt;    &lt;p&gt;&#123;$dataObj:age&#125;&lt;/p&gt;    &lt;volist name='dataArr' id="item"&gt;        &#123;$item.name&#125;&amp;nbsp;&#123;$item.age&#125;&lt;br/&gt;    &lt;/volist&gt;&lt;/body&gt;&lt;/html&gt;
+
+最终效果如下：
+注意，函数名和页面名字是相同的，一一对应的。
+增删查改增删查改，在thinkphp开发手册中对应“模型&gt;GURD操作”和“专题&gt;数据分页”。
+数据库配置利用navicat等工具连接到本地mysql数据库，创建数据库volunteer，在数据库中创建表volun_admin(int id, varchar name, vachar password)和volun_project(int id, varchar title, varchar content)。注意，编码格式选择utf8。
+php配置在进行数据库增删查改之前，我们需要先连接到数据库。打开Application/Common/Conf/config.php文件，修改内容如下：
+&lt;?phpreturn array(    //'配置项'=&gt;'配置值'    'DB_TYPE'=&gt;'mysql', //数据库类型    'DB_HOST'=&gt;'localhost', //服务器地址    'DB_NAME'=&gt;'volunteer', //数据库名    'DB_USER'=&gt;'root', //用户名    'DB_PWD'=&gt;'', //密码    'DB_PORT'=&gt;3306, //端口    'DB_PREFIX'=&gt;'volun_', //数据库表前缀    'SHOW_PAGE_TRACE' =&gt;true,);?&gt;
+
+project表的增删查改// 志愿项目增删查改public function projectAdd($title, $content)&#123;    $project = D('project');    $data['title'] = $title;    $data['content'] = $content;    if($project-&gt;create($data))&#123;        $id = $project-&gt;add();        if($id)&#123;            $result = array(                'code'=&gt; '0',                'ext'=&gt; 'success'            );            echo json_encode($result);        &#125;    &#125;&#125;public function projectEdit($id, $title, $content)&#123;    $project = D('project');    $data['title'] = $title;    $data['content'] = $content;    $success = $project-&gt;where("id='$id'")-&gt;save($data);    if($success)&#123;        $result = array(            'code'=&gt; '0',            'ext'=&gt; 'success'        );        echo json_encode($result);    &#125;else &#123;        $result = array(            'code'=&gt; '1',            'ext'=&gt; 'fail'        );        echo json_encode($result);    &#125;&#125;public function projectDelete($id)&#123;    $project = D('project');    $success = $project-&gt;where("id='$id'")-&gt;delete();    if($success)&#123;        $result = array(            'code'=&gt; '0',            'ext'=&gt; 'success'        );        echo json_encode($result);    &#125;else &#123;        $result = array(            'code'=&gt; '1',            'ext'=&gt; 'fail'        );        echo json_encode($result);    &#125;&#125;public function projectList()&#123;    $project = D('project');    $resultArr = $project-&gt;select();    echo json_encode($resultArr,JSON_UNESCAPED_UNICODE);&#125;public function projectPage($pageSize,$pageNum)&#123;    $project = D('project');    $total = $project-&gt;count();    $totalPage = $total%$pageSize ? (int)($total/$pageSize)+1 : (int)($total/$pageSize);        $list = $project-&gt;page($pageNum.','.$pageSize)-&gt;select();    if($list)&#123;        $resultArr = array(            'totalPage'=&gt; $totalPage,            'pageNum'=&gt; $pageNum,            'projectList'=&gt; $list        );        $result = array(            'code'=&gt; '0',            'ext'=&gt; 'success',            'obj'=&gt; $resultArr        );        echo json_encode($result,JSON_UNESCAPED_UNICODE);    &#125;&#125;
+
+以上方法，在js中，可以使用GET方式请求，也可以使用POST方式请求。
+路由控制、模板渲染、增删改查，至此全部跑通，可以进行简单的开发了。至于thinkphp提供的其他更加强大的功能，在需要时查查文档就好。
+接口测试上次在给大家演示HttpRequester的时候，验证登录接口，一直出现错误。猜测有四种可能：1、HttpRequester的问题2、thinkphp的问题3、php的问题4、apache的问题
+HttpRequester的问题以projectAdd方法为例，在js中使用ajax请求该方法，无论type是GET还是POST，都能成功拿到返回值{&quot;code&quot;:&quot;0&quot;,&quot;ext&quot;:&quot;success&quot;}。
+在HttpRequester中，使用GET方式请求该方法，可以拿到返回值；但是，使用POST方式请求，拿不到返回值，提示“参数错误或者未定义:title”，因为projectAdd方法没有拿到我们传过去的参数。
+修改projectAdd方法为：
+public function projectAdd()&#123;    $title = $_POST['title'];    $content = $_POST['content'];    $project = D('project');    $data['title'] = $title;    $data['content'] = $content;    if($project-&gt;create($data))&#123;        $id = $project-&gt;add();        if($id)&#123;            $result = array(                'code'=&gt; '0',                'ext'=&gt; 'success'            );            echo json_encode($result);        &#125;    &#125;&#125;
+
+再次使用HttpRequester请求projectAdd方法，这次换了个错误：
+Column 'content' cannot be null [ SQL语句 ] : INSERT INTO `volun_project` (`title`,`content`) VALUES (NULL,NULL)
+
+显然，错误的原因依然是projectAdd方法没有拿到我们传过去的参数，导致title和content为空。
+使用ajax的POST方式请求该方法，成功拿到返回值。可见，这是HttpRequester的问题，它无法模拟ajax的POST请求。
+那么问题来了，ajax的POST和HttpRequester的POST到底有什么区别？很遗憾，暂时没有找到答案。
+thinkphp的问题在公司开发时，一直使用HttpRequester来验证接口，能用ajax请求的接口，都可以使用HttpRequester来模拟请求。这样看来，就是接口的问题，也就是thinkphp框架的问题！或者，就是php的问题！
+php的问题在thinkphp文件下，新建了一个test.php文件：
+&lt;?php    $title = $_POST['title'];    $array = array(        'title'=&gt;$title    );    echo json_encode($array);?&gt;
+在ajax中，带入参数{title:&#39;测试标题&#39;}，POST请求http://localhost/thinkphp/test.php，成功拿到返回值。
+在HttpRequester中，带入参数{title:&#39;测试标题&#39;}，POST请求http://localhost/thinkphp/test.php，提示错误“Notice: Undefined index: title in D:\Server\wamp64\www\thinkphp\test.php on line 2”。
+修改test.php文件为：
+&lt;?php    $title = $_GET['title'];    $array = array(        'title'=&gt;$title    );    echo json_encode($array);?&gt;
+在ajax中，带入参数{title:&#39;测试标题&#39;}，GET请求http://localhost/thinkphp/test.php，成功拿到返回值。
+在HttpRequester中，带入参数{title:&#39;测试标题&#39;}，GET请求http://localhost/thinkphp/test.php，成功拿到返回值。
+由此排除thinkphp的问题。
+apache的问题还有一种可能，apache的问题，于是把test.php文件放到nginx下，经测试，接口同样拿不到参数。由此排除apache的问题。
+小结综上，HttpRequester无法测试thinkphp的POST接口问题，有两个可能，一个是HttpRequester存在缺陷，另一个是php存在缺陷。
+后记无论哪种原因，总之，无法使用HttpRequester的POST请求来验证我们的thinkphp接口了。需要验证接口时，暂时使用GET请求，因为我们的接口两种请求方式都可以拿到返回值。
+注意，本应该是POST请求的接口，接口文档中的请求类型依然写POST，ajax的type也使用POST，保证规范性。
+2016.09.14更新Thinkphp3.2.3 接收不到json数据https://segmentfault.com/q/1010000004980405
+原来，造成HttpRequester无法测试接口的原因，是Content-Type没有选对。
+由于PHP默认只识别Content-Type: application/x-www.form-urlencoded标准的数据类型，因此，对型如application/json的内容无法解析为$_POST数组，故保留原型，交给$GLOBALS[&#39;HTTP_RAW_POST_DATA&#39;]来接收。
+file_get_contents(&#39;php://input&#39;)允许读取 POST 的原始数据，和$GLOBALS[&#39;HTTP_RAW_POST_DATA&#39;]比起来，它给内存带来的压力较小，并且不需要任何特殊的php.ini设置。file_get_contents(&#39;php://input&#39;)不能用于enctype=&quot;multipart/form-data&quot;。
+书签序言 - ThinkPHP3.2完全开发手册http://document.thinkphp.cn/manual_3_2.html
+ThinkPHP框架教程 - 猿团http://edu.yuantuan.com/course/explore/thinkphp
+PHP: 语言参考 - Manualhttp://php.net/manual/zh/langref.php
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>php</category>
+      </categories>
+      <tags>
+        <tag>php</tag>
+        <tag>thinkphp</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>thinkphp中session跨域问题</title>
     <url>/dev-thinkphp-session-cross-domain/</url>
     <content><![CDATA[问题描述《thinkphp实现短信验证注册》中，小编不止记录了短信验证码的实现方法，同时还记录了图片验证码的实现方法。本地使用，一切正常；后端项目和前端项目都部署到服务器，一切正常；后端项目部署到服务器，并设置允许跨域访问后，本地前端项目使用服务器上后端项目接口时，问题来了：首先，使用postman测试获取图片验证码接口和验证图片验证码接口，正常。然后，在html中使用获取图片验证码接口，正常；最后，在JS中使用验证图片验证码接口，出错！！！
@@ -28472,83 +28964,6 @@ gmetad.conf：gmetad配置文件（1）
         <tag>ubuntu</tag>
         <tag>监控</tag>
         <tag>ganglia</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>ThinkPHP实战</title>
-    <url>/dev-thinkphp-in-action/</url>
-    <content><![CDATA[前言本着“需要什么就学习什么”的原则，花了几天时间，实践了一下thinkphp框架的使用。整理了一下必须掌握的三个部分：路由控制、模板渲染、增删改查。
-
-
-准备在《ThinkPHP开发环境搭建》中，我们已经准备好了thinkphp的开发环境。在此基础上，复制Application中的Home文件夹，重命名为Admin。然后，修改Admin/IndexController.class.php文件的namespace为：
-namespace Admin\Controller;
-好了，可以进入真正的开发了！
-路由控制路由控制，在thinkphp开发手册中对应“架构&gt;URL模式”。thinkphp提供了多种URL模式，本次开发采用标准URL格式。
-http://serverName/index.php/模块/控制器/操作
-
-比如，我们在Admin/IndexController.class.php文件中添加函数：
-public function firstFunc()&#123;    echo '第一个函数';&#125;
-那么，这个函数的访问路径为http://localhost/thinkphp/index.php/Admin/Index/firstFunc。访问该路径，我们可以在页面上看到返回值“第一个函数”。
-模板渲染模板渲染，在thinkphp开发手册中对应“视图&gt;模板赋值和模板渲染”以及“模板”。在Admin/View/Index文件夹下，新建文件template.html。在Admin/IndexController.class.php文件中添加函数：
-public function template()&#123;    $data = '测试数据';    $dataArr = array(        array('name'=&gt;'郝锦','age'=&gt;'24'),        array('name'=&gt;'小帅','age'=&gt;'22'),        array('name'=&gt;'小飞','age'=&gt;'22')    );    $dataObj = new userInfo();    $this-&gt;assign('data2',$data);    $this-&gt;assign('dataArr',$dataArr);    $this-&gt;assign('dataObj',$dataObj);    $this-&gt;display();&#125;
-同时，在文件最后添加一个userInfo类：
-class userInfo&#123;    public $name = '郝锦';    public $age = '24';    function show()&#123;        echo '一个函数';    &#125;&#125;
-那么，$data、$dataArr和$dataObj都会通过assign函数传送到template.html页面。template.html页面代码如下：
-&lt;!DOCTYPE html&gt;&lt;html lang="zh"&gt;&lt;head&gt;    &lt;meta charset="UTF-8"&gt;    &lt;title&gt;模板&lt;/title&gt;&lt;/head&gt;&lt;body&gt;    &lt;h1&gt;模板&lt;/h1&gt;    &lt;p&gt;&#123;$data2&#125;&lt;/p&gt;    &lt;p&gt;&#123;$dataObj:name&#125;&lt;/p&gt;    &lt;p&gt;&#123;$dataObj:age&#125;&lt;/p&gt;    &lt;volist name='dataArr' id="item"&gt;        &#123;$item.name&#125;&amp;nbsp;&#123;$item.age&#125;&lt;br/&gt;    &lt;/volist&gt;&lt;/body&gt;&lt;/html&gt;
-
-最终效果如下：
-注意，函数名和页面名字是相同的，一一对应的。
-增删查改增删查改，在thinkphp开发手册中对应“模型&gt;GURD操作”和“专题&gt;数据分页”。
-数据库配置利用navicat等工具连接到本地mysql数据库，创建数据库volunteer，在数据库中创建表volun_admin(int id, varchar name, vachar password)和volun_project(int id, varchar title, varchar content)。注意，编码格式选择utf8。
-php配置在进行数据库增删查改之前，我们需要先连接到数据库。打开Application/Common/Conf/config.php文件，修改内容如下：
-&lt;?phpreturn array(    //'配置项'=&gt;'配置值'    'DB_TYPE'=&gt;'mysql', //数据库类型    'DB_HOST'=&gt;'localhost', //服务器地址    'DB_NAME'=&gt;'volunteer', //数据库名    'DB_USER'=&gt;'root', //用户名    'DB_PWD'=&gt;'', //密码    'DB_PORT'=&gt;3306, //端口    'DB_PREFIX'=&gt;'volun_', //数据库表前缀    'SHOW_PAGE_TRACE' =&gt;true,);?&gt;
-
-project表的增删查改// 志愿项目增删查改public function projectAdd($title, $content)&#123;    $project = D('project');    $data['title'] = $title;    $data['content'] = $content;    if($project-&gt;create($data))&#123;        $id = $project-&gt;add();        if($id)&#123;            $result = array(                'code'=&gt; '0',                'ext'=&gt; 'success'            );            echo json_encode($result);        &#125;    &#125;&#125;public function projectEdit($id, $title, $content)&#123;    $project = D('project');    $data['title'] = $title;    $data['content'] = $content;    $success = $project-&gt;where("id='$id'")-&gt;save($data);    if($success)&#123;        $result = array(            'code'=&gt; '0',            'ext'=&gt; 'success'        );        echo json_encode($result);    &#125;else &#123;        $result = array(            'code'=&gt; '1',            'ext'=&gt; 'fail'        );        echo json_encode($result);    &#125;&#125;public function projectDelete($id)&#123;    $project = D('project');    $success = $project-&gt;where("id='$id'")-&gt;delete();    if($success)&#123;        $result = array(            'code'=&gt; '0',            'ext'=&gt; 'success'        );        echo json_encode($result);    &#125;else &#123;        $result = array(            'code'=&gt; '1',            'ext'=&gt; 'fail'        );        echo json_encode($result);    &#125;&#125;public function projectList()&#123;    $project = D('project');    $resultArr = $project-&gt;select();    echo json_encode($resultArr,JSON_UNESCAPED_UNICODE);&#125;public function projectPage($pageSize,$pageNum)&#123;    $project = D('project');    $total = $project-&gt;count();    $totalPage = $total%$pageSize ? (int)($total/$pageSize)+1 : (int)($total/$pageSize);        $list = $project-&gt;page($pageNum.','.$pageSize)-&gt;select();    if($list)&#123;        $resultArr = array(            'totalPage'=&gt; $totalPage,            'pageNum'=&gt; $pageNum,            'projectList'=&gt; $list        );        $result = array(            'code'=&gt; '0',            'ext'=&gt; 'success',            'obj'=&gt; $resultArr        );        echo json_encode($result,JSON_UNESCAPED_UNICODE);    &#125;&#125;
-
-以上方法，在js中，可以使用GET方式请求，也可以使用POST方式请求。
-路由控制、模板渲染、增删改查，至此全部跑通，可以进行简单的开发了。至于thinkphp提供的其他更加强大的功能，在需要时查查文档就好。
-接口测试上次在给大家演示HttpRequester的时候，验证登录接口，一直出现错误。猜测有四种可能：1、HttpRequester的问题2、thinkphp的问题3、php的问题4、apache的问题
-HttpRequester的问题以projectAdd方法为例，在js中使用ajax请求该方法，无论type是GET还是POST，都能成功拿到返回值{&quot;code&quot;:&quot;0&quot;,&quot;ext&quot;:&quot;success&quot;}。
-在HttpRequester中，使用GET方式请求该方法，可以拿到返回值；但是，使用POST方式请求，拿不到返回值，提示“参数错误或者未定义:title”，因为projectAdd方法没有拿到我们传过去的参数。
-修改projectAdd方法为：
-public function projectAdd()&#123;    $title = $_POST['title'];    $content = $_POST['content'];    $project = D('project');    $data['title'] = $title;    $data['content'] = $content;    if($project-&gt;create($data))&#123;        $id = $project-&gt;add();        if($id)&#123;            $result = array(                'code'=&gt; '0',                'ext'=&gt; 'success'            );            echo json_encode($result);        &#125;    &#125;&#125;
-
-再次使用HttpRequester请求projectAdd方法，这次换了个错误：
-Column 'content' cannot be null [ SQL语句 ] : INSERT INTO `volun_project` (`title`,`content`) VALUES (NULL,NULL)
-
-显然，错误的原因依然是projectAdd方法没有拿到我们传过去的参数，导致title和content为空。
-使用ajax的POST方式请求该方法，成功拿到返回值。可见，这是HttpRequester的问题，它无法模拟ajax的POST请求。
-那么问题来了，ajax的POST和HttpRequester的POST到底有什么区别？很遗憾，暂时没有找到答案。
-thinkphp的问题在公司开发时，一直使用HttpRequester来验证接口，能用ajax请求的接口，都可以使用HttpRequester来模拟请求。这样看来，就是接口的问题，也就是thinkphp框架的问题！或者，就是php的问题！
-php的问题在thinkphp文件下，新建了一个test.php文件：
-&lt;?php    $title = $_POST['title'];    $array = array(        'title'=&gt;$title    );    echo json_encode($array);?&gt;
-在ajax中，带入参数{title:&#39;测试标题&#39;}，POST请求http://localhost/thinkphp/test.php，成功拿到返回值。
-在HttpRequester中，带入参数{title:&#39;测试标题&#39;}，POST请求http://localhost/thinkphp/test.php，提示错误“Notice: Undefined index: title in D:\Server\wamp64\www\thinkphp\test.php on line 2”。
-修改test.php文件为：
-&lt;?php    $title = $_GET['title'];    $array = array(        'title'=&gt;$title    );    echo json_encode($array);?&gt;
-在ajax中，带入参数{title:&#39;测试标题&#39;}，GET请求http://localhost/thinkphp/test.php，成功拿到返回值。
-在HttpRequester中，带入参数{title:&#39;测试标题&#39;}，GET请求http://localhost/thinkphp/test.php，成功拿到返回值。
-由此排除thinkphp的问题。
-apache的问题还有一种可能，apache的问题，于是把test.php文件放到nginx下，经测试，接口同样拿不到参数。由此排除apache的问题。
-小结综上，HttpRequester无法测试thinkphp的POST接口问题，有两个可能，一个是HttpRequester存在缺陷，另一个是php存在缺陷。
-后记无论哪种原因，总之，无法使用HttpRequester的POST请求来验证我们的thinkphp接口了。需要验证接口时，暂时使用GET请求，因为我们的接口两种请求方式都可以拿到返回值。
-注意，本应该是POST请求的接口，接口文档中的请求类型依然写POST，ajax的type也使用POST，保证规范性。
-2016.09.14更新Thinkphp3.2.3 接收不到json数据https://segmentfault.com/q/1010000004980405
-原来，造成HttpRequester无法测试接口的原因，是Content-Type没有选对。
-由于PHP默认只识别Content-Type: application/x-www.form-urlencoded标准的数据类型，因此，对型如application/json的内容无法解析为$_POST数组，故保留原型，交给$GLOBALS[&#39;HTTP_RAW_POST_DATA&#39;]来接收。
-file_get_contents(&#39;php://input&#39;)允许读取 POST 的原始数据，和$GLOBALS[&#39;HTTP_RAW_POST_DATA&#39;]比起来，它给内存带来的压力较小，并且不需要任何特殊的php.ini设置。file_get_contents(&#39;php://input&#39;)不能用于enctype=&quot;multipart/form-data&quot;。
-书签序言 - ThinkPHP3.2完全开发手册http://document.thinkphp.cn/manual_3_2.html
-ThinkPHP框架教程 - 猿团http://edu.yuantuan.com/course/explore/thinkphp
-PHP: 语言参考 - Manualhttp://php.net/manual/zh/langref.php
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>php</category>
-      </categories>
-      <tags>
-        <tag>php</tag>
-        <tag>thinkphp</tag>
       </tags>
   </entry>
   <entry>
@@ -31218,53 +31633,6 @@ PS：公安备案成功后拿到了备案号，但是现在查询，居然没有
       </tags>
   </entry>
   <entry>
-    <title>科目二</title>
-    <url>/essay-driving-license-subject-two/</url>
-    <content><![CDATA[前言同学们都说：“考过科目二，驾照就算到手了。”可见科目二的重要性以及难度。3月4日开始学科目二，近一周了，收获非常多，在此总结一下，方便自己和后来的小伙伴。本文会在学车的过程中不断更新，更新时间请看后记。
-吐槽学车有风险，笨蛋需谨慎。
-第一天（3月4日，周三），学了曲线行驶（也就是我们常说的S弯）和直角转弯。第一次，开进了草地，被骂的没有人样；第二次，又开进了草地，没有被骂，直接被踹了下去。咳咳，真的是被“踹”了下去。。。这一天，印象最深的一句话是：“你是我见过最笨的学员！”还有什么!@#$%^&amp;*另外两个学员安慰我：“别放在心上，他就随口一说，第一天我们都被骂哭了！”
-第二天（3月5日，周四），学了倒车入库（只学了右倒库。左倒库考前学，据说比较简单）。奇迹般的，我居然倒车倒得不错！啊勒，我都佩服我自己了！依然被骂，但比第一天好了太多太多！确实，表现的好坏，会影响教练对你的态度。和一个学员聊天，他向我倾诉：“唉，今天可惨了，教练说没见过我这么笨的学员！还有!@#$%^&amp;*”我紧紧地握住了他的手：“教练昨天也是和我这么说的！！！”从这一天开始，融入了同学们当中，开始和大家嘻嘻哈哈，互相帮助。
-
-第三天（3月7日，周六），学了侧方停车。表现依然不错！而且，我们教练有两辆车，今天他在另一辆车上教新学员。我们自由练习，无人看管，开森的不得了！和同学们吧啦吧啦吧啦。。。
-第四天（3月8日，周日），学了坡道定点。表现依旧惊艳！也开了几圈S弯，虽然不够完美，但是，不会开进草地了！进步是巨大的！自我感觉，学完倒车入库，其他几项都有进步！开始打卡了，4个小时。当然，和同学们在一起吐槽吹牛也是必须的。
-第五天（3月9日，周一），五项，练习。进步中，可以感觉到。今天我们聊得最多的是：甲：“诶？教练今天怎么没有骂我？”乙：“他昨天就没有骂我！”甲：“对对对，从昨天就不对劲了！”丙：“其实，从前天开始，教练心情就不错！”丁：“我也发现了！”戊：“还真有点不习惯！”。。。
-后视镜调整倒车入库右边：后门把手看到后端左边：后门把手看到后端
-侧方停车右边：前门把手中间偏左，后门把手看到前端左边：看到前门把手
-重点速度控制好速度，科目二你就学好了一半！最重要的在于踩离合：向下压减速，向上抬加速；左右打方向盘减速，回正方向盘加速。目标是：无论怎样打方向盘，我们通过压和抬方向盘，使速度始终保持（慢）匀速。
-方向盘打方向，值得花时间练习！为什么？打方向盘也可以很帅很拉风！不不，主要原因是，方向盘的控制，直接决定各个点是否打的好！
-倒车入库多练倒车入库！感觉用倒车入库来打基础非常好！练出手感，完虐其他四项！
-勤奋早上7点半到驾校，我觉得已经很早了。但是，那些勤奋的同学，每天早上6点半左右就到了！早去，没有人，就可以多学一小时甚至一个半小时。多学一小时有什么用？我能说的只是，一整天（上午8点到下午5点），你能练习的时间，满打满算一小时就不错了！
-五项要点Tips：以下要点，不是硬性规定。具体操作的时候，根据当时情况自己调整。
-曲线行驶口诀：提前转，先少转，追着弯道转；早点回，先少回，追着弯道回。
-详解：入弯时，靠右行驶；当右边线与车头相交，交点移动到车头左侧三分之一处时，方向盘向左打一圈，然后在左右90度之内调整方向盘，使左车头和右边线始终重合；当左车头快要碰到左边线时，回正方向盘；当左边线与车头相交，交点移动到车头右侧三分之一处时，方向盘向右打一圈，然后在左右90度之内调整方向盘，使右车头和左边线始终重合。
-直角转弯详解：入弯时，靠右行驶；当车头完全盖住前方边线（或水管）时，向左打死方向盘；当方向快要回正时，回正方向盘。
-倒车入库详解：正手入库时，当右后车门上的竖直杠和车库的右角重合时，向右打死方向盘；看右后视镜，当车身与白线的夹角大概到30度的时候，方向盘回一圈；当右后视镜盖过车身与白线的夹角时，向右打死方向盘；当右后视镜中车身与车库右边线马上就要平行时，回正方向盘；看左后视镜，找停车点，踩下刹车；
-反手出库时，方向盘向左打90度，前进，数2或3或6秒（视左边距离而定），回正方向盘；当车头盖住车库前方黄线时，向左打死方向盘；当车身与车库前方黄线呈45度角时，踩下刹车；
-反手入库时，看左后视镜或者右后视镜，当车身与车库左右边线将要平行时，回正方向盘，找停车点，踩下刹车；
-正手出库时，当车头盖过车库前方黄线时，向右打死方向盘；当车身与车库前方黄线平行时，回正方向盘。
-侧方停车详解：前进时，控制车头与车库左边线的交点在车头右侧三分之一处；看右后视镜，当右后视镜中可以看到车库前边线时，再前进两秒；
-入库时，看右后视镜，当右后视镜盖过车库前边线时，向右打死方向盘；看左后视镜，左车身后保险杠与车库左边线有一个交点，当这个交点移动到保险杠中点时，回正方向盘；继续看左后视镜，当左后车轮压到车库左边线时，向左打死方向盘；继续看左后视镜，当车身与车库左边线平行时，踩下刹车；
-出库时，当车头与道路左边线的交点位于车头中点时，向右打死方向盘；当车身与道路平行时，回正方向盘。
-坡道定点详解：上坡时，调整车头，使车头中点偏右处与内侧黄线相交；当车头右角小后视镜与桩杆快要平行时，踩下刹车；慢慢松开离合，当车身抖动时，松开刹车；当车子行驶过坡道最高点，开始下坡时，可以松开离合。
-考试科目二和科目三各有五次预约机会，每次预约间隔十天。每次预约考试，不过的话，当天可以补考一次。也就是说，科目二和科目三各有十次考试机会。
-科目二考试时，曲线行驶、直角转弯、侧方停车、坡道定点，这四项一起考，被称为电子路；倒车入库单独考，教练习惯说正反手。
-电子路和倒车入库，全部通过，则通过。有一个不通过，则需要补考电子路和倒车入库。
-等待时间学车，绝大部分情况下，都不只有你一个人，是大家一起学。这个时候，就要排队，每人开几次。那么，等待时间干啥呢？吹牛啊！哈哈，开个玩笑，聊天啊！可好玩了，特别有意思！大家一起吐槽教练，怎一个暗爽了得！还有，大家交流一下经验，讨论一下不明白的地方。牛逼的学员也会传授一些经验，不止是关于打方向的各个点，还有关于考试的注意事项、关于考场的选择（比如11号考场是死亡考场）、关于打卡、关于送礼、关于驾校的内幕。。。
-再不济，还可以玩手机啊。注意，要趁教练不在的时候看，否则，准备迎接教练的怒吼吧！如果带本托福雅思啥的，应该没事吧。。。
-后记3月31日，模拟考试。倒车入库三次（3号库），挂两次；电子路六条线（7号到12号），挂两条线；加模倒车入库两次，全过。
-4月1日，正式考试。10号线，完美通过；倒车入库（6号库），反手忘带90度，险险通过。
-哈哈，终于考完了科目二，今天约了科目三的练习时间，驾照指日可待！吼吼~
-最后一次更新时间：2015-04-02
-]]></content>
-      <categories>
-        <category>随笔</category>
-      </categories>
-      <tags>
-        <tag>随笔</tag>
-        <tag>笔记</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>怎样做出可口的食物？</title>
     <url>/essay-how-to-cook-good-food/</url>
     <content><![CDATA[前言记不得新冠疫情开始的具体时间，只知道今年的春节（2020年1月25日），没有出去拜年，春节期间也没有出去聚餐。然后，疫情日益严重，继湖北武汉之后，各市也开始封城。复工日期一推再推，2月15日经历了两次信息登记，三次体温检测，顺利返回北京。先去社区办理观察证，小区内隔离两周，拿到出入证，还要录入人脸识别，以便进出小区。3月9日年后第一次上班，需要查询近期行程，测量体温，才能进入达美中心。复工后三周休两周，直到最近，才每周上班。但是，仍然不敢在外面吃饭，因为多人用餐是最容易传播新冠的途径。
@@ -31599,6 +31967,9 @@ sudo nvram BootAudio=%01sudo nvram -d SystemAudioVolume
 解决办法：打开Finder，command＋逗号，出现Finder偏好设置，边栏，设备中勾选硬盘。然后在侧边栏中，就可以打开硬盘，看到所有文件了。
 当然， /etc 这种文件夹是看不到的。
 设置默认文件排序打开Finder，点击家目录，command＋J，选择排序方式（种类），用做默认。家目录下的所有目录，都会继承这种默认排序方式。
+禁止生成 .DS_Store.DS_Store(Desktop Services Store)文件目的在于存贮目录的自定义属性，例如显示方式为图标还是列表。
+禁止：defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool TRUE开启：defaults delete com.apple.desktopservices DSDontWriteNetworkStores
+注意：禁止生成 .DS_Store 后，已经存在的 .DS_Store 不受影响。
 打不开软件从网络下载的软件，安装时提示：打不开“xxx”，因为它来自身份不明的开发者。
 解决办法：系统偏好设置，安全性和隐私，点锁按钮以进行更改，任何来源，允许来自任何来源。
 安装字体1、从windows系统 C:\Windows\Fonts 目录中拷贝需要的字体。2、command+shift+G，输入 /Library/Fonts，前往。3、字体放入 Fonts 目录。
@@ -31947,59 +32318,6 @@ Reddit网站周一发表了一个帖子，让许多已婚男性描述他们是�
       </categories>
       <tags>
         <tag>读者</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>程序猿笑话，放松一下</title>
-    <url>/hobby-programmer-joke/</url>
-    <content><![CDATA[原文来自：http://www.itjhwd.com/cxyxiaohua-2/
-1、新春对联上联：为系统而生，为框架而死，为debug奋斗一辈子下联：吃符号的亏，上大小写的当，最后死在需求上！横批：杯具程序员。
-2、程序员其实可痛苦的了……需求一做一改，一个月就过去了；嚎~需求再一改一调，一季度就过去了；嚎~程序员最痛苦的事儿是啥，知道不？就是，程序没做完，需求又改了；程序员最最痛苦的事儿是啥，知道不？ 就是，系统好不容易做完了，方案全改了；程序员最最最痛苦的事儿是啥，知道不？ 就是，系统做完了，狗日的客户跑了；程序员最最最最最痛苦的事儿是啥，知道不？ 就是，狗日的客户又回来了,程序给删没了！
-
-3、男：我是程序猿。女：哦，程先生，你好。男：客气了，叫我序猿就好~
-4、我是你的什么，你是我的程序猿，啊？？原来我是猴子啊，酱紫我就可以让你耍coding啦！！！
-5、怎么使用面向对象的方式变得富有？继承。
-6、一男子在路边一根接着一根地抽烟。一个女士走过来对他说：“嘿，你不知道你是在慢性自杀吗？注意看看烟盒上的警告信息。”“没关系”，男子悠然自得地又吸了一口：“我是个程序猿。”“嗯？这和你是程序猿有什么关系？”“我们一点儿也不在乎警告（warning），我们只在乎错误（error）。”
-7、问：程序员最讨厌康熙的哪个儿子。答：胤禩。因为他是八阿哥（bug）。
-8、换一个电灯泡需要几个程序员？一个也不要，这是硬件问题
-9、危楼高百尺，手可写代码；举头望明月，低头写代码；王师北定中原日，家祭无忘写代码；
-10、孤帆远影碧空尽，唯见代码眼前流
-11、十个顶尖软件工程师参加培训管理人员的课程。老师提出了这样一个问题：“假如你供职的公司是为航空电子设备提供软件的。有一天你乘飞机出差，当你上了飞机后你发现一个牌子上写着这个飞机用的是你的团队开发的Beta版软件，你会下飞机吗？”九个软件工程师举了手。老师看着第十个问道：“你为什么愿意留在飞机上？”这人回答说：“如果是我的团队写的这个软件，飞机根本无法起飞，根本谈不上坠毁。”
-12、换一个电灯泡需要几个C++程序员？你还在用面向过程的思维考虑问题。一个设计良好的电灯泡类必然封装了换灯泡的方法，所以你要做的就是调用“换电灯泡”方法
-13、电脑是高速的笨蛋，程序员是低速的笨蛋。
-14、爱情观爱情就是死循环，一旦执行就陷进去了。爱上一个人，就是内存泄漏–你永远释放不了。真正爱上一个人的时候，那就是常量限定，永远不会改变。女朋友就是私有变量，只有我这个类才能调用。情人就是指针用的时候一定要注意，要不然就带来巨大的灾难。
-15、笑话二：女人篇有的女人就是Windows虽然很优秀，但是安全隐患太大。有的女人就是MFC她条件很好，然而不是谁都能玩的起。有的女人就是C#长的很漂亮，但是家务活不行。有的女人就是C++,她会默默的为你做很多的事情。有的女人就是汇编虽然很麻烦，但是有的时候还得求它。有的女人就是SQL，她会为你的发展带来莫大的帮助。
-17、世界上最遥远的距离不是生与死，而是你亲手制造的BUG就在你眼前，你却怎么都找不到她。。。
-18、杀一个程序员不需要用枪，改三次需求就可以了
-19、十行代码九个警告八个错误竟然敢说七日精通六天学会五湖四海也不见如此三心二意之项目经理简直一等下流。
-20、网络聊天的时候，想表达对方是猪，一般人会打“xxx你这个猪。”，程序员会打 xxx.isPig = TRUE。
-21、假如生活欺骗了你，找50个程序员问问为什么编程；假如生活让你想死，找50个程序员问问BUG改完了没有；假如你觉得生活拮据，找50个程序员问问工资涨了没有；假如你觉得活着无聊，找50个程序员问问他们一天都干了什么！
-22、c程序员看不起c++程序员，c++程序员看不起java程序员，java程序员看不起c#程序员，c#程序员看不起美工，周末了，美工带着妹子出去约会了…一群傻X程序员还在加班！
-23、一个合格的程序员是不会写出诸如“摧毁地球”这样的程序的，他们会写一个函数叫“摧毁行星”而把地球当一个参数传进去。
-24、Borland说我很有前途，Sun笑了；Sun说我很有钱，IBM笑了；IBM说我很专业，Sybase笑了；Sybase说我数据库很牛，Oracle笑了；Oracle说我是开放的，Linux笑了；Linux说我要打败Unix，微软笑了；微软说我的系统很稳定，我们都笑了。
-25、一程序员告老还乡，想安度晚年，于是决定在书法上有所造诣。省略数字……，准备好文房4宝，挥起毛笔在白纸上郑重的写下：Hello World
-26、真正的程序员喜欢兼卖爆米花，他们利用CPU散发出的热量做爆米花，可以根据米花爆裂的速度听出正在运行什么程序。
-27、【程序猿的三重境界】第一重：无尽bug常作客，困闷调试伴不眠。第二重：千行代码过，bug不沾身。第三重：编码间，bug灰飞烟灭。
-28、程序猿xx遭遇车祸成植物人，医生说她活下来的希望只有万分之一，唤醒更为渺茫。她的同事和亲人没放弃，并根据程xx对testing痴迷的作风，每天都在她身边念：“你测的模块上线后回滚了…”奇迹发生了，程xx醒来第一句话：确认那模块是我测的？
-29、学&lt;数据结构&gt;的童鞋注意了，告诉大家一个真相，中国实行计划生育最终目的是为了能够用二叉树进行统计管理，因为二叉树最多可以生两个孩子，多了就超生。
-30、程序员找不到对象，一般有三种情况：1、 C# JAVA都有对象，但是经常找不到对象。2、ASM C直接没有对象。3、javascript都是伪对象，最多算暧昧。但C++日子一直都好过，因为C++是多继承，富二代呀！！！
-31、一群男程序员酒后乱逛，正要集体侵犯一个女子。女子见势不妙，问：那你们说最好的编程语言是什么？程序员们就地讨论了三天三夜不欢而散，女子趁机顺利脱身。
-32、开着MyEclipse，独自彷徨在悠长、悠长又寂寥的雨巷，我希望逢着一个和我一样的调试代码的姑娘。她是有需求一样的凌乱，设计一样的荒唐，测试一样的忧愁，在代码里哀怨，哀怨又彷徨；她彷徨在这寂寥的雨巷。
-33、某小偷潜入某IT公司欲行窃，没想到始终有人，他只好等啊等啊等，结果始终有一大拨人在加班。过了一个月，小偷终于逮到机会溜出来，同伙问：去哪了？小偷：在IT公司呆了一个月。同伙：收获不错吧？小偷苦笑：别TM提了，三十个大夜下来，我现在已经学会写程序了。
-34、真的猛士，敢于直面混乱的程序，敢于正视变幻的需求。
-35、《未来的云计算服务》张总在办公室下载了苍井空，按下CTRL+X后就回家了。晚上躺在床上按下CTRL+V继续观看，旁边的小蜜惊呆了，张总淡淡的说：云剪贴。
-36、如果你的朋友最近没和你联系，要理解！只有三种可能：第一，他死了；第二，他改行当程序猿了；第三，需求又改了！
-37、某日和同学聊起对象问题，我答道：哥最不缺的就是对象了，要知道哥是程序员，每天不知道要new多少个对象出来，而且想要啥类型就有啥类型。如果你想要，哥给你来个for循环嵌套，new上她千个百个
-38、我是个程序员，一天我坐在路边一边喝水一边苦苦检查bug。 这时一个乞丐在我边上坐下了，开始要饭，我觉得可怜，就给了他1块钱。 然后接着调试程序。他可能生意不好，就无聊的看看我在干什么，然后过了一会，他缓缓地指着我的屏幕说，这里少了个分号…
-39、锄禾日当午，不如coding苦，对着C++，一调一下午；锄禾日当午，不如coding苦，调了一下午，BUG还得补； 锄禾日当午，不如coding苦，Bug刚补完，结构需重组；锄禾日当午，哪有coding苦，Bug改不完，无言见列祖。
-40、最后祝大家在以后的日子里：男生象Oracle般健壮，女生象win7般漂亮，桃花运象IE中毒般频繁，钱包如Gmail容量般壮大，升职速度赶上微软打补丁，追女朋友像木马一样猖獗，生活像重装电脑后一样幸福，写程序敲代码和聊天一样有激情。
-]]></content>
-      <categories>
-        <category>爱好</category>
-        <category>读书</category>
-      </categories>
-      <tags>
-        <tag>笑话</tag>
       </tags>
   </entry>
   <entry>
@@ -32408,6 +32726,53 @@ leetcodeleetcode，之前用java完成了几题，在此清零。在刷完《剑
       <tags>
         <tag>笔记</tag>
         <tag>读书</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>科目二</title>
+    <url>/essay-driving-license-subject-two/</url>
+    <content><![CDATA[前言同学们都说：“考过科目二，驾照就算到手了。”可见科目二的重要性以及难度。3月4日开始学科目二，近一周了，收获非常多，在此总结一下，方便自己和后来的小伙伴。本文会在学车的过程中不断更新，更新时间请看后记。
+吐槽学车有风险，笨蛋需谨慎。
+第一天（3月4日，周三），学了曲线行驶（也就是我们常说的S弯）和直角转弯。第一次，开进了草地，被骂的没有人样；第二次，又开进了草地，没有被骂，直接被踹了下去。咳咳，真的是被“踹”了下去。。。这一天，印象最深的一句话是：“你是我见过最笨的学员！”还有什么!@#$%^&amp;*另外两个学员安慰我：“别放在心上，他就随口一说，第一天我们都被骂哭了！”
+第二天（3月5日，周四），学了倒车入库（只学了右倒库。左倒库考前学，据说比较简单）。奇迹般的，我居然倒车倒得不错！啊勒，我都佩服我自己了！依然被骂，但比第一天好了太多太多！确实，表现的好坏，会影响教练对你的态度。和一个学员聊天，他向我倾诉：“唉，今天可惨了，教练说没见过我这么笨的学员！还有!@#$%^&amp;*”我紧紧地握住了他的手：“教练昨天也是和我这么说的！！！”从这一天开始，融入了同学们当中，开始和大家嘻嘻哈哈，互相帮助。
+
+第三天（3月7日，周六），学了侧方停车。表现依然不错！而且，我们教练有两辆车，今天他在另一辆车上教新学员。我们自由练习，无人看管，开森的不得了！和同学们吧啦吧啦吧啦。。。
+第四天（3月8日，周日），学了坡道定点。表现依旧惊艳！也开了几圈S弯，虽然不够完美，但是，不会开进草地了！进步是巨大的！自我感觉，学完倒车入库，其他几项都有进步！开始打卡了，4个小时。当然，和同学们在一起吐槽吹牛也是必须的。
+第五天（3月9日，周一），五项，练习。进步中，可以感觉到。今天我们聊得最多的是：甲：“诶？教练今天怎么没有骂我？”乙：“他昨天就没有骂我！”甲：“对对对，从昨天就不对劲了！”丙：“其实，从前天开始，教练心情就不错！”丁：“我也发现了！”戊：“还真有点不习惯！”。。。
+后视镜调整倒车入库右边：后门把手看到后端左边：后门把手看到后端
+侧方停车右边：前门把手中间偏左，后门把手看到前端左边：看到前门把手
+重点速度控制好速度，科目二你就学好了一半！最重要的在于踩离合：向下压减速，向上抬加速；左右打方向盘减速，回正方向盘加速。目标是：无论怎样打方向盘，我们通过压和抬方向盘，使速度始终保持（慢）匀速。
+方向盘打方向，值得花时间练习！为什么？打方向盘也可以很帅很拉风！不不，主要原因是，方向盘的控制，直接决定各个点是否打的好！
+倒车入库多练倒车入库！感觉用倒车入库来打基础非常好！练出手感，完虐其他四项！
+勤奋早上7点半到驾校，我觉得已经很早了。但是，那些勤奋的同学，每天早上6点半左右就到了！早去，没有人，就可以多学一小时甚至一个半小时。多学一小时有什么用？我能说的只是，一整天（上午8点到下午5点），你能练习的时间，满打满算一小时就不错了！
+五项要点Tips：以下要点，不是硬性规定。具体操作的时候，根据当时情况自己调整。
+曲线行驶口诀：提前转，先少转，追着弯道转；早点回，先少回，追着弯道回。
+详解：入弯时，靠右行驶；当右边线与车头相交，交点移动到车头左侧三分之一处时，方向盘向左打一圈，然后在左右90度之内调整方向盘，使左车头和右边线始终重合；当左车头快要碰到左边线时，回正方向盘；当左边线与车头相交，交点移动到车头右侧三分之一处时，方向盘向右打一圈，然后在左右90度之内调整方向盘，使右车头和左边线始终重合。
+直角转弯详解：入弯时，靠右行驶；当车头完全盖住前方边线（或水管）时，向左打死方向盘；当方向快要回正时，回正方向盘。
+倒车入库详解：正手入库时，当右后车门上的竖直杠和车库的右角重合时，向右打死方向盘；看右后视镜，当车身与白线的夹角大概到30度的时候，方向盘回一圈；当右后视镜盖过车身与白线的夹角时，向右打死方向盘；当右后视镜中车身与车库右边线马上就要平行时，回正方向盘；看左后视镜，找停车点，踩下刹车；
+反手出库时，方向盘向左打90度，前进，数2或3或6秒（视左边距离而定），回正方向盘；当车头盖住车库前方黄线时，向左打死方向盘；当车身与车库前方黄线呈45度角时，踩下刹车；
+反手入库时，看左后视镜或者右后视镜，当车身与车库左右边线将要平行时，回正方向盘，找停车点，踩下刹车；
+正手出库时，当车头盖过车库前方黄线时，向右打死方向盘；当车身与车库前方黄线平行时，回正方向盘。
+侧方停车详解：前进时，控制车头与车库左边线的交点在车头右侧三分之一处；看右后视镜，当右后视镜中可以看到车库前边线时，再前进两秒；
+入库时，看右后视镜，当右后视镜盖过车库前边线时，向右打死方向盘；看左后视镜，左车身后保险杠与车库左边线有一个交点，当这个交点移动到保险杠中点时，回正方向盘；继续看左后视镜，当左后车轮压到车库左边线时，向左打死方向盘；继续看左后视镜，当车身与车库左边线平行时，踩下刹车；
+出库时，当车头与道路左边线的交点位于车头中点时，向右打死方向盘；当车身与道路平行时，回正方向盘。
+坡道定点详解：上坡时，调整车头，使车头中点偏右处与内侧黄线相交；当车头右角小后视镜与桩杆快要平行时，踩下刹车；慢慢松开离合，当车身抖动时，松开刹车；当车子行驶过坡道最高点，开始下坡时，可以松开离合。
+考试科目二和科目三各有五次预约机会，每次预约间隔十天。每次预约考试，不过的话，当天可以补考一次。也就是说，科目二和科目三各有十次考试机会。
+科目二考试时，曲线行驶、直角转弯、侧方停车、坡道定点，这四项一起考，被称为电子路；倒车入库单独考，教练习惯说正反手。
+电子路和倒车入库，全部通过，则通过。有一个不通过，则需要补考电子路和倒车入库。
+等待时间学车，绝大部分情况下，都不只有你一个人，是大家一起学。这个时候，就要排队，每人开几次。那么，等待时间干啥呢？吹牛啊！哈哈，开个玩笑，聊天啊！可好玩了，特别有意思！大家一起吐槽教练，怎一个暗爽了得！还有，大家交流一下经验，讨论一下不明白的地方。牛逼的学员也会传授一些经验，不止是关于打方向的各个点，还有关于考试的注意事项、关于考场的选择（比如11号考场是死亡考场）、关于打卡、关于送礼、关于驾校的内幕。。。
+再不济，还可以玩手机啊。注意，要趁教练不在的时候看，否则，准备迎接教练的怒吼吧！如果带本托福雅思啥的，应该没事吧。。。
+后记3月31日，模拟考试。倒车入库三次（3号库），挂两次；电子路六条线（7号到12号），挂两条线；加模倒车入库两次，全过。
+4月1日，正式考试。10号线，完美通过；倒车入库（6号库），反手忘带90度，险险通过。
+哈哈，终于考完了科目二，今天约了科目三的练习时间，驾照指日可待！吼吼~
+最后一次更新时间：2015-04-02
+]]></content>
+      <categories>
+        <category>随笔</category>
+      </categories>
+      <tags>
+        <tag>随笔</tag>
+        <tag>笔记</tag>
       </tags>
   </entry>
   <entry>
@@ -33161,135 +33526,6 @@ d:\server\xampp\mysql\share\charsets\
         <tag>java</tag>
         <tag>eclipse</tag>
         <tag>jsp</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Jupyter notebook</title>
-    <url>/dev-jupyter-notebook/</url>
-    <content><![CDATA[前言本文转载自优达学城《机器学习工程师》
-Jupyter notebook 是 Web 文档，能让你将文本、图像和代码全部组合到一个文档中。它已经成为数据分析的标准环境。notebook 源自 2011 年的 IPython 项目，之后迅速流行起来。
-
-
-Jupyter notebook 是什么？欢迎学习本课，即如何使用 Jupyter notebook。notebook 是一种 Web 应用，能让用户将说明文本、数学方程、代码和可视化内容全部组合到一个易于共享的文档中。例如，不久前我共享了我最爱的 notebook 之一，它分析了 LIGO 实验探测到的两个碰撞的黑洞所发出的引力波。你可以下载数据，运行 notebook 中的代码，重复整个分析，实际上等于你自己探测引力波！
-Notebook 已迅速成为处理数据的必备工具。其已知用途包括数据清理和探索、可视化、机器学习和大数据分析。我为我的个人博客创建了一个 notebook 示例，它展示了 notebook 的许多特点。这项工作通常在终端中完成，也即使用普通的 Python shell 或 IPython 完成。可视化在单独的窗口中进行，而文字资料以及各种函数和类脚本包含在独立的文档中。但是，notebook 能将这一切集中到一处，让用户一目了然。
-GitHub 上面也会自动提供 notebook。借助此出色的功能，你可以轻松共享工作。http://nbviewer.jupyter.org/ 也会提供 GitHub 代码库中的 notebook 或存储在其他地方的 notebook。
-文学化编程notebook 是 Donald Knuth 在 1984 年提出的文学化编程的一种形式。在文学化编程中，直接在代码旁写出叙述性文档，而不是另外编写单独的文档。用 Donald Knuth 的话来说：
-
-让我们集中精力向人们解释我们希望计算机做什么，而不是设想我们的主要任务是指示计算机做什么。
-
-归根到底，代码是写给人而不是计算机看的。notebook 恰恰提供了这种能力。你能够直接在代码旁写出叙述性文档。这不仅对阅读 notebook 的人很有用，而且对你将来回头分析代码也很有用。
-说点题外话：最近，文学化编程这个概念已经发展成为一门完整的编程语言，即 Eve。
-notebook 如何工作Jupyter notebook 源自 Fernando Perez 发起的 IPython 项目。IPython 是一种交互式 shell，与普通的 Python shell 相似，但具有一些很好的功能（例如语法高亮显示和代码补全）。最初，notebook 的工作方式是，将来自 Web 应用（你在浏览器中看到的 notebook）的消息发送给 IPython 内核（在后台运行的 IPython 应用程序）。内核执行代码，然后将代码发送回 notebook。当前架构与之相似，具体见下图（摘自Jupyter文档）。中心点是 notebook 服务器。你通过浏览器连接到该服务器，而 notebook 呈现为 Web 应用。你在 Web 应用中编写的代码通过该服务器发送给内核。内核运行代码并将代码发送回该服务器，之后，任何输出都会返回到浏览器中。保存 notebook 时，它作为 JSON 文件（文件扩展名为 .ipynb）写入到该服务器中。
-此架构的一个优点是，内核无需运行 Python。由于 notebook 和内核分开，因此可以在两者之间发送任何语言的代码。例如，早期的两个非 Python 内核分别用于 R 语言和 Julia 语言。使用 R 内核时，用 R 编写的代码将发送给执行该代码的 R 内核，这与在 Python 内核上运行 Python 代码完全一样。IPython notebook 已被改名，因为 notebook 变得与编程语言无关。新的名称 Jupyter 由 Julia、Python 和 R 组合而成。如果有兴趣，不妨看看可用内核的列表。
-另一个优点是，可以在任何地方运行服务器，并且可通过互联网访问服务器。通常，你会在存储所有数据和 notebook 文件的自有计算机上运行服务器。但是，你也可以在远程计算机或云实例（如 Amazon 的 EC2）上设置服务器。之后，可以在全球任何地方通过浏览器访问 notebook。
-安装 Jupyter notebook到目前为止，安装 Jupyter 的最简单方法是使用 Anaconda。该发行版自动附带了 Jupyter notebook。你能够在默认环境下使用 notebook。
-要在 conda 环境中安装 Jupyter notebook，请使用 conda install jupyter notebook。
-也可以通过 pip 使用 pip install jupyter notebook 来获得 Jupyter notebook。
-安装多版本内核1、查看已安装内核jupyter kernelspec list
-2、安装内核假设默认环境是python2.7，那么切换到python3.6环境下，然后安装内核
-activate py3conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/conda config --set show_channel_urls yesconda install ipykernel
-
-3、把内核添加到jupyter
-activate py3python -m ipykernel install
-
-可以添加命令 --name kernelname 为kernel指定名字。
-4、删除内核jupyter kernelspec remove kernelname
-启动 notebook 服务器要启动 notebook 服务器，请在终端或控制台中输入 jupyter notebook。服务器会在你运行此命令的目录中启动。这意味着任何 notebook 文件都会保存在该目录中。你通常希望在 notebook 所在的目录中启动服务器。不过，你可以在文件系统中导航到 notebook 所在的位置。
-运行此命令时（请自己试一下！），服务器主页会在浏览器中打开。默认情况下，notebook 服务器的运行地址是 http://localhost:8888。如果你不熟悉该地址，其含义是：localhost 表示你的计算机，而 8888 是服务器的通信端口。只要服务器仍在运行，你随时都能通过在浏览器中输入 http://localhost:8888 返回到服务器。
-如果启动其他服务器，新服务器会尝试使用端口 8888，但由于此端口已被占用，因此新服务器会在端口 8889 上运行。之后，可以通过 http://localhost:8889 连接到新服务器。每台额外的 notebook 服务器都会像这样增大端口号。
-如果你尝试启动自己的服务器，它应类似以下所示：
-你可能会看到上面列表中的一些文件和文件夹，具体取决于你在哪里启动服务器。
-在右侧，你可以点击“New”（新建），创建新的 notebook、文本文件、文件夹或终端。“Notebooks”下的列表显示了你已安装的内核。由于我在 Python 3 环境中运行服务器，因此列出了 Python 3 内核。你在这里看到的可能是 Python 2。我还安装了用于 Scala 2.10 和 2.11 的内核，因此它们出现在列表中。
-如果在 conda 环境中运行 Jupyter notebook 服务器，则你还能选择任何其他环境中的内核（见下图）。要创建新的 notebook，请点击你要使用的内核。
-顶部的选项卡是 Files（文件）、Running（运行）和 Cluster（聚类）。Files（文件）显示当前目录中的所有文件和文件夹。点击 Running（运行）选项卡会列出所有正在运行的 notebook。可以在该选项卡中管理这些 notebook。
-过去，在 Clusters（聚类）中创建多个用于并行计算的内核。现在，这项工作已经由 ipyparallel 接管，因此该选项卡如今用处不多。
-如果在 conda 环境中运行 notebook 服务器，则你还能访问以下所示的“Conda”选项卡。可以通过该选项卡管理 Jupyter 中的环境。你可以执行多种操作，例如创建新的环境、安装包、更新包、导出环境。
-快速启动 notebook启动jupyter notebook时，每次都要切换文件路径，需要输入相关的命令，相对来说比较麻烦，有一个可以快速启动的小技巧。
-在想要打开的目录下，创建一个 ipy.bat 文件，用记事本打开这个文件，输入如下内容并保存。
-jupyter notebookpause
-双击这个 ipy.bat 文件，就可以快速启动jupyter notebook，把这个 ipy.bat文件以快捷方式发送到桌面，启动很方便。
-关闭 Jupyter通过在服务器主页上选中 notebook 旁边的复选框，然后点击“Shutdown”（关闭），你可以关闭各个 notebook。但是，在这样做之前，请确保你保存了工作！否则，在你上次保存后所做的任何更改都会丢失。下次运行 notebook 时，你还需要重新运行代码。通过在终端中按两次 Ctrl + C，可以关闭整个服务器。再次提醒，这会立即关闭所有运行中的 notebook，因此，请确保你保存了工作！
-notebook 界面创建新的 notebook 时，你会看到如下所示的界面：请随意尝试和四处浏览一下。
-你会看到外框为绿色的一个小方框。它称为单元格。单元格是你编写和运行代码的地方。你也可以更改其类型，以呈现 Markdown（一种常用于编写 Web 内容的格式化语法）。我会在后面更详细地介绍 Markdown。在工具栏中点击“Code”，将其改为 Markdown，然后改回来。小型的播放按钮用于运行单元格，而向上和向下的箭头用于上下移动单元格。运行代码单元格时，单元格下方会显示输出。单元格还会被编号（左侧会显示 In [1]:）。这能让你知道运行的代码和运行顺序（如果运行了多个单元格的话）。在 Markdown 模式下运行单元格会将 Markdown 呈现为文本。
-工具栏从左侧开始，工具栏上的其他控件是：
-
-落伍的软盘符号，表示“保存”。请记得保存 notebook！
-
-按钮用于创建新的单元格
-
-
-然后是用于剪切、复制和粘贴单元格的按钮。
-运行、停止、重新启动内核
-单元格类型：代码、Markdown、原始文本和标题
-命令面板（见下文）
-单元格工具栏，提供不同的单元格选项（例如将单元格用作幻灯片）
-
-命令面板小键盘符号代表命令面板。点击它会弹出一个带有搜索栏的面板，供你搜索不同的命令。这能切实帮助你加快工作速度，因为你无需使用鼠标翻查各个菜单。你只需打开命令面板，然后键入要执行的操作。例如，如果要合并两个单元格：
-更多事项顶部显示了标题。点击它可以将 notebook 重命名。
-右侧是内核类型（在我的例子中是 Python 3），旁边是一个小圆形。在内核运行单元格时，会填充这个小圆形。对于大多数快速运行的操作，并不会填充它。它是一个小型指示器，让你知道实际运行的代码会运行较长时间。
-工具栏包含了保存按钮，此外，notebook 也会定期自动保存。标题右侧会注明最近一次的保存。可以使用保存按钮手动进行保存，也可以按键盘上的 Esc，然后按 s。按 Esc 键会变为命令模式，而 s 是“保存”的快捷键。我会在后面介绍命令模式和快捷键。
-在“File”（文件）菜单中，可以下载多种格式的 notebook。通常，你会希望将它作为 HTML 文件下载，以便与不使用 Jupyter 的其他人共享。也可以将 notebook 作为普通的 Python 文件下载，此时所有代码都会像平常一样运行。要在博客或文档中使用 notebook，Markdown 和 reST 格式很合适。
-代码单元格notebook 中的大部分工作均在代码单元格中完成。这是编写和执行代码的地方。在代码单元格中可以执行多种操作，例如编写任何代码、给变量赋值、定义函数和类、导入包。在一个单元格中执行的任何代码在所有其他单元格中均可用。
-我创建了一个 notebook，你可以将它当作练习来完成。请在下面下载此 notebook (Working With Code Cells)，然后从你自己的 notebook 服务器运行它。（在你的终端中，转到包含此 notebook 文件的目录，然后输入 jupyter notebook）浏览器可能会尝试不下载就打开此 notebook 文件。如果是这样，请右击链接并选择“链接另存为…”。
-辅助材料：Working With Code Cells
-Markdown 单元格如前所述，单元格也可用于以 Markdown 编写的文本。Markdown 是格式化语法，可让你加入链接、将文本样式设为粗体或斜体和设置代码格式。像代码单元格一样，按 Shift + Enter 或 Ctrl + Enter 可运行 Markdown 单元格，这会将 Markdown 呈现为格式化文本。加入文本可让你直接在代码旁写出叙述性文档，以及为代码和代码中的思路编写文档。
-你可以在此处查找文档，但我会提供简短的入门文档。
-标题要编写标题，可在文本前放置井号，即 #（英文读作 pound、hash 或 octothorpe）。一个 # 呈现为 h1 标题，两个 # 是 h2 标题，依此类推。类似以下所示：
-# Header 1## Header 2### Header 3
-
-链接要在 Markdown 中添加链接，请在文本两侧加上方括号，并在 URL 两侧加上圆括号，例如：[Udacity&#39;s home page](https://www.udacity.com) 表示指向 Udacity’s home page的链接。
-强调效果可以使用星号或下划线（* 或 _）来表示粗体或斜体，从而添加强调效果。对于斜体，在文本两侧加上一个星号或下划线，例如 _gelato_ 或 *gelato* 会呈现为 gelato。
-粗体文本使用两个符号，例如 **aardvark** 或 __aardvark__ 会呈现为 aardvark。
-只要在文本两侧使用相同的符号，星号和下划线的作用都一样。
-代码可以通过两种不同的方式显示代码，一种是与文本内联，另一种是将代码块与文本分离。要将代码变为内联格式，请在文本两侧加上反撇号。例如，`string.punctuation` 会呈现为 string.punctuation。
-要创建代码块，请另起一行并用三个反撇号将文本包起来：或者将代码块的每一行都缩进四个空格。
-数学表达式在 Markdown 单元格中，可以使用 LaTeX 符号创建数学表达式。notebook 使用 MathJax 将 LaTeX 符号呈现为数学符号。要启动数学模式，请在 LaTeX 符号两侧加上美元符号（例如 $y = mx + b$），以创建内联的数学表达式。对于数学符号块，请使用两个美元符号：
-$$y = \frac&#123;a&#125;&#123;b+c&#125;$$
-
-此功能的确很有用，因此，如果你没有用过 LaTeX，请阅读这篇入门文档，它介绍了如何使用 LaTeX 来创建数学表达式。
-小结在编写 Markdown 时，可以参考这个速查指南。我建议使用 Markdown 单元格，与使用一堆代码块相比，这使 notebook 变得更易于阅读。
-快捷键notebook 自带一组快捷键，能让你使用键盘与单元格交互，而无需使用鼠标和工具栏。熟悉这些快捷键需要花费一点时间，但如果能熟练掌握，将大大加快你在 notebook 中的工作速度。要详细了解这些快捷键和练习它们的用法，请在下面下载 notebook Keyboard Shortcuts。再次提醒，浏览器可能会尝试打开它，但请将它保存到计算机中。请右击链接并选择“链接另存为…”。辅助材料：Keyboard Shortcuts
-Magic 关键字Magic 关键字是可以在单元格中运行的特殊命令，能让你控制 notebook 本身或执行系统调用（例如更改目录）。例如，可以使用 %matplotlib 将 matplotlib 设置为以交互方式在 notebook 中工作。
-Magic 命令的前面带有一个或两个百分号（% 或 %%），分别对应行 Magic 命令和单元格 Magic 命令。行 Magic 命令仅应用于编写 Magic 命令时所在的行，而单元格 Magic 命令应用于整个单元格。
-注意：这些 Magic 关键字是特定于普通 Python 内核的关键字。如果使用其他内核，这些关键字很有可能无效。
-代码计时有时候，你可能要花些精力优化代码，让代码运行得更快。在此优化过程中，必须对代码的运行速度进行计时。可以使用 Magic 命令 timeit 测算函数的运行时间，如下所示：
-如果要测算整个单元格的运行时间，请使用 %%timeit，如下所示：
-
-在 notebook 中嵌入可视化内容如前所述，notebook 允许你将图像与文本和代码一起嵌入。这在你使用 matplotlib 或其他绘图包创建可视化内容时最为有用。可以使用 %matplotlib 将 matplotlib 设置为以交互方式在 notebook 中工作。默认情况下，图形呈现在各自的窗口中。但是，可以向命令传递参数，以选择特定的“后端”（呈现图像的软件）。要直接在 notebook 中呈现图形，应将内联后端与命令 %matplotlib inline 一起使用。
-
-提示：在分辨率较高的屏幕（例如 Retina 显示屏）上，notebook 中的默认图像可能会显得模糊。可以在 %matplotlib inline 之后使用 %config InlineBackend.figure_format = &#39;retina&#39; 来呈现分辨率较高的图像。
-
-
-在 notebook 中进行调试对于 Python 内核，可以使用 Magic 命令 %pdb开启交互式调试器。出错时，你能检查当前命名空间中的变量。
-在上图中，可以看到我尝试对字符串求和，这造成了错误。调试器指出了该错误，并提示你检查代码。
-要详细了解 pdb，请阅读此文档。要退出调试器，在提示符中输入 q 即可。
-补充读物Magic 命令还有很多，我只是介绍了你将会用得最多的一些命令。要了解更多信息，请查看此列表，它列出了所有可用的 Magic 命令。
-转换 notebookNotebook 只是扩展名为 .ipynb 的大型 JSON 文件。
-由于 notebook 是 JSON 文件，因此，可以轻松将其转换为其他格式。Jupyter 附带了一个名为 nbconvert 的实用程序，可将 notebook 转换为 HTML、Markdown、幻灯片等格式。
-例如，要将 notebook 转换为 HTML 文件，请在终端中使用jupyter nbconvert --to html notebook.ipynb
-要将 notebook 与不使用 notebook 的其他人共享，转换为 HTML 很有用。而要在博客和其他接受 Markdown 格式化的文本编辑器中加入 notebook，Markdown 很合适。
-像平常一样，要详细了解 nbconvert，请阅读相关文档。
-创建幻灯片通过 notebook 创建幻灯片是我最爱的功能之一。此处有一个幻灯片示例，它介绍了用于处理数据的 Pandas。
-在 notebook 中创建幻灯片的过程像平常一样，但需要指定作为幻灯片的单元格和单元格的幻灯片类型。在菜单栏中，点击“View”（视图）&gt;“Cell Toolbar”（单元格工具栏）&gt;“Slideshow”（幻灯片），以便在每个单元格上弹出幻灯片单元格菜单。
-这会在每个单元格上显示一个下拉菜单，让你选择单元格在幻灯片中的显示方式。
-
-Slides（幻灯片）是你从左向右移动的完整幻灯片。按向上或向下的箭头时，Sub-slides（子幻灯片）会出现在幻灯片中。Fragments（片段）最初是隐藏的，在你按下按钮时会出现。选择 Skip（忽略）会忽略幻灯片中的单元格，而选择 Notes（备注）会将单元格保留为演讲者备注。
-运行幻灯片要通过 notebook 文件创建幻灯片，需要使用 nbconvert：jupyter nbconvert notebook.ipynb --to slides
-这只是将 notebook 转换为幻灯片必需的文件，你需要向其提供 HTTP 服务器才能真正看到演示文稿。
-要转换它并立即看到它，请使用jupyter nbconvert notebook.ipynb --to slides --post serve这会在浏览器中打开幻灯片，让你可以演示它。
-恭喜你！这个简短的课程到此结束，它主要介绍了 Python 数据科学工作流程中的工具。充分利用 Anaconda 和 Jupyter notebook 不仅能提升你的工作效率，还会让你心情更愉快。要想充分发挥它们的作用，你还要学习很多东西（例如 Markdown 和 LaTeX），但很快你就会想知道为何要以其他方式进行数据分析。
-再次恭喜你！祝你好运！
-书签Jupyter Notebook的27个秘诀，技巧和快捷键
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>机器学习</category>
-        <category>udacity</category>
-      </categories>
-      <tags>
-        <tag>转载</tag>
-        <tag>jupyter</tag>
-        <tag>anaconda</tag>
       </tags>
   </entry>
   <entry>
@@ -34533,6 +34769,135 @@ Nginx作为负载均衡服务器：Nginx 既可以在内部直接支持 Rails �
       </tags>
   </entry>
   <entry>
+    <title>Jupyter notebook</title>
+    <url>/dev-jupyter-notebook/</url>
+    <content><![CDATA[前言本文转载自优达学城《机器学习工程师》
+Jupyter notebook 是 Web 文档，能让你将文本、图像和代码全部组合到一个文档中。它已经成为数据分析的标准环境。notebook 源自 2011 年的 IPython 项目，之后迅速流行起来。
+
+
+Jupyter notebook 是什么？欢迎学习本课，即如何使用 Jupyter notebook。notebook 是一种 Web 应用，能让用户将说明文本、数学方程、代码和可视化内容全部组合到一个易于共享的文档中。例如，不久前我共享了我最爱的 notebook 之一，它分析了 LIGO 实验探测到的两个碰撞的黑洞所发出的引力波。你可以下载数据，运行 notebook 中的代码，重复整个分析，实际上等于你自己探测引力波！
+Notebook 已迅速成为处理数据的必备工具。其已知用途包括数据清理和探索、可视化、机器学习和大数据分析。我为我的个人博客创建了一个 notebook 示例，它展示了 notebook 的许多特点。这项工作通常在终端中完成，也即使用普通的 Python shell 或 IPython 完成。可视化在单独的窗口中进行，而文字资料以及各种函数和类脚本包含在独立的文档中。但是，notebook 能将这一切集中到一处，让用户一目了然。
+GitHub 上面也会自动提供 notebook。借助此出色的功能，你可以轻松共享工作。http://nbviewer.jupyter.org/ 也会提供 GitHub 代码库中的 notebook 或存储在其他地方的 notebook。
+文学化编程notebook 是 Donald Knuth 在 1984 年提出的文学化编程的一种形式。在文学化编程中，直接在代码旁写出叙述性文档，而不是另外编写单独的文档。用 Donald Knuth 的话来说：
+
+让我们集中精力向人们解释我们希望计算机做什么，而不是设想我们的主要任务是指示计算机做什么。
+
+归根到底，代码是写给人而不是计算机看的。notebook 恰恰提供了这种能力。你能够直接在代码旁写出叙述性文档。这不仅对阅读 notebook 的人很有用，而且对你将来回头分析代码也很有用。
+说点题外话：最近，文学化编程这个概念已经发展成为一门完整的编程语言，即 Eve。
+notebook 如何工作Jupyter notebook 源自 Fernando Perez 发起的 IPython 项目。IPython 是一种交互式 shell，与普通的 Python shell 相似，但具有一些很好的功能（例如语法高亮显示和代码补全）。最初，notebook 的工作方式是，将来自 Web 应用（你在浏览器中看到的 notebook）的消息发送给 IPython 内核（在后台运行的 IPython 应用程序）。内核执行代码，然后将代码发送回 notebook。当前架构与之相似，具体见下图（摘自Jupyter文档）。中心点是 notebook 服务器。你通过浏览器连接到该服务器，而 notebook 呈现为 Web 应用。你在 Web 应用中编写的代码通过该服务器发送给内核。内核运行代码并将代码发送回该服务器，之后，任何输出都会返回到浏览器中。保存 notebook 时，它作为 JSON 文件（文件扩展名为 .ipynb）写入到该服务器中。
+此架构的一个优点是，内核无需运行 Python。由于 notebook 和内核分开，因此可以在两者之间发送任何语言的代码。例如，早期的两个非 Python 内核分别用于 R 语言和 Julia 语言。使用 R 内核时，用 R 编写的代码将发送给执行该代码的 R 内核，这与在 Python 内核上运行 Python 代码完全一样。IPython notebook 已被改名，因为 notebook 变得与编程语言无关。新的名称 Jupyter 由 Julia、Python 和 R 组合而成。如果有兴趣，不妨看看可用内核的列表。
+另一个优点是，可以在任何地方运行服务器，并且可通过互联网访问服务器。通常，你会在存储所有数据和 notebook 文件的自有计算机上运行服务器。但是，你也可以在远程计算机或云实例（如 Amazon 的 EC2）上设置服务器。之后，可以在全球任何地方通过浏览器访问 notebook。
+安装 Jupyter notebook到目前为止，安装 Jupyter 的最简单方法是使用 Anaconda。该发行版自动附带了 Jupyter notebook。你能够在默认环境下使用 notebook。
+要在 conda 环境中安装 Jupyter notebook，请使用 conda install jupyter notebook。
+也可以通过 pip 使用 pip install jupyter notebook 来获得 Jupyter notebook。
+安装多版本内核1、查看已安装内核jupyter kernelspec list
+2、安装内核假设默认环境是python2.7，那么切换到python3.6环境下，然后安装内核
+activate py3conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/conda config --set show_channel_urls yesconda install ipykernel
+
+3、把内核添加到jupyter
+activate py3python -m ipykernel install
+
+可以添加命令 --name kernelname 为kernel指定名字。
+4、删除内核jupyter kernelspec remove kernelname
+启动 notebook 服务器要启动 notebook 服务器，请在终端或控制台中输入 jupyter notebook。服务器会在你运行此命令的目录中启动。这意味着任何 notebook 文件都会保存在该目录中。你通常希望在 notebook 所在的目录中启动服务器。不过，你可以在文件系统中导航到 notebook 所在的位置。
+运行此命令时（请自己试一下！），服务器主页会在浏览器中打开。默认情况下，notebook 服务器的运行地址是 http://localhost:8888。如果你不熟悉该地址，其含义是：localhost 表示你的计算机，而 8888 是服务器的通信端口。只要服务器仍在运行，你随时都能通过在浏览器中输入 http://localhost:8888 返回到服务器。
+如果启动其他服务器，新服务器会尝试使用端口 8888，但由于此端口已被占用，因此新服务器会在端口 8889 上运行。之后，可以通过 http://localhost:8889 连接到新服务器。每台额外的 notebook 服务器都会像这样增大端口号。
+如果你尝试启动自己的服务器，它应类似以下所示：
+你可能会看到上面列表中的一些文件和文件夹，具体取决于你在哪里启动服务器。
+在右侧，你可以点击“New”（新建），创建新的 notebook、文本文件、文件夹或终端。“Notebooks”下的列表显示了你已安装的内核。由于我在 Python 3 环境中运行服务器，因此列出了 Python 3 内核。你在这里看到的可能是 Python 2。我还安装了用于 Scala 2.10 和 2.11 的内核，因此它们出现在列表中。
+如果在 conda 环境中运行 Jupyter notebook 服务器，则你还能选择任何其他环境中的内核（见下图）。要创建新的 notebook，请点击你要使用的内核。
+顶部的选项卡是 Files（文件）、Running（运行）和 Cluster（聚类）。Files（文件）显示当前目录中的所有文件和文件夹。点击 Running（运行）选项卡会列出所有正在运行的 notebook。可以在该选项卡中管理这些 notebook。
+过去，在 Clusters（聚类）中创建多个用于并行计算的内核。现在，这项工作已经由 ipyparallel 接管，因此该选项卡如今用处不多。
+如果在 conda 环境中运行 notebook 服务器，则你还能访问以下所示的“Conda”选项卡。可以通过该选项卡管理 Jupyter 中的环境。你可以执行多种操作，例如创建新的环境、安装包、更新包、导出环境。
+快速启动 notebook启动jupyter notebook时，每次都要切换文件路径，需要输入相关的命令，相对来说比较麻烦，有一个可以快速启动的小技巧。
+在想要打开的目录下，创建一个 ipy.bat 文件，用记事本打开这个文件，输入如下内容并保存。
+jupyter notebookpause
+双击这个 ipy.bat 文件，就可以快速启动jupyter notebook，把这个 ipy.bat文件以快捷方式发送到桌面，启动很方便。
+关闭 Jupyter通过在服务器主页上选中 notebook 旁边的复选框，然后点击“Shutdown”（关闭），你可以关闭各个 notebook。但是，在这样做之前，请确保你保存了工作！否则，在你上次保存后所做的任何更改都会丢失。下次运行 notebook 时，你还需要重新运行代码。通过在终端中按两次 Ctrl + C，可以关闭整个服务器。再次提醒，这会立即关闭所有运行中的 notebook，因此，请确保你保存了工作！
+notebook 界面创建新的 notebook 时，你会看到如下所示的界面：请随意尝试和四处浏览一下。
+你会看到外框为绿色的一个小方框。它称为单元格。单元格是你编写和运行代码的地方。你也可以更改其类型，以呈现 Markdown（一种常用于编写 Web 内容的格式化语法）。我会在后面更详细地介绍 Markdown。在工具栏中点击“Code”，将其改为 Markdown，然后改回来。小型的播放按钮用于运行单元格，而向上和向下的箭头用于上下移动单元格。运行代码单元格时，单元格下方会显示输出。单元格还会被编号（左侧会显示 In [1]:）。这能让你知道运行的代码和运行顺序（如果运行了多个单元格的话）。在 Markdown 模式下运行单元格会将 Markdown 呈现为文本。
+工具栏从左侧开始，工具栏上的其他控件是：
+
+落伍的软盘符号，表示“保存”。请记得保存 notebook！
+
+按钮用于创建新的单元格
+
+
+然后是用于剪切、复制和粘贴单元格的按钮。
+运行、停止、重新启动内核
+单元格类型：代码、Markdown、原始文本和标题
+命令面板（见下文）
+单元格工具栏，提供不同的单元格选项（例如将单元格用作幻灯片）
+
+命令面板小键盘符号代表命令面板。点击它会弹出一个带有搜索栏的面板，供你搜索不同的命令。这能切实帮助你加快工作速度，因为你无需使用鼠标翻查各个菜单。你只需打开命令面板，然后键入要执行的操作。例如，如果要合并两个单元格：
+更多事项顶部显示了标题。点击它可以将 notebook 重命名。
+右侧是内核类型（在我的例子中是 Python 3），旁边是一个小圆形。在内核运行单元格时，会填充这个小圆形。对于大多数快速运行的操作，并不会填充它。它是一个小型指示器，让你知道实际运行的代码会运行较长时间。
+工具栏包含了保存按钮，此外，notebook 也会定期自动保存。标题右侧会注明最近一次的保存。可以使用保存按钮手动进行保存，也可以按键盘上的 Esc，然后按 s。按 Esc 键会变为命令模式，而 s 是“保存”的快捷键。我会在后面介绍命令模式和快捷键。
+在“File”（文件）菜单中，可以下载多种格式的 notebook。通常，你会希望将它作为 HTML 文件下载，以便与不使用 Jupyter 的其他人共享。也可以将 notebook 作为普通的 Python 文件下载，此时所有代码都会像平常一样运行。要在博客或文档中使用 notebook，Markdown 和 reST 格式很合适。
+代码单元格notebook 中的大部分工作均在代码单元格中完成。这是编写和执行代码的地方。在代码单元格中可以执行多种操作，例如编写任何代码、给变量赋值、定义函数和类、导入包。在一个单元格中执行的任何代码在所有其他单元格中均可用。
+我创建了一个 notebook，你可以将它当作练习来完成。请在下面下载此 notebook (Working With Code Cells)，然后从你自己的 notebook 服务器运行它。（在你的终端中，转到包含此 notebook 文件的目录，然后输入 jupyter notebook）浏览器可能会尝试不下载就打开此 notebook 文件。如果是这样，请右击链接并选择“链接另存为…”。
+辅助材料：Working With Code Cells
+Markdown 单元格如前所述，单元格也可用于以 Markdown 编写的文本。Markdown 是格式化语法，可让你加入链接、将文本样式设为粗体或斜体和设置代码格式。像代码单元格一样，按 Shift + Enter 或 Ctrl + Enter 可运行 Markdown 单元格，这会将 Markdown 呈现为格式化文本。加入文本可让你直接在代码旁写出叙述性文档，以及为代码和代码中的思路编写文档。
+你可以在此处查找文档，但我会提供简短的入门文档。
+标题要编写标题，可在文本前放置井号，即 #（英文读作 pound、hash 或 octothorpe）。一个 # 呈现为 h1 标题，两个 # 是 h2 标题，依此类推。类似以下所示：
+# Header 1## Header 2### Header 3
+
+链接要在 Markdown 中添加链接，请在文本两侧加上方括号，并在 URL 两侧加上圆括号，例如：[Udacity&#39;s home page](https://www.udacity.com) 表示指向 Udacity’s home page的链接。
+强调效果可以使用星号或下划线（* 或 _）来表示粗体或斜体，从而添加强调效果。对于斜体，在文本两侧加上一个星号或下划线，例如 _gelato_ 或 *gelato* 会呈现为 gelato。
+粗体文本使用两个符号，例如 **aardvark** 或 __aardvark__ 会呈现为 aardvark。
+只要在文本两侧使用相同的符号，星号和下划线的作用都一样。
+代码可以通过两种不同的方式显示代码，一种是与文本内联，另一种是将代码块与文本分离。要将代码变为内联格式，请在文本两侧加上反撇号。例如，`string.punctuation` 会呈现为 string.punctuation。
+要创建代码块，请另起一行并用三个反撇号将文本包起来：或者将代码块的每一行都缩进四个空格。
+数学表达式在 Markdown 单元格中，可以使用 LaTeX 符号创建数学表达式。notebook 使用 MathJax 将 LaTeX 符号呈现为数学符号。要启动数学模式，请在 LaTeX 符号两侧加上美元符号（例如 $y = mx + b$），以创建内联的数学表达式。对于数学符号块，请使用两个美元符号：
+$$y = \frac&#123;a&#125;&#123;b+c&#125;$$
+
+此功能的确很有用，因此，如果你没有用过 LaTeX，请阅读这篇入门文档，它介绍了如何使用 LaTeX 来创建数学表达式。
+小结在编写 Markdown 时，可以参考这个速查指南。我建议使用 Markdown 单元格，与使用一堆代码块相比，这使 notebook 变得更易于阅读。
+快捷键notebook 自带一组快捷键，能让你使用键盘与单元格交互，而无需使用鼠标和工具栏。熟悉这些快捷键需要花费一点时间，但如果能熟练掌握，将大大加快你在 notebook 中的工作速度。要详细了解这些快捷键和练习它们的用法，请在下面下载 notebook Keyboard Shortcuts。再次提醒，浏览器可能会尝试打开它，但请将它保存到计算机中。请右击链接并选择“链接另存为…”。辅助材料：Keyboard Shortcuts
+Magic 关键字Magic 关键字是可以在单元格中运行的特殊命令，能让你控制 notebook 本身或执行系统调用（例如更改目录）。例如，可以使用 %matplotlib 将 matplotlib 设置为以交互方式在 notebook 中工作。
+Magic 命令的前面带有一个或两个百分号（% 或 %%），分别对应行 Magic 命令和单元格 Magic 命令。行 Magic 命令仅应用于编写 Magic 命令时所在的行，而单元格 Magic 命令应用于整个单元格。
+注意：这些 Magic 关键字是特定于普通 Python 内核的关键字。如果使用其他内核，这些关键字很有可能无效。
+代码计时有时候，你可能要花些精力优化代码，让代码运行得更快。在此优化过程中，必须对代码的运行速度进行计时。可以使用 Magic 命令 timeit 测算函数的运行时间，如下所示：
+如果要测算整个单元格的运行时间，请使用 %%timeit，如下所示：
+
+在 notebook 中嵌入可视化内容如前所述，notebook 允许你将图像与文本和代码一起嵌入。这在你使用 matplotlib 或其他绘图包创建可视化内容时最为有用。可以使用 %matplotlib 将 matplotlib 设置为以交互方式在 notebook 中工作。默认情况下，图形呈现在各自的窗口中。但是，可以向命令传递参数，以选择特定的“后端”（呈现图像的软件）。要直接在 notebook 中呈现图形，应将内联后端与命令 %matplotlib inline 一起使用。
+
+提示：在分辨率较高的屏幕（例如 Retina 显示屏）上，notebook 中的默认图像可能会显得模糊。可以在 %matplotlib inline 之后使用 %config InlineBackend.figure_format = &#39;retina&#39; 来呈现分辨率较高的图像。
+
+
+在 notebook 中进行调试对于 Python 内核，可以使用 Magic 命令 %pdb开启交互式调试器。出错时，你能检查当前命名空间中的变量。
+在上图中，可以看到我尝试对字符串求和，这造成了错误。调试器指出了该错误，并提示你检查代码。
+要详细了解 pdb，请阅读此文档。要退出调试器，在提示符中输入 q 即可。
+补充读物Magic 命令还有很多，我只是介绍了你将会用得最多的一些命令。要了解更多信息，请查看此列表，它列出了所有可用的 Magic 命令。
+转换 notebookNotebook 只是扩展名为 .ipynb 的大型 JSON 文件。
+由于 notebook 是 JSON 文件，因此，可以轻松将其转换为其他格式。Jupyter 附带了一个名为 nbconvert 的实用程序，可将 notebook 转换为 HTML、Markdown、幻灯片等格式。
+例如，要将 notebook 转换为 HTML 文件，请在终端中使用jupyter nbconvert --to html notebook.ipynb
+要将 notebook 与不使用 notebook 的其他人共享，转换为 HTML 很有用。而要在博客和其他接受 Markdown 格式化的文本编辑器中加入 notebook，Markdown 很合适。
+像平常一样，要详细了解 nbconvert，请阅读相关文档。
+创建幻灯片通过 notebook 创建幻灯片是我最爱的功能之一。此处有一个幻灯片示例，它介绍了用于处理数据的 Pandas。
+在 notebook 中创建幻灯片的过程像平常一样，但需要指定作为幻灯片的单元格和单元格的幻灯片类型。在菜单栏中，点击“View”（视图）&gt;“Cell Toolbar”（单元格工具栏）&gt;“Slideshow”（幻灯片），以便在每个单元格上弹出幻灯片单元格菜单。
+这会在每个单元格上显示一个下拉菜单，让你选择单元格在幻灯片中的显示方式。
+
+Slides（幻灯片）是你从左向右移动的完整幻灯片。按向上或向下的箭头时，Sub-slides（子幻灯片）会出现在幻灯片中。Fragments（片段）最初是隐藏的，在你按下按钮时会出现。选择 Skip（忽略）会忽略幻灯片中的单元格，而选择 Notes（备注）会将单元格保留为演讲者备注。
+运行幻灯片要通过 notebook 文件创建幻灯片，需要使用 nbconvert：jupyter nbconvert notebook.ipynb --to slides
+这只是将 notebook 转换为幻灯片必需的文件，你需要向其提供 HTTP 服务器才能真正看到演示文稿。
+要转换它并立即看到它，请使用jupyter nbconvert notebook.ipynb --to slides --post serve这会在浏览器中打开幻灯片，让你可以演示它。
+恭喜你！这个简短的课程到此结束，它主要介绍了 Python 数据科学工作流程中的工具。充分利用 Anaconda 和 Jupyter notebook 不仅能提升你的工作效率，还会让你心情更愉快。要想充分发挥它们的作用，你还要学习很多东西（例如 Markdown 和 LaTeX），但很快你就会想知道为何要以其他方式进行数据分析。
+再次恭喜你！祝你好运！
+书签Jupyter Notebook的27个秘诀，技巧和快捷键
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>机器学习</category>
+        <category>udacity</category>
+      </categories>
+      <tags>
+        <tag>转载</tag>
+        <tag>jupyter</tag>
+        <tag>anaconda</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Numpy和Pandas教程</title>
     <url>/dev-numpy-and-pandas/</url>
     <content><![CDATA[前言本文转载自优达学城《机器学习工程师》
@@ -34636,8 +35001,8 @@ https://github.com/voidking/udacity-python/tree/master/matplotlib
       <categories>
         <category>专业</category>
         <category>开发</category>
-        <category>机器学习</category>
         <category>python</category>
+        <category>机器学习</category>
       </categories>
       <tags>
         <tag>python</tag>
@@ -34767,6 +35132,78 @@ Caused by:java.lang.ClassNotFoundException: org.apache.commons.logging.LogFactor
         <tag>java</tag>
         <tag>eclipse</tag>
         <tag>spring</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>thinkphp和angularjs整合</title>
+    <url>/dev-thinkphp-and-angularjs/</url>
+    <content><![CDATA[前言为了前后端分离的更彻底，便于前后端独立开发，小太阳项目，计划使用thinkphp+angular。后端专注写接口，前端负责页面渲染。
+
+
+项目分割项目分成三个子系统：业主端、物业端、CMS端。每个子系统分别有前端和后端，前端使用angular，后端使用thinkphp。自此，产生了六个子项目，分别命名为owner-fd、owner-bd、manager-fd、manager-bd、cms-fd和cms-bd。接下来，我们以cms-fd和cms-bd为例，来说明angular和thinkphp之间的交互。
+添加业主信息业务逻辑：在添加业主信息页面，填写业主信息的表单，填写完成后单击“确认添加”按钮，发送http请求给后端。后端把获取到的数据存到数据库中，并且返回值给前端，前端提示成功或失败。
+angular部分1、入口html
+&lt;!--cms-fd/index.html--&gt;&lt;!DOCTYPE html&gt;&lt;html lang="zh"&gt;&lt;head&gt;    &lt;meta charset="UTF-8"&gt;    &lt;link rel="stylesheet" href="public/libs/bootstrap/dist/css/bootstrap.min.css"&gt;    &lt;link rel="stylesheet" href="public/libs/layer/skin/layer.css"&gt;    &lt;link rel="stylesheet" href="public/css/index.css"&gt;    &lt;title&gt;CMS系统&lt;/title&gt;&lt;/head&gt;&lt;body ng-app="myApp"&gt;    &lt;ul class="navigator nav nav-pills" ng-controller="MainCtroller"&gt;        &lt;li role="presentation" ng-class="&#123;active:'home' == currentTab&#125;"&gt;            &lt;a ui-sref="home" ng-click="changeTab('home')"&gt;首页&lt;/a&gt;        &lt;/li&gt;        &lt;li role="presentation" ng-class="&#123;active:'ownerList' == currentTab&#125;"&gt;            &lt;a ui-sref="ownerList" ng-click="changeTab('ownerList')"&gt;业主信息列表&lt;/a&gt;        &lt;/li&gt;        &lt;li role="presentation" ng-class="&#123;active:'ownerAdd' == currentTab&#125;"&gt;            &lt;a ui-sref="ownerAdd" ng-click="changeTab('ownerAdd')"&gt;添加业主信息&lt;/a&gt;        &lt;/li&gt;    &lt;/ul&gt;    &lt;div ui-view style="width: 500px;margin: 50px auto 0"&gt;&lt;/div&gt;&lt;script src="public/libs/angular/angular.min.js"&gt;&lt;/script&gt;&lt;script src="public/libs/angular-ui-router/release/angular-ui-router.min.js"&gt;&lt;/script&gt;&lt;script src="public/libs/oclazyload/dist/ocLazyLoad.min.js"&gt;&lt;/script&gt;&lt;script src="public/libs/jquery/dist/jquery.min.js"&gt;&lt;/script&gt;&lt;script src="public/libs/layer/layer.js"&gt;&lt;/script&gt;&lt;script src="public/js/index.js"&gt;&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;
+
+2、入口js
+/* *cms-fd/public/js/index.js*/var myApp = angular.module('myApp',['ui.router','oc.lazyLoad']);myApp.config(function ($stateProvider,$urlRouterProvider) &#123;    $urlRouterProvider.when('','/home');    $stateProvider.state('home',&#123;        url:'/home',        templateUrl: 'views/home.html',        resolve:&#123;            loadMyCtrl:['$ocLazyLoad',function ($ocLazyLoad) &#123;                return $ocLazyLoad.load(&#123;                    name:'homeController',                    files:['public/js/home.js']                &#125;)            &#125;]         &#125;    &#125;);    $stateProvider.state('ownerList',&#123;        url:'/ownerList',        templateUrl:'views/owner/list.html',        resolve:&#123;            loadMyCtrl:function ($ocLazyLoad) &#123;                return $ocLazyLoad.load(&#123;                    name:'ownerListController',                    files:['public/js/owner/list.js']                &#125;)            &#125;        &#125;    &#125;);    $stateProvider.state('ownerAdd',&#123;        url: '/ownerAdd',        templateUrl: 'views/owner/add.html',        resolve:&#123;            loadMyCtrl:function ($ocLazyLoad) &#123;                return $ocLazyLoad.load(&#123;                    name:'ownerAddController',                    files:['public/js/owner/add.js']                &#125;)            &#125;        &#125;    &#125;);    $stateProvider.state('ownerEdit',&#123;        url: '/owner/edit/:ownerId',        templateUrl: 'views/owner/edit.html',        resolve:&#123;            loadMyCtrl:function ($ocLazyLoad) &#123;                return $ocLazyLoad.load(&#123;                    name:'ownerEditController',                    files:['public/js/owner/edit.js']                &#125;)            &#125;        &#125;    &#125;);    &#125;);myApp.controller('MainCtroller',function($scope,$location)&#123;    //console.log($location.url());    var url = $location.url();    $scope.currentTab = url.substr(1);    $scope.changeTab = function(tabname)&#123;          $scope.currentTab = tabname;    &#125;;  &#125;);
+
+3、添加业主信息页面
+&lt;!--cms-fd/views/owner/add.html--&gt;&lt;div id="home" ng-controller="ownerAddController"&gt;    &lt;h2&gt;添加业主信息&lt;/h2&gt;    &lt;form role="form"&gt;        &lt;div class="form-group"&gt;            &lt;label for=""&gt;用户名&lt;/label&gt;            &lt;input name="username" type="text" class="form-control username" id="" ng-model="username"&gt;        &lt;/div&gt;        &lt;div class="form-group"&gt;            &lt;label for=""&gt;密码&lt;/label&gt;            &lt;input name="password" type="password" class="form-control password" id="" ng-model="password"&gt;        &lt;/div&gt;        &lt;div class="form-group"&gt;            &lt;label for=""&gt;邮箱&lt;/label&gt;            &lt;input name="password" type="email" class="form-control email" id="" ng-model="email"&gt;        &lt;/div&gt;        &lt;div class="form-group"&gt;            &lt;label for=""&gt;昵称&lt;/label&gt;            &lt;input name="nickname" type="text" class="form-control nickname" id="" ng-model="nickname"&gt;        &lt;/div&gt;        &lt;button type="submit" class="btn btn-primary submit" ng-click="submit()"&gt;确认添加&lt;/button&gt;    &lt;/form&gt;&lt;/div&gt;
+
+3、添加业主信息页面js
+/* *cms-fd/public/js/owner/add.js*/angular.module('myApp').controller('ownerAddController', function ($scope,$http,$httpParamSerializer) &#123;     $scope.submit = function()&#123;        var param = &#123;            username: $scope.username,            password: $scope.password,            email: $scope.email,            nickname: $scope.nickname        &#125;;        $http(&#123;            method:'POST',            url:'/cms-bd/index.php/Home/Owner/add',            headers:&#123;                'Content-Type':'application/x-www-form-urlencoded'            &#125;,            dataType: 'json',            data: $httpParamSerializer(param)        &#125;).then(function successCallback(response) &#123;            console.log(response.data);            layer.msg(response.data.ext);        &#125;, function errorCallback(response) &#123;            console.log(response.data);        &#125;);    &#125;&#125;);
+
+thinkphp部分在cms-bd/Application/Home/Controller中新建OwnerController.class.php，编写add函数。
+// 增加业主public function add()&#123;    if(!$_POST['username'] || !$_POST['password'] || !$_POST['email'] || !$_POST['nickname'])&#123;        $result = array(            'code' =&gt; '0',            'ext' =&gt; '参数不足'         );        echo json_encode($result,JSON_UNESCAPED_UNICODE);        return;    &#125;    $data['username'] = $_POST['username'];    $data['password'] = md5($_POST['password']);    $data['email'] = $_POST['email'];    $data['nickname'] = $_POST['nickname'];    $data['create_at'] = date('Y-m-d H:i:s');    $data['update_at'] = date('Y-m-d H:i:s');    $owner = D('owner');    if($owner-&gt;create($data))&#123;        $id = $owner-&gt;add();        if($id)&#123;            $owner_temp = $owner-&gt;where("id='$id'")-&gt;find();            $result = array(                'code'=&gt; '0',                'ext'=&gt; 'success',                'obj'=&gt;$owner_temp            );            echo json_encode($result,JSON_UNESCAPED_UNICODE);        &#125;    &#125;&#125;
+
+查看业主信息列表和删除业主信息业务逻辑：进入业主信息列表页时，发送http请求给后端，获取到业主信息列表，然后显示到业主信息列表页上。单击某条记录后面的“删除”按钮，弹出确认提示框。确认删除，则发送http请求给后端，获取返回值，如果删除成功，则从页面移除该条记录。
+angular部分1、业主信息列表页面
+&lt;!--cms-fd/views/owner/list.html--&gt;&lt;div id="owner-list" ng-controller="ownerListController"&gt;    &lt;h2&gt;业主列表&lt;/h2&gt;    &lt;ul&gt;        &lt;li ng-repeat="owner in ownerList"&gt;            &lt;span&gt;用户名：&#123;&#123;owner.username&#125;&#125;，昵称：&#123;&#123;owner.nickname&#125;&#125;&lt;/span&gt;            &lt;button ng-click="edit(owner.id)"&gt;修改&lt;/button&gt;            &lt;button ng-click="delete(owner.id,$index)"&gt;删除&lt;/button&gt;        &lt;/li&gt;    &lt;/ul&gt; &lt;/div&gt;
+
+2、业主信息列表页js
+/* *cms-fd/public/js/owner/list.js*/angular.module('myApp').controller('ownerListController', function ($scope,$http,$httpParamSerializer,$state) &#123;     $http(&#123;        method: 'POST',        url: '/cms-bd/index.php/Home/Owner/listAll',        headers:&#123;            'Content-Type':'application/x-www-form-urlencoded'        &#125;,        dataType: 'json',        data: $httpParamSerializer(&#123;&#125;)    &#125;).then(function successCallback(response)&#123;        console.log(response.data);        $scope.ownerList = response.data;    &#125;, function errorCallback(response)&#123;        console.log(response.data);    &#125;);    $scope.edit = function(ownerId)&#123;        $state.go('ownerEdit', &#123;ownerId: ownerId&#125;);    &#125;    $scope.delete = function(ownerId,index)&#123;        var layerIndex = layer.confirm('确认删除？', &#123;            btn: ['是的','取消'] //按钮        &#125;, function()&#123;            $http(&#123;                method:'POST',                url:'/cms-bd/index.php/Home/Owner/delete',                headers:&#123;                    'Content-Type':'application/x-www-form-urlencoded'                &#125;,                dataType: 'json',                data: $httpParamSerializer(&#123;ownerId: ownerId&#125;)            &#125;).then(function successCallback(response) &#123;                console.log(response.data);                if(response.data.code == '0')&#123;                    $scope.ownerList.splice(index,1);                &#125;                layer.close(layerIndex);            &#125;, function errorCallback(response) &#123;                console.log(response.data);                layer.close(layerIndex);            &#125;);                    &#125;, function()&#123;            //layer.msg('取消');        &#125;);    &#125;&#125;);
+
+thinkphp部分添加listAll函数和delete函数。
+// 业主列表public function listAll()&#123;    $owner = D('owner');    $resultArr = $owner-&gt;where('state=0')-&gt;order('update_at desc,id desc')-&gt;select();    echo json_encode($resultArr,JSON_UNESCAPED_UNICODE);&#125;// 删除业主public function delete()&#123;    $ownerId = $_POST['ownerId'];    $data['state'] = 1;    $owner = D('owner');    $success = $owner-&gt;where("id='$ownerId'")-&gt;save($data);    if($success)&#123;        $result = array(            'code'=&gt; '0',            'ext'=&gt; 'success'        );        echo json_encode($result);    &#125;else &#123;        $result = array(            'code'=&gt; '1',            'ext'=&gt; 'fail'        );        echo json_encode($result);    &#125;&#125;
+
+修改业主信息业务逻辑：在业主信息列表页，单击某条记录后的“修改”按钮，跳转到修改业主信息页面。修改完成后，单击“确认修改”按钮，跳转回业主信息列表页。
+angular部分1、修改业主信息页面
+&lt;!--cms-fd/views/owner/edit.html--&gt;&lt;div id="owner-edit" ng-controller="ownerEditController"&gt;    &lt;h2&gt;修改业主信息&lt;/h2&gt;    &lt;form role="form"&gt;        &lt;div class="form-group"&gt;            &lt;label for=""&gt;用户名&lt;/label&gt;            &lt;input name="username" type="text" class="form-control username" id="" ng-model="owner.username"&gt;        &lt;/div&gt;        &lt;div class="form-group"&gt;            &lt;label for=""&gt;密码&lt;/label&gt;            &lt;input name="password" type="password" class="form-control password" id="" ng-model="owner.password"&gt;        &lt;/div&gt;        &lt;div class="form-group"&gt;            &lt;label for=""&gt;邮箱&lt;/label&gt;            &lt;input name="password" type="email" class="form-control email" id="" ng-model="owner.email"&gt;        &lt;/div&gt;        &lt;div class="form-group"&gt;            &lt;label for=""&gt;昵称&lt;/label&gt;            &lt;input name="nickname" type="text" class="form-control nickname" id="" ng-model="owner.nickname"&gt;        &lt;/div&gt;        &lt;button type="submit" class="btn btn-primary submit" ng-click="submit()"&gt;确认修改&lt;/button&gt;    &lt;/form&gt;&lt;/div&gt;
+
+2、修改业主信息js
+/* *cms-fd/public/js/owner/edit.js*/angular.module('myApp').controller('ownerEditController', function ($scope,$http,$httpParamSerializer,$stateParams,$state) &#123;     $http(&#123;        method:'POST',        url:'/cms-bd/index.php/Home/Owner/findById',        headers:&#123;            'Content-Type':'application/x-www-form-urlencoded'        &#125;,        dataType: 'json',        data: $httpParamSerializer(&#123;ownerId: $stateParams.ownerId&#125;)    &#125;).then(function successCallback(response) &#123;        console.log(response.data);        $scope.owner = response.data.obj;    &#125;, function errorCallback(response) &#123;        console.log(response.data);    &#125;);    $scope.submit = function()&#123;        $http(&#123;            method:'POST',            url:'/cms-bd/index.php/Home/Owner/edit',            headers:&#123;                'Content-Type':'application/x-www-form-urlencoded'            &#125;,            dataType: 'json',            data: $httpParamSerializer($scope.owner)        &#125;).then(function successCallback(response) &#123;            console.log(response.data);            $state.go('ownerList');        &#125;, function errorCallback(response) &#123;            console.log(response.data);        &#125;);    &#125;&#125;);
+
+thinkphp部分添加findById和edit两个函数。
+// 根据id查找业主public function findById()&#123;    $ownerId = $_POST['ownerId'];    $owner = D('owner');    $ownerObj = $owner-&gt;where("id='$ownerId'")-&gt;find();    if($ownerObj)&#123;        $result = array(            'code'=&gt; '0',            'ext'=&gt; 'success',            'obj'=&gt; $ownerObj        );        echo json_encode($result,JSON_UNESCAPED_UNICODE);    &#125;else&#123;        $result = array(            'code'=&gt; '1',            'ext'=&gt; '没有找到记录'        );        echo json_encode($result,JSON_UNESCAPED_UNICODE);    &#125;  &#125;// 修改业主public function edit()&#123;    if(!$_POST['id'] || !$_POST['username'] || !$_POST['password'] || !$_POST['email'] || !$_POST['nickname'])&#123;        $result = array(            'code' =&gt; '0',            'ext' =&gt; '参数不足'         );        echo json_encode($result,JSON_UNESCAPED_UNICODE);        return;    &#125;    $id = $_POST['id'];    $data['username'] = $_POST['username'];    $data['password'] = md5($_POST['password']);    $data['email'] = $_POST['email'];    $data['nickname'] = $_POST['nickname'];    $data['update_at'] = date('Y-m-d H:i:s');    $owner = D('owner');    $success = $owner-&gt;where("id='$id'")-&gt;save($data);    if($success)&#123;        $owner_temp = $owner-&gt;where("id='$id'")-&gt;find();        $result = array(            'code'=&gt; '0',            'ext'=&gt; 'success',            'obj'=&gt;$owner_temp        );        echo json_encode($result,JSON_UNESCAPED_UNICODE);    &#125;else &#123;        $result = array(            'code'=&gt; '1',            'ext'=&gt; '用户不存在'        );        echo json_encode($result,JSON_UNESCAPED_UNICODE);    &#125;&#125;
+
+
+thinkphp关闭右下角Trace信息thinkphp默认开启调试模式，返回值时总会跟着一个小图标，默认在页面的右下角小图标。在部署阶段，需要把它关闭。1、在入口文件index.php加入
+define("APP_DEBUG", false);
+
+2、在Application/Common/config.php 配置文件中加入
+'SHOW_PAGE_TRACE' =&gt; false
+
+3、删除Application下的Runtime文件夹。
+后记增删查改跑通，这个demo也算是比较完整了。在实际开发的时候，很多地方还要做调整。比如导航栏的一些坑、更好页面布局、更友好的提示和跳转、安全性校验、数据库表设计等等等等。
+angular非常容易产生页面缓存，如果遇到很奇葩的坑，比如修改了某个页面，但是刷新无效。不要犹豫，先清下浏览器缓存。
+书签Php 5.6 “Automatically populating $HTTP_RAW_POST_DATA is deprecatedhttps://github.com/piwik/piwik/issues/6465
+PHP 5.6: “Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version.”https://www.bram.us/php-5-6-automatically-populating-http_raw_post_data-is-deprecated-and-will-be-removed-in-a-future-version/
+angularjs 请求后端接口请求了两次http://jingyan.baidu.com/article/49ad8bce42a2415834d8fa97.html
+AngularJs + angular-ui-router + bootstrap 实现基础导航栏http://blog.csdn.net/a416311458/article/details/51497230
+Angular结合Bootstrap3的导航菜单http://www.tuicool.com/articles/ayqqmi
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>angularjs</category>
+        <category>php</category>
+      </categories>
+      <tags>
+        <tag>前端</tag>
+        <tag>angularjs</tag>
+        <tag>php</tag>
+        <tag>thinkphp</tag>
       </tags>
   </entry>
   <entry>
@@ -34947,78 +35384,6 @@ PXELINUX
         <tag>操作系统</tag>
         <tag>ubuntu</tag>
         <tag>pxe</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>thinkphp和angularjs整合</title>
-    <url>/dev-thinkphp-and-angularjs/</url>
-    <content><![CDATA[前言为了前后端分离的更彻底，便于前后端独立开发，小太阳项目，计划使用thinkphp+angular。后端专注写接口，前端负责页面渲染。
-
-
-项目分割项目分成三个子系统：业主端、物业端、CMS端。每个子系统分别有前端和后端，前端使用angular，后端使用thinkphp。自此，产生了六个子项目，分别命名为owner-fd、owner-bd、manager-fd、manager-bd、cms-fd和cms-bd。接下来，我们以cms-fd和cms-bd为例，来说明angular和thinkphp之间的交互。
-添加业主信息业务逻辑：在添加业主信息页面，填写业主信息的表单，填写完成后单击“确认添加”按钮，发送http请求给后端。后端把获取到的数据存到数据库中，并且返回值给前端，前端提示成功或失败。
-angular部分1、入口html
-&lt;!--cms-fd/index.html--&gt;&lt;!DOCTYPE html&gt;&lt;html lang="zh"&gt;&lt;head&gt;    &lt;meta charset="UTF-8"&gt;    &lt;link rel="stylesheet" href="public/libs/bootstrap/dist/css/bootstrap.min.css"&gt;    &lt;link rel="stylesheet" href="public/libs/layer/skin/layer.css"&gt;    &lt;link rel="stylesheet" href="public/css/index.css"&gt;    &lt;title&gt;CMS系统&lt;/title&gt;&lt;/head&gt;&lt;body ng-app="myApp"&gt;    &lt;ul class="navigator nav nav-pills" ng-controller="MainCtroller"&gt;        &lt;li role="presentation" ng-class="&#123;active:'home' == currentTab&#125;"&gt;            &lt;a ui-sref="home" ng-click="changeTab('home')"&gt;首页&lt;/a&gt;        &lt;/li&gt;        &lt;li role="presentation" ng-class="&#123;active:'ownerList' == currentTab&#125;"&gt;            &lt;a ui-sref="ownerList" ng-click="changeTab('ownerList')"&gt;业主信息列表&lt;/a&gt;        &lt;/li&gt;        &lt;li role="presentation" ng-class="&#123;active:'ownerAdd' == currentTab&#125;"&gt;            &lt;a ui-sref="ownerAdd" ng-click="changeTab('ownerAdd')"&gt;添加业主信息&lt;/a&gt;        &lt;/li&gt;    &lt;/ul&gt;    &lt;div ui-view style="width: 500px;margin: 50px auto 0"&gt;&lt;/div&gt;&lt;script src="public/libs/angular/angular.min.js"&gt;&lt;/script&gt;&lt;script src="public/libs/angular-ui-router/release/angular-ui-router.min.js"&gt;&lt;/script&gt;&lt;script src="public/libs/oclazyload/dist/ocLazyLoad.min.js"&gt;&lt;/script&gt;&lt;script src="public/libs/jquery/dist/jquery.min.js"&gt;&lt;/script&gt;&lt;script src="public/libs/layer/layer.js"&gt;&lt;/script&gt;&lt;script src="public/js/index.js"&gt;&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;
-
-2、入口js
-/* *cms-fd/public/js/index.js*/var myApp = angular.module('myApp',['ui.router','oc.lazyLoad']);myApp.config(function ($stateProvider,$urlRouterProvider) &#123;    $urlRouterProvider.when('','/home');    $stateProvider.state('home',&#123;        url:'/home',        templateUrl: 'views/home.html',        resolve:&#123;            loadMyCtrl:['$ocLazyLoad',function ($ocLazyLoad) &#123;                return $ocLazyLoad.load(&#123;                    name:'homeController',                    files:['public/js/home.js']                &#125;)            &#125;]         &#125;    &#125;);    $stateProvider.state('ownerList',&#123;        url:'/ownerList',        templateUrl:'views/owner/list.html',        resolve:&#123;            loadMyCtrl:function ($ocLazyLoad) &#123;                return $ocLazyLoad.load(&#123;                    name:'ownerListController',                    files:['public/js/owner/list.js']                &#125;)            &#125;        &#125;    &#125;);    $stateProvider.state('ownerAdd',&#123;        url: '/ownerAdd',        templateUrl: 'views/owner/add.html',        resolve:&#123;            loadMyCtrl:function ($ocLazyLoad) &#123;                return $ocLazyLoad.load(&#123;                    name:'ownerAddController',                    files:['public/js/owner/add.js']                &#125;)            &#125;        &#125;    &#125;);    $stateProvider.state('ownerEdit',&#123;        url: '/owner/edit/:ownerId',        templateUrl: 'views/owner/edit.html',        resolve:&#123;            loadMyCtrl:function ($ocLazyLoad) &#123;                return $ocLazyLoad.load(&#123;                    name:'ownerEditController',                    files:['public/js/owner/edit.js']                &#125;)            &#125;        &#125;    &#125;);    &#125;);myApp.controller('MainCtroller',function($scope,$location)&#123;    //console.log($location.url());    var url = $location.url();    $scope.currentTab = url.substr(1);    $scope.changeTab = function(tabname)&#123;          $scope.currentTab = tabname;    &#125;;  &#125;);
-
-3、添加业主信息页面
-&lt;!--cms-fd/views/owner/add.html--&gt;&lt;div id="home" ng-controller="ownerAddController"&gt;    &lt;h2&gt;添加业主信息&lt;/h2&gt;    &lt;form role="form"&gt;        &lt;div class="form-group"&gt;            &lt;label for=""&gt;用户名&lt;/label&gt;            &lt;input name="username" type="text" class="form-control username" id="" ng-model="username"&gt;        &lt;/div&gt;        &lt;div class="form-group"&gt;            &lt;label for=""&gt;密码&lt;/label&gt;            &lt;input name="password" type="password" class="form-control password" id="" ng-model="password"&gt;        &lt;/div&gt;        &lt;div class="form-group"&gt;            &lt;label for=""&gt;邮箱&lt;/label&gt;            &lt;input name="password" type="email" class="form-control email" id="" ng-model="email"&gt;        &lt;/div&gt;        &lt;div class="form-group"&gt;            &lt;label for=""&gt;昵称&lt;/label&gt;            &lt;input name="nickname" type="text" class="form-control nickname" id="" ng-model="nickname"&gt;        &lt;/div&gt;        &lt;button type="submit" class="btn btn-primary submit" ng-click="submit()"&gt;确认添加&lt;/button&gt;    &lt;/form&gt;&lt;/div&gt;
-
-3、添加业主信息页面js
-/* *cms-fd/public/js/owner/add.js*/angular.module('myApp').controller('ownerAddController', function ($scope,$http,$httpParamSerializer) &#123;     $scope.submit = function()&#123;        var param = &#123;            username: $scope.username,            password: $scope.password,            email: $scope.email,            nickname: $scope.nickname        &#125;;        $http(&#123;            method:'POST',            url:'/cms-bd/index.php/Home/Owner/add',            headers:&#123;                'Content-Type':'application/x-www-form-urlencoded'            &#125;,            dataType: 'json',            data: $httpParamSerializer(param)        &#125;).then(function successCallback(response) &#123;            console.log(response.data);            layer.msg(response.data.ext);        &#125;, function errorCallback(response) &#123;            console.log(response.data);        &#125;);    &#125;&#125;);
-
-thinkphp部分在cms-bd/Application/Home/Controller中新建OwnerController.class.php，编写add函数。
-// 增加业主public function add()&#123;    if(!$_POST['username'] || !$_POST['password'] || !$_POST['email'] || !$_POST['nickname'])&#123;        $result = array(            'code' =&gt; '0',            'ext' =&gt; '参数不足'         );        echo json_encode($result,JSON_UNESCAPED_UNICODE);        return;    &#125;    $data['username'] = $_POST['username'];    $data['password'] = md5($_POST['password']);    $data['email'] = $_POST['email'];    $data['nickname'] = $_POST['nickname'];    $data['create_at'] = date('Y-m-d H:i:s');    $data['update_at'] = date('Y-m-d H:i:s');    $owner = D('owner');    if($owner-&gt;create($data))&#123;        $id = $owner-&gt;add();        if($id)&#123;            $owner_temp = $owner-&gt;where("id='$id'")-&gt;find();            $result = array(                'code'=&gt; '0',                'ext'=&gt; 'success',                'obj'=&gt;$owner_temp            );            echo json_encode($result,JSON_UNESCAPED_UNICODE);        &#125;    &#125;&#125;
-
-查看业主信息列表和删除业主信息业务逻辑：进入业主信息列表页时，发送http请求给后端，获取到业主信息列表，然后显示到业主信息列表页上。单击某条记录后面的“删除”按钮，弹出确认提示框。确认删除，则发送http请求给后端，获取返回值，如果删除成功，则从页面移除该条记录。
-angular部分1、业主信息列表页面
-&lt;!--cms-fd/views/owner/list.html--&gt;&lt;div id="owner-list" ng-controller="ownerListController"&gt;    &lt;h2&gt;业主列表&lt;/h2&gt;    &lt;ul&gt;        &lt;li ng-repeat="owner in ownerList"&gt;            &lt;span&gt;用户名：&#123;&#123;owner.username&#125;&#125;，昵称：&#123;&#123;owner.nickname&#125;&#125;&lt;/span&gt;            &lt;button ng-click="edit(owner.id)"&gt;修改&lt;/button&gt;            &lt;button ng-click="delete(owner.id,$index)"&gt;删除&lt;/button&gt;        &lt;/li&gt;    &lt;/ul&gt; &lt;/div&gt;
-
-2、业主信息列表页js
-/* *cms-fd/public/js/owner/list.js*/angular.module('myApp').controller('ownerListController', function ($scope,$http,$httpParamSerializer,$state) &#123;     $http(&#123;        method: 'POST',        url: '/cms-bd/index.php/Home/Owner/listAll',        headers:&#123;            'Content-Type':'application/x-www-form-urlencoded'        &#125;,        dataType: 'json',        data: $httpParamSerializer(&#123;&#125;)    &#125;).then(function successCallback(response)&#123;        console.log(response.data);        $scope.ownerList = response.data;    &#125;, function errorCallback(response)&#123;        console.log(response.data);    &#125;);    $scope.edit = function(ownerId)&#123;        $state.go('ownerEdit', &#123;ownerId: ownerId&#125;);    &#125;    $scope.delete = function(ownerId,index)&#123;        var layerIndex = layer.confirm('确认删除？', &#123;            btn: ['是的','取消'] //按钮        &#125;, function()&#123;            $http(&#123;                method:'POST',                url:'/cms-bd/index.php/Home/Owner/delete',                headers:&#123;                    'Content-Type':'application/x-www-form-urlencoded'                &#125;,                dataType: 'json',                data: $httpParamSerializer(&#123;ownerId: ownerId&#125;)            &#125;).then(function successCallback(response) &#123;                console.log(response.data);                if(response.data.code == '0')&#123;                    $scope.ownerList.splice(index,1);                &#125;                layer.close(layerIndex);            &#125;, function errorCallback(response) &#123;                console.log(response.data);                layer.close(layerIndex);            &#125;);                    &#125;, function()&#123;            //layer.msg('取消');        &#125;);    &#125;&#125;);
-
-thinkphp部分添加listAll函数和delete函数。
-// 业主列表public function listAll()&#123;    $owner = D('owner');    $resultArr = $owner-&gt;where('state=0')-&gt;order('update_at desc,id desc')-&gt;select();    echo json_encode($resultArr,JSON_UNESCAPED_UNICODE);&#125;// 删除业主public function delete()&#123;    $ownerId = $_POST['ownerId'];    $data['state'] = 1;    $owner = D('owner');    $success = $owner-&gt;where("id='$ownerId'")-&gt;save($data);    if($success)&#123;        $result = array(            'code'=&gt; '0',            'ext'=&gt; 'success'        );        echo json_encode($result);    &#125;else &#123;        $result = array(            'code'=&gt; '1',            'ext'=&gt; 'fail'        );        echo json_encode($result);    &#125;&#125;
-
-修改业主信息业务逻辑：在业主信息列表页，单击某条记录后的“修改”按钮，跳转到修改业主信息页面。修改完成后，单击“确认修改”按钮，跳转回业主信息列表页。
-angular部分1、修改业主信息页面
-&lt;!--cms-fd/views/owner/edit.html--&gt;&lt;div id="owner-edit" ng-controller="ownerEditController"&gt;    &lt;h2&gt;修改业主信息&lt;/h2&gt;    &lt;form role="form"&gt;        &lt;div class="form-group"&gt;            &lt;label for=""&gt;用户名&lt;/label&gt;            &lt;input name="username" type="text" class="form-control username" id="" ng-model="owner.username"&gt;        &lt;/div&gt;        &lt;div class="form-group"&gt;            &lt;label for=""&gt;密码&lt;/label&gt;            &lt;input name="password" type="password" class="form-control password" id="" ng-model="owner.password"&gt;        &lt;/div&gt;        &lt;div class="form-group"&gt;            &lt;label for=""&gt;邮箱&lt;/label&gt;            &lt;input name="password" type="email" class="form-control email" id="" ng-model="owner.email"&gt;        &lt;/div&gt;        &lt;div class="form-group"&gt;            &lt;label for=""&gt;昵称&lt;/label&gt;            &lt;input name="nickname" type="text" class="form-control nickname" id="" ng-model="owner.nickname"&gt;        &lt;/div&gt;        &lt;button type="submit" class="btn btn-primary submit" ng-click="submit()"&gt;确认修改&lt;/button&gt;    &lt;/form&gt;&lt;/div&gt;
-
-2、修改业主信息js
-/* *cms-fd/public/js/owner/edit.js*/angular.module('myApp').controller('ownerEditController', function ($scope,$http,$httpParamSerializer,$stateParams,$state) &#123;     $http(&#123;        method:'POST',        url:'/cms-bd/index.php/Home/Owner/findById',        headers:&#123;            'Content-Type':'application/x-www-form-urlencoded'        &#125;,        dataType: 'json',        data: $httpParamSerializer(&#123;ownerId: $stateParams.ownerId&#125;)    &#125;).then(function successCallback(response) &#123;        console.log(response.data);        $scope.owner = response.data.obj;    &#125;, function errorCallback(response) &#123;        console.log(response.data);    &#125;);    $scope.submit = function()&#123;        $http(&#123;            method:'POST',            url:'/cms-bd/index.php/Home/Owner/edit',            headers:&#123;                'Content-Type':'application/x-www-form-urlencoded'            &#125;,            dataType: 'json',            data: $httpParamSerializer($scope.owner)        &#125;).then(function successCallback(response) &#123;            console.log(response.data);            $state.go('ownerList');        &#125;, function errorCallback(response) &#123;            console.log(response.data);        &#125;);    &#125;&#125;);
-
-thinkphp部分添加findById和edit两个函数。
-// 根据id查找业主public function findById()&#123;    $ownerId = $_POST['ownerId'];    $owner = D('owner');    $ownerObj = $owner-&gt;where("id='$ownerId'")-&gt;find();    if($ownerObj)&#123;        $result = array(            'code'=&gt; '0',            'ext'=&gt; 'success',            'obj'=&gt; $ownerObj        );        echo json_encode($result,JSON_UNESCAPED_UNICODE);    &#125;else&#123;        $result = array(            'code'=&gt; '1',            'ext'=&gt; '没有找到记录'        );        echo json_encode($result,JSON_UNESCAPED_UNICODE);    &#125;  &#125;// 修改业主public function edit()&#123;    if(!$_POST['id'] || !$_POST['username'] || !$_POST['password'] || !$_POST['email'] || !$_POST['nickname'])&#123;        $result = array(            'code' =&gt; '0',            'ext' =&gt; '参数不足'         );        echo json_encode($result,JSON_UNESCAPED_UNICODE);        return;    &#125;    $id = $_POST['id'];    $data['username'] = $_POST['username'];    $data['password'] = md5($_POST['password']);    $data['email'] = $_POST['email'];    $data['nickname'] = $_POST['nickname'];    $data['update_at'] = date('Y-m-d H:i:s');    $owner = D('owner');    $success = $owner-&gt;where("id='$id'")-&gt;save($data);    if($success)&#123;        $owner_temp = $owner-&gt;where("id='$id'")-&gt;find();        $result = array(            'code'=&gt; '0',            'ext'=&gt; 'success',            'obj'=&gt;$owner_temp        );        echo json_encode($result,JSON_UNESCAPED_UNICODE);    &#125;else &#123;        $result = array(            'code'=&gt; '1',            'ext'=&gt; '用户不存在'        );        echo json_encode($result,JSON_UNESCAPED_UNICODE);    &#125;&#125;
-
-
-thinkphp关闭右下角Trace信息thinkphp默认开启调试模式，返回值时总会跟着一个小图标，默认在页面的右下角小图标。在部署阶段，需要把它关闭。1、在入口文件index.php加入
-define("APP_DEBUG", false);
-
-2、在Application/Common/config.php 配置文件中加入
-'SHOW_PAGE_TRACE' =&gt; false
-
-3、删除Application下的Runtime文件夹。
-后记增删查改跑通，这个demo也算是比较完整了。在实际开发的时候，很多地方还要做调整。比如导航栏的一些坑、更好页面布局、更友好的提示和跳转、安全性校验、数据库表设计等等等等。
-angular非常容易产生页面缓存，如果遇到很奇葩的坑，比如修改了某个页面，但是刷新无效。不要犹豫，先清下浏览器缓存。
-书签Php 5.6 “Automatically populating $HTTP_RAW_POST_DATA is deprecatedhttps://github.com/piwik/piwik/issues/6465
-PHP 5.6: “Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version.”https://www.bram.us/php-5-6-automatically-populating-http_raw_post_data-is-deprecated-and-will-be-removed-in-a-future-version/
-angularjs 请求后端接口请求了两次http://jingyan.baidu.com/article/49ad8bce42a2415834d8fa97.html
-AngularJs + angular-ui-router + bootstrap 实现基础导航栏http://blog.csdn.net/a416311458/article/details/51497230
-Angular结合Bootstrap3的导航菜单http://www.tuicool.com/articles/ayqqmi
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>angularjs</category>
-        <category>php</category>
-      </categories>
-      <tags>
-        <tag>前端</tag>
-        <tag>angularjs</tag>
-        <tag>php</tag>
-        <tag>thinkphp</tag>
       </tags>
   </entry>
   <entry>
