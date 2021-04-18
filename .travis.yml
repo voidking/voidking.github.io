@@ -21,7 +21,7 @@ before_install:
 - chmod 600 ~/.ssh/id_rsa
 
 script:
-- ssh voidking@${ALI_IP} "cd /opt/nginx/html/voidking/ && git pull --force --quiet \"https://${GIT_USER}:${GITEE_TOKEN}@${GITEE_PAGES_REPO}\" master:master"
+- ssh voidking@${ALI_IP} "cd /opt/nginx/work/voidking/ && git pull --force --quiet \"https://${GIT_USER}:${GITEE_TOKEN}@${GITEE_PAGES_REPO}\" master:master"
 
 after_success:
 - echo "deploy success"
