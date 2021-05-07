@@ -569,8 +569,8 @@ sed -i "s/专业,开发,nginx/专业,运维,nginx/g" `grep '专业,开发,nginx'
 ]]></content>
       <categories>
         <category>专业</category>
-        <category>运维</category>
         <category>开发</category>
+        <category>运维</category>
         <category>hexo</category>
         <category>shell</category>
       </categories>
@@ -960,8 +960,8 @@ Install Apache, PHP And MySQL On CentOS 7 (LAMP)
 ]]></content>
       <categories>
         <category>专业</category>
-        <category>运维</category>
         <category>开发</category>
+        <category>运维</category>
         <category>apache</category>
         <category>centos</category>
         <category>php</category>
@@ -1185,8 +1185,8 @@ centos7安装运行多个mysql实例笔记https://my.oschina.net/hollowj/blog/79
 ]]></content>
       <categories>
         <category>专业</category>
-        <category>运维</category>
         <category>开发</category>
+        <category>运维</category>
         <category>centos</category>
         <category>mysql</category>
       </categories>
@@ -1223,8 +1223,8 @@ PS：查看mysql版本mysql -V
 ]]></content>
       <categories>
         <category>专业</category>
-        <category>运维</category>
         <category>开发</category>
+        <category>运维</category>
         <category>centos</category>
         <category>mysql</category>
       </categories>
@@ -1298,8 +1298,8 @@ client_max_body_size 500m
 ]]></content>
       <categories>
         <category>专业</category>
-        <category>运维</category>
         <category>开发</category>
+        <category>运维</category>
         <category>centos</category>
         <category>mysql</category>
       </categories>
@@ -1339,8 +1339,8 @@ LNMP一键安装包
 ]]></content>
       <categories>
         <category>专业</category>
-        <category>运维</category>
         <category>开发</category>
+        <category>运维</category>
         <category>centos</category>
         <category>php</category>
       </categories>
@@ -1395,8 +1395,8 @@ pyenv实战《Django部署到线上》《Django部署到线上（修改版）》
 ]]></content>
       <categories>
         <category>专业</category>
-        <category>运维</category>
         <category>开发</category>
+        <category>运维</category>
         <category>python</category>
         <category>centos</category>
       </categories>
@@ -1554,8 +1554,8 @@ catalina.sh在执行的时候会调用同级路径下的setenv.sh来设置额外
 ]]></content>
       <categories>
         <category>专业</category>
-        <category>运维</category>
         <category>开发</category>
+        <category>运维</category>
         <category>centos</category>
         <category>tomcat</category>
       </categories>
@@ -1665,8 +1665,8 @@ cd vkbeegobee run
 ]]></content>
       <categories>
         <category>专业</category>
-        <category>运维</category>
         <category>开发</category>
+        <category>运维</category>
         <category>golang</category>
         <category>centos</category>
       </categories>
@@ -2231,8 +2231,8 @@ TOKEN=$(kubectl describe secrets $(kubectl get secrets -n kube-system |grep admi
       <categories>
         <category>专业</category>
         <category>运维</category>
-        <category>k8s</category>
         <category>docker</category>
+        <category>k8s</category>
       </categories>
       <tags>
         <tag>k8s</tag>
@@ -2476,6 +2476,112 @@ public class ReportImpl extends Report&#123;    public void printTitle()    &#12
       <tags>
         <tag>转载</tag>
         <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>APP第三方登录QQ和微博配置</title>
+    <url>/dev-app-login-qq-sina/</url>
+    <content><![CDATA[需求使用hbuilder修改东北高师就业联盟网的app，完成了qq和微博第三方登录，真机调试正常。但是打包发布后，问题来了。使用qq登录时，会提示错误“该应用非官方正版应用，请去应用宝下载正版后进行qq登陆。（错误码：100044）”。使用微博登录时，会提示错误“21338:sso package or sign error”。
+因为就业联盟网在开放平台上是一个web应用，但是我们的app打包后是一个android应用和一个ios应用。所以，要解决这个问题，我们要在开放平台上添加android应用和ios应用。
+
+
+android打包签名在配置开放平台之前，我们先把android app打包发布，具体流程如下：
+安装java环境参考《全平台安装JDK》。
+生成keystorekeytool -genkey -alias dsjyw.keystore -keyalg RSA -validity 1000 -keystore dsjyw.keystore
+说明：keytool -genkey -alias 别名.keystore -keyalg RSA -validity 有效期限(天数) -keystore 别名.keystore
+dsjyw.store参数输入密钥库口令: voidking再次输入新口令: voidking您的名字与姓氏是什么?  [Unknown]:  VoidKing您的组织单位名称是什么?  [Unknown]:  Nenu您的组织名称是什么?  [Unknown]:  Nenu您所在的城市或区域名称是什么?  [Unknown]:  ChangChun您所在的省/市/自治区名称是什么?  [Unknown]:  JiLin该单位的双字母国家/地区代码是什么?  [Unknown]:  CNCN=VoidKing, OU=Nenu, O=Nenu, L=ChangChun, ST=JiLin, C=CN是否正确?  [否]:  y输入 &lt;dsjyw.keystore&gt; 的密钥口令        (如果和密钥库口令相同, 按回车):
+
+打包1、打开Hbuilder，发行，发行为原生安装包。
+2、使用自有证书；Android包名是自动生成的，不需要修改，也可以修改为自己喜欢的包名；证书别名和私钥密码是生成keystore时配置的；证书文件选择生成的keystore文件。
+3、打包，之后会自动上传源码，打包好后下载到app存放目录中。
+签名1、复制打包下载好的apk文件到dsjyw.keystore相同的目录，重命名apk文件为android-release-unsigned.apk。
+2、打开cmd，执行签名命令jarsigner -verbose -keystore dsjyw.keystore -signedjar dsjyw.apk android-release-unsigned.apk dsjyw.keystore
+说明：jarsigner -verbose -keystore 别名.keystore(密钥库位置) -signedjar 签名后产生的文件.apk要签名的文件.apk 别名.keystore(密钥库)
+查看签名keytool -v -list -keystore dsjyw.keystore
+找到MD5: 70:1D:81:1E:D3:A6:8B:28:66:82:BA:D8:EB:79:DC:63
+新浪创建移动应用时要求的是32位数字小写字母，把前面的这串数字中的冒号去掉，字母小写即可。
+腾讯开放平台创建安卓应用1、登录腾讯开放平台
+2、安卓应用，创建应用。
+3、关联QQ互联，输入联盟网web应用的appid和appkey，确定。之所以关联QQ互联，是为了统一appid，否则，web登录和app登录获得的是不同的openid。
+如果关联QQ互联后，创建应用失败，提示“对不起，您不是应用的创建者或协作者(1500401)”。
+可能一：不是协作者。请先使用联盟网web应用所在账号登录，在管理中心页面，滑动鼠标到右上角用户名，单击权限权限管理，添加协作者。
+可能二：账号冲突。之前的web应用在QQ互联上，此时，不要在浏览器中同时打开腾讯开放平台和QQ互联，也不要登录其他的QQ邮箱，有可能账号冲突。
+可能三：开发者资料未提交审核。
+4、选择移动应用 安卓，创建应用，选择应用类型，确定。此时创建的安卓应用，它的appid和appkey就和联盟网web应用相同了。
+5、按照提示，填写需要的字段即可。需要注意的是，上传安装包时，需要上传签名后的apk文件。
+6、填写好信息，保存即可，不需要提交审核。如果需要提交审核的话，请先根据提示加固应用。
+创建ios应用1、在安卓应用中，可以看到我们创建的联盟网app，单击它。
+2、鼠标滑到右上角平台信息，单击IOS应用，即可创建IOS应用。该IOS应用的appid和appkey就和联盟网web应用相同，也和安卓应用相同。
+警告，创建ios应用后，此时安卓应用和ios应用实际上是同一个应用。删除任意一个，两个应用就都没有了。
+3、按照提示填写各字段即可。其中比较难的是URL scheme、AppStore ID和Bundle ID，这些信息可以到Apple Developer和itunes connect上查看到。
+新浪开放平台1、登录新浪开放平台
+2、微连接，移动应用，立即接入。勾选Iphone和Android两个平台，创建。
+3、填写应用基本信息。其中比较难的是Android签名，不必使用新浪提供的签名工具，参考本文中的“查看签名”小节，填入得到的32位字符串。
+4、保存信息，提交审核。审核不通过会有详细提示，参考提示修改后再次提交审核。
+5、单击左侧导航栏应用信息，高级信息。OAuth2.0 授权设置中点击编辑，授权回调页和取消授权回调页都填入https://api.weibo.com/oauth2/default.html。
+书签HBuilder 打包流程
+腾讯开放平台创建应用的坑，安卓和iOS端如何共用同一个Appid？
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>android</category>
+      </categories>
+      <tags>
+        <tag>android</tag>
+        <tag>hbuilder</tag>
+        <tag>ios</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>基于JQuery实现滚动到页面底端时自动加载更多信息</title>
+    <url>/dev-auto-loading-when-scroll-to-the-bottom/</url>
+    <content><![CDATA[这篇文章主要介绍了基于JQuery实现滚动到页面底端时自动加载更多信息，类似微博，新浪新闻的评论等，都采用了这方法,需要的朋友可以参考下关键代码：
+var stop=true; $(window).scroll(function()&#123;     totalheight = parseFloat($(window).height()) + parseFloat($(window).scrollTop());     if($(document).height() &lt;= totalheight)&#123;         if(stop==true)&#123;             stop=false;             $.post("ajax.php", &#123;start:1, n:50&#125;,function(txt)&#123;                 $("#Loading").before(txt);                 stop=true;             &#125;,"text");         &#125;     &#125; &#125;);
+
+
+
+HTML代码如下:
+&lt;div id="Loading"&gt;Loading...&lt;/div&gt;
+
+实现方法是比较页面总高度和下滚高度以判断是否到达底端，若到达底端则通过ajax读取更多的内容，用before插入到Loading之前。stop参数是考虑到ajax读取耗时，防止在一次ajax读取过程中多次触发事件，造成多次加载内容。
+转载自http://www.3lian.com/edu/2014/02-10/127916.html
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>jquery</category>
+      </categories>
+      <tags>
+        <tag>前端</tag>
+        <tag>jquery</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>artTemplate模板引擎</title>
+    <url>/dev-arttemplate/</url>
+    <content><![CDATA[前言在开发过程中，常常要实现这样一种效果：获取数据，并且插入到当前页面。最基本的做法是把获取到的数据拼接到一个字符串中，然后使用html()或者append()函数插入到页面中。这种做法，拼接字符串时很麻烦。本文中，小编要介绍一下ArtTemplate，一个超快的前端模板引擎。
+
+
+快速上手编写模板&lt;script id="test" type="text/html"&gt;&lt;h1&gt;&#123;&#123;title&#125;&#125;&lt;/h1&gt;&lt;ul&gt;    &#123;&#123;each list as value i&#125;&#125;        &lt;li&gt;索引 &#123;&#123;i + 1&#125;&#125; ：&#123;&#123;value&#125;&#125;&lt;/li&gt;    &#123;&#123;/each&#125;&#125;&lt;/ul&gt;&lt;/script&gt;
+
+渲染模板var data = &#123;    title: '标签',    list: ['文艺', '博客', '摄影', '电影', '民谣', '旅行', '吉他']&#125;;var html = template('test', data);document.getElementById('content').innerHTML = html;
+
+模板语法注意：简洁语法和原生语法引入的js文件不同。
+简洁语法&#123;&#123;if admin&#125;&#125;    &#123;&#123;include 'admin_content'&#125;&#125;    &#123;&#123;each list&#125;&#125;        &lt;div&gt;&#123;&#123;$index&#125;&#125;. &#123;&#123;$value.user&#125;&#125;&lt;/div&gt;    &#123;&#123;/each&#125;&#125;&#123;&#123;/if&#125;&#125;
+
+原生语法&lt;%if (admin)&#123;%&gt;    &lt;%include('admin_content')%&gt;    &lt;%for (var i=0;i&lt;list.length;i++) &#123;%&gt;        &lt;div&gt;&lt;%=i%&gt;. &lt;%=list[i].user%&gt;&lt;/div&gt;    &lt;%&#125;%&gt;&lt;%&#125;%&gt;
+
+参考文档Arttemplate by auihttp://aui.github.io/artTemplate/
+前端模版artTemplate的介绍及使用http://blog.csdn.net/playboyanta123/article/details/45536501
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+      </categories>
+      <tags>
+        <tag>前端</tag>
+        <tag>javascript</tag>
       </tags>
   </entry>
   <entry>
@@ -2759,10 +2865,10 @@ server &#123;    server_name wecms.voidking.com;     listen 80;    location / &#
 ]]></content>
       <categories>
         <category>专业</category>
-        <category>运维</category>
         <category>开发</category>
-        <category>docker</category>
+        <category>运维</category>
         <category>python</category>
+        <category>docker</category>
         <category>django</category>
       </categories>
       <tags>
@@ -2770,111 +2876,6 @@ server &#123;    server_name wecms.voidking.com;     listen 80;    location / &#
         <tag>django</tag>
         <tag>微信公众平台</tag>
         <tag>dokcer</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Docker-Compose入门篇</title>
-    <url>/dev-docker-compose/</url>
-    <content><![CDATA[Docker-Compose简介Compose是用于定义和运行多容器Docker应用程序的工具。通过Compose，可以使用YAML文件来配置应用程序的服务。然后使用一个命令，就可以从配置中创建并启动所有服务。Compose可在所有环境中工作：生产、模拟、开发、测试以及CI工作流。
-使用Compose基本上是三步流程：
-
-使用Dockerfile定义应用程序的环境，以便可以在任何地方复制它。
-在docker-compose.yml中定义组成您的应用程序的服务，以便它们可以在隔离的环境中一起运行。
-运行docker-compose up，然后Compose启动并运行整个应用程序。
-
-Docker-Compose项目由Python编写，调用Docker服务提供的API来对容器进行管理。因此，只要所操作的平台支持Docker API，就可以在其上利用Compose来进行编排管理。更多内容参考Overview of Docker Compose。
-
-
-安装Compose在CentOS7机器上，假设已经了Docker，参考Install Docker Compose安装Compose-Docker。如果没有安装Docker，那么参考Docker入门进行安装。
-1、安装docker-compose
-sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-
-2、添加执行权限
-sudo chmod +x /usr/local/bin/docker-composesudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-
-3、验证安装docker-compose --version
-Hello World1、创建测试目录
-mkdir composetestcd composetest
-
-2、在项目目录中创建一个名为app.py的文件，内容为：
-import timeimport redisfrom flask import Flaskapp = Flask(__name__)cache = redis.Redis(host='redis', port=6379)def get_hit_count():    retries = 5    while True:        try:            return cache.incr('hits')        except redis.exceptions.ConnectionError as exc:            if retries == 0:                raise exc            retries -= 1            time.sleep(0.5)@app.route('/')def hello():    count = get_hit_count()    return 'Hello World! I have been seen &#123;&#125; times.\n'.format(count)
-在此示例中，redis是应用程序网络上的redis容器的主机名，使用默认端口6379。
-3、创建requirements.txt文件，内容为：
-flaskredis
-
-4、创建Dockerfile，内容为：
-FROM python:3.7-alpineWORKDIR /codeENV FLASK_APP app.pyENV FLASK_RUN_HOST 0.0.0.0RUN apk add --no-cache gcc musl-dev linux-headersCOPY requirements.txt requirements.txtRUN pip install -r requirements.txtCOPY . .CMD ["flask", "run"]
-
-该文件说明：
-
-从Python 3.7映像开始构建映像。
-将工作目录设置为/code。
-设置flask命令使用的环境变量。
-安装gcc，以便诸如MarkupSafe和SQLAlchemy之类的Python包可以编译加速。
-复制requirements.txt并安装Python依赖项。
-复制当前目录中的所有文件到工作目录。
-将容器的默认命令设置为flask run。
-
-有关如何编写Dockerfile的更多信息，参考Docker用户指南和Dockerfile参考。
-5、创建docker-compose.yml，内容为：
-version: '3'services:  web:    build: .    ports:      - "15000:5000"  redis:    image: "redis:alpine"
-该Compose文件定义了两个服务：Web和Redis。Web服务从Dockerfile构建镜像，启动后容器在5000端口提供服务，然后将容器端口5000绑定到主机端口15000。
-6、使用Compose构建和运行应用docker-compose up
-7、测试应用curl http://127.0.0.1:15000
-Hello World 2.01、编辑docker-compose.yml，挂载当前目录到/code
-version: '3'services:  web:    build: .    ports:      - "5000:5000"    volumes:      - .:/code    environment:      FLASK_ENV: development  redis:    image: "redis:alpine"
-
-2、运行应用docker-compose up
-3、修改app.py
-import timeimport redisfrom flask import Flaskapp = Flask(__name__)cache = redis.Redis(host='redis', port=6379)def get_hit_count():    retries = 5    while True:        try:            return cache.incr('hits')        except redis.exceptions.ConnectionError as exc:            if retries == 0:                raise exc            retries -= 1            time.sleep(0.5)@app.route('/')def hello():    count = get_hit_count()    return 'Hello World 2.0! I have been seen &#123;&#125; times.\n'.format(count)
-
-4、测试应用curl http://127.0.0.1:15000
-常用命令# 构建和运行应用docker-compose up# 构建和后台运行应用docker-compose up -d# 关闭应用docker-compose down# 关闭应用，并删除Redis容器内数据docker-compose down --volumes# 查看容器docker-compose ps# 查看web服务的环境变量docker-compose run web env
-
-书签Overview of Docker Compose
-Docker 入门教程
-docker/compose
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>docker</category>
-      </categories>
-      <tags>
-        <tag>docker</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Docker中使用定时任务</title>
-    <url>/dev-docker-crontab/</url>
-    <content><![CDATA[前言《Linux设置定时任务》一文中学习了crontab的使用方法，但是同样的配置方法，在Docker中是不会生效的。因为Docker中默认只会启动一个进程，crond并不会启动。本文研究一下在Docker中配置定时任务的方法，踩踩坑。
-
-
-启动crond要想在容器中使用定时任务，有三个办法：
-
-把crond作为一号进程启动。
-supervisor作为一号进程启动，使用supervisor启动crond。
-进入容器手动启动crond。
-
-本文使用第一个方法启动crond，启动命令为：
-docker run --name vkcrond -d -it voidking/crond:v1.0 "/bin/bash" "-c" "/usr/sbin/crond &gt; start.log &amp;&amp; tail -f start.log"
-
-crond日志1、查看crond日志tail /var/log/cron报错没有这个文件，这是因为没有打开rsyslog。
-2、打开rsyslog
-# centos/etc/init.d/rsyslog start# centos7systemctl restart rsyslog.service# centos6service rsyslog restart
-
-再次查看，crond日志文件就存在了。
-使用crondcrond启动后，其他的配置参考《Linux设置定时任务》即可。
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>docker</category>
-        <category>linux</category>
-      </categories>
-      <tags>
-        <tag>docker</tag>
-        <tag>crontab</tag>
       </tags>
   </entry>
   <entry>
@@ -3152,8 +3153,8 @@ docker run --name vk-mysql -d \-p 3306:3306 \-v /opt/data/mysql:/var/lib/mysql \
 ]]></content>
       <categories>
         <category>专业</category>
-        <category>运维</category>
         <category>开发</category>
+        <category>运维</category>
         <category>docker</category>
         <category>mysql</category>
       </categories>
@@ -3217,8 +3218,8 @@ curl http://8.136.13.58curl http://8.136.13.58 -L
 ]]></content>
       <categories>
         <category>专业</category>
-        <category>运维</category>
         <category>开发</category>
+        <category>运维</category>
         <category>docker</category>
         <category>hexo</category>
         <category>nginx</category>
@@ -3409,8 +3410,8 @@ yum install ncnc -v localhost 8080
 ]]></content>
       <categories>
         <category>专业</category>
-        <category>运维</category>
         <category>开发</category>
+        <category>运维</category>
         <category>docker</category>
         <category>tomcat</category>
       </categories>
@@ -3490,8 +3491,8 @@ curl localhost:8080
 ]]></content>
       <categories>
         <category>专业</category>
-        <category>运维</category>
         <category>开发</category>
+        <category>运维</category>
         <category>docker</category>
         <category>ubuntu</category>
         <category>tomcat</category>
@@ -3551,8 +3552,8 @@ docker镜像的命名规则 registry_url/namespace/image_name:tag 默认tag是la
 ]]></content>
       <categories>
         <category>专业</category>
-        <category>运维</category>
         <category>开发</category>
+        <category>运维</category>
         <category>docker</category>
         <category>centos</category>
         <category>tomcat</category>
@@ -3614,8 +3615,8 @@ apiVersion: v1kind: Podmetadata:  creationTimestamp: null  labels:    run: ubunt
       <categories>
         <category>专业</category>
         <category>运维</category>
-        <category>k8s</category>
         <category>docker</category>
+        <category>k8s</category>
       </categories>
       <tags>
         <tag>k8s</tag>
@@ -3700,8 +3701,8 @@ tomcat使用supervisor管理
 ]]></content>
       <categories>
         <category>专业</category>
-        <category>运维</category>
         <category>开发</category>
+        <category>运维</category>
         <category>docker</category>
         <category>centos</category>
         <category>tomcat</category>
@@ -4226,6 +4227,111 @@ CentOS 7 开放3306端口访问
         <tag>centos</tag>
         <tag>firewall</tag>
         <tag>iptables</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Docker中使用定时任务</title>
+    <url>/dev-docker-crontab/</url>
+    <content><![CDATA[前言《Linux设置定时任务》一文中学习了crontab的使用方法，但是同样的配置方法，在Docker中是不会生效的。因为Docker中默认只会启动一个进程，crond并不会启动。本文研究一下在Docker中配置定时任务的方法，踩踩坑。
+
+
+启动crond要想在容器中使用定时任务，有三个办法：
+
+把crond作为一号进程启动。
+supervisor作为一号进程启动，使用supervisor启动crond。
+进入容器手动启动crond。
+
+本文使用第一个方法启动crond，启动命令为：
+docker run --name vkcrond -d -it voidking/crond:v1.0 "/bin/bash" "-c" "/usr/sbin/crond &gt; start.log &amp;&amp; tail -f start.log"
+
+crond日志1、查看crond日志tail /var/log/cron报错没有这个文件，这是因为没有打开rsyslog。
+2、打开rsyslog
+# centos/etc/init.d/rsyslog start# centos7systemctl restart rsyslog.service# centos6service rsyslog restart
+
+再次查看，crond日志文件就存在了。
+使用crondcrond启动后，其他的配置参考《Linux设置定时任务》即可。
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>docker</category>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>crontab</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Docker-Compose入门篇</title>
+    <url>/dev-docker-compose/</url>
+    <content><![CDATA[Docker-Compose简介Compose是用于定义和运行多容器Docker应用程序的工具。通过Compose，可以使用YAML文件来配置应用程序的服务。然后使用一个命令，就可以从配置中创建并启动所有服务。Compose可在所有环境中工作：生产、模拟、开发、测试以及CI工作流。
+使用Compose基本上是三步流程：
+
+使用Dockerfile定义应用程序的环境，以便可以在任何地方复制它。
+在docker-compose.yml中定义组成您的应用程序的服务，以便它们可以在隔离的环境中一起运行。
+运行docker-compose up，然后Compose启动并运行整个应用程序。
+
+Docker-Compose项目由Python编写，调用Docker服务提供的API来对容器进行管理。因此，只要所操作的平台支持Docker API，就可以在其上利用Compose来进行编排管理。更多内容参考Overview of Docker Compose。
+
+
+安装Compose在CentOS7机器上，假设已经了Docker，参考Install Docker Compose安装Compose-Docker。如果没有安装Docker，那么参考Docker入门进行安装。
+1、安装docker-compose
+sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+2、添加执行权限
+sudo chmod +x /usr/local/bin/docker-composesudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+
+3、验证安装docker-compose --version
+Hello World1、创建测试目录
+mkdir composetestcd composetest
+
+2、在项目目录中创建一个名为app.py的文件，内容为：
+import timeimport redisfrom flask import Flaskapp = Flask(__name__)cache = redis.Redis(host='redis', port=6379)def get_hit_count():    retries = 5    while True:        try:            return cache.incr('hits')        except redis.exceptions.ConnectionError as exc:            if retries == 0:                raise exc            retries -= 1            time.sleep(0.5)@app.route('/')def hello():    count = get_hit_count()    return 'Hello World! I have been seen &#123;&#125; times.\n'.format(count)
+在此示例中，redis是应用程序网络上的redis容器的主机名，使用默认端口6379。
+3、创建requirements.txt文件，内容为：
+flaskredis
+
+4、创建Dockerfile，内容为：
+FROM python:3.7-alpineWORKDIR /codeENV FLASK_APP app.pyENV FLASK_RUN_HOST 0.0.0.0RUN apk add --no-cache gcc musl-dev linux-headersCOPY requirements.txt requirements.txtRUN pip install -r requirements.txtCOPY . .CMD ["flask", "run"]
+
+该文件说明：
+
+从Python 3.7映像开始构建映像。
+将工作目录设置为/code。
+设置flask命令使用的环境变量。
+安装gcc，以便诸如MarkupSafe和SQLAlchemy之类的Python包可以编译加速。
+复制requirements.txt并安装Python依赖项。
+复制当前目录中的所有文件到工作目录。
+将容器的默认命令设置为flask run。
+
+有关如何编写Dockerfile的更多信息，参考Docker用户指南和Dockerfile参考。
+5、创建docker-compose.yml，内容为：
+version: '3'services:  web:    build: .    ports:      - "15000:5000"  redis:    image: "redis:alpine"
+该Compose文件定义了两个服务：Web和Redis。Web服务从Dockerfile构建镜像，启动后容器在5000端口提供服务，然后将容器端口5000绑定到主机端口15000。
+6、使用Compose构建和运行应用docker-compose up
+7、测试应用curl http://127.0.0.1:15000
+Hello World 2.01、编辑docker-compose.yml，挂载当前目录到/code
+version: '3'services:  web:    build: .    ports:      - "5000:5000"    volumes:      - .:/code    environment:      FLASK_ENV: development  redis:    image: "redis:alpine"
+
+2、运行应用docker-compose up
+3、修改app.py
+import timeimport redisfrom flask import Flaskapp = Flask(__name__)cache = redis.Redis(host='redis', port=6379)def get_hit_count():    retries = 5    while True:        try:            return cache.incr('hits')        except redis.exceptions.ConnectionError as exc:            if retries == 0:                raise exc            retries -= 1            time.sleep(0.5)@app.route('/')def hello():    count = get_hit_count()    return 'Hello World 2.0! I have been seen &#123;&#125; times.\n'.format(count)
+
+4、测试应用curl http://127.0.0.1:15000
+常用命令# 构建和运行应用docker-compose up# 构建和后台运行应用docker-compose up -d# 关闭应用docker-compose down# 关闭应用，并删除Redis容器内数据docker-compose down --volumes# 查看容器docker-compose ps# 查看web服务的环境变量docker-compose run web env
+
+书签Overview of Docker Compose
+Docker 入门教程
+docker/compose
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>docker</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
       </tags>
   </entry>
   <entry>
@@ -5338,112 +5444,6 @@ package mainimport (    "fmt"    "time")func say(s string) &#123;    for i := 0;
       </tags>
   </entry>
   <entry>
-    <title>APP第三方登录QQ和微博配置</title>
-    <url>/dev-app-login-qq-sina/</url>
-    <content><![CDATA[需求使用hbuilder修改东北高师就业联盟网的app，完成了qq和微博第三方登录，真机调试正常。但是打包发布后，问题来了。使用qq登录时，会提示错误“该应用非官方正版应用，请去应用宝下载正版后进行qq登陆。（错误码：100044）”。使用微博登录时，会提示错误“21338:sso package or sign error”。
-因为就业联盟网在开放平台上是一个web应用，但是我们的app打包后是一个android应用和一个ios应用。所以，要解决这个问题，我们要在开放平台上添加android应用和ios应用。
-
-
-android打包签名在配置开放平台之前，我们先把android app打包发布，具体流程如下：
-安装java环境参考《全平台安装JDK》。
-生成keystorekeytool -genkey -alias dsjyw.keystore -keyalg RSA -validity 1000 -keystore dsjyw.keystore
-说明：keytool -genkey -alias 别名.keystore -keyalg RSA -validity 有效期限(天数) -keystore 别名.keystore
-dsjyw.store参数输入密钥库口令: voidking再次输入新口令: voidking您的名字与姓氏是什么?  [Unknown]:  VoidKing您的组织单位名称是什么?  [Unknown]:  Nenu您的组织名称是什么?  [Unknown]:  Nenu您所在的城市或区域名称是什么?  [Unknown]:  ChangChun您所在的省/市/自治区名称是什么?  [Unknown]:  JiLin该单位的双字母国家/地区代码是什么?  [Unknown]:  CNCN=VoidKing, OU=Nenu, O=Nenu, L=ChangChun, ST=JiLin, C=CN是否正确?  [否]:  y输入 &lt;dsjyw.keystore&gt; 的密钥口令        (如果和密钥库口令相同, 按回车):
-
-打包1、打开Hbuilder，发行，发行为原生安装包。
-2、使用自有证书；Android包名是自动生成的，不需要修改，也可以修改为自己喜欢的包名；证书别名和私钥密码是生成keystore时配置的；证书文件选择生成的keystore文件。
-3、打包，之后会自动上传源码，打包好后下载到app存放目录中。
-签名1、复制打包下载好的apk文件到dsjyw.keystore相同的目录，重命名apk文件为android-release-unsigned.apk。
-2、打开cmd，执行签名命令jarsigner -verbose -keystore dsjyw.keystore -signedjar dsjyw.apk android-release-unsigned.apk dsjyw.keystore
-说明：jarsigner -verbose -keystore 别名.keystore(密钥库位置) -signedjar 签名后产生的文件.apk要签名的文件.apk 别名.keystore(密钥库)
-查看签名keytool -v -list -keystore dsjyw.keystore
-找到MD5: 70:1D:81:1E:D3:A6:8B:28:66:82:BA:D8:EB:79:DC:63
-新浪创建移动应用时要求的是32位数字小写字母，把前面的这串数字中的冒号去掉，字母小写即可。
-腾讯开放平台创建安卓应用1、登录腾讯开放平台
-2、安卓应用，创建应用。
-3、关联QQ互联，输入联盟网web应用的appid和appkey，确定。之所以关联QQ互联，是为了统一appid，否则，web登录和app登录获得的是不同的openid。
-如果关联QQ互联后，创建应用失败，提示“对不起，您不是应用的创建者或协作者(1500401)”。
-可能一：不是协作者。请先使用联盟网web应用所在账号登录，在管理中心页面，滑动鼠标到右上角用户名，单击权限权限管理，添加协作者。
-可能二：账号冲突。之前的web应用在QQ互联上，此时，不要在浏览器中同时打开腾讯开放平台和QQ互联，也不要登录其他的QQ邮箱，有可能账号冲突。
-可能三：开发者资料未提交审核。
-4、选择移动应用 安卓，创建应用，选择应用类型，确定。此时创建的安卓应用，它的appid和appkey就和联盟网web应用相同了。
-5、按照提示，填写需要的字段即可。需要注意的是，上传安装包时，需要上传签名后的apk文件。
-6、填写好信息，保存即可，不需要提交审核。如果需要提交审核的话，请先根据提示加固应用。
-创建ios应用1、在安卓应用中，可以看到我们创建的联盟网app，单击它。
-2、鼠标滑到右上角平台信息，单击IOS应用，即可创建IOS应用。该IOS应用的appid和appkey就和联盟网web应用相同，也和安卓应用相同。
-警告，创建ios应用后，此时安卓应用和ios应用实际上是同一个应用。删除任意一个，两个应用就都没有了。
-3、按照提示填写各字段即可。其中比较难的是URL scheme、AppStore ID和Bundle ID，这些信息可以到Apple Developer和itunes connect上查看到。
-新浪开放平台1、登录新浪开放平台
-2、微连接，移动应用，立即接入。勾选Iphone和Android两个平台，创建。
-3、填写应用基本信息。其中比较难的是Android签名，不必使用新浪提供的签名工具，参考本文中的“查看签名”小节，填入得到的32位字符串。
-4、保存信息，提交审核。审核不通过会有详细提示，参考提示修改后再次提交审核。
-5、单击左侧导航栏应用信息，高级信息。OAuth2.0 授权设置中点击编辑，授权回调页和取消授权回调页都填入https://api.weibo.com/oauth2/default.html。
-书签HBuilder 打包流程
-腾讯开放平台创建应用的坑，安卓和iOS端如何共用同一个Appid？
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>android</category>
-      </categories>
-      <tags>
-        <tag>android</tag>
-        <tag>hbuilder</tag>
-        <tag>ios</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>artTemplate模板引擎</title>
-    <url>/dev-arttemplate/</url>
-    <content><![CDATA[前言在开发过程中，常常要实现这样一种效果：获取数据，并且插入到当前页面。最基本的做法是把获取到的数据拼接到一个字符串中，然后使用html()或者append()函数插入到页面中。这种做法，拼接字符串时很麻烦。本文中，小编要介绍一下ArtTemplate，一个超快的前端模板引擎。
-
-
-快速上手编写模板&lt;script id="test" type="text/html"&gt;&lt;h1&gt;&#123;&#123;title&#125;&#125;&lt;/h1&gt;&lt;ul&gt;    &#123;&#123;each list as value i&#125;&#125;        &lt;li&gt;索引 &#123;&#123;i + 1&#125;&#125; ：&#123;&#123;value&#125;&#125;&lt;/li&gt;    &#123;&#123;/each&#125;&#125;&lt;/ul&gt;&lt;/script&gt;
-
-渲染模板var data = &#123;    title: '标签',    list: ['文艺', '博客', '摄影', '电影', '民谣', '旅行', '吉他']&#125;;var html = template('test', data);document.getElementById('content').innerHTML = html;
-
-模板语法注意：简洁语法和原生语法引入的js文件不同。
-简洁语法&#123;&#123;if admin&#125;&#125;    &#123;&#123;include 'admin_content'&#125;&#125;    &#123;&#123;each list&#125;&#125;        &lt;div&gt;&#123;&#123;$index&#125;&#125;. &#123;&#123;$value.user&#125;&#125;&lt;/div&gt;    &#123;&#123;/each&#125;&#125;&#123;&#123;/if&#125;&#125;
-
-原生语法&lt;%if (admin)&#123;%&gt;    &lt;%include('admin_content')%&gt;    &lt;%for (var i=0;i&lt;list.length;i++) &#123;%&gt;        &lt;div&gt;&lt;%=i%&gt;. &lt;%=list[i].user%&gt;&lt;/div&gt;    &lt;%&#125;%&gt;&lt;%&#125;%&gt;
-
-参考文档Arttemplate by auihttp://aui.github.io/artTemplate/
-前端模版artTemplate的介绍及使用http://blog.csdn.net/playboyanta123/article/details/45536501
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-      </categories>
-      <tags>
-        <tag>前端</tag>
-        <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>基于JQuery实现滚动到页面底端时自动加载更多信息</title>
-    <url>/dev-auto-loading-when-scroll-to-the-bottom/</url>
-    <content><![CDATA[这篇文章主要介绍了基于JQuery实现滚动到页面底端时自动加载更多信息，类似微博，新浪新闻的评论等，都采用了这方法,需要的朋友可以参考下关键代码：
-var stop=true; $(window).scroll(function()&#123;     totalheight = parseFloat($(window).height()) + parseFloat($(window).scrollTop());     if($(document).height() &lt;= totalheight)&#123;         if(stop==true)&#123;             stop=false;             $.post("ajax.php", &#123;start:1, n:50&#125;,function(txt)&#123;                 $("#Loading").before(txt);                 stop=true;             &#125;,"text");         &#125;     &#125; &#125;);
-
-
-
-HTML代码如下:
-&lt;div id="Loading"&gt;Loading...&lt;/div&gt;
-
-实现方法是比较页面总高度和下滚高度以判断是否到达底端，若到达底端则通过ajax读取更多的内容，用before插入到Loading之前。stop参数是考虑到ajax读取耗时，防止在一次ajax读取过程中多次触发事件，造成多次加载内容。
-转载自http://www.3lian.com/edu/2014/02-10/127916.html
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>jquery</category>
-      </categories>
-      <tags>
-        <tag>前端</tag>
-        <tag>jquery</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Go语言开发的小技巧</title>
     <url>/dev-golang-skills/</url>
     <content><![CDATA[前言最近学到了一些Go语言开发时的小技巧，做下记录。
@@ -6281,8 +6281,8 @@ server &#123;    listen 80;    listen 443 ssl;    server_name www.voidking.com; 
 ]]></content>
       <categories>
         <category>专业</category>
-        <category>运维</category>
         <category>开发</category>
+        <category>运维</category>
         <category>hexo</category>
         <category>nginx</category>
       </categories>
@@ -6939,8 +6939,8 @@ after_success:- git config --global user.name "voidking"- git config --global us
 ]]></content>
       <categories>
         <category>专业</category>
-        <category>运维</category>
         <category>开发</category>
+        <category>运维</category>
         <category>hexo</category>
         <category>CICD</category>
       </categories>
@@ -7359,8 +7359,8 @@ Service Account Key PairKube Proxy Client CertificateKubelet Client Certificates
       <categories>
         <category>专业</category>
         <category>运维</category>
-        <category>k8s</category>
         <category>docker</category>
+        <category>k8s</category>
       </categories>
       <tags>
         <tag>k8s</tag>
@@ -7438,8 +7438,8 @@ Linux 守护进程的启动方法http://www.ruanyifeng.com/blog/2016/02/linux-da
 ]]></content>
       <categories>
         <category>专业</category>
-        <category>运维</category>
         <category>开发</category>
+        <category>运维</category>
         <category>node</category>
         <category>centos</category>
       </categories>
@@ -7852,8 +7852,8 @@ ETCDCTL_API=3 etcdctl \--endpoints=https://[127.0.0.1]:2379 \--cacert=/etc/kuber
       <categories>
         <category>专业</category>
         <category>运维</category>
-        <category>k8s</category>
         <category>docker</category>
+        <category>k8s</category>
       </categories>
       <tags>
         <tag>k8s</tag>
@@ -7990,8 +7990,8 @@ for i in `env | grep -E -i 'SERVICE|HOST|ADDR|PORT' | sed 's/=.*//'` ; do unset 
       <categories>
         <category>专业</category>
         <category>运维</category>
-        <category>k8s</category>
         <category>docker</category>
+        <category>k8s</category>
       </categories>
       <tags>
         <tag>k8s</tag>
@@ -8063,8 +8063,8 @@ error: You must be logged in to the server (Unauthorized)
       <categories>
         <category>专业</category>
         <category>运维</category>
-        <category>k8s</category>
         <category>docker</category>
+        <category>k8s</category>
       </categories>
       <tags>
         <tag>k8s</tag>
@@ -8351,8 +8351,8 @@ sonobuoy官网地址：sonobuoy源码地址：vmware-tanzu/sonobuoy
       <categories>
         <category>专业</category>
         <category>运维</category>
-        <category>k8s</category>
         <category>docker</category>
+        <category>k8s</category>
       </categories>
       <tags>
         <tag>k8s</tag>
@@ -8425,8 +8425,8 @@ apt-get install kubeadm=1.12.0-00apt-get install kubelet=1.12.0-00kubeadm upgrad
       <categories>
         <category>专业</category>
         <category>运维</category>
-        <category>k8s</category>
         <category>docker</category>
+        <category>k8s</category>
       </categories>
       <tags>
         <tag>k8s</tag>
@@ -9187,85 +9187,6 @@ MAVEN安装JAR文件到本地仓库
       <tags>
         <tag>java</tag>
         <tag>maven</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>瀑布流特效</title>
-    <url>/dev-jquery-waterfall/</url>
-    <content><![CDATA[原理假设页面上有三列图片，当我们下拉时，最短（或最长）的一列图片展示完的时候，就要请求加载新的图片，获取到的新的图片放到最短一列图片的下面。
-尝试过用原生js或jquery实现瀑布流，源码放在本文最后。下面记录一种使用imageloaded和masonry插件实现的瀑布流，更简便。
-
-
-imageloaded和masonryejs代码：
-&lt;div id="meitulist" class="meitulist"&gt;    &lt;% data.obj.pictureList.forEach(function(picture)&#123; %&gt;        &lt;a href="/inspiration/imagedetail/&lt;%= picture.albumId%&gt;" class="item"&gt;            &lt;img src="&lt;%= picture.url%&gt;" /&gt;        &lt;/a&gt;    &lt;% &#125;)%&gt;&lt;/div&gt;
-
-每次加载图片并插入后，执行resetImage()函数。
-function resetImage()&#123;    var width = document.documentElement.clientWidth;    var column = width&gt;320? 3 : 2;    var itemWidth = Math.ceil((width-(column+1)*10)/column);    $('.meitulist .item').css('width',itemWidth);    $('.meitulist .item img').css(&#123;        'width':itemWidth        // 'height': itemWidth    &#125;)    window.imagesLoaded('#meitulist', function() &#123;        var msnry = new Masonry('#meitulist',&#123;            'columnWidth': itemWidth,            'itemSelector': '.item',            'isAnimated':true,            // 'percentPosition':true,            'gutter': 10        &#125;);    &#125;);&#125;
-
-js和jquery源码https://github.com/voidking/front-end-demo/tree/master/%E7%80%91%E5%B8%83%E6%B5%81
-参考文档瀑布流特效http://www.cnblogs.com/Leo_wl/p/4306295.html
-Masonry官网http://masonry.desandro.com/
-mosonry项目地址：https://github.com/desandro/masonry
-imagesLoaded官网http://imagesloaded.desandro.com/
-imagesloaded项目地址：https://github.com/desandro/imagesloaded
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>jquery</category>
-      </categories>
-      <tags>
-        <tag>前端</tag>
-        <tag>插件</tag>
-        <tag>jquery</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>jQuery学习笔记——概述篇</title>
-    <url>/dev-jquery-start/</url>
-    <content><![CDATA[jQuery是什么jQuery是一个兼容多浏览器的Javascript库，类似于C语言中的”.h”文件和Java中的”.jar” 文件。
-核心理念是write less,do more(写得更少,做得更多)。
-jQuery是免费、开源的，使用MIT许可协议。jQuery的语法设计可以使开发者更加便捷，例如操作文档对象、选择DOM元素、制作动画效果、事件处理、使用Ajax以及其他功能。除此以外，jQuery提供API让开发者编写插件。其模块化的使用方式使开发者可以很轻松的开发出功能强大的静态或动态网页。
-jQuery能够做什么1、简化编程。jQuery最大的优点，是简化了Javascript编程。本来需要很多行代码才能完成的功能，使用jQuery，时常一两行就够了。
-2、跨平台。使用Javascript开发，是一件痛苦的事情，因为你不得不考虑到各种浏览器的兼容问题。而使用jQuery，你编写的程序可以很容易地实现跨浏览器平台。
-
-jQuery简史jQuery在2006年1月由美国人John Resig在纽约的barcamp发布，吸引了来自世界各地的众多JavaScript高手加入，由Dave Methvin率领团队进行开发。
-如今，jQuery已经成为最流行的javascript库，在世界前10000个访问最多的网站中，有超过55%在使用jQuery。
-在写这篇文章的时候，在谷歌搜索jQuery，返回大约 85,900,000条结果。jQuery每天都有新的官方插件和第三方插件产生，它们不断扩展jQuery的核心功能。
-hello voidkingC语言写的第一个程序是helloworld，今天，void自恋一把，第一个程序就和自己打招呼了！
-1、官网下载jQuery文件（这里我使用的是jquery-1.10.2.js）。
-2、新建index.html文件，内容如下：
-&lt;html&gt;&lt;head&gt;		&lt;script type="text/javascript" src="jquery-1.10.2.js"&gt;&lt;/script&gt;	&lt;script type="text/javascript"&gt;		$(function()&#123;			alert("hello voidking");			$("p").css("color","red");		&#125;);	&lt;/script&gt;&lt;/head&gt;&lt;body&gt;	&lt;p&gt;		welcome to jQuery world !	&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
-
-3、打开浏览器，看到弹出的对话框了吧？大功告成！下面的内容，会对此程序作出解释。
-$jQuery的一切功能都源自”$”对象，即一个美元符号对象（或美元符号方法），它可以用”jQuery”来代替。
-美元符号既是一个对象，也是一个方法。这是因为它具有很多成员属性和方法可以调用，同时可以把它当成一个函数来调用。
-延迟加载我们在hellovoidking的代码中，使用$(function(){});进行首尾包裹，那么为什么要包裹这段代码呢？原因是，jQuery库文件是在body元素之前加载的，我们必须等待所有的DOM元素加载后，延迟支持DOM操作，否则就无法获取到。
-为了延迟等待加载，JavaScript提供了一个事件为load，方法如下：
-window.onload = function()&#123;&#125;;
-而jQuery提供的方法如下：
-$(document).ready(function()&#123;&#125;);
-什么东东？和hello voidking中的代码不一样啊？原来，jQuery的延迟加载方法可以简写为：
-$(function()&#123;&#125;);
-
-jQuery选择器jQuery最核心的组成部分就是：选择器引擎。用iPhone式的格言来说，“让选择器完成一切”就是jQuery的座右铭。
-在使用jQuery的任何方法时，首先要做的就是选择页面中要操作的那些元素。
-jQuery选择器继承了CSS的语法，可以对DOM元素的标签名、属性名、状态等进行快速准确的选择，并且不必担心浏览器的兼容性。jQuery选择器实现了CSS1~CSS3的大部分规则之外，还实现了一些自定义的选择器，用于各种特殊状态的选择。
-选择器部分内容很多，我会在下一篇文章中详细研究探讨。
-事件处理对于事件的概念，我在《Javascript学习笔记——基础篇》中已经解释过，这里不再赘述。jQuery的事件处理，内容也很多，我会在接下来的文章中探究。
-AjaxjQuery的Ajax也是重点，必须的展开。我靠，肿么这么多！别吐槽了帅哥，写教程的void都快哭了，赶着去搞XMPP呢！
-调试个人喜欢的工具是：火狐浏览器 + firebug。
-结束语jQuery博大精深，还有什么单元测试、插件、特效制作啥的，void就不多说了，感兴趣的小伙伴自己查找资料吧！
-参考文档李炎恢的jQuery视频教程《jQuery攻略（作者B.M.Harwani）》《jQuery实战（作者Bear Bibeault、Yehuda Katz）》《jQuery高级编程（作者 Cesar Otero、Rob Larsen）》《jQuery Javascript 与CSS开发入门经典（作者Richard York）》
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>jquery</category>
-      </categories>
-      <tags>
-        <tag>jquery</tag>
-        <tag>javascript</tag>
       </tags>
   </entry>
   <entry>
@@ -10763,6 +10684,85 @@ git添加 .ignore 忽略http://www.thinksaas.cn/topics/0/487/487787.html
       <tags>
         <tag>git</tag>
         <tag>node</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>瀑布流特效</title>
+    <url>/dev-jquery-waterfall/</url>
+    <content><![CDATA[原理假设页面上有三列图片，当我们下拉时，最短（或最长）的一列图片展示完的时候，就要请求加载新的图片，获取到的新的图片放到最短一列图片的下面。
+尝试过用原生js或jquery实现瀑布流，源码放在本文最后。下面记录一种使用imageloaded和masonry插件实现的瀑布流，更简便。
+
+
+imageloaded和masonryejs代码：
+&lt;div id="meitulist" class="meitulist"&gt;    &lt;% data.obj.pictureList.forEach(function(picture)&#123; %&gt;        &lt;a href="/inspiration/imagedetail/&lt;%= picture.albumId%&gt;" class="item"&gt;            &lt;img src="&lt;%= picture.url%&gt;" /&gt;        &lt;/a&gt;    &lt;% &#125;)%&gt;&lt;/div&gt;
+
+每次加载图片并插入后，执行resetImage()函数。
+function resetImage()&#123;    var width = document.documentElement.clientWidth;    var column = width&gt;320? 3 : 2;    var itemWidth = Math.ceil((width-(column+1)*10)/column);    $('.meitulist .item').css('width',itemWidth);    $('.meitulist .item img').css(&#123;        'width':itemWidth        // 'height': itemWidth    &#125;)    window.imagesLoaded('#meitulist', function() &#123;        var msnry = new Masonry('#meitulist',&#123;            'columnWidth': itemWidth,            'itemSelector': '.item',            'isAnimated':true,            // 'percentPosition':true,            'gutter': 10        &#125;);    &#125;);&#125;
+
+js和jquery源码https://github.com/voidking/front-end-demo/tree/master/%E7%80%91%E5%B8%83%E6%B5%81
+参考文档瀑布流特效http://www.cnblogs.com/Leo_wl/p/4306295.html
+Masonry官网http://masonry.desandro.com/
+mosonry项目地址：https://github.com/desandro/masonry
+imagesLoaded官网http://imagesloaded.desandro.com/
+imagesloaded项目地址：https://github.com/desandro/imagesloaded
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>jquery</category>
+      </categories>
+      <tags>
+        <tag>前端</tag>
+        <tag>插件</tag>
+        <tag>jquery</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>jQuery学习笔记——概述篇</title>
+    <url>/dev-jquery-start/</url>
+    <content><![CDATA[jQuery是什么jQuery是一个兼容多浏览器的Javascript库，类似于C语言中的”.h”文件和Java中的”.jar” 文件。
+核心理念是write less,do more(写得更少,做得更多)。
+jQuery是免费、开源的，使用MIT许可协议。jQuery的语法设计可以使开发者更加便捷，例如操作文档对象、选择DOM元素、制作动画效果、事件处理、使用Ajax以及其他功能。除此以外，jQuery提供API让开发者编写插件。其模块化的使用方式使开发者可以很轻松的开发出功能强大的静态或动态网页。
+jQuery能够做什么1、简化编程。jQuery最大的优点，是简化了Javascript编程。本来需要很多行代码才能完成的功能，使用jQuery，时常一两行就够了。
+2、跨平台。使用Javascript开发，是一件痛苦的事情，因为你不得不考虑到各种浏览器的兼容问题。而使用jQuery，你编写的程序可以很容易地实现跨浏览器平台。
+
+jQuery简史jQuery在2006年1月由美国人John Resig在纽约的barcamp发布，吸引了来自世界各地的众多JavaScript高手加入，由Dave Methvin率领团队进行开发。
+如今，jQuery已经成为最流行的javascript库，在世界前10000个访问最多的网站中，有超过55%在使用jQuery。
+在写这篇文章的时候，在谷歌搜索jQuery，返回大约 85,900,000条结果。jQuery每天都有新的官方插件和第三方插件产生，它们不断扩展jQuery的核心功能。
+hello voidkingC语言写的第一个程序是helloworld，今天，void自恋一把，第一个程序就和自己打招呼了！
+1、官网下载jQuery文件（这里我使用的是jquery-1.10.2.js）。
+2、新建index.html文件，内容如下：
+&lt;html&gt;&lt;head&gt;		&lt;script type="text/javascript" src="jquery-1.10.2.js"&gt;&lt;/script&gt;	&lt;script type="text/javascript"&gt;		$(function()&#123;			alert("hello voidking");			$("p").css("color","red");		&#125;);	&lt;/script&gt;&lt;/head&gt;&lt;body&gt;	&lt;p&gt;		welcome to jQuery world !	&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+
+3、打开浏览器，看到弹出的对话框了吧？大功告成！下面的内容，会对此程序作出解释。
+$jQuery的一切功能都源自”$”对象，即一个美元符号对象（或美元符号方法），它可以用”jQuery”来代替。
+美元符号既是一个对象，也是一个方法。这是因为它具有很多成员属性和方法可以调用，同时可以把它当成一个函数来调用。
+延迟加载我们在hellovoidking的代码中，使用$(function(){});进行首尾包裹，那么为什么要包裹这段代码呢？原因是，jQuery库文件是在body元素之前加载的，我们必须等待所有的DOM元素加载后，延迟支持DOM操作，否则就无法获取到。
+为了延迟等待加载，JavaScript提供了一个事件为load，方法如下：
+window.onload = function()&#123;&#125;;
+而jQuery提供的方法如下：
+$(document).ready(function()&#123;&#125;);
+什么东东？和hello voidking中的代码不一样啊？原来，jQuery的延迟加载方法可以简写为：
+$(function()&#123;&#125;);
+
+jQuery选择器jQuery最核心的组成部分就是：选择器引擎。用iPhone式的格言来说，“让选择器完成一切”就是jQuery的座右铭。
+在使用jQuery的任何方法时，首先要做的就是选择页面中要操作的那些元素。
+jQuery选择器继承了CSS的语法，可以对DOM元素的标签名、属性名、状态等进行快速准确的选择，并且不必担心浏览器的兼容性。jQuery选择器实现了CSS1~CSS3的大部分规则之外，还实现了一些自定义的选择器，用于各种特殊状态的选择。
+选择器部分内容很多，我会在下一篇文章中详细研究探讨。
+事件处理对于事件的概念，我在《Javascript学习笔记——基础篇》中已经解释过，这里不再赘述。jQuery的事件处理，内容也很多，我会在接下来的文章中探究。
+AjaxjQuery的Ajax也是重点，必须的展开。我靠，肿么这么多！别吐槽了帅哥，写教程的void都快哭了，赶着去搞XMPP呢！
+调试个人喜欢的工具是：火狐浏览器 + firebug。
+结束语jQuery博大精深，还有什么单元测试、插件、特效制作啥的，void就不多说了，感兴趣的小伙伴自己查找资料吧！
+参考文档李炎恢的jQuery视频教程《jQuery攻略（作者B.M.Harwani）》《jQuery实战（作者Bear Bibeault、Yehuda Katz）》《jQuery高级编程（作者 Cesar Otero、Rob Larsen）》《jQuery Javascript 与CSS开发入门经典（作者Richard York）》
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>jquery</category>
+      </categories>
+      <tags>
+        <tag>jquery</tag>
+        <tag>javascript</tag>
       </tags>
   </entry>
   <entry>
@@ -12541,8 +12541,8 @@ import osimport jsonres = os.popen('sh main.sh')data = json.loads(res.read())res
 ]]></content>
       <categories>
         <category>专业</category>
-        <category>运维</category>
         <category>开发</category>
+        <category>运维</category>
         <category>python</category>
         <category>shell</category>
       </categories>
@@ -12736,33 +12736,6 @@ two_function#!/bin/bash# Calling one function from anothernumber_one () &#123;  
       </tags>
   </entry>
   <entry>
-    <title>用div模拟input和textarea</title>
-    <url>/dev-simulate-input-by-div/</url>
-    <content><![CDATA[前言先看需求：在输入评论的时候，当评论长度超过一行时，自动换行，同时评论框变高，效果如下。
-然而，input并没有自动换行属性，也就无法实现这个效果；使用textarea，写js控制row？想想就不够优雅！
-经评估，使用div模拟输入框，是最佳方案。
-
-
-html&lt;div class="input-body"&gt;    &lt;div class="left"&gt;        &lt;div class="input"&gt;            &lt;p id="input-comment" contenteditable="true"&gt;&lt;/p&gt;            &lt;p id="input-placeholder"&gt;请输入评论内容&lt;/p&gt;        &lt;/div&gt;                  &lt;/div&gt;    &lt;div class="right"&gt;        &lt;span id="send"&gt;发送&lt;/span&gt;    &lt;/div&gt;  &lt;/div&gt;&lt;div class="input-body-back"&gt;&lt;/div&gt;
-
-scss.input-body&#123;    position: fixed;    border-top: 1px solid #e5e5e5;    border-bottom: 1px solid #e5e5e5;    width: 100%;    bottom: 0;    background: #f7f7f7;    font-size: 1.2rem;    .left&#123;        display: inline-block;        vertical-align: bottom;        width: 80%;        text-align: center;        padding: .5rem;        .input&#123;            position: relative;            #input-comment&#123;                display: inline-block;                width: 92%;                min-height: 2rem;                line-height: 2rem;                text-align: left;                padding: .2rem .5rem;                background: #fff;                border: 1px solid #e5e5e5;                border-radius: 3px;                outline: 0;            &#125;               #input-placeholder&#123;                position: absolute;                top: .5rem;                left: .8rem;                color: #8E8E93;            &#125;        &#125;           &#125;    .right&#123;        display: inline-block;        vertical-align: bottom;        width: 15%;        height: 2.5rem;        text-align: center;        font-weight: bold;        #send&#123;            margin-right: 1rem;            color: #8E8E93;            &amp;.active&#123;                color: #146AF3;            &#125;;        &#125;    &#125;&#125;.input-body-back&#123;    height: 4rem;&#125;
-
-js$('#input-comment').on('input propertychange',function()&#123;    var str = $(this).html();    if(str == '')&#123;        $('#send').removeClass('active');        $('#input-placeholder').show();    &#125;else&#123;        $('#send').addClass('active');        $('#input-placeholder').hide();    &#125;&#125;);$('#send').on('click',function()&#123;    if(!$(this).hasClass('active'))&#123;        return;    &#125;    var comment = $('#input-comment').html();    if(comment.length &gt; 500)&#123;        alert('字数过多，请删减');        return;    &#125;    // ajax请求&#125;);
-
-
-书签div模拟textarea文本域轻松实现高度自适应http://www.zhangxinxu.com/wordpress/2010/12/div-textarea-height-auto/
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>javascript</category>
-      </categories>
-      <tags>
-        <tag>css</tag>
-        <tag>前端</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>用div模拟select</title>
     <url>/dev-simulate-select-by-div/</url>
     <content><![CDATA[前言四不四傻？有select不用，干嘛要用div来模拟select呢？下面来看一个问题：
@@ -12789,6 +12762,33 @@ jsselectMonth2();changeDay2();selectDay2();function selectMonth2()&#123;    var 
         <category>专业</category>
         <category>开发</category>
         <category>css</category>
+        <category>javascript</category>
+      </categories>
+      <tags>
+        <tag>css</tag>
+        <tag>前端</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>用div模拟input和textarea</title>
+    <url>/dev-simulate-input-by-div/</url>
+    <content><![CDATA[前言先看需求：在输入评论的时候，当评论长度超过一行时，自动换行，同时评论框变高，效果如下。
+然而，input并没有自动换行属性，也就无法实现这个效果；使用textarea，写js控制row？想想就不够优雅！
+经评估，使用div模拟输入框，是最佳方案。
+
+
+html&lt;div class="input-body"&gt;    &lt;div class="left"&gt;        &lt;div class="input"&gt;            &lt;p id="input-comment" contenteditable="true"&gt;&lt;/p&gt;            &lt;p id="input-placeholder"&gt;请输入评论内容&lt;/p&gt;        &lt;/div&gt;                  &lt;/div&gt;    &lt;div class="right"&gt;        &lt;span id="send"&gt;发送&lt;/span&gt;    &lt;/div&gt;  &lt;/div&gt;&lt;div class="input-body-back"&gt;&lt;/div&gt;
+
+scss.input-body&#123;    position: fixed;    border-top: 1px solid #e5e5e5;    border-bottom: 1px solid #e5e5e5;    width: 100%;    bottom: 0;    background: #f7f7f7;    font-size: 1.2rem;    .left&#123;        display: inline-block;        vertical-align: bottom;        width: 80%;        text-align: center;        padding: .5rem;        .input&#123;            position: relative;            #input-comment&#123;                display: inline-block;                width: 92%;                min-height: 2rem;                line-height: 2rem;                text-align: left;                padding: .2rem .5rem;                background: #fff;                border: 1px solid #e5e5e5;                border-radius: 3px;                outline: 0;            &#125;               #input-placeholder&#123;                position: absolute;                top: .5rem;                left: .8rem;                color: #8E8E93;            &#125;        &#125;           &#125;    .right&#123;        display: inline-block;        vertical-align: bottom;        width: 15%;        height: 2.5rem;        text-align: center;        font-weight: bold;        #send&#123;            margin-right: 1rem;            color: #8E8E93;            &amp;.active&#123;                color: #146AF3;            &#125;;        &#125;    &#125;&#125;.input-body-back&#123;    height: 4rem;&#125;
+
+js$('#input-comment').on('input propertychange',function()&#123;    var str = $(this).html();    if(str == '')&#123;        $('#send').removeClass('active');        $('#input-placeholder').show();    &#125;else&#123;        $('#send').addClass('active');        $('#input-placeholder').hide();    &#125;&#125;);$('#send').on('click',function()&#123;    if(!$(this).hasClass('active'))&#123;        return;    &#125;    var comment = $('#input-comment').html();    if(comment.length &gt; 500)&#123;        alert('字数过多，请删减');        return;    &#125;    // ajax请求&#125;);
+
+
+书签div模拟textarea文本域轻松实现高度自适应http://www.zhangxinxu.com/wordpress/2010/12/div-textarea-height-auto/
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
         <category>javascript</category>
       </categories>
       <tags>
@@ -14049,8 +14049,8 @@ git add .git commmit -m "添加travis.yml"git push
 ]]></content>
       <categories>
         <category>专业</category>
-        <category>运维</category>
         <category>开发</category>
+        <category>运维</category>
         <category>hexo</category>
         <category>CICD</category>
       </categories>
@@ -14814,8 +14814,8 @@ gv重选刚才选择的选区，o在选择区两端跳动。ctrl+v、3j垂直下
       <categories>
         <category>专业</category>
         <category>运维</category>
-        <category>linux</category>
         <category>工具</category>
+        <category>linux</category>
         <category>编辑器</category>
       </categories>
       <tags>
@@ -17742,6 +17742,25 @@ rainmeterrainmeter（雨滴），个人比较满意的一款桌面美化工具�
       </tags>
   </entry>
   <entry>
+    <title>13-14寒假学习计划</title>
+    <url>/essay-13-14-the-winter-vacation-learning-plan/</url>
+    <content><![CDATA[一、Java1、线程√2、集合√3、泛型√4、反射机制√5、网络编程√6、枚举√7、持久化Hibernate√
+1、jsp serverlet Tomcat√2、java webservice————————————3、javaAPIrestful4、服务器 jboss jetty glassfish5、框架 Struts JPA spring framework6、23种设计模式√
+
+二、前端1、html2、css3、javascript————————1、jquery2、extjs3、angularjs
+三、Android
+四、数据库1、基本操作 mysql oracle db2 sqlite √2、优化3、事务
+五、帮助1、stackoverflow2、谷歌开发者3、插件4、5431156375、oracle官网
+java基础看完。23种设计模式junit或者testng单元测试hudson集成测试subversion版本控制和管理maven依赖管理尽可能对软件研发有一个总体的了解
+]]></content>
+      <categories>
+        <category>随笔</category>
+      </categories>
+      <tags>
+        <tag>随笔</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>良朋益友</title>
     <url>/hobby-good-friend/</url>
     <content><![CDATA[作者：魏悌香
@@ -18497,6 +18516,24 @@ m3u8转mp4手机QQ浏览器的视频下载功能确实强大，大部分能看�
       </tags>
   </entry>
   <entry>
+    <title>Markdown文档导出为pdf</title>
+    <url>/hobby-markdown-to-pdf/</url>
+    <content><![CDATA[一直非常眼热Mac下的Mou，从Markdown导出pdf非常方便，而且格式良好。
+没有Mac，只能找一些Windows下可以使用的工具。之前一直使用MarkdownPad2，这货导出格式特别难看就算了，而且，收费！
+今天找到了另一种方式，虽然麻烦了一点点，但是格式很不错。现记录如下：1、使用在线编辑器StackEdit：https://stackedit.io/editor
+2、预览
+3、打印打印时保存为pdf。
+4、添加书签使用福昕PDF阅读器添加书签（包括子目录书签）。
+]]></content>
+      <categories>
+        <category>爱好</category>
+        <category>电脑</category>
+      </categories>
+      <tags>
+        <tag>markdown</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>士之德操</title>
     <url>/hobby-men-of-morality/</url>
     <content><![CDATA[作者：张艺谋
@@ -18541,43 +18578,6 @@ m3u8转mp4手机QQ浏览器的视频下载功能确实强大，大部分能看�
       </categories>
       <tags>
         <tag>读者</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Markdown文档导出为pdf</title>
-    <url>/hobby-markdown-to-pdf/</url>
-    <content><![CDATA[一直非常眼热Mac下的Mou，从Markdown导出pdf非常方便，而且格式良好。
-没有Mac，只能找一些Windows下可以使用的工具。之前一直使用MarkdownPad2，这货导出格式特别难看就算了，而且，收费！
-今天找到了另一种方式，虽然麻烦了一点点，但是格式很不错。现记录如下：1、使用在线编辑器StackEdit：https://stackedit.io/editor
-2、预览
-3、打印打印时保存为pdf。
-4、添加书签使用福昕PDF阅读器添加书签（包括子目录书签）。
-]]></content>
-      <categories>
-        <category>爱好</category>
-        <category>电脑</category>
-      </categories>
-      <tags>
-        <tag>markdown</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>13-14寒假学习计划</title>
-    <url>/essay-13-14-the-winter-vacation-learning-plan/</url>
-    <content><![CDATA[一、Java1、线程√2、集合√3、泛型√4、反射机制√5、网络编程√6、枚举√7、持久化Hibernate√
-1、jsp serverlet Tomcat√2、java webservice————————————3、javaAPIrestful4、服务器 jboss jetty glassfish5、框架 Struts JPA spring framework6、23种设计模式√
-
-二、前端1、html2、css3、javascript————————1、jquery2、extjs3、angularjs
-三、Android
-四、数据库1、基本操作 mysql oracle db2 sqlite √2、优化3、事务
-五、帮助1、stackoverflow2、谷歌开发者3、插件4、5431156375、oracle官网
-java基础看完。23种设计模式junit或者testng单元测试hudson集成测试subversion版本控制和管理maven依赖管理尽可能对软件研发有一个总体的了解
-]]></content>
-      <categories>
-        <category>随笔</category>
-      </categories>
-      <tags>
-        <tag>随笔</tag>
       </tags>
   </entry>
   <entry>
@@ -22097,11 +22097,11 @@ nginx + uwsgi（socket方式）
 ]]></content>
       <categories>
         <category>专业</category>
-        <category>运维</category>
         <category>开发</category>
+        <category>运维</category>
         <category>python</category>
-        <category>centos</category>
         <category>django</category>
+        <category>centos</category>
       </categories>
       <tags>
         <tag>python</tag>
@@ -22271,11 +22271,11 @@ Django 部署(Nginx)
 ]]></content>
       <categories>
         <category>专业</category>
-        <category>运维</category>
         <category>开发</category>
+        <category>运维</category>
         <category>python</category>
-        <category>centos</category>
         <category>django</category>
+        <category>centos</category>
       </categories>
       <tags>
         <tag>python</tag>
@@ -22283,110 +22283,6 @@ Django 部署(Nginx)
         <tag>centos</tag>
         <tag>supervisor</tag>
         <tag>uwsgi</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>使用Docker安装配置Apache和PHP环境（微擎环境）</title>
-    <url>/dev-docker-apache-php/</url>
-    <content><![CDATA[前言《在CentOS7上配置PHP运行环境》一文中学习了安装配置LNMP环境，《CentOS安装Apache和PHP环境》一文中学习了安装配置Apache和PHP环境。
-本文学习使用Docker安装配置Apache和PHP，与Mysql结合，搭建一个容器化的LAMP环境，部署微擎服务。
-前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。已知docker宿主机IP为192.168.56.130。
-
-
-安装Mysql参考《使用Docker安装配置Mysql》，安装好mysql server和mysql client。
-1、登录mysql servermysql -h 127.0.0.1 -u root -p
-2、创建数据库
-create database `w7` default character set utf8 collate utf8_general_ci;
-
-安装PHP1、登录dockerhub查看需要的PHP - Docker Official Images。
-2、下载php镜像（以7.2-apache为例）docker pull php:7.2-apache
-选择带有apache的版本，省去了安装apache的步骤。
-3、启动php和apache服务
-docker run --name vk-php -d \-p 8080:80 \-v /opt/php/w7:/var/www/html \php:7.2-apache
-
-以上命令：
-
-命名容器为vk-php，后台运行
-映射宿主机8080端口到容器的80端口
-挂载宿主机目录/opt/php/w7到容器目录/var/www/html
-
-更多启动命令参数可以参考How to use this image。
-4、创建测试文件vim /opt/php/w7/index.php，内容为：
-&lt;?php    echo 'hello php7.2';?&gt;
-
-5、验证安装curl localhost:8080，可以看到hello php7.2。浏览器访问 http://192.168.56.130:8080 ，可以看到hello php7.2。
-以上，apache和php环境安装配置完成。
-安装微擎初始尝试主要参考《微擎系统搭建》和微擎linux服务器安装。1、下载微擎安装引导文件
-cd /opt/php/w7wget https://cdn.w7.cc/download/WeEngine-Laster-Online.zipunzip WeEngine-Laster-Online.zip
-
-2、浏览器访问安装页面http://192.168.56.130:8080/install.php填入用户名密码后，点击验证后安装微擎。没有通过验证，如下图：由报错看，主要是目录权限问题和缺少扩展问题。
-重做镜像1、修改sources.list在容器中查看/etc/apt/sources.list，发现镜像版本是debian buster，因此新建一个sources.list为：
-deb http://mirrors.aliyun.com/debian/ buster main non-free contribdeb-src http://mirrors.aliyun.com/debian/ buster main non-free contribdeb http://mirrors.aliyun.com/debian-security buster/updates maindeb-src http://mirrors.aliyun.com/debian-security buster/updates maindeb http://mirrors.aliyun.com/debian/ buster-updates main non-free contribdeb-src http://mirrors.aliyun.com/debian/ buster-updates main non-free contribdeb http://mirrors.aliyun.com/debian/ buster-backports main non-free contribdeb-src http://mirrors.aliyun.com/debian/ buster-backports main non-free contrib
-
-2、编写Dockerfile
-FROM php:7.2-apacheCOPY sources.list /etc/apt/sources.listRUN apt-get update &amp;&amp; apt-get install -y libpng-dev libzip-dev \    &amp;&amp; docker-php-ext-install zip gd pdo pdo_mysqlRUN chmod 777 /var/www/html
-
-3、生成新镜像docker build -t voidking/w7:v1.0 .
-再次尝试1、删除原有容器
-docker stop vk-phpdocker rm vk-php
-
-2、启动新的容器
-docker run --name vk-php -d \-p 8080:80 \-v /opt/php/w7:/var/www/html \voidking/w7:v1.0
-
-3、再次安装，再次验证可以看到，这次还剩一个问题：外网不可访问。这就奇怪了，在容器内明明是可以正常访问外网的，为啥报这个错？既然没错，那就忽略它好了。但是这个错存在，就无法进行下一步，因此这里我们换一种安装方式：源码安装。
-源码安装1、下载源码
-cd /opt/php/w7rm -rf ./*cd ..git clone https://gitee.com/we7coreteam/pros.git w7
-
-2、再次安装，再次验证nice，完美跳过了外网不可访问这个坑。然后，data目录权限报错。修改data目录权限，chmod 777 /opt/php/w7/data/，问题解决。
-3、填入数据库连接信息，以及管理员用户名密码
-4、然后，安装完成。
-5、测试访问浏览器访问首页 http://192.168.56.130:8080/index.php ，即会跳转到微擎登录页。
-以上，微擎系统安装配置完成，可以愉快地使用了。
-百度云解析备案失败百度智能云年终盛典，全场云服务器一折起，于是151块钱入手了一台1C2G2M的百度云BCC主机。但是，没有想到的是，网站需要新增接入备案，否则无法使用域名！！！这个不怪百度，如果使用百度云备案成功，以后想要接入阿里云或者腾讯云，也需要新增接入备案。
-不过百度云比较坑的有两点：第一点是备案期间域名不能解析，而阿里云备案期间可以正常解析。第二点是无法通过百度云的备案审核，提交备案后百度云给出了六条不符合审核条件的理由，而同样的审核材料，一个月前在阿里云通过了备案审核。
-真的是没有对比就没有伤害，第一个念头是退货，然而退货失败。不能退货，那该怎样使用这台服务器呢？那该怎样在这台服务器上部署服务，然后通过域名访问呢？
-在github找到了一些项目，awesome-selfhosted，想要部署一些不需要域名的服务，好歹给利用起来了。但是，依然不甘心，想要给这些服务加上域名！然后，真的找到了办法！前提是你还有一台可以进行域名接入的主机，无论是备案过的阿里云主机，还是不需要备案的海外主机，都可以。
-解析方案已知两台主机：可以域名接入的主机（主机A），百度云主机（主机B）。我们在主机B上部署好了微擎服务，想要给这个服务添加一个域名：w7.voidking.com 
-1、安装frp参考《使用frp进行内网穿透》，在主机A上安装配置好frp server，在主机B上安装配置好frp client。主机B上的8080端口，映射为主机A上的3480端口。
-2、nginx配置在主机A上，添加nginx解析 w7.voidking.com.conf ，内容为：
-server &#123;    server_name w7.voidking.com;    listen 80;    location / &#123;        proxy_pass http://127.0.0.1:3480/;        proxy_set_header X-Real-IP $remote_addr;    &#125;&#125;
-
-注意，不用多加其他参数，不然会出现502等错误。
-3、域名解析在dnspod上添加A记录解析到主机A。
-以上，可以通过域名访问百度云上的微擎服务了。
-微擎后续问题站点URL问题确实可以通过域名访问微擎服务了，但是站点的很多请求地址为 127.0.0.1:3480 ，因为微擎服务使用proxy_pass里的URL作为了站点URL。我们想让微擎服务把域名作为站点URL，解决办法很简单，添加：
-proxy_set_header Host $http_host;
-但是，添加完这个参数，就会出现502错误，尴尬了吧。。。nginx层没法进行修复，看来这个问题只能通过修改微擎源码来修复了。编辑/opt/php/w7/framework/bootstrap.inc.php，如下修改：
-# line 90, change// $_W['siteroot'] = htmlspecialchars($_W['sitescheme'] . (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '') . $sitepath);$_W['siteroot'] = 'w7.voidking.com';
-
-然后，请求地址就全部变成 w7.voidking.com ，nice。
-跨域问题但是，一些请求报错：
-Access to XMLHttpRequest at 'javascript:;' from origin 'http://w7.voidking.com' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, chrome-extension, https.
-
-明明都是同一个url，居然还是跨域错误，没有找到解决办法。
-重装微擎既然自己安装微擎问题这么多，那就使用官网给的docker镜像好了，参考docker安装微擎。
-1、删除原有环境
-docker stop vk-phpdocker rm vk-php
-
-2、启动新的容器
-docker run -it --name vk-php -d \-p 8080:80 \-v /opt/w7/mysql:/var/lib/mysql \-v /opt/w7/html:/var/www/html \-e MYSQL\_ROOT\_PASSWORD=123456 -d \--restart=always \ccr.ccs.tencentyun.com/weiqing/nginxphpmysql:1.0
-
-3、重新安装微擎http://ip:8080/install.php
-4、设置用户名密码
-5、同样修改微擎源码，修改站点URL。
-然后，同样有跨域问题，但是站点已经可以正常使用了，就先这么滴吧。
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>开发</category>
-        <category>docker</category>
-        <category>php</category>
-      </categories>
-      <tags>
-        <tag>docker</tag>
-        <tag>apache</tag>
-        <tag>php</tag>
       </tags>
   </entry>
   <entry>
@@ -22823,6 +22719,110 @@ $1
       </tags>
   </entry>
   <entry>
+    <title>使用Docker安装配置Apache和PHP环境（微擎环境）</title>
+    <url>/dev-docker-apache-php/</url>
+    <content><![CDATA[前言《在CentOS7上配置PHP运行环境》一文中学习了安装配置LNMP环境，《CentOS安装Apache和PHP环境》一文中学习了安装配置Apache和PHP环境。
+本文学习使用Docker安装配置Apache和PHP，与Mysql结合，搭建一个容器化的LAMP环境，部署微擎服务。
+前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。已知docker宿主机IP为192.168.56.130。
+
+
+安装Mysql参考《使用Docker安装配置Mysql》，安装好mysql server和mysql client。
+1、登录mysql servermysql -h 127.0.0.1 -u root -p
+2、创建数据库
+create database `w7` default character set utf8 collate utf8_general_ci;
+
+安装PHP1、登录dockerhub查看需要的PHP - Docker Official Images。
+2、下载php镜像（以7.2-apache为例）docker pull php:7.2-apache
+选择带有apache的版本，省去了安装apache的步骤。
+3、启动php和apache服务
+docker run --name vk-php -d \-p 8080:80 \-v /opt/php/w7:/var/www/html \php:7.2-apache
+
+以上命令：
+
+命名容器为vk-php，后台运行
+映射宿主机8080端口到容器的80端口
+挂载宿主机目录/opt/php/w7到容器目录/var/www/html
+
+更多启动命令参数可以参考How to use this image。
+4、创建测试文件vim /opt/php/w7/index.php，内容为：
+&lt;?php    echo 'hello php7.2';?&gt;
+
+5、验证安装curl localhost:8080，可以看到hello php7.2。浏览器访问 http://192.168.56.130:8080 ，可以看到hello php7.2。
+以上，apache和php环境安装配置完成。
+安装微擎初始尝试主要参考《微擎系统搭建》和微擎linux服务器安装。1、下载微擎安装引导文件
+cd /opt/php/w7wget https://cdn.w7.cc/download/WeEngine-Laster-Online.zipunzip WeEngine-Laster-Online.zip
+
+2、浏览器访问安装页面http://192.168.56.130:8080/install.php填入用户名密码后，点击验证后安装微擎。没有通过验证，如下图：由报错看，主要是目录权限问题和缺少扩展问题。
+重做镜像1、修改sources.list在容器中查看/etc/apt/sources.list，发现镜像版本是debian buster，因此新建一个sources.list为：
+deb http://mirrors.aliyun.com/debian/ buster main non-free contribdeb-src http://mirrors.aliyun.com/debian/ buster main non-free contribdeb http://mirrors.aliyun.com/debian-security buster/updates maindeb-src http://mirrors.aliyun.com/debian-security buster/updates maindeb http://mirrors.aliyun.com/debian/ buster-updates main non-free contribdeb-src http://mirrors.aliyun.com/debian/ buster-updates main non-free contribdeb http://mirrors.aliyun.com/debian/ buster-backports main non-free contribdeb-src http://mirrors.aliyun.com/debian/ buster-backports main non-free contrib
+
+2、编写Dockerfile
+FROM php:7.2-apacheCOPY sources.list /etc/apt/sources.listRUN apt-get update &amp;&amp; apt-get install -y libpng-dev libzip-dev \    &amp;&amp; docker-php-ext-install zip gd pdo pdo_mysqlRUN chmod 777 /var/www/html
+
+3、生成新镜像docker build -t voidking/w7:v1.0 .
+再次尝试1、删除原有容器
+docker stop vk-phpdocker rm vk-php
+
+2、启动新的容器
+docker run --name vk-php -d \-p 8080:80 \-v /opt/php/w7:/var/www/html \voidking/w7:v1.0
+
+3、再次安装，再次验证可以看到，这次还剩一个问题：外网不可访问。这就奇怪了，在容器内明明是可以正常访问外网的，为啥报这个错？既然没错，那就忽略它好了。但是这个错存在，就无法进行下一步，因此这里我们换一种安装方式：源码安装。
+源码安装1、下载源码
+cd /opt/php/w7rm -rf ./*cd ..git clone https://gitee.com/we7coreteam/pros.git w7
+
+2、再次安装，再次验证nice，完美跳过了外网不可访问这个坑。然后，data目录权限报错。修改data目录权限，chmod 777 /opt/php/w7/data/，问题解决。
+3、填入数据库连接信息，以及管理员用户名密码
+4、然后，安装完成。
+5、测试访问浏览器访问首页 http://192.168.56.130:8080/index.php ，即会跳转到微擎登录页。
+以上，微擎系统安装配置完成，可以愉快地使用了。
+百度云解析备案失败百度智能云年终盛典，全场云服务器一折起，于是151块钱入手了一台1C2G2M的百度云BCC主机。但是，没有想到的是，网站需要新增接入备案，否则无法使用域名！！！这个不怪百度，如果使用百度云备案成功，以后想要接入阿里云或者腾讯云，也需要新增接入备案。
+不过百度云比较坑的有两点：第一点是备案期间域名不能解析，而阿里云备案期间可以正常解析。第二点是无法通过百度云的备案审核，提交备案后百度云给出了六条不符合审核条件的理由，而同样的审核材料，一个月前在阿里云通过了备案审核。
+真的是没有对比就没有伤害，第一个念头是退货，然而退货失败。不能退货，那该怎样使用这台服务器呢？那该怎样在这台服务器上部署服务，然后通过域名访问呢？
+在github找到了一些项目，awesome-selfhosted，想要部署一些不需要域名的服务，好歹给利用起来了。但是，依然不甘心，想要给这些服务加上域名！然后，真的找到了办法！前提是你还有一台可以进行域名接入的主机，无论是备案过的阿里云主机，还是不需要备案的海外主机，都可以。
+解析方案已知两台主机：可以域名接入的主机（主机A），百度云主机（主机B）。我们在主机B上部署好了微擎服务，想要给这个服务添加一个域名：w7.voidking.com 
+1、安装frp参考《使用frp进行内网穿透》，在主机A上安装配置好frp server，在主机B上安装配置好frp client。主机B上的8080端口，映射为主机A上的3480端口。
+2、nginx配置在主机A上，添加nginx解析 w7.voidking.com.conf ，内容为：
+server &#123;    server_name w7.voidking.com;    listen 80;    location / &#123;        proxy_pass http://127.0.0.1:3480/;        proxy_set_header X-Real-IP $remote_addr;    &#125;&#125;
+
+注意，不用多加其他参数，不然会出现502等错误。
+3、域名解析在dnspod上添加A记录解析到主机A。
+以上，可以通过域名访问百度云上的微擎服务了。
+微擎后续问题站点URL问题确实可以通过域名访问微擎服务了，但是站点的很多请求地址为 127.0.0.1:3480 ，因为微擎服务使用proxy_pass里的URL作为了站点URL。我们想让微擎服务把域名作为站点URL，解决办法很简单，添加：
+proxy_set_header Host $http_host;
+但是，添加完这个参数，就会出现502错误，尴尬了吧。。。nginx层没法进行修复，看来这个问题只能通过修改微擎源码来修复了。编辑/opt/php/w7/framework/bootstrap.inc.php，如下修改：
+# line 90, change// $_W['siteroot'] = htmlspecialchars($_W['sitescheme'] . (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '') . $sitepath);$_W['siteroot'] = 'w7.voidking.com';
+
+然后，请求地址就全部变成 w7.voidking.com ，nice。
+跨域问题但是，一些请求报错：
+Access to XMLHttpRequest at 'javascript:;' from origin 'http://w7.voidking.com' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, chrome-extension, https.
+
+明明都是同一个url，居然还是跨域错误，没有找到解决办法。
+重装微擎既然自己安装微擎问题这么多，那就使用官网给的docker镜像好了，参考docker安装微擎。
+1、删除原有环境
+docker stop vk-phpdocker rm vk-php
+
+2、启动新的容器
+docker run -it --name vk-php -d \-p 8080:80 \-v /opt/w7/mysql:/var/lib/mysql \-v /opt/w7/html:/var/www/html \-e MYSQL\_ROOT\_PASSWORD=123456 -d \--restart=always \ccr.ccs.tencentyun.com/weiqing/nginxphpmysql:1.0
+
+3、重新安装微擎http://ip:8080/install.php
+4、设置用户名密码
+5、同样修改微擎源码，修改站点URL。
+然后，同样有跨域问题，但是站点已经可以正常使用了，就先这么滴吧。
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>运维</category>
+        <category>docker</category>
+        <category>php</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>apache</tag>
+        <tag>php</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>遗传规划</title>
     <url>/dev-genetic-programming/</url>
     <content><![CDATA[来龙去脉在什么情况下，存在什么问题，遗传规划是从什么样的视角来解决问题的？（整体介绍，通常10分钟左右）
@@ -23092,8 +23092,8 @@ go mod init vk-projectgo mod tidy -vgo mod vendor
 ]]></content>
       <categories>
         <category>专业</category>
-        <category>运维</category>
         <category>开发</category>
+        <category>运维</category>
         <category>k8s</category>
         <category>golang</category>
       </categories>
@@ -23377,8 +23377,8 @@ sudo: falselanguage: node_jsnode_js:- 10.16.3cache: npmbranches:  only:  - maste
 ]]></content>
       <categories>
         <category>专业</category>
-        <category>运维</category>
         <category>开发</category>
+        <category>运维</category>
         <category>hexo</category>
         <category>CICD</category>
       </categories>
@@ -23466,8 +23466,8 @@ SSL的配置不要加 ssl on ，否则启动时会存在一个警告：
 ]]></content>
       <categories>
         <category>专业</category>
-        <category>运维</category>
         <category>开发</category>
+        <category>运维</category>
         <category>hexo</category>
         <category>nginx</category>
       </categories>
@@ -24688,8 +24688,8 @@ pip install PyYAML==5.1pip install python-json2yamlcat a.json | json2yaml &gt; a
       <categories>
         <category>专业</category>
         <category>运维</category>
-        <category>k8s</category>
         <category>docker</category>
+        <category>k8s</category>
       </categories>
       <tags>
         <tag>k8s</tag>
@@ -26752,6 +26752,45 @@ Maven详解之聚合与继承
       </tags>
   </entry>
   <entry>
+    <title>Node.js学习笔记（二）</title>
+    <url>/dev-nodejs-note-2/</url>
+    <content><![CDATA[整理自：慕课网
+伪造模板数据跑通前后端交互流程本篇博客用到的代码，小伙伴们直接复制粘贴就可以了，你们可知道小编一行行敲得多么辛苦T_T，复制粘贴前给个赞啊！
+工程结构helloworld/  -bower_components/  -node_modules/  -views/    -includes/      -head.jade      -header.jade    -pages/      -index.jade      -detail.jade      -admin.jade      -list.jade    -layout.jade  -app.js
+
+操作步骤我们在上次helloworld工程的基础上接着做！1、在views文件夹下新建文件夹includes和pages2、在views文件夹下，删除index.jade，新建layout.jade，输入内容：
+doctypehtml	head		meta(charset="utf-8")		title #&#123;title&#125;		include ./includes/head	body		include ./includes/header		block content
+3、在includes文件夹下，新建文件head.jade和header.jade，分别输入内容：
+link(href="/bootstrap/dist/css/bootstrap.min.css",rel="stylesheet")script(src="/jquery/dist/jquery.min.js")script(src="/bootstrap/dist/js/bootstrap.min.js")
+.container	.row		.page-header			h1 #&#123;title&#125;			small 天印电影
+4、在pages文件夹下，新建文件index.jade、detail.jade、admin.jade和list.jade，分别输入内容：
+extends ../layoutblock content	.container		.row			each item in movies				.col-md-2					.thumbnail						a(href="/movie/#&#123;item._id&#125;")							img(src="#&#123;item.poster&#125;",alt="#&#123;item.title&#125;")						.caption							h3 #&#123;item.title&#125;							p: a.btn.btn-primary(href="/movie/#&#123;item._id&#125;",role="button")								观看预告片
+extends ../layoutblock content	.container		.row			.col-md-7				embed(src="#&#123;movie.flash&#125;",allowFullScreen="true",quality="high",width="720",height="500",align="middle",type="application/x-shock")			.col-md-5				dl.dl-horizontal					dt 电影名字					dd= movie.title					dt 导演					dd= movie.doctor					dt 国家					dd= movie.country					dt 语言					dd= movie.language					dt 上映年份					dd= movie.year					dt 简介					dd= movie.summary
+extends ../layoutblock content	.container		.row			form.form-horizontal(method="post",action="/admin/movie/new")				.form-group					label.col-sm-3.control-label(for="inputTitle") 电影名字					.col-sm-10						input#inputTitle.form-control(type="text",name="movie[title]",value="#&#123;movie.title&#125;")				.form-group					label.col-sm-3.control-label(for="inputDoctor") 导演					.col-sm-10						input#inputTitle.form-control(type="text",name="movie[doctor]",value="#&#123;movie.doctor&#125;")				.form-group					label.col-sm-3.control-label(for="inputCountry") 国家					.col-sm-10						input#inputTitle.form-control(type="text",name="movie[country]",value="#&#123;movie.country&#125;")				.form-group					label.col-sm-3.control-label(for="inputLanguage") 语言					.col-sm-10						input#inputTitle.form-control(type="text",name="movie[language]",value="#&#123;movie.language&#125;")				.form-group					label.col-sm-3.control-label(for="inputYear") 上映年份					.col-sm-10						input#inputTitle.form-control(type="text",name="movie[year]",value="#&#123;movie.year&#125;")				.form-group					label.col-sm-3.control-label(for="inputSummary") 简介					.col-sm-10						input#inputTitle.form-control(type="text",name="movie[summary]",value="#&#123;movie.summary&#125;")										.form-group					label.col-sm-3.control-label(for="inputPoster") 海报地址					.col-sm-10						input#inputTitle.form-control(type="text",name="movie[poster]",value="#&#123;movie.poster&#125;")				.form-group					label.col-sm-3.control-label(for="inputFlash") 片源地址					.col-sm-10						input#inputTitle.form-control(type="text",name="movie[flash]",value="#&#123;movie.flash&#125;")																.form-group					.col-sm-offset-2.col-sum-10					button.btn.btn-default(type="submit") 录入
+extends ../layoutblock content	.container		.row			table.table.table-hover.table-bordered				thead					tr						th 电影名称						th 导演						th 国家						th 上映年份						//- th 录入时间						th 查看						th 修改						th 删除				tbody					each item in movies						tr(class="item-id-#&#123;item._id&#125;")							td #&#123;item.title&#125;							td #&#123;item.doctor&#125;							td #&#123;item.country&#125;							td #&#123;item.year&#125;							//- td #&#123;moment(item.meta.createdAt).format('MM/DD/YYYY')&#125;							td: a(target="_blank",href="../movie/#&#123;item._id&#125;") 查看							td: a(target="_blank",href="../admin/update/#&#123;item._id&#125;") 修改							td								button.btn.btn-danger.del(type="button",data-id="#&#123;item._id&#125;") 删除
+5、修改helloworld文件夹下app.js，主要是加入模拟数据，内容如下：
+var express = require('express');var path = require('path');var port = process.env.PORT || 3000 ;var app = express();app.set('views','./views/pages');app.set('view engine','jade');app.use(express.bodyParser());app.use(express.static(path.join(__dirname, 'bower_components')));app.listen(port);console.log('helloworld started on port ' + port);app.get('/', function(req, res)&#123;  res.render('index',&#123;  title:'首页',  movies: [	  &#123;		title: '机械战警',		_id: 1,		poster: 'http://ihelloworld.qiniudn.com/%40%2Fimgs%2FiNJIT.jpg',	  &#125;,	  &#123;		title: '机械战警',		_id: 2,		poster: 'http://ihelloworld.qiniudn.com/%40%2Fimgs%2FiNJIT.jpg',	  &#125;    ]  &#125;)&#125;)app.get('/movie/:id', function(req, res)&#123;  res.render('detail',&#123;  title:'详情页',  movie: &#123;	doctor: '未知',	country: '美国',	title: '机械战警',	year: '2014',	poster: 'http://ihelloworld.qiniudn.com/%40%2Fimgs%2FiNJIT.jpg',	language: '英语',	flash: 'http://player.youku.com/player.php/sid/XNjM3Njc3MTY4/v.swf',	summary: '无',  &#125;  &#125;)&#125;)app.get('/admin/movie', function(req, res)&#123;  res.render('admin',&#123;  title:'后台录入页',  movie: &#123;	doctor: '',	country: '',	title: '',	year: '',	poster: '',	language: '',	flash: '',	summary: '',  &#125;  &#125;)&#125;)app.get('/admin/list', function(req, res)&#123;  res.render('list',&#123;  title:'列表页',  movies: [	  &#123;		_id: 1,		doctor: '未知',		country: '美国',		title: '机械战警',		year: '2014',		poster: 'http://ihelloworld.qiniudn.com/%40%2Fimgs%2FiNJIT.jpg',		language: '英语',		flash: 'http://player.youku.com/player.php/sid/XNjM3Njc3MTY4/v.swf',		summary: '无',	  &#125;,	  &#123;		_id: 2,		doctor: '未知',		country: '美国',		title: '机械战警',		year: '2014',		poster: 'http://ihelloworld.qiniudn.com/%40%2Fimgs%2FiNJIT.jpg',		language: '英语',		flash: 'http://player.youku.com/player.php/sid/XNjM3Njc3MTY4/v.swf',		summary: '无',	  &#125;  ]  &#125;)&#125;)
+报错处理至此，已经敲完了Scott大神给的代码，马上就能看到效果了，好激动！哎呦我靠！报错，我改！又报错，我再改！还报错……诶？坏了，改不出来了！记录错误如下：百度“nodejs使用app.use(express.bodyParser());出错”，得到如下结论：1、node.js和windows的兼容性不如POSIX操作系统，因此npm提供给windows的第三方模块较少。2、bodyParser以前是集成在express中的，现在需要单独安装。无论哪个结论，解决办法都是安装body-parser：
+npm install body-parser
+然后在代码中如下使用：
+
+var bodyParser = require(‘body-parser’);app.use(bodyParser.urlencoded({ extended: false }))app.use(bodyParser.json());
+
+即把app.js的内容修改为如下内容：
+var express = require('express');var path = require('path');var port = process.env.PORT || 3000 ;var app = express();var bodyParser = require('body-parser');app.set('views','./views/pages');app.set('view engine','jade');app.use(bodyParser.urlencoded(&#123; extended: false &#125;))app.use(bodyParser.json());app.use(express.static(path.join(__dirname, 'bower_components')));app.listen(port);console.log('helloworld started on port ' + port);app.get('/', function(req, res)&#123;  res.render('index',&#123;  title:'首页',  movies: [	  &#123;		title: '机械战警',		_id: 1,		poster: 'http://ihelloworld.qiniudn.com/%40%2Fimgs%2FiNJIT.jpg',	  &#125;,	  &#123;		title: '机械战警',		_id: 2,		poster: 'http://ihelloworld.qiniudn.com/%40%2Fimgs%2FiNJIT.jpg',	  &#125;    ]  &#125;)&#125;)app.get('/movie/:id', function(req, res)&#123;  res.render('detail',&#123;  title:'详情页',  movie: &#123;	doctor: '未知',	country: '美国',	title: '机械战警',	year: '2014',	poster: 'http://ihelloworld.qiniudn.com/%40%2Fimgs%2FiNJIT.jpg',	language: '英语',	flash: 'http://player.youku.com/player.php/sid/XNjM3Njc3MTY4/v.swf',	summary: '无',  &#125;  &#125;)&#125;)app.get('/admin/movie', function(req, res)&#123;  res.render('admin',&#123;  title:'后台录入页',  movie: &#123;	doctor: '',	country: '',	title: '',	year: '',	poster: '',	language: '',	flash: '',	summary: '',  &#125;  &#125;)&#125;)app.get('/admin/list', function(req, res)&#123;  res.render('list',&#123;  title:'列表页',  movies: [	  &#123;		_id: 1,		doctor: '未知',		country: '美国',		title: '机械战警',		year: '2014',		poster: 'http://ihelloworld.qiniudn.com/%40%2Fimgs%2FiNJIT.jpg',		language: '英语',		flash: 'http://player.youku.com/player.php/sid/XNjM3Njc3MTY4/v.swf',		summary: '无',	  &#125;,	  &#123;		_id: 2,		doctor: '未知',		country: '美国',		title: '机械战警',		year: '2014',		poster: 'http://ihelloworld.qiniudn.com/%40%2Fimgs%2FiNJIT.jpg',		language: '英语',		flash: 'http://player.youku.com/player.php/sid/XNjM3Njc3MTY4/v.swf',		summary: '无',	  &#125;  ]  &#125;)&#125;)
+效果图吼吼，终于搞定了！有图有真相！
+结束操作过程中的其他小错误，在此不作记录，有任何问题欢迎留言！
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>node</category>
+      </categories>
+      <tags>
+        <tag>node</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>jQuery学习笔记——选择器篇</title>
     <url>/dev-jquery-selector/</url>
     <content><![CDATA[选择器语法jQuery选择元素的语法为：$(selector,[content]);
@@ -27054,45 +27093,6 @@ $(“li:lt(3)”)
       <tags>
         <tag>jquery</tag>
         <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Node.js学习笔记（二）</title>
-    <url>/dev-nodejs-note-2/</url>
-    <content><![CDATA[整理自：慕课网
-伪造模板数据跑通前后端交互流程本篇博客用到的代码，小伙伴们直接复制粘贴就可以了，你们可知道小编一行行敲得多么辛苦T_T，复制粘贴前给个赞啊！
-工程结构helloworld/  -bower_components/  -node_modules/  -views/    -includes/      -head.jade      -header.jade    -pages/      -index.jade      -detail.jade      -admin.jade      -list.jade    -layout.jade  -app.js
-
-操作步骤我们在上次helloworld工程的基础上接着做！1、在views文件夹下新建文件夹includes和pages2、在views文件夹下，删除index.jade，新建layout.jade，输入内容：
-doctypehtml	head		meta(charset="utf-8")		title #&#123;title&#125;		include ./includes/head	body		include ./includes/header		block content
-3、在includes文件夹下，新建文件head.jade和header.jade，分别输入内容：
-link(href="/bootstrap/dist/css/bootstrap.min.css",rel="stylesheet")script(src="/jquery/dist/jquery.min.js")script(src="/bootstrap/dist/js/bootstrap.min.js")
-.container	.row		.page-header			h1 #&#123;title&#125;			small 天印电影
-4、在pages文件夹下，新建文件index.jade、detail.jade、admin.jade和list.jade，分别输入内容：
-extends ../layoutblock content	.container		.row			each item in movies				.col-md-2					.thumbnail						a(href="/movie/#&#123;item._id&#125;")							img(src="#&#123;item.poster&#125;",alt="#&#123;item.title&#125;")						.caption							h3 #&#123;item.title&#125;							p: a.btn.btn-primary(href="/movie/#&#123;item._id&#125;",role="button")								观看预告片
-extends ../layoutblock content	.container		.row			.col-md-7				embed(src="#&#123;movie.flash&#125;",allowFullScreen="true",quality="high",width="720",height="500",align="middle",type="application/x-shock")			.col-md-5				dl.dl-horizontal					dt 电影名字					dd= movie.title					dt 导演					dd= movie.doctor					dt 国家					dd= movie.country					dt 语言					dd= movie.language					dt 上映年份					dd= movie.year					dt 简介					dd= movie.summary
-extends ../layoutblock content	.container		.row			form.form-horizontal(method="post",action="/admin/movie/new")				.form-group					label.col-sm-3.control-label(for="inputTitle") 电影名字					.col-sm-10						input#inputTitle.form-control(type="text",name="movie[title]",value="#&#123;movie.title&#125;")				.form-group					label.col-sm-3.control-label(for="inputDoctor") 导演					.col-sm-10						input#inputTitle.form-control(type="text",name="movie[doctor]",value="#&#123;movie.doctor&#125;")				.form-group					label.col-sm-3.control-label(for="inputCountry") 国家					.col-sm-10						input#inputTitle.form-control(type="text",name="movie[country]",value="#&#123;movie.country&#125;")				.form-group					label.col-sm-3.control-label(for="inputLanguage") 语言					.col-sm-10						input#inputTitle.form-control(type="text",name="movie[language]",value="#&#123;movie.language&#125;")				.form-group					label.col-sm-3.control-label(for="inputYear") 上映年份					.col-sm-10						input#inputTitle.form-control(type="text",name="movie[year]",value="#&#123;movie.year&#125;")				.form-group					label.col-sm-3.control-label(for="inputSummary") 简介					.col-sm-10						input#inputTitle.form-control(type="text",name="movie[summary]",value="#&#123;movie.summary&#125;")										.form-group					label.col-sm-3.control-label(for="inputPoster") 海报地址					.col-sm-10						input#inputTitle.form-control(type="text",name="movie[poster]",value="#&#123;movie.poster&#125;")				.form-group					label.col-sm-3.control-label(for="inputFlash") 片源地址					.col-sm-10						input#inputTitle.form-control(type="text",name="movie[flash]",value="#&#123;movie.flash&#125;")																.form-group					.col-sm-offset-2.col-sum-10					button.btn.btn-default(type="submit") 录入
-extends ../layoutblock content	.container		.row			table.table.table-hover.table-bordered				thead					tr						th 电影名称						th 导演						th 国家						th 上映年份						//- th 录入时间						th 查看						th 修改						th 删除				tbody					each item in movies						tr(class="item-id-#&#123;item._id&#125;")							td #&#123;item.title&#125;							td #&#123;item.doctor&#125;							td #&#123;item.country&#125;							td #&#123;item.year&#125;							//- td #&#123;moment(item.meta.createdAt).format('MM/DD/YYYY')&#125;							td: a(target="_blank",href="../movie/#&#123;item._id&#125;") 查看							td: a(target="_blank",href="../admin/update/#&#123;item._id&#125;") 修改							td								button.btn.btn-danger.del(type="button",data-id="#&#123;item._id&#125;") 删除
-5、修改helloworld文件夹下app.js，主要是加入模拟数据，内容如下：
-var express = require('express');var path = require('path');var port = process.env.PORT || 3000 ;var app = express();app.set('views','./views/pages');app.set('view engine','jade');app.use(express.bodyParser());app.use(express.static(path.join(__dirname, 'bower_components')));app.listen(port);console.log('helloworld started on port ' + port);app.get('/', function(req, res)&#123;  res.render('index',&#123;  title:'首页',  movies: [	  &#123;		title: '机械战警',		_id: 1,		poster: 'http://ihelloworld.qiniudn.com/%40%2Fimgs%2FiNJIT.jpg',	  &#125;,	  &#123;		title: '机械战警',		_id: 2,		poster: 'http://ihelloworld.qiniudn.com/%40%2Fimgs%2FiNJIT.jpg',	  &#125;    ]  &#125;)&#125;)app.get('/movie/:id', function(req, res)&#123;  res.render('detail',&#123;  title:'详情页',  movie: &#123;	doctor: '未知',	country: '美国',	title: '机械战警',	year: '2014',	poster: 'http://ihelloworld.qiniudn.com/%40%2Fimgs%2FiNJIT.jpg',	language: '英语',	flash: 'http://player.youku.com/player.php/sid/XNjM3Njc3MTY4/v.swf',	summary: '无',  &#125;  &#125;)&#125;)app.get('/admin/movie', function(req, res)&#123;  res.render('admin',&#123;  title:'后台录入页',  movie: &#123;	doctor: '',	country: '',	title: '',	year: '',	poster: '',	language: '',	flash: '',	summary: '',  &#125;  &#125;)&#125;)app.get('/admin/list', function(req, res)&#123;  res.render('list',&#123;  title:'列表页',  movies: [	  &#123;		_id: 1,		doctor: '未知',		country: '美国',		title: '机械战警',		year: '2014',		poster: 'http://ihelloworld.qiniudn.com/%40%2Fimgs%2FiNJIT.jpg',		language: '英语',		flash: 'http://player.youku.com/player.php/sid/XNjM3Njc3MTY4/v.swf',		summary: '无',	  &#125;,	  &#123;		_id: 2,		doctor: '未知',		country: '美国',		title: '机械战警',		year: '2014',		poster: 'http://ihelloworld.qiniudn.com/%40%2Fimgs%2FiNJIT.jpg',		language: '英语',		flash: 'http://player.youku.com/player.php/sid/XNjM3Njc3MTY4/v.swf',		summary: '无',	  &#125;  ]  &#125;)&#125;)
-报错处理至此，已经敲完了Scott大神给的代码，马上就能看到效果了，好激动！哎呦我靠！报错，我改！又报错，我再改！还报错……诶？坏了，改不出来了！记录错误如下：百度“nodejs使用app.use(express.bodyParser());出错”，得到如下结论：1、node.js和windows的兼容性不如POSIX操作系统，因此npm提供给windows的第三方模块较少。2、bodyParser以前是集成在express中的，现在需要单独安装。无论哪个结论，解决办法都是安装body-parser：
-npm install body-parser
-然后在代码中如下使用：
-
-var bodyParser = require(‘body-parser’);app.use(bodyParser.urlencoded({ extended: false }))app.use(bodyParser.json());
-
-即把app.js的内容修改为如下内容：
-var express = require('express');var path = require('path');var port = process.env.PORT || 3000 ;var app = express();var bodyParser = require('body-parser');app.set('views','./views/pages');app.set('view engine','jade');app.use(bodyParser.urlencoded(&#123; extended: false &#125;))app.use(bodyParser.json());app.use(express.static(path.join(__dirname, 'bower_components')));app.listen(port);console.log('helloworld started on port ' + port);app.get('/', function(req, res)&#123;  res.render('index',&#123;  title:'首页',  movies: [	  &#123;		title: '机械战警',		_id: 1,		poster: 'http://ihelloworld.qiniudn.com/%40%2Fimgs%2FiNJIT.jpg',	  &#125;,	  &#123;		title: '机械战警',		_id: 2,		poster: 'http://ihelloworld.qiniudn.com/%40%2Fimgs%2FiNJIT.jpg',	  &#125;    ]  &#125;)&#125;)app.get('/movie/:id', function(req, res)&#123;  res.render('detail',&#123;  title:'详情页',  movie: &#123;	doctor: '未知',	country: '美国',	title: '机械战警',	year: '2014',	poster: 'http://ihelloworld.qiniudn.com/%40%2Fimgs%2FiNJIT.jpg',	language: '英语',	flash: 'http://player.youku.com/player.php/sid/XNjM3Njc3MTY4/v.swf',	summary: '无',  &#125;  &#125;)&#125;)app.get('/admin/movie', function(req, res)&#123;  res.render('admin',&#123;  title:'后台录入页',  movie: &#123;	doctor: '',	country: '',	title: '',	year: '',	poster: '',	language: '',	flash: '',	summary: '',  &#125;  &#125;)&#125;)app.get('/admin/list', function(req, res)&#123;  res.render('list',&#123;  title:'列表页',  movies: [	  &#123;		_id: 1,		doctor: '未知',		country: '美国',		title: '机械战警',		year: '2014',		poster: 'http://ihelloworld.qiniudn.com/%40%2Fimgs%2FiNJIT.jpg',		language: '英语',		flash: 'http://player.youku.com/player.php/sid/XNjM3Njc3MTY4/v.swf',		summary: '无',	  &#125;,	  &#123;		_id: 2,		doctor: '未知',		country: '美国',		title: '机械战警',		year: '2014',		poster: 'http://ihelloworld.qiniudn.com/%40%2Fimgs%2FiNJIT.jpg',		language: '英语',		flash: 'http://player.youku.com/player.php/sid/XNjM3Njc3MTY4/v.swf',		summary: '无',	  &#125;  ]  &#125;)&#125;)
-效果图吼吼，终于搞定了！有图有真相！
-结束操作过程中的其他小错误，在此不作记录，有任何问题欢迎留言！
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>node</category>
-      </categories>
-      <tags>
-        <tag>node</tag>
       </tags>
   </entry>
   <entry>
@@ -27493,81 +27493,6 @@ IO故障1、在实例中创建一个IO进程stress-ng --io 1使用iostat -d -k 2
 后记至此，完成了系统故障对于OpenStack虚拟机在线迁移过程中的性能影响的实验。实验数据和预期差别很大，比如停机时间量级不合理，比如停机时间基本上不受系统故障影响，比如迁移成功后却出现无法ping通的现象等等。
 后续任务有两个，一是需要进行共享存储的虚拟机在线迁移实验，用于对比。二是尝试进行调参，把停机时间调整到毫秒级。
 再进一步的话，可以研究下虚拟机迁移成功后无法ping通的原因，还可以研究下同样故障下虚拟机迁移时而成功时而失败的原因。
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>测试</category>
-        <category>openstack</category>
-      </categories>
-      <tags>
-        <tag>docker</tag>
-        <tag>linux</tag>
-        <tag>ubuntu</tag>
-        <tag>openstack</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>虚拟机在线迁移的性能统计</title>
-    <url>/dev-openstack-vm-live-migration-performance/</url>
-    <content><![CDATA[前言OpenStack中共享存储和非共享存储的虚拟机迁移环境都已经搭建完成，接下来可以进行实验了。对于不同的宿主机、不同的实例、不同的负载，虚拟机迁移的性能也会有所不同。那么，虚拟机迁移的性能指标有哪些？又该怎样统计呢？本文就来研究一下。
-
-
-性能指标参考论文《Virt-LM: a benchmark for live migration of virtual machine》，可以得知，虚拟机迁移过程中的主要性能指标有四个：
-
-整体迁移时间：从迁移开始到迁移结束的时间。
-虚拟机停机时间：迁移过程中虚拟机停机（停止服务）的时间。
-迁移数据量：在虚拟机迁移期间传输的数据总量。
-应用程序的性能：迁移过程中对虚拟机中应用程序产生的影响。
-
-测量方法监控既然是实验，那么肯定要收集实验过程中的数据。小编给这个四个节点的OpenStack集群安装了ganglia，用来监控各种指标。但是，ganglia更适合监控实时数据和观察变化，不适合进行统计。
-迁移时间整体迁移时间怎么测出来？通过观察图表？不靠谱。叶可江老师提供了思路，整体迁移时间的话，可以通过日志来获取：tail -n 40 /var/lib/docker/volumes/kolla_logs/_data/nova/nova-compute.log
-通过查看迁出宿主机的日志，然后对比ganglia图表，可以找到两个关键节点：
-2018-11-22 09:59:42.442 5 INFO nova.virt.libvirt.migration [req-d9849256-eaa8-4446-9cec-9545b74df126 202e7852a6074540a70638eed185538e eb83bf3b057f45e1b386cbc8c0702ae1 - default default] [instance: eebe068a-ba85-4905-a39b-f003a7480b14] Increasing downtime to 50 ms after 0 sec elapsed time......2018-11-22 10:00:02.984 5 INFO nova.compute.manager [req-4b409237-6c82-4b56-ae4c-9f905a4f932e b2edc935f89d4d2684ec4039c02a21cc ab7e3eb8c00d4299afd8572e1ec437bf - default default] [instance: eebe068a-ba85-4905-a39b-f003a7480b14] VM Stopped (Lifecycle Event)
-但是，依然需要手动来计算迁移时间，很麻烦，那就写一个脚本来搞定吧！参考linux shell 时间运算以及时间差计算方法。
-#!/bin/bashtime1=`grep nova.virt.libvirt.migration /var/lib/docker/volumes/kolla_logs/_data/nova/nova-compute.log | tail -n 1 |awk '&#123;print $2&#125;'`;time2=`grep 'VM Stopped' /var/lib/docker/volumes/kolla_logs/_data/nova/nova-compute.log | tail -n 1 | awk '&#123;print $2&#125;'`;# 计算时间差time=$(($(date +%s -d $time2) - $(date +%s -d $time1)));echo "$time s";
-以上脚本，保存为time.sh，并添加执行权限。
-另外，还可以通过nova migration-list &gt; list.log查看到迁移的开始时间和结束时间。然后通过脚本计算迁移时间：
-#!/bin/bashtime1=`grep 'live-migration' list.log | head -n 1 | awk '&#123;print $24&#125;'`time2=`grep 'live-migration' list.log | head -n 1 | awk '&#123;print $26&#125;'`time=$(($(date +%s -d $time2) - $(date +%s -d $time1)));echo "$time s";
-不过，这种方法测出的迁移时间，比我们从nova-compute.log日志中测出的迁移时间，要多出7秒左右。这种方法应该更准确一些，毕竟是OpenStack自己记录的。
-停机时间参考How to measure Migration time and Down time，使用ping命令来测量停机时间。
-我们的虚拟机有两个IP，一个是内网IP，一个是浮动IP。外部机器可以直连的，一般是浮动IP，所以在迁移过程中，建议ping浮动IP，比如sudo ping 10.0.2.159 -i 0.01 &gt;&gt; ping.log。ping.log中的信息为：
-PING 10.0.2.159 (10.0.2.159) 56(84) bytes of data.64 bytes from 10.0.2.159: icmp_seq=1 ttl=63 time=3.40 ms64 bytes from 10.0.2.159: icmp_seq=2 ttl=63 time=1.15 ms64 bytes from 10.0.2.159: icmp_seq=3 ttl=63 time=1.17 ms64 bytes from 10.0.2.159: icmp_seq=4 ttl=63 time=1.33 ms......64 bytes from 10.0.2.159: icmp_seq=4139 ttl=63 time=1.17 ms64 bytes from 10.0.2.159: icmp_seq=4140 ttl=63 time=1.05 ms64 bytes from 10.0.2.159: icmp_seq=4141 ttl=63 time=1.12 ms64 bytes from 10.0.2.159: icmp_seq=4142 ttl=63 time=1.06 ms--- 10.0.2.159 ping statistics ---4142 packets transmitted, 3668 received, 11% packet loss, time 44127msrtt min/avg/max/mdev = 0.580/1.412/36.648/1.407 ms, pipe 3
-
-由统计信息可以求出停机时间：
-# 方法一：(缺失的icmp_seq总数)*(时间间隔)(4142-3668)*0.01=4.74s# 方法二：(总时间)*(icmp_seq缺失百分比)(44127/1000)*0.11 = 4.85s
-
-两种方法相差0.1s，方法一更精确一些。如果想要更加精确，还可以把ping命令的时间间隔调整为1ms。
-方法一写成脚本为：
-#!/bin/bashtransmitted=`grep 'packets transmitted' ping.log | tail -n 1 | awk '&#123;print $1&#125;'`received=`grep 'packets transmitted' ping.log | tail -n 1 | awk '&#123;print $4&#125;'`lost=`expr $transmitted - $received`# echo "downtime is $lost ms"downtime=$(echo "scale=3; $lost / 1000" | bc)echo "downtime is $downtime s"
-
-方法二写成脚本为：
-#!/bin/bashtime_str=`grep 'packets transmitted' ping.log | tail -n 1 | awk '&#123;print $10&#125;'`loss_str=`grep 'packets transmitted' ping.log | tail -n 1 | awk '&#123;print $6&#125;'`time_num=`echo $&#123;time_str%ms&#125;`loss_percent=`echo $&#123;loss_str%\%&#125;`# downtime = (time_num)*(loss_percent/100)/1000num=`expr $time_num \* $loss_percent`downtime=$(echo "scale=3; $num / 100000" | bc)echo "downtime is $downtime s"
-
-以上方法求出的停机时间，是总的停机时间，无论迁移过程中有几次停机，该方法都是适用的。我们会好奇，实际迁移过程中，停机是否只有一次？我们写一个脚本来寻求答案：
-#!/bin/bash# 去掉头部和尾部，保留第五列cat ping.log | sed '1d' | tac | sed '1,4d' | tac | awk '&#123;print $5&#125;' &gt; seq.log &amp;&amp;# 得到最后一行的序列号max=`tail -n 1 seq.log | awk -F '=' '&#123;print $2&#125;'`# 所有序列号赋值给数组array_str=`cat seq.log | awk -F '=' '&#123;print $2&#125;'`IPS=' 'array=($array_str)# 打印没有响应的序列号COUNTER=0while [ $COUNTER -lt $max ]do    COUNTER=`expr $COUNTER + 1`    if [[ "$&#123;array[@]&#125;" =~ $COUNTER ]]    then        continue    else        echo $COUNTER  &gt;&gt; result.log    fidone &amp;&amp;# 对比seq数量start=`head -n 1 result.log`end=`tail -n 1 result.log`num=`expr $end - $start + 1`echo "if continuous, num should be $num"result_str=`cat result.log`IPS='\n'result=($result_str)echo "real num is $&#123;#result[@]&#125;"
-
-脚本输出两个474，说明实例没有响应的序列号是连续的，证明了停机只有一次。比如result.log中为{3,4,5,6,7}，那么7-3+1=5，集合中元素个数也为5，证明连续。比如result.log中为{3,4,5,10,11}，那么11-3+1=9，集合中元素个数为5，证明不连续。
-带宽测量出的downtime为4.74s，很不合理，因为虚拟机迁移理论上的停机时间是毫秒级的！是因为带宽太低导致停机时间过长吗？可以用如下方法进行测试：1、compute1和compute2上都安装iperfsudo apt install iperf
-2、compute1上启动iperf服务iperf -s
-3、compute2上启动iperf客户端iperf -c 192.168.56.112 -i 1
-迁移数据量对于迁移数据量，可以使用iptables对端口进行监控，参考Linux下对端口流量进行统计和Linux 使用iptables进行shadowsocks流量统计。但是，计算节点网络非常复杂，小编不想对其进行修改，所以采用另外一种方案，iptraf，参考使用iptraf查看TCP/UDP某个特定端口的带宽与流量。
-1、两个计算节点安装iptrafsudo apt install iptraf
-需要注意的是，iptraf只支持名为ethX的网卡。想要显示enoX、enp0sX网卡，要么网卡重命名，要么安装使用iptraf-ng。sudo apt install iptraf-ng
-2、启动iptrafsudo iptraf启动后，进入到一个字符界面。
-3、设置Configure… -&gt; Additional ports…-&gt; 22 -&gt; Exit Configuration -&gt; Statistical breakdowns… -&gt; By TCP/UDP port -&gt; eth0 -&gt; statistic view
-参考Configure live migrations，可以得知：
-
-By default, libvirt uses the TCP port range from 49152 to 49261 for copying memory and disk contents. Compute hosts must accept connections in this range.
-
-所以在实际使用的时候，端口设置为49152 to 49261。重新进入统计页面，之前的统计数据会清零。
-应用性能Web应用的性能，主要包括执行时间、传输速度、吞吐量、资源占用率。
-基准测试（benchmarking）是一种测量和评估软件性能指标的活动。你可以在某个时候通过基准测试建立一个已知的性能水平（称为基准线），当系统的软硬件环境发生变化之后再进行一次基准测试以确定那些变化对性能的影响。这是基准测试最常见的用途。其他用途包括测定某种负载水平下的性能极限、管理系统或环境的变化、发现可能导致性能问题的条件，等等。详情参考什么是基准测试？。
-对于性能的监控，最简单的思路是Apache Benchmark。使用ab来监控Web服务的性能，检查迁移过程中会发生哪些变化。但是，ab什么时候运行？什么时候停止？请求多少次？怎么计算迁移过程中的平均性能？这些都不能确定。如果使用cAdvisor+prometheus呢？参考linux工匠之docker和kubernetes的监控(cadvisor+prometheus)。不行，因为这种方法监控的是docker容器，收集的是CPU、内存等数据，而不是Web性能数据。使用SPEC？也不好，收费，安装使用复杂。
-很绝望，前辈们都是怎么进行测试的？不管了，先不考虑应用性能指标。
-书签An analysis of the performance of live migration in Openstack
-An analysis of the performance of block live migration in Openstack
-Performance analysis of “post-copy” live migration in Openstack
 ]]></content>
       <categories>
         <category>专业</category>
@@ -28670,6 +28595,81 @@ gif动态图局部加马赛克模糊广告文字http://www.leawo.cn/space-138176
         <tag>angularjs</tag>
         <tag>php</tag>
         <tag>thinkphp</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>虚拟机在线迁移的性能统计</title>
+    <url>/dev-openstack-vm-live-migration-performance/</url>
+    <content><![CDATA[前言OpenStack中共享存储和非共享存储的虚拟机迁移环境都已经搭建完成，接下来可以进行实验了。对于不同的宿主机、不同的实例、不同的负载，虚拟机迁移的性能也会有所不同。那么，虚拟机迁移的性能指标有哪些？又该怎样统计呢？本文就来研究一下。
+
+
+性能指标参考论文《Virt-LM: a benchmark for live migration of virtual machine》，可以得知，虚拟机迁移过程中的主要性能指标有四个：
+
+整体迁移时间：从迁移开始到迁移结束的时间。
+虚拟机停机时间：迁移过程中虚拟机停机（停止服务）的时间。
+迁移数据量：在虚拟机迁移期间传输的数据总量。
+应用程序的性能：迁移过程中对虚拟机中应用程序产生的影响。
+
+测量方法监控既然是实验，那么肯定要收集实验过程中的数据。小编给这个四个节点的OpenStack集群安装了ganglia，用来监控各种指标。但是，ganglia更适合监控实时数据和观察变化，不适合进行统计。
+迁移时间整体迁移时间怎么测出来？通过观察图表？不靠谱。叶可江老师提供了思路，整体迁移时间的话，可以通过日志来获取：tail -n 40 /var/lib/docker/volumes/kolla_logs/_data/nova/nova-compute.log
+通过查看迁出宿主机的日志，然后对比ganglia图表，可以找到两个关键节点：
+2018-11-22 09:59:42.442 5 INFO nova.virt.libvirt.migration [req-d9849256-eaa8-4446-9cec-9545b74df126 202e7852a6074540a70638eed185538e eb83bf3b057f45e1b386cbc8c0702ae1 - default default] [instance: eebe068a-ba85-4905-a39b-f003a7480b14] Increasing downtime to 50 ms after 0 sec elapsed time......2018-11-22 10:00:02.984 5 INFO nova.compute.manager [req-4b409237-6c82-4b56-ae4c-9f905a4f932e b2edc935f89d4d2684ec4039c02a21cc ab7e3eb8c00d4299afd8572e1ec437bf - default default] [instance: eebe068a-ba85-4905-a39b-f003a7480b14] VM Stopped (Lifecycle Event)
+但是，依然需要手动来计算迁移时间，很麻烦，那就写一个脚本来搞定吧！参考linux shell 时间运算以及时间差计算方法。
+#!/bin/bashtime1=`grep nova.virt.libvirt.migration /var/lib/docker/volumes/kolla_logs/_data/nova/nova-compute.log | tail -n 1 |awk '&#123;print $2&#125;'`;time2=`grep 'VM Stopped' /var/lib/docker/volumes/kolla_logs/_data/nova/nova-compute.log | tail -n 1 | awk '&#123;print $2&#125;'`;# 计算时间差time=$(($(date +%s -d $time2) - $(date +%s -d $time1)));echo "$time s";
+以上脚本，保存为time.sh，并添加执行权限。
+另外，还可以通过nova migration-list &gt; list.log查看到迁移的开始时间和结束时间。然后通过脚本计算迁移时间：
+#!/bin/bashtime1=`grep 'live-migration' list.log | head -n 1 | awk '&#123;print $24&#125;'`time2=`grep 'live-migration' list.log | head -n 1 | awk '&#123;print $26&#125;'`time=$(($(date +%s -d $time2) - $(date +%s -d $time1)));echo "$time s";
+不过，这种方法测出的迁移时间，比我们从nova-compute.log日志中测出的迁移时间，要多出7秒左右。这种方法应该更准确一些，毕竟是OpenStack自己记录的。
+停机时间参考How to measure Migration time and Down time，使用ping命令来测量停机时间。
+我们的虚拟机有两个IP，一个是内网IP，一个是浮动IP。外部机器可以直连的，一般是浮动IP，所以在迁移过程中，建议ping浮动IP，比如sudo ping 10.0.2.159 -i 0.01 &gt;&gt; ping.log。ping.log中的信息为：
+PING 10.0.2.159 (10.0.2.159) 56(84) bytes of data.64 bytes from 10.0.2.159: icmp_seq=1 ttl=63 time=3.40 ms64 bytes from 10.0.2.159: icmp_seq=2 ttl=63 time=1.15 ms64 bytes from 10.0.2.159: icmp_seq=3 ttl=63 time=1.17 ms64 bytes from 10.0.2.159: icmp_seq=4 ttl=63 time=1.33 ms......64 bytes from 10.0.2.159: icmp_seq=4139 ttl=63 time=1.17 ms64 bytes from 10.0.2.159: icmp_seq=4140 ttl=63 time=1.05 ms64 bytes from 10.0.2.159: icmp_seq=4141 ttl=63 time=1.12 ms64 bytes from 10.0.2.159: icmp_seq=4142 ttl=63 time=1.06 ms--- 10.0.2.159 ping statistics ---4142 packets transmitted, 3668 received, 11% packet loss, time 44127msrtt min/avg/max/mdev = 0.580/1.412/36.648/1.407 ms, pipe 3
+
+由统计信息可以求出停机时间：
+# 方法一：(缺失的icmp_seq总数)*(时间间隔)(4142-3668)*0.01=4.74s# 方法二：(总时间)*(icmp_seq缺失百分比)(44127/1000)*0.11 = 4.85s
+
+两种方法相差0.1s，方法一更精确一些。如果想要更加精确，还可以把ping命令的时间间隔调整为1ms。
+方法一写成脚本为：
+#!/bin/bashtransmitted=`grep 'packets transmitted' ping.log | tail -n 1 | awk '&#123;print $1&#125;'`received=`grep 'packets transmitted' ping.log | tail -n 1 | awk '&#123;print $4&#125;'`lost=`expr $transmitted - $received`# echo "downtime is $lost ms"downtime=$(echo "scale=3; $lost / 1000" | bc)echo "downtime is $downtime s"
+
+方法二写成脚本为：
+#!/bin/bashtime_str=`grep 'packets transmitted' ping.log | tail -n 1 | awk '&#123;print $10&#125;'`loss_str=`grep 'packets transmitted' ping.log | tail -n 1 | awk '&#123;print $6&#125;'`time_num=`echo $&#123;time_str%ms&#125;`loss_percent=`echo $&#123;loss_str%\%&#125;`# downtime = (time_num)*(loss_percent/100)/1000num=`expr $time_num \* $loss_percent`downtime=$(echo "scale=3; $num / 100000" | bc)echo "downtime is $downtime s"
+
+以上方法求出的停机时间，是总的停机时间，无论迁移过程中有几次停机，该方法都是适用的。我们会好奇，实际迁移过程中，停机是否只有一次？我们写一个脚本来寻求答案：
+#!/bin/bash# 去掉头部和尾部，保留第五列cat ping.log | sed '1d' | tac | sed '1,4d' | tac | awk '&#123;print $5&#125;' &gt; seq.log &amp;&amp;# 得到最后一行的序列号max=`tail -n 1 seq.log | awk -F '=' '&#123;print $2&#125;'`# 所有序列号赋值给数组array_str=`cat seq.log | awk -F '=' '&#123;print $2&#125;'`IPS=' 'array=($array_str)# 打印没有响应的序列号COUNTER=0while [ $COUNTER -lt $max ]do    COUNTER=`expr $COUNTER + 1`    if [[ "$&#123;array[@]&#125;" =~ $COUNTER ]]    then        continue    else        echo $COUNTER  &gt;&gt; result.log    fidone &amp;&amp;# 对比seq数量start=`head -n 1 result.log`end=`tail -n 1 result.log`num=`expr $end - $start + 1`echo "if continuous, num should be $num"result_str=`cat result.log`IPS='\n'result=($result_str)echo "real num is $&#123;#result[@]&#125;"
+
+脚本输出两个474，说明实例没有响应的序列号是连续的，证明了停机只有一次。比如result.log中为{3,4,5,6,7}，那么7-3+1=5，集合中元素个数也为5，证明连续。比如result.log中为{3,4,5,10,11}，那么11-3+1=9，集合中元素个数为5，证明不连续。
+带宽测量出的downtime为4.74s，很不合理，因为虚拟机迁移理论上的停机时间是毫秒级的！是因为带宽太低导致停机时间过长吗？可以用如下方法进行测试：1、compute1和compute2上都安装iperfsudo apt install iperf
+2、compute1上启动iperf服务iperf -s
+3、compute2上启动iperf客户端iperf -c 192.168.56.112 -i 1
+迁移数据量对于迁移数据量，可以使用iptables对端口进行监控，参考Linux下对端口流量进行统计和Linux 使用iptables进行shadowsocks流量统计。但是，计算节点网络非常复杂，小编不想对其进行修改，所以采用另外一种方案，iptraf，参考使用iptraf查看TCP/UDP某个特定端口的带宽与流量。
+1、两个计算节点安装iptrafsudo apt install iptraf
+需要注意的是，iptraf只支持名为ethX的网卡。想要显示enoX、enp0sX网卡，要么网卡重命名，要么安装使用iptraf-ng。sudo apt install iptraf-ng
+2、启动iptrafsudo iptraf启动后，进入到一个字符界面。
+3、设置Configure… -&gt; Additional ports…-&gt; 22 -&gt; Exit Configuration -&gt; Statistical breakdowns… -&gt; By TCP/UDP port -&gt; eth0 -&gt; statistic view
+参考Configure live migrations，可以得知：
+
+By default, libvirt uses the TCP port range from 49152 to 49261 for copying memory and disk contents. Compute hosts must accept connections in this range.
+
+所以在实际使用的时候，端口设置为49152 to 49261。重新进入统计页面，之前的统计数据会清零。
+应用性能Web应用的性能，主要包括执行时间、传输速度、吞吐量、资源占用率。
+基准测试（benchmarking）是一种测量和评估软件性能指标的活动。你可以在某个时候通过基准测试建立一个已知的性能水平（称为基准线），当系统的软硬件环境发生变化之后再进行一次基准测试以确定那些变化对性能的影响。这是基准测试最常见的用途。其他用途包括测定某种负载水平下的性能极限、管理系统或环境的变化、发现可能导致性能问题的条件，等等。详情参考什么是基准测试？。
+对于性能的监控，最简单的思路是Apache Benchmark。使用ab来监控Web服务的性能，检查迁移过程中会发生哪些变化。但是，ab什么时候运行？什么时候停止？请求多少次？怎么计算迁移过程中的平均性能？这些都不能确定。如果使用cAdvisor+prometheus呢？参考linux工匠之docker和kubernetes的监控(cadvisor+prometheus)。不行，因为这种方法监控的是docker容器，收集的是CPU、内存等数据，而不是Web性能数据。使用SPEC？也不好，收费，安装使用复杂。
+很绝望，前辈们都是怎么进行测试的？不管了，先不考虑应用性能指标。
+书签An analysis of the performance of live migration in Openstack
+An analysis of the performance of block live migration in Openstack
+Performance analysis of “post-copy” live migration in Openstack
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>测试</category>
+        <category>openstack</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>linux</tag>
+        <tag>ubuntu</tag>
+        <tag>openstack</tag>
       </tags>
   </entry>
   <entry>
@@ -32265,6 +32265,65 @@ Ubuntu16 下载软件Aria2 全局配置方法(最全组合)
       </tags>
   </entry>
   <entry>
+    <title>B533史记</title>
+    <url>/essay-b533-history/</url>
+    <content><![CDATA[一天晚上，小胖发了个说说：我要改掉坏习惯！第二天，他果然改掉了上课睡觉和玩手机的坏习惯。因为他没去上课……
+——“郝哥哥，你真帅！”——“低调低调！”——“你不赞我一下？”——“你这求互赞呢！好吧，小黑你真帅！”……
+高富帅的由来：刚开学，收到很多理发店传单，邓俊鹏和丁凯俩人一看很便宜，理发一次只要两元，就屁颠屁颠地去了。结果人家给理发到一半停下了，不断蛊惑让他们办会员卡。结果，丁凯办了一张黄金VIP卡，500；邓俊鹏办了一张钻石VIP卡，1000！从此以后，高富帅就诞生了……
+突然有一天，高富帅做了个头发，300多，然后又买了5瓶化妆品，400多。我靠，奢侈的一比啊！然后我们看到兄弟宿舍的宋金峰发了个说说，大致内容是说邱浩买了一瓶化妆品，像是要相亲一样！看到这个说说，我们沉默了……富帅啊，你这是想勾搭多少妹子啊……
+老胡，一朵奇葩，刚开学的时候特别开朗，各个宿舍跑着找人交流。后来……………………………………………………………………………………………………………………请问我们班还有比他更沉默的帅哥吗？唉，变身失败的孩纸伤不起啊…………
+“介个，我跟你讲……”“我要睡觉了！”
+“我要激活码！”“美女耶！”
+“哔哔砰砰……”“我眺望远方的山峰……”
+“bingo！”“当当当当！”“我靠，又吃到蒜了！”“哈喽，帅哥！”
+“我决定了……”“我觉得吧，明天不上课了！”
+“这不科学！”“关我毛事！”
+老胡：“我决定了，下午好好学习，再也不lol了，玩腻了都！”吃完午饭，老胡继续lol……小杰：“老胡，你不是说下午好好学习吗？”老胡：“我说过吗？”小杰：“……”
+
+一天晚上，又一天晚上，还是一天晚上……下载……然后上厕所……少儿不宜，你们懂得……
+一晚卧谈会，高富帅：“当年我和小黄狗聊天，她说她表弟小小年纪就特别好色，老喜欢抱她，晚上还要和她一起睡！我叹息了一声，小黄狗说怎么了，你也抱过啊，然后我说：‘但是我没睡过啊！’”
+有段时间学生会比较忙，每天很晚才回到宿舍，小黑：“郝哥哥每天都出去鬼混！四处勾搭妹子！”我：“哥是去工作好不好？”小黑：“解释就是掩饰，掩饰就是事实！”我：“……”
+在空间发了一张我们宿舍六人的合影：标题是B533最帅的六个人！（每次安慰富帅，我都会告诉他：你好歹也是B533最帅的六个人之一啊）
+如果你的女朋友是南工程的，请珍惜，因为她身边有那么多优秀男生，却选择了你；如果你的男朋友是南工程的，请更加珍惜，因为他身边有那么多优秀男生，却依然喜欢女生！
+为什么我的眼中常含泪水，因为我的室友老给我丢人！
+我：“好，今天我高兴，小杰请我吃饭！”
+——“昨天，我总结了一下！”安静……——“昨天，我总结了一下！”安静……——“昨天，我总结了一下！”安静……——“昨天……”——“你TMD到底说不说啊！”
+——“其实我有生理问题，希望你们不要歧视我！”——“怎么了？废了？”——“不是！”——“那是怎么了？”——“我不好意思说……”——“没关系，大不了一死嘛！”——-_-|||“我只是想说，我有蛀牙……”
+有天卧谈会，谈到强奸这个问题，小胖说了一句话：“万一_____（此处填空，两个字）肿么办？”瞬间就亮了！
+以前，高富帅经常讲和他前女友小黄狗的故事。后来有一天，高富帅神经出了点问题，死活不承认小黄狗以前是他女朋友。于是，小杰说了一句话：“行行行，小黄狗不是你女朋友，她是你好基友行了吧？！”
+还记得某天晚上，小胖念了一遍lol人物台词，我们顿时有了新的理解！读的方法是：某某某脱下裤子+原台词！例如“Ashe脱下裤子，我射的很准！”Ashe: 我射的很准！安妮：你也要来玩吗?很好玩的哦炼金：摇还是不摇，这是一个问题ez：是时候表演真正的技术了！亡灵：不要再2了野兽：我们的狂怒你驾驭不住提莫：提莫队长正在待命小炮：我好想射点什么皮女：好戏开场了 
+老胡创造了这么一句话：“风吹裤裆JB凉！”
+老胡：“那个女生不好！”我们：“为什么？”老胡：“她性冷淡！”后来我们一直想知道老胡怎么知道的……
+——“用个成语形容自己！”——“帅的一比！”
+小杰发了一个说说，后来怕没人赞，于是又加了一个说说：请大家赞我上一个说说！
+小黑躺在床上玩手机，突然说：“哎呀，没电了！”我不假思索地接了一句：“没电了玩手机啊！”……
+时间不早了，大家安息吧！
+二货室友们，我想死你们了!
+以前一直不知道什么是2B青年，后来见到了小杰，我一下子明白了！
+小杰每天晚上睡前都B-BOX，打扰大家睡觉。后来有一天，小杰发现得了肾结石，很难过，不B-BOX了，然后晚上12点半左右开始放视频，外音……
+小北门门口每天都停满了网吧车，大家习以为常。有一天来了辆林肯加长和一辆宝马，也是网吧车，当天就登上了网易头条……
+小杰去打水，经常做的事是：5分钟之后回来，告诉我们忘记带水瓶了……忘带水瓶……打水……-_-|||
+有一天我去打水，到了打水的机子前，掏出了公交卡，掏出了银行卡，连身份证都掏出来了，但是，饭卡没带……
+小杰说喜欢王梦娇，但是他和顾俐慧关系非常暧昧，每天都聊啊聊，我们都认为其实小杰是喜欢顾俐慧的。于是有一天，我就帮小杰表白了，顾俐慧打电话给小杰，小杰死活不承认。后来又一天，小杰发现自己真的喜欢的是顾俐慧，于是再次表白，结果得知顾俐慧在前一天结束了单身……小杰啊，我已经不想再说你什么了……
+网球课，老师让同学做一遍挥拍动作。先是吉旭峰，做了一次，完全跑偏，老师很无奈。又叫了赵佳袁，再次跑偏，还耍了耍帅。我明明看到老师脸上瞬间挂上了三根黑线，“这两个人哪儿冒出来的？”
+缪，miu还是miao？
+开学第一天点名，点到王郑的时候，他室友邱浩回答：老师，他家里有事，还没来到学校。老师淡定地指了指，“他那不是来了吗，你看，正举手呢！”只见王郑果然来了……邱浩满脸的黑线啊……这时老师补充了一句：好基友，一辈子！
+蔡老师问：你们学过java吧？谁教的？我们：叶和亚！他恍然大悟状：奥~我们叶老师可以出了名的……（一副你懂得的表情）我们：嗯嗯！（我们懂得）蔡老师：你们想哪去了，我是说我们叶老师出了名的水平高！
+我们只点名五次，小于等于五次。你们好好数着，等到了四次，基本上你们就不用来了，因为我可能就不点了。
+等到人品爆发的时候，怎么说也有30k吧！
+那时候我们回到宿舍，第一件事肯定是在楼道里大喊：C不C？这时有人回：C!C!C!!!这时会有人问：谁贱？谁贱？下面就会有人抢着：我建！我建！谁建谁是有好处的，看谁打得好，直接踢掉！呀，不好意思，手误手误！再加再加！
+再后来，我们不止C的水平很高，杀毒水平也很高，为什么？因为如果你的电脑中毒，人家不带你C！你可以不让我吃饭，你可以不让我上课，但是，你怎么能不让我C呢？这怎么能忍受？所以，为了不中毒，我们就开始研究各种杀毒杀木马的方法。后来网上出现的各种病毒，说杀伤力怎样怎样，很多大网站都中招了，但是对我们来说，都是小case！比如当年出现的冲击波病毒，特别恶心，它不删你文件，也不复制出乱七八糟的东西，但是，它关你电脑！你正C的开心，旁边弹出一个对话框：60,59，……而你唯一能做的，就是跟着它一起数，然后，关机了！这谁受得了对吧？结果这个病毒刚一出现，就有同学到了网吧，一天就找到了解决办法，然后写一个文档，第一步第二步列的清清楚楚，只要照着做就能解决。但是，我们解决了，女生那边还没有解决啊！阿姨，你不知道，现在出了一个冲击波病毒，危害非常严重，我们班女生都没法学习了！然后给阿姨看那个文档！阿姨：快去快去！谢谢阿姨！你们知道吗？好名声是会传播的，我们系女生的问题解决了，其他系女生的问题没解决啊！不要担心，其他系的女生打电话给你：请问是某某某同学吗？下午有时间吗？再找到阿姨，阿姨，我就是上次来的那个男生，这次来帮其他系女生修电脑！奥，是你啊，小伙子不错，快去吧！谢谢阿姨！
+一件帅气的格子衬衫，领口张开，下面穿一件纯黑短裤，还洒满了白点子，配上一双耐克运动鞋，再加上一副优雅的黑框眼镜，哎呀！让我瞬间忽略了他的代码！
+]]></content>
+      <categories>
+        <category>随笔</category>
+      </categories>
+      <tags>
+        <tag>随笔</tag>
+        <tag>笑话</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>2012浙大考研经验</title>
     <url>/hobby-kaoyan-2012-zheda/</url>
     <content><![CDATA[本文转载自：http://www.cskaoyan.com/thread-88458-1-1.html
@@ -32616,65 +32675,6 @@ Stretchly
       </categories>
       <tags>
         <tag>读者</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>B533史记</title>
-    <url>/essay-b533-history/</url>
-    <content><![CDATA[一天晚上，小胖发了个说说：我要改掉坏习惯！第二天，他果然改掉了上课睡觉和玩手机的坏习惯。因为他没去上课……
-——“郝哥哥，你真帅！”——“低调低调！”——“你不赞我一下？”——“你这求互赞呢！好吧，小黑你真帅！”……
-高富帅的由来：刚开学，收到很多理发店传单，邓俊鹏和丁凯俩人一看很便宜，理发一次只要两元，就屁颠屁颠地去了。结果人家给理发到一半停下了，不断蛊惑让他们办会员卡。结果，丁凯办了一张黄金VIP卡，500；邓俊鹏办了一张钻石VIP卡，1000！从此以后，高富帅就诞生了……
-突然有一天，高富帅做了个头发，300多，然后又买了5瓶化妆品，400多。我靠，奢侈的一比啊！然后我们看到兄弟宿舍的宋金峰发了个说说，大致内容是说邱浩买了一瓶化妆品，像是要相亲一样！看到这个说说，我们沉默了……富帅啊，你这是想勾搭多少妹子啊……
-老胡，一朵奇葩，刚开学的时候特别开朗，各个宿舍跑着找人交流。后来……………………………………………………………………………………………………………………请问我们班还有比他更沉默的帅哥吗？唉，变身失败的孩纸伤不起啊…………
-“介个，我跟你讲……”“我要睡觉了！”
-“我要激活码！”“美女耶！”
-“哔哔砰砰……”“我眺望远方的山峰……”
-“bingo！”“当当当当！”“我靠，又吃到蒜了！”“哈喽，帅哥！”
-“我决定了……”“我觉得吧，明天不上课了！”
-“这不科学！”“关我毛事！”
-老胡：“我决定了，下午好好学习，再也不lol了，玩腻了都！”吃完午饭，老胡继续lol……小杰：“老胡，你不是说下午好好学习吗？”老胡：“我说过吗？”小杰：“……”
-
-一天晚上，又一天晚上，还是一天晚上……下载……然后上厕所……少儿不宜，你们懂得……
-一晚卧谈会，高富帅：“当年我和小黄狗聊天，她说她表弟小小年纪就特别好色，老喜欢抱她，晚上还要和她一起睡！我叹息了一声，小黄狗说怎么了，你也抱过啊，然后我说：‘但是我没睡过啊！’”
-有段时间学生会比较忙，每天很晚才回到宿舍，小黑：“郝哥哥每天都出去鬼混！四处勾搭妹子！”我：“哥是去工作好不好？”小黑：“解释就是掩饰，掩饰就是事实！”我：“……”
-在空间发了一张我们宿舍六人的合影：标题是B533最帅的六个人！（每次安慰富帅，我都会告诉他：你好歹也是B533最帅的六个人之一啊）
-如果你的女朋友是南工程的，请珍惜，因为她身边有那么多优秀男生，却选择了你；如果你的男朋友是南工程的，请更加珍惜，因为他身边有那么多优秀男生，却依然喜欢女生！
-为什么我的眼中常含泪水，因为我的室友老给我丢人！
-我：“好，今天我高兴，小杰请我吃饭！”
-——“昨天，我总结了一下！”安静……——“昨天，我总结了一下！”安静……——“昨天，我总结了一下！”安静……——“昨天……”——“你TMD到底说不说啊！”
-——“其实我有生理问题，希望你们不要歧视我！”——“怎么了？废了？”——“不是！”——“那是怎么了？”——“我不好意思说……”——“没关系，大不了一死嘛！”——-_-|||“我只是想说，我有蛀牙……”
-有天卧谈会，谈到强奸这个问题，小胖说了一句话：“万一_____（此处填空，两个字）肿么办？”瞬间就亮了！
-以前，高富帅经常讲和他前女友小黄狗的故事。后来有一天，高富帅神经出了点问题，死活不承认小黄狗以前是他女朋友。于是，小杰说了一句话：“行行行，小黄狗不是你女朋友，她是你好基友行了吧？！”
-还记得某天晚上，小胖念了一遍lol人物台词，我们顿时有了新的理解！读的方法是：某某某脱下裤子+原台词！例如“Ashe脱下裤子，我射的很准！”Ashe: 我射的很准！安妮：你也要来玩吗?很好玩的哦炼金：摇还是不摇，这是一个问题ez：是时候表演真正的技术了！亡灵：不要再2了野兽：我们的狂怒你驾驭不住提莫：提莫队长正在待命小炮：我好想射点什么皮女：好戏开场了 
-老胡创造了这么一句话：“风吹裤裆JB凉！”
-老胡：“那个女生不好！”我们：“为什么？”老胡：“她性冷淡！”后来我们一直想知道老胡怎么知道的……
-——“用个成语形容自己！”——“帅的一比！”
-小杰发了一个说说，后来怕没人赞，于是又加了一个说说：请大家赞我上一个说说！
-小黑躺在床上玩手机，突然说：“哎呀，没电了！”我不假思索地接了一句：“没电了玩手机啊！”……
-时间不早了，大家安息吧！
-二货室友们，我想死你们了!
-以前一直不知道什么是2B青年，后来见到了小杰，我一下子明白了！
-小杰每天晚上睡前都B-BOX，打扰大家睡觉。后来有一天，小杰发现得了肾结石，很难过，不B-BOX了，然后晚上12点半左右开始放视频，外音……
-小北门门口每天都停满了网吧车，大家习以为常。有一天来了辆林肯加长和一辆宝马，也是网吧车，当天就登上了网易头条……
-小杰去打水，经常做的事是：5分钟之后回来，告诉我们忘记带水瓶了……忘带水瓶……打水……-_-|||
-有一天我去打水，到了打水的机子前，掏出了公交卡，掏出了银行卡，连身份证都掏出来了，但是，饭卡没带……
-小杰说喜欢王梦娇，但是他和顾俐慧关系非常暧昧，每天都聊啊聊，我们都认为其实小杰是喜欢顾俐慧的。于是有一天，我就帮小杰表白了，顾俐慧打电话给小杰，小杰死活不承认。后来又一天，小杰发现自己真的喜欢的是顾俐慧，于是再次表白，结果得知顾俐慧在前一天结束了单身……小杰啊，我已经不想再说你什么了……
-网球课，老师让同学做一遍挥拍动作。先是吉旭峰，做了一次，完全跑偏，老师很无奈。又叫了赵佳袁，再次跑偏，还耍了耍帅。我明明看到老师脸上瞬间挂上了三根黑线，“这两个人哪儿冒出来的？”
-缪，miu还是miao？
-开学第一天点名，点到王郑的时候，他室友邱浩回答：老师，他家里有事，还没来到学校。老师淡定地指了指，“他那不是来了吗，你看，正举手呢！”只见王郑果然来了……邱浩满脸的黑线啊……这时老师补充了一句：好基友，一辈子！
-蔡老师问：你们学过java吧？谁教的？我们：叶和亚！他恍然大悟状：奥~我们叶老师可以出了名的……（一副你懂得的表情）我们：嗯嗯！（我们懂得）蔡老师：你们想哪去了，我是说我们叶老师出了名的水平高！
-我们只点名五次，小于等于五次。你们好好数着，等到了四次，基本上你们就不用来了，因为我可能就不点了。
-等到人品爆发的时候，怎么说也有30k吧！
-那时候我们回到宿舍，第一件事肯定是在楼道里大喊：C不C？这时有人回：C!C!C!!!这时会有人问：谁贱？谁贱？下面就会有人抢着：我建！我建！谁建谁是有好处的，看谁打得好，直接踢掉！呀，不好意思，手误手误！再加再加！
-再后来，我们不止C的水平很高，杀毒水平也很高，为什么？因为如果你的电脑中毒，人家不带你C！你可以不让我吃饭，你可以不让我上课，但是，你怎么能不让我C呢？这怎么能忍受？所以，为了不中毒，我们就开始研究各种杀毒杀木马的方法。后来网上出现的各种病毒，说杀伤力怎样怎样，很多大网站都中招了，但是对我们来说，都是小case！比如当年出现的冲击波病毒，特别恶心，它不删你文件，也不复制出乱七八糟的东西，但是，它关你电脑！你正C的开心，旁边弹出一个对话框：60,59，……而你唯一能做的，就是跟着它一起数，然后，关机了！这谁受得了对吧？结果这个病毒刚一出现，就有同学到了网吧，一天就找到了解决办法，然后写一个文档，第一步第二步列的清清楚楚，只要照着做就能解决。但是，我们解决了，女生那边还没有解决啊！阿姨，你不知道，现在出了一个冲击波病毒，危害非常严重，我们班女生都没法学习了！然后给阿姨看那个文档！阿姨：快去快去！谢谢阿姨！你们知道吗？好名声是会传播的，我们系女生的问题解决了，其他系女生的问题没解决啊！不要担心，其他系的女生打电话给你：请问是某某某同学吗？下午有时间吗？再找到阿姨，阿姨，我就是上次来的那个男生，这次来帮其他系女生修电脑！奥，是你啊，小伙子不错，快去吧！谢谢阿姨！
-一件帅气的格子衬衫，领口张开，下面穿一件纯黑短裤，还洒满了白点子，配上一双耐克运动鞋，再加上一副优雅的黑框眼镜，哎呀！让我瞬间忽略了他的代码！
-]]></content>
-      <categories>
-        <category>随笔</category>
-      </categories>
-      <tags>
-        <tag>随笔</tag>
-        <tag>笑话</tag>
       </tags>
   </entry>
   <entry>
@@ -37716,6 +37716,113 @@ SHL是逻辑左移指令，它的功能为：[1]将一个寄存器或内存单�
       </tags>
   </entry>
   <entry>
+    <title>英语学习方法</title>
+    <url>/en-learning-method-of-english/</url>
+    <content><![CDATA[理论磨刀不误砍柴工，了解一下英语学习的理论，能够少走一些弯路，找到自己应该坚持的方向。
+赖世雄说英语讲得非常棒、非常流利是英语学习者的一个梦想。有人说，学英语就一定要在英语系国家住个三五年，赖世雄告诉你这个是完全不对的。比如在国外生活了很多年的华侨，英语流利度仍然不够，还有很多人从来没出过国，但是他们的英语讲得非常流利。口语是一个人的门面，口语是沟通的桥梁，所以学英语的第一步是学说，先有语言后才有文字。
+
+
+1、会话法。用正确的声音源（地道老外讲的话）把资料书的内容完全消化，然后丢开书，自己一个人分裂练习多个角色，反复操练。用回忆，尽量不要看书，很流利之后可以自己造句，直至内容完全吸收。
+2、描述法，随身携带很小的汉英字典。见到什么就描述什么，不会的单词就查（不用英汉字典，因为汉字不会说的时候查汉英字典更方便）
+3、翻译法，口语翻译，比如看电视的时候，听见任何对白都给它翻译成英文，将任何进入大脑的中文都翻译成英文。不会的马上查。学校开会很无聊，把老师和校长的讲话都翻译成英文。
+视频链接：https://pan.baidu.com/s/1osQw7w2_u8ZQn6LVAYS7uA 密码：d0du
+英语思维篇简单的说，用英语思维，就是看你能否用英语来理解英语。要达到英文思维的水平，最起码的，就是像中国人读中文一样：一段话从前看到后，就读懂了。（当然，我指通俗读物中的文字，过于弯弯绕的，中文也未必能一眼读懂）不需要从英文翻译到中文，从中文翻译到汉语拼音，更不需要翻译到一幅幅图片，你就是读懂了。
+为什么大多数人始终没有培养出英语思维？原因一：很多人背单词的时候，只顾着背英文词汇与中文释义之间的一一对应关系，这是绝大多数人学不好英文的根本原因之一。
+解决办法：果断抛弃英汉词典，只用英英字典。你学习justify这个词，看到的释义是这样：
+
+To justify a decision, action, or idea means to show or prove that it is reasonable or necessary.
+
+再看到justify，你不会想到“使…合理化”，也未必能把这整句柯林斯释义复述出来，但是拿把枪顶你脑门上逼你解释的话，你一定会联想到decision, prove, reasonable, necessary 这些关键词。够了！当你能够用简单的英语单词来关联复杂的英语单词，在你的脑中，英语词汇就不再是一个单词绑上一个释义这样几千个孤立的知识点，而是能够构成网络和体系，就像中文对你而言一样。真的不用担心你没法一字一句把释义记下来，就像我问你中文“逻辑”是什么意思，“抽象”是什么意思，你能给出准确解释么，你当然不能，你又不是人肉字典。
+原因二：不敢脱离翻译去看原文，一旦没有翻译，就哭着喊着臣妾做不到啊。结果，就是你永远把英语当成一门学问在学，而无法当作一个技能在用。很多人会说，我也想用啊，我想先学好了再用。正是这样的想法，导致无数人学了十几年英语，依然只知道读新概念，还要单词从A背到C，再从A背到C，再从A背到C……
+你知道问题在哪里么？因为“学”和“用”之间，本就没有一条黑白分明的界限，不是说你花100天去专心学习，到了101天，啊，见证奇迹的时刻，你突然可以开始用了。
+大家都学过中文，有谁是把几万个汉字和成语都先掌握了，再去看书读报的？会开车的话，谁又是把车技练得跟舒马赫一样再上路的？学英文难道不是一个道理么，如果你已经熟悉了三四千个单词，那么你就应该大胆开始阅读原文，并且果断抛弃中文译文。你以为自己在双语阅读的时候，根本就是在汉语阅读而已嘛。
+除非是关系你饭碗或者生命的阅读材料，否则不用怕读不懂，不用怕理解错，你想象一下自己小时候是怎么一点点学会看中文书的，不也是从连蒙带猜开始的么；但是你读了几十几百篇，自然就读出了感觉，读出了自信，是不是这个道理？说到底，英语思维，或者用英语思考和理解，本身不是什么大不了的事情，一个愿意付出努力和坚持，并且方法得当的语言学习者，经过一段时间的训练就能达到这样的水平。
+解决办法：连蒙带猜地读，大量的读。
+克拉申说“会用任何语言流利交流的前提是必须能用这种语言思考，做不到的就永远不能正常交流。”这是结论，没有英文思维，永远也听不懂正常速度的英文，永远也听不了长句子。
+模仿儿童学习语言的方式：猜测–形成条件反射–建立语言区–实现语言思维。成人学习语言的过程：学习–记忆–记忆区–知识。
+克拉申创立的S.L.A.（Second Language Acquisition）：简单来说，语言的掌握，无论是第一语言还是第二语言，都是在“可理解的”真实语句发生（即我们前面探讨的有效的声音，也就是可以懂意思的外语）下实现的；都是在放松的不反感的条件下接受的；它不需要“有意识地”学习，训练和使用语法知识；它不能一夜速成，开始时会比较慢，说的能力比听的能力实现得晚。所以最好的方法就是针对以上语言实现的特点来设计的。他的理论由以下五大支柱组成，被他称为五个“假说”。五个假说不分先后，但分量不同。
+1）习得-学得差异假设（The Acquisition-Learning Hy-pothesis）2）监检假设（The Monitor Hypothesis）3）输入假设（The Input Hypothesis）4）情感过滤假设（The Affective Filter Hypothesis）5）自然顺序假设（The Natural Order Hypothesis） 
+沉默期有一个非常重要的“沉默期”(Silent period)的概念，克拉申认为，无论成人或儿童，在掌握说话能力前，都会有一个相当长的沉默期，直到听懂的量达到一定程度而有足够的自信时，才可能说话。这一沉默期是正常的同时也是必要的。所以大家不要急着上来就想说，说的能力要来得慢，同时它是自然到来的。
+“先听说，不读写”这是一个外国语言学家不太讨论（因为对他们来说是常识）而中国同学却常常误解问题，即听说读写之间的关系。对于中国同学来说，认为这四个方面的区别比较明显，而且我们常常把“听说”归在一类，把“读写”归在一类。这和中文的特殊性有关。中文的“听、说、读、写”是分家的，大家会“听说”交流后，并不会认字，要去“学习”认字。因为中国的汉字确实是需要通过“学习”的方法掌握，也就是主要用记忆的方法。不学习，汉字是无法掌握的。而英文，和许多其他的拼音文字一样，读音和文字是紧密相连的。会了“听说”，只要掌握了读音规律，拼写自然就会了。所以严格来讲，外国小孩上学不学习“认字”，而是学“拼音规律”。英文叫做Phonics。
+我们已经明确了“建立英文思维主要是建立英文声音的思维”这个概念，结合“二语悉得”的理论，再根据母语掌握的规律，可以先明确这一理念：“先听说，后读写。”大家笑了，就这呀！早就听过这个老生常谈了，而且知道母语学习都是这个顺序。其实很多人并不真正明白它的含义，也不照着做。它的实际含义是叫你在你学会“听说”之前，不要急着学“读写”。所以本人说得过分一点，把它称为：“先听说，不读写”。到高阶段再说。我把著名语言学家保罗•比斯勒博士(Pimsleur)的关于“阅读”应实现于“听说”的语言能力掌握之后的论述给大家参考：“Reading has been defined as “decoding the graphicmaterial to the phonemic patterns of spoken language which have already been mastered when reading is begun.” To put it another way, reading consists of coming back to speech through the graphics symbols. In short, meanings reside in the sounds of the spoken language. Speaking a language is the necessary first step to acquiring the ability to read a language with meaning. ——Paul Pimsleur”
+对大多数中国同学而言，主动回避“文字”更十分必要。因为大多数中国同学，只要上到大学程度的，多半是“视觉学习型”（Visual Learning Style）。而“听觉学习型”(Audio Learning Style)和“动作学习型” (Kinesthetic Learning Style)的同学，一般会被我国这种教育体制淘汰掉。“视觉学习型”的同学，建立英语思维时，很容易受到“文字”的干扰，忍不住看文字，甚至先想一下文字，再过度到含义。成了“声音”—“字型”—“含义”的路线。应该避免想到字型，直接将“声音”和“含义”建立联系。
+“听”的原则和方法：1）千万不要着急学文字，语言掌握的关键是解决“声音”。2）不依赖语法知识和中文翻译，重点是“猜测”着听。3）在后期能听懂简单段落和简单对话时，可以模仿和重复一些句子并尝试自己说。4）最后，可以开始阅读一些与听到的对话有关的文字。注意一定要在听之后才能读，千万不能一发现听不懂马上去翻看文字来帮忙。 
+背单词方法原则：建立连接，加强连接。
+1、多维，可以背单词，可以背句子，可以听ESLPod，可以阅读，不排斥任何一种记忆方法。2、重复，按照艾宾浩斯遗忘曲线也好，按照早晚也好，按照循环也好，一定要重复。3、欧陆词典法，使用分类词典，闭目听选，三秒过一个单词。4、联想法，同类词 实物 拆词 近义词 反义词 父词 解释 造句。5、英英记忆法，使用英文解释英文单词。
+心态对于说英语，像玩游戏一样放松，一样自信，脸皮要厚，不要怕犯错。英语是交流的工具，能听懂别人说什么，能表达出自己的思想，这才是目的。把关注点放在倾听，放在表达，而不是语法错误和词法错误。交流不是考试，有错误又怎样？别人能听明白就够了！
+私人剧本法Benny Lewis创立了一种神奇的口语速成法，叫做私人剧本法。私人剧本法的核心理念是，任何有效的口语速成训练法，一定要从“与我相关”的剧本开始。想学一门新外语，就要从第一天开口。学习任何一门新外语，第一周就要制作与我密切相关的私人剧本，目的是说自己内心想要表达的话。用一个方法就可以理解私人剧本的意思，就是如果你内心渴望用中文和别人说什么，你就尽量写出英文相应的剧本。
+听说听写听写，or听抄，顾名思义，就是一边放听力段子，一边写下听到的内容。听写并非考验诸位的记忆，所以放完一句，暂停掉，写下你能够听到的每一个词的全拼，如果不能听出来所有内容，就重新放一遍刚才这一句话，再听不出来就再放一遍，以此循环往复直到完整写下原文，然后再放下一句。当然，如果5遍以上还是听不出来，直接看原文，不要继续纠结了，我们的学习过程要遵循人性啊。那么5遍还没有听出来是什么原因呢？有生词？那么查之。有语音现象导致认识的词也听不出来？那说明还没有练到火候啊。语速过快？那么先从比较慢的材料开始吧。一步一步训练耳朵的熟悉度，然后再换比较快的材料。
+听读一篇新的听力材料，头2、3遍一定要从头到尾连贯着听，不要逐字逐句听，这个时候不求听懂绝大部分内容，而只求听懂一个大概。这样2、3遍连贯着听下来，哪怕你只懂了几个单词，也没关系，这在听力的新手来说完全正常，根本不必责难自己（哪怕你觉得自己阅读理解的水平已经达到了《新概念》第四册都已经学完的水平、但从没练过听力）。
+第二步，逐字逐句听。一开始，把一个比较长的句子一次全部听下来，可能会有困难：听到句尾，早就已经忘了开头说什么了。逐字逐句听的时候，可以把一句话拆成几个部分来听，听完一小部分，立刻口头重复，说一遍。
+第二步中，遇到难点要来回多听几遍，力求听懂。但如果某一句话或句子的某1、2个单词听了4、5遍还没听出来，那就先放一放，往下听。后面的内容常常会为前面的内容提供解释。
+一篇听力练习，你能听明白90%-95%的意思，就行了。这不是“不求甚解”，而是力求高效地利用时间，更重要的是保持自己学习英语的兴趣和热情。
+影子跟读法影子跟读法的核心在于跟读native的对话，不纠结于一词一句的发音对错，不要打断录音，也就是不要按暂停键，强迫自己跟上native的节奏和思维，最后达到能够下意识的做出回答，绕过中文思考-英文说出的弯弯。
+外语学习最重要的目的就是进行“有效的沟通”。
+影子跟读所谓影子跟读，指的是跟读者滞后一小段时间，像影子一样在源语后面进行复述。具体操作就是：当源语在读第二或者第三个单词时，跟读者开始跟读第一个单词，并尽量保证使用与源语完全相同的语速、语调、语气甚至音色。影子跟读最大的妙处在于其使得语言在跟读者脑中形成了一个“闭环”：先听源语，有时还可以看着原文，在跟读动作开始前，这是一个源语输入的过程；开始跟读时，跟读者其实是借助刚刚听到和现在看到的（如果看原文）源语进行输出；当跟读者听到自己的跟读时，会对准确度和流畅度甚至还原度进行判断，这是再次输入。因此，影子跟读并非简单意义上的模仿，而是一个非常复杂的语言习得过程。其相比于普通意义上逐句跟读的好处是，由于跟读时离源语输入的时间尚短，对于语调和发音的还原将更加准确，即使不准确，也更易发觉并纠正。一篇文章至少跟读50遍！50遍！ 大家在做影子跟读的时候，最大的困难就是跟不上，此时，可借助电脑中的各种播放器的变速功能进行练习，比如Windows系统自带的MediaPlayer就在高级选项中有播放速度设定，不同水平的跟读者可以根据自己的具体情况来选择0.5-1.0甚至更高倍速来播放要跟读的音频。而到后期用原速跟读毫无压力时，则可以开启加强模式，加快音频速度进行跟读。
+教程链接: http://pan.baidu.com/s/1sljF5al 密码: jxkx
+在条件不允许大声跟读的情况下，可以在心中跟读。
+句子读法“三剑客”那么如何去练习句子的发音呢？给大家介绍句子读法“三剑客”：连读、失去爆破、弱读。比如，on it不应读成【on】【It】，而应读成【o】【nI】【t】，同样，first time中的两个【t】应读成一个【t】；美国总统奥巴马在2008年芝加哥获胜演说中读“must be”中的【t】不读出声，读“could be”中的【d】彻底消失。因此，与其将大量精力浪费在一个孤立的音标上，倒不如学习如何读好句子，毕竟这才是根本。
+发声和气息气为声之本，气乃音之帅。气息是我们发声的根源，掌握良好的气息运用方式，不但说话不累，而且可以美化音色，强身健体。
+
+关键：肚子有两个方向，正面和侧面。吸气时，两个方向都应该被打开。而当你唱歌/读书的时候，腰的前后方向应该是收缩的，但是侧面别动，用肌肉撑住。
+
+1、最简单易上手的训练方式，其实就是“读报纸”，用你心中觉得是播音员的方式来大声朗读（关键是大声，但不是吼叫），尽量把每个字的发音发清楚发完整。每天十分钟到半小时，三个月后发声和之前完全不一样了。咬字方面要活动开脸部肌肉，最大限度打开牙关，多张大嘴巴，下巴放松，嘴唇和舌头咬保持有力。
+2、腹式呼吸训练。
+
+在刚开始练习的时候要慢吸慢吐就像在闻花香，喉咙只是一个运送气息的管道而不是着力点，说话、唱歌时的发力点是小腹，通过小腹的支撑下，喉咙应该是放松的。
+在播音发声时，气息会吸到丹田处，小腹微微紧张，把吸到丹田的气拖住。出声时，两肋和小腹形成一个“皮球”，慢慢的把气控制着放出来。
+后仰三十度，小腹紧张，感觉小腹处支撑住你的气息，发出yia的音。你要感觉到声音是从丹田处出来，而不是扯嗓子。这种强控制练习提升是最快的。
+打嘟嘟（唇颤音），通过打哈欠和发笑的感觉去发声。
+
+背诵新东方有个学员现在在Duke大学，他从高一开始背《新概念英语》第三册，背到高三就背完了。高考考进了北大，进北大后，他本来不想再背了。但当他背给同学听的时候，其他同学都露出了羡慕的眼光，于是，为了这种虚荣心，他就坚持背第四册，把第三、四册都背得滚瓜烂熟，他熟到什么地步呢，有人把其中任何一句说出来，把能把上一句和下一句连接下去，而且语音非常标准，因为他是模仿着磁带来背的。后来他去了美国Duke大学，他给新东方的教师写信，老师不敢回，因为老师对他的英文有畏惧感，他的英文学得太好，只能给他回中文信，并告诉他不是不会写英文，而是想让他温习温习中文，不要忘记祖国的语言。这位学员到美国第一个星期写文章，教授把他叫过去说他的文章是剽窃的，因为他的文章写得太好了，教授说：“我20年教书没有教出这么漂亮的文章来。“这个学员说，我没有办法证明我能写出这么优秀的文章，但我告诉你，我能背108篇文章，而且背得非常熟练，你想不想听。结果，他没有背完两篇，教授就哭了起来，为什么？因为这个教授想一想自己教了20年了，居然一篇文章也没有背过，被中国学生背掉了，所以很难过……　 
+
+学习英语唯一的正轨，不出仿效与熟诵；仿效即整句的仿效，熟诵则仿效之后必回环练习，必使能顺口而出而后已。凡能依这方法读英文的，无不成功，而且这极容易，真是学习英语的康庄大道。——林语堂
+
+熟读成诵，每次背诵三句话，直到脱口而出。
+
+所背的课文要典型而纯。
+理解而后能背。
+先听后背。
+从易到难，从短到长，循序渐进。
+一天之计在于晨。
+注意重点句型和单词。
+及时复习，多多重复。
+尽量尝试不同语调，在不同环境和条件下重复。
+
+对话1、模仿对话材料选择EnglishPod，模仿会话中的角色，进行英语对话。
+2、自我对话听完某条VOA新闻后，自己和自己把这个新闻复述一遍，或者看完某篇文章以后，自己和自己把这篇文章大概说了一个什么意思叙述一遍。或者，比如最近有某个电视连续剧很好看，自己和自己把整个连续剧的故事讲一遍。比如西游记大家都看过吧？你找不到口语练习材料的时候，就对自己把西游记的故事讲一遍，比如从前有一个和尚，他要去西天取经，佛祖派他怎么怎么样，他的徒弟怎么怎么样，四个徒弟分别是谁，什么性格，于是他们出发上路了，路上有很多妖怪，都分别有什么样的妖怪，想起来哪个就叙述哪个，保证这样可以让你不间断地说上半个小时的。总而言之，就是把自己分成两个人，一个给另一个讲故事、讲笑话、讲新闻等等。
+读写透析法透析法要提升中国人的英语文化水平，核心就是读懂英文原著。读懂原著，能让你睁眼看世界，品味原汁原味的英语。狭义上说，英文原著主要是指以英语为母语人士的文字著作，也包括了其他语种著作的英译版。广义上说，英文原著是一切以英语为载体的信息，包括广播、电视、歌曲、电影、有声电子书、网络视频、播客等视听信息。广义上，原著的资源十分丰富，例如全世界75%的电视节目是用英语播出的。在国内，我们也可以在网上接收到世界上很多国家的英文电台、电视台。
+把英语用起来，就是在真实的生活把英语用起来，就是在真实的生活中使用这门语言，要求听、说、读、中使用这门语言，要求听、说、读、写全部实现英文原著化。听，就听实时的英语新闻，从BBC、CNN到Al Jazeera；说，就用英语聊天，从身边的熟人到网络另一端的老外；读，就读老外的英文版，从短信、邮件到大部头的专著；写，就写英文邮件、短信给亲友同事乃至生意上的伙伴。 
+对一本英文原著而言，“读下去”比“学生词”的意义大得多。只有“读下去”，你才能获得英 文原著的种种好处，读不下去，一切都等于零。 
+核心操作：每2页查1个生词。
+首先可以跳过卷首，包括简介和评论，以免打击积极性。从原著的正文开始读，遇到生词的时候，使用电子词典查单词。每2页查1个生词，词组、短语等是与单词处于同等地位的词条，亦视为一个词。你也可根据手机、平板电脑等设备的屏幕大小自定词的数量，但总的原则是不可查太多，特别是不能每个生词都查。透析时，遇到生词认为需要查词典便可使用查词机会，而不是先挑出生词来查，也不是读完再回头找生词查。在电子词典上看懂生词解释后便可回到原著，不要试图停下来记忆单词。在每2页中无论碰到多少个生词，10个好，20个亦好，有且只需查1个（除非你找不到生词了）。这些措施都能尽可能减少查生词操作对阅读的干扰。
+你不禁要问：“多查几个不行吗？”“2页才查1个太少了吧？”……没商量！你想多查生词吗？可以，但你必须有阅读量的支持。例如，你若想迅速扩充词汇量，每天掌握50个生词，你就必须读够100页。千万别以为“每2页查1个生词”太少了，如果你只读一两页，就像在学校上英语课那样，查1个还是查10个，是没有什么区别的。但现在你每天要读几十页，或者电子版的几个百分点，日后你要读成千上万页、几百本书，就很有必要控制查词量，每2页查1个和每2页查2个的差别都是巨大的。多查生词，就会厌烦，进而有半途而废的风险，这正是无数人读不懂原著，长年停留在英语蒙昧状态的致命原因：你觉得几个生词重要，还是几百本原著重要？ 每2页才有1个查词机会，而生词多，如何选择？答案：随便。可以查重现率高的词，因为查明意义就能明白书中许多地方，可以查你认为“关键”的词，如小说关键情节中的生词，还可以从“功利”出发，优先查考试中可能出现的“大纲生词”，等等。
+第二天在读英文原著之前，你要在电子词典上复习查词的“历史”，但是不要超过5分钟。
+中译英打开《新2》，先别看英语原文，因为都是初中程度的句子，你一看就会。先看汉语翻译，一句一句从汉语向英语口译，口译完，再看英文原文。因为这本的内容很浅显，你有很大机率口译得跟原文差不多，但别大意，最好写下来，尤其那些be动词啊，单数第三人称啊，过去式啊，倒装啊，强调啊，和原文对比，跟原文不同的地方，就是你的进步之处！做过几篇，你就发现你变牛了，你觉得一个句子，自己的写法可以，书上的写法也可以。这时你就可以整篇小文地译了，译完，整体对比。如果你觉得新２比较散，可以口译带汉译的作文范文。那个句子土了点，不过见效快，一个搭配你没真掌握绝对译不出来，想破头再看原文，记忆效果加倍！
+衡中体利用真题作文，以原因或影响为切入点，使用衡中体，练习限时写作。
+学习资料通用：把你的英语用起来、真题、新概念英语。单词：欧路词典（优词词根词缀、English Etymology、Collins、Collins Thesaurus、Vocabulary.com Dictionary、LDOCE5、牛津词典、英汉-汉英词典、USE THE RIGHT WORD）、沙拉查词、1368个单词就够了、Word Power Made Easy、Merriam-Webster’s Vocabulary Builder听力：点滴复读机、ESLPod、EnglishPod、粉红猪小妹、老友记、生活大爆炸口语：赖世雄美语音标、ESLPod、EnglishPod、赖世雄语法阅读：BBC、VOA、newyorker写作：Writing Academic English、On Writing Well、The Chicago Manual of Style
+小结条条大路通罗马，方法只是让自己少走一些弯路，真正重要的是——坚持！有计划地坚持！所有泛泛而谈都是吹牛逼，去听，去说，去读，去写！每天完成什么，完成多少，量化，看到自己的进度，看到自己的进步！
+书签清北托福备考联盟慕课
+将英语变成母语
+怎么在一个月内让英语听力有明显的提高？
+如何在一个月内通过大学英语四级、大学英语六级考试？
+我的英语学习之路–影子跟读法
+句子读法“三剑客”：连读、失去爆破、弱读
+英语朗读技巧（连读、失去爆破和弱读/缩读 ）精华版
+怎样培养英语思维，尤其是在读英文文章的时候？-王捷
+怎样培养英语思维，尤其是在读英文文章的时候？-陈名豪
+The New Yorker
+Collins Dictionary
+老友记（Friends）（MP3+LRC）_VOA英语学习网
+]]></content>
+      <categories>
+        <category>英语</category>
+      </categories>
+      <tags>
+        <tag>英语</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>曾经的考研日记</title>
     <url>/hobby-kaoyan-diary/</url>
     <content><![CDATA[本文转载自：http://www.cskaoyan.com/thread-45695-1-1.html
@@ -37869,113 +37976,6 @@ Zidane也是一个干净的人，我依然保留着自己对他的着迷。他�
       <tags>
         <tag>考研</tag>
         <tag>励志</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>英语学习方法</title>
-    <url>/en-learning-method-of-english/</url>
-    <content><![CDATA[理论磨刀不误砍柴工，了解一下英语学习的理论，能够少走一些弯路，找到自己应该坚持的方向。
-赖世雄说英语讲得非常棒、非常流利是英语学习者的一个梦想。有人说，学英语就一定要在英语系国家住个三五年，赖世雄告诉你这个是完全不对的。比如在国外生活了很多年的华侨，英语流利度仍然不够，还有很多人从来没出过国，但是他们的英语讲得非常流利。口语是一个人的门面，口语是沟通的桥梁，所以学英语的第一步是学说，先有语言后才有文字。
-
-
-1、会话法。用正确的声音源（地道老外讲的话）把资料书的内容完全消化，然后丢开书，自己一个人分裂练习多个角色，反复操练。用回忆，尽量不要看书，很流利之后可以自己造句，直至内容完全吸收。
-2、描述法，随身携带很小的汉英字典。见到什么就描述什么，不会的单词就查（不用英汉字典，因为汉字不会说的时候查汉英字典更方便）
-3、翻译法，口语翻译，比如看电视的时候，听见任何对白都给它翻译成英文，将任何进入大脑的中文都翻译成英文。不会的马上查。学校开会很无聊，把老师和校长的讲话都翻译成英文。
-视频链接：https://pan.baidu.com/s/1osQw7w2_u8ZQn6LVAYS7uA 密码：d0du
-英语思维篇简单的说，用英语思维，就是看你能否用英语来理解英语。要达到英文思维的水平，最起码的，就是像中国人读中文一样：一段话从前看到后，就读懂了。（当然，我指通俗读物中的文字，过于弯弯绕的，中文也未必能一眼读懂）不需要从英文翻译到中文，从中文翻译到汉语拼音，更不需要翻译到一幅幅图片，你就是读懂了。
-为什么大多数人始终没有培养出英语思维？原因一：很多人背单词的时候，只顾着背英文词汇与中文释义之间的一一对应关系，这是绝大多数人学不好英文的根本原因之一。
-解决办法：果断抛弃英汉词典，只用英英字典。你学习justify这个词，看到的释义是这样：
-
-To justify a decision, action, or idea means to show or prove that it is reasonable or necessary.
-
-再看到justify，你不会想到“使…合理化”，也未必能把这整句柯林斯释义复述出来，但是拿把枪顶你脑门上逼你解释的话，你一定会联想到decision, prove, reasonable, necessary 这些关键词。够了！当你能够用简单的英语单词来关联复杂的英语单词，在你的脑中，英语词汇就不再是一个单词绑上一个释义这样几千个孤立的知识点，而是能够构成网络和体系，就像中文对你而言一样。真的不用担心你没法一字一句把释义记下来，就像我问你中文“逻辑”是什么意思，“抽象”是什么意思，你能给出准确解释么，你当然不能，你又不是人肉字典。
-原因二：不敢脱离翻译去看原文，一旦没有翻译，就哭着喊着臣妾做不到啊。结果，就是你永远把英语当成一门学问在学，而无法当作一个技能在用。很多人会说，我也想用啊，我想先学好了再用。正是这样的想法，导致无数人学了十几年英语，依然只知道读新概念，还要单词从A背到C，再从A背到C，再从A背到C……
-你知道问题在哪里么？因为“学”和“用”之间，本就没有一条黑白分明的界限，不是说你花100天去专心学习，到了101天，啊，见证奇迹的时刻，你突然可以开始用了。
-大家都学过中文，有谁是把几万个汉字和成语都先掌握了，再去看书读报的？会开车的话，谁又是把车技练得跟舒马赫一样再上路的？学英文难道不是一个道理么，如果你已经熟悉了三四千个单词，那么你就应该大胆开始阅读原文，并且果断抛弃中文译文。你以为自己在双语阅读的时候，根本就是在汉语阅读而已嘛。
-除非是关系你饭碗或者生命的阅读材料，否则不用怕读不懂，不用怕理解错，你想象一下自己小时候是怎么一点点学会看中文书的，不也是从连蒙带猜开始的么；但是你读了几十几百篇，自然就读出了感觉，读出了自信，是不是这个道理？说到底，英语思维，或者用英语思考和理解，本身不是什么大不了的事情，一个愿意付出努力和坚持，并且方法得当的语言学习者，经过一段时间的训练就能达到这样的水平。
-解决办法：连蒙带猜地读，大量的读。
-克拉申说“会用任何语言流利交流的前提是必须能用这种语言思考，做不到的就永远不能正常交流。”这是结论，没有英文思维，永远也听不懂正常速度的英文，永远也听不了长句子。
-模仿儿童学习语言的方式：猜测–形成条件反射–建立语言区–实现语言思维。成人学习语言的过程：学习–记忆–记忆区–知识。
-克拉申创立的S.L.A.（Second Language Acquisition）：简单来说，语言的掌握，无论是第一语言还是第二语言，都是在“可理解的”真实语句发生（即我们前面探讨的有效的声音，也就是可以懂意思的外语）下实现的；都是在放松的不反感的条件下接受的；它不需要“有意识地”学习，训练和使用语法知识；它不能一夜速成，开始时会比较慢，说的能力比听的能力实现得晚。所以最好的方法就是针对以上语言实现的特点来设计的。他的理论由以下五大支柱组成，被他称为五个“假说”。五个假说不分先后，但分量不同。
-1）习得-学得差异假设（The Acquisition-Learning Hy-pothesis）2）监检假设（The Monitor Hypothesis）3）输入假设（The Input Hypothesis）4）情感过滤假设（The Affective Filter Hypothesis）5）自然顺序假设（The Natural Order Hypothesis） 
-沉默期有一个非常重要的“沉默期”(Silent period)的概念，克拉申认为，无论成人或儿童，在掌握说话能力前，都会有一个相当长的沉默期，直到听懂的量达到一定程度而有足够的自信时，才可能说话。这一沉默期是正常的同时也是必要的。所以大家不要急着上来就想说，说的能力要来得慢，同时它是自然到来的。
-“先听说，不读写”这是一个外国语言学家不太讨论（因为对他们来说是常识）而中国同学却常常误解问题，即听说读写之间的关系。对于中国同学来说，认为这四个方面的区别比较明显，而且我们常常把“听说”归在一类，把“读写”归在一类。这和中文的特殊性有关。中文的“听、说、读、写”是分家的，大家会“听说”交流后，并不会认字，要去“学习”认字。因为中国的汉字确实是需要通过“学习”的方法掌握，也就是主要用记忆的方法。不学习，汉字是无法掌握的。而英文，和许多其他的拼音文字一样，读音和文字是紧密相连的。会了“听说”，只要掌握了读音规律，拼写自然就会了。所以严格来讲，外国小孩上学不学习“认字”，而是学“拼音规律”。英文叫做Phonics。
-我们已经明确了“建立英文思维主要是建立英文声音的思维”这个概念，结合“二语悉得”的理论，再根据母语掌握的规律，可以先明确这一理念：“先听说，后读写。”大家笑了，就这呀！早就听过这个老生常谈了，而且知道母语学习都是这个顺序。其实很多人并不真正明白它的含义，也不照着做。它的实际含义是叫你在你学会“听说”之前，不要急着学“读写”。所以本人说得过分一点，把它称为：“先听说，不读写”。到高阶段再说。我把著名语言学家保罗•比斯勒博士(Pimsleur)的关于“阅读”应实现于“听说”的语言能力掌握之后的论述给大家参考：“Reading has been defined as “decoding the graphicmaterial to the phonemic patterns of spoken language which have already been mastered when reading is begun.” To put it another way, reading consists of coming back to speech through the graphics symbols. In short, meanings reside in the sounds of the spoken language. Speaking a language is the necessary first step to acquiring the ability to read a language with meaning. ——Paul Pimsleur”
-对大多数中国同学而言，主动回避“文字”更十分必要。因为大多数中国同学，只要上到大学程度的，多半是“视觉学习型”（Visual Learning Style）。而“听觉学习型”(Audio Learning Style)和“动作学习型” (Kinesthetic Learning Style)的同学，一般会被我国这种教育体制淘汰掉。“视觉学习型”的同学，建立英语思维时，很容易受到“文字”的干扰，忍不住看文字，甚至先想一下文字，再过度到含义。成了“声音”—“字型”—“含义”的路线。应该避免想到字型，直接将“声音”和“含义”建立联系。
-“听”的原则和方法：1）千万不要着急学文字，语言掌握的关键是解决“声音”。2）不依赖语法知识和中文翻译，重点是“猜测”着听。3）在后期能听懂简单段落和简单对话时，可以模仿和重复一些句子并尝试自己说。4）最后，可以开始阅读一些与听到的对话有关的文字。注意一定要在听之后才能读，千万不能一发现听不懂马上去翻看文字来帮忙。 
-背单词方法原则：建立连接，加强连接。
-1、多维，可以背单词，可以背句子，可以听ESLPod，可以阅读，不排斥任何一种记忆方法。2、重复，按照艾宾浩斯遗忘曲线也好，按照早晚也好，按照循环也好，一定要重复。3、欧陆词典法，使用分类词典，闭目听选，三秒过一个单词。4、联想法，同类词 实物 拆词 近义词 反义词 父词 解释 造句。5、英英记忆法，使用英文解释英文单词。
-心态对于说英语，像玩游戏一样放松，一样自信，脸皮要厚，不要怕犯错。英语是交流的工具，能听懂别人说什么，能表达出自己的思想，这才是目的。把关注点放在倾听，放在表达，而不是语法错误和词法错误。交流不是考试，有错误又怎样？别人能听明白就够了！
-私人剧本法Benny Lewis创立了一种神奇的口语速成法，叫做私人剧本法。私人剧本法的核心理念是，任何有效的口语速成训练法，一定要从“与我相关”的剧本开始。想学一门新外语，就要从第一天开口。学习任何一门新外语，第一周就要制作与我密切相关的私人剧本，目的是说自己内心想要表达的话。用一个方法就可以理解私人剧本的意思，就是如果你内心渴望用中文和别人说什么，你就尽量写出英文相应的剧本。
-听说听写听写，or听抄，顾名思义，就是一边放听力段子，一边写下听到的内容。听写并非考验诸位的记忆，所以放完一句，暂停掉，写下你能够听到的每一个词的全拼，如果不能听出来所有内容，就重新放一遍刚才这一句话，再听不出来就再放一遍，以此循环往复直到完整写下原文，然后再放下一句。当然，如果5遍以上还是听不出来，直接看原文，不要继续纠结了，我们的学习过程要遵循人性啊。那么5遍还没有听出来是什么原因呢？有生词？那么查之。有语音现象导致认识的词也听不出来？那说明还没有练到火候啊。语速过快？那么先从比较慢的材料开始吧。一步一步训练耳朵的熟悉度，然后再换比较快的材料。
-听读一篇新的听力材料，头2、3遍一定要从头到尾连贯着听，不要逐字逐句听，这个时候不求听懂绝大部分内容，而只求听懂一个大概。这样2、3遍连贯着听下来，哪怕你只懂了几个单词，也没关系，这在听力的新手来说完全正常，根本不必责难自己（哪怕你觉得自己阅读理解的水平已经达到了《新概念》第四册都已经学完的水平、但从没练过听力）。
-第二步，逐字逐句听。一开始，把一个比较长的句子一次全部听下来，可能会有困难：听到句尾，早就已经忘了开头说什么了。逐字逐句听的时候，可以把一句话拆成几个部分来听，听完一小部分，立刻口头重复，说一遍。
-第二步中，遇到难点要来回多听几遍，力求听懂。但如果某一句话或句子的某1、2个单词听了4、5遍还没听出来，那就先放一放，往下听。后面的内容常常会为前面的内容提供解释。
-一篇听力练习，你能听明白90%-95%的意思，就行了。这不是“不求甚解”，而是力求高效地利用时间，更重要的是保持自己学习英语的兴趣和热情。
-影子跟读法影子跟读法的核心在于跟读native的对话，不纠结于一词一句的发音对错，不要打断录音，也就是不要按暂停键，强迫自己跟上native的节奏和思维，最后达到能够下意识的做出回答，绕过中文思考-英文说出的弯弯。
-外语学习最重要的目的就是进行“有效的沟通”。
-影子跟读所谓影子跟读，指的是跟读者滞后一小段时间，像影子一样在源语后面进行复述。具体操作就是：当源语在读第二或者第三个单词时，跟读者开始跟读第一个单词，并尽量保证使用与源语完全相同的语速、语调、语气甚至音色。影子跟读最大的妙处在于其使得语言在跟读者脑中形成了一个“闭环”：先听源语，有时还可以看着原文，在跟读动作开始前，这是一个源语输入的过程；开始跟读时，跟读者其实是借助刚刚听到和现在看到的（如果看原文）源语进行输出；当跟读者听到自己的跟读时，会对准确度和流畅度甚至还原度进行判断，这是再次输入。因此，影子跟读并非简单意义上的模仿，而是一个非常复杂的语言习得过程。其相比于普通意义上逐句跟读的好处是，由于跟读时离源语输入的时间尚短，对于语调和发音的还原将更加准确，即使不准确，也更易发觉并纠正。一篇文章至少跟读50遍！50遍！ 大家在做影子跟读的时候，最大的困难就是跟不上，此时，可借助电脑中的各种播放器的变速功能进行练习，比如Windows系统自带的MediaPlayer就在高级选项中有播放速度设定，不同水平的跟读者可以根据自己的具体情况来选择0.5-1.0甚至更高倍速来播放要跟读的音频。而到后期用原速跟读毫无压力时，则可以开启加强模式，加快音频速度进行跟读。
-教程链接: http://pan.baidu.com/s/1sljF5al 密码: jxkx
-在条件不允许大声跟读的情况下，可以在心中跟读。
-句子读法“三剑客”那么如何去练习句子的发音呢？给大家介绍句子读法“三剑客”：连读、失去爆破、弱读。比如，on it不应读成【on】【It】，而应读成【o】【nI】【t】，同样，first time中的两个【t】应读成一个【t】；美国总统奥巴马在2008年芝加哥获胜演说中读“must be”中的【t】不读出声，读“could be”中的【d】彻底消失。因此，与其将大量精力浪费在一个孤立的音标上，倒不如学习如何读好句子，毕竟这才是根本。
-发声和气息气为声之本，气乃音之帅。气息是我们发声的根源，掌握良好的气息运用方式，不但说话不累，而且可以美化音色，强身健体。
-
-关键：肚子有两个方向，正面和侧面。吸气时，两个方向都应该被打开。而当你唱歌/读书的时候，腰的前后方向应该是收缩的，但是侧面别动，用肌肉撑住。
-
-1、最简单易上手的训练方式，其实就是“读报纸”，用你心中觉得是播音员的方式来大声朗读（关键是大声，但不是吼叫），尽量把每个字的发音发清楚发完整。每天十分钟到半小时，三个月后发声和之前完全不一样了。咬字方面要活动开脸部肌肉，最大限度打开牙关，多张大嘴巴，下巴放松，嘴唇和舌头咬保持有力。
-2、腹式呼吸训练。
-
-在刚开始练习的时候要慢吸慢吐就像在闻花香，喉咙只是一个运送气息的管道而不是着力点，说话、唱歌时的发力点是小腹，通过小腹的支撑下，喉咙应该是放松的。
-在播音发声时，气息会吸到丹田处，小腹微微紧张，把吸到丹田的气拖住。出声时，两肋和小腹形成一个“皮球”，慢慢的把气控制着放出来。
-后仰三十度，小腹紧张，感觉小腹处支撑住你的气息，发出yia的音。你要感觉到声音是从丹田处出来，而不是扯嗓子。这种强控制练习提升是最快的。
-打嘟嘟（唇颤音），通过打哈欠和发笑的感觉去发声。
-
-背诵新东方有个学员现在在Duke大学，他从高一开始背《新概念英语》第三册，背到高三就背完了。高考考进了北大，进北大后，他本来不想再背了。但当他背给同学听的时候，其他同学都露出了羡慕的眼光，于是，为了这种虚荣心，他就坚持背第四册，把第三、四册都背得滚瓜烂熟，他熟到什么地步呢，有人把其中任何一句说出来，把能把上一句和下一句连接下去，而且语音非常标准，因为他是模仿着磁带来背的。后来他去了美国Duke大学，他给新东方的教师写信，老师不敢回，因为老师对他的英文有畏惧感，他的英文学得太好，只能给他回中文信，并告诉他不是不会写英文，而是想让他温习温习中文，不要忘记祖国的语言。这位学员到美国第一个星期写文章，教授把他叫过去说他的文章是剽窃的，因为他的文章写得太好了，教授说：“我20年教书没有教出这么漂亮的文章来。“这个学员说，我没有办法证明我能写出这么优秀的文章，但我告诉你，我能背108篇文章，而且背得非常熟练，你想不想听。结果，他没有背完两篇，教授就哭了起来，为什么？因为这个教授想一想自己教了20年了，居然一篇文章也没有背过，被中国学生背掉了，所以很难过……　 
-
-学习英语唯一的正轨，不出仿效与熟诵；仿效即整句的仿效，熟诵则仿效之后必回环练习，必使能顺口而出而后已。凡能依这方法读英文的，无不成功，而且这极容易，真是学习英语的康庄大道。——林语堂
-
-熟读成诵，每次背诵三句话，直到脱口而出。
-
-所背的课文要典型而纯。
-理解而后能背。
-先听后背。
-从易到难，从短到长，循序渐进。
-一天之计在于晨。
-注意重点句型和单词。
-及时复习，多多重复。
-尽量尝试不同语调，在不同环境和条件下重复。
-
-对话1、模仿对话材料选择EnglishPod，模仿会话中的角色，进行英语对话。
-2、自我对话听完某条VOA新闻后，自己和自己把这个新闻复述一遍，或者看完某篇文章以后，自己和自己把这篇文章大概说了一个什么意思叙述一遍。或者，比如最近有某个电视连续剧很好看，自己和自己把整个连续剧的故事讲一遍。比如西游记大家都看过吧？你找不到口语练习材料的时候，就对自己把西游记的故事讲一遍，比如从前有一个和尚，他要去西天取经，佛祖派他怎么怎么样，他的徒弟怎么怎么样，四个徒弟分别是谁，什么性格，于是他们出发上路了，路上有很多妖怪，都分别有什么样的妖怪，想起来哪个就叙述哪个，保证这样可以让你不间断地说上半个小时的。总而言之，就是把自己分成两个人，一个给另一个讲故事、讲笑话、讲新闻等等。
-读写透析法透析法要提升中国人的英语文化水平，核心就是读懂英文原著。读懂原著，能让你睁眼看世界，品味原汁原味的英语。狭义上说，英文原著主要是指以英语为母语人士的文字著作，也包括了其他语种著作的英译版。广义上说，英文原著是一切以英语为载体的信息，包括广播、电视、歌曲、电影、有声电子书、网络视频、播客等视听信息。广义上，原著的资源十分丰富，例如全世界75%的电视节目是用英语播出的。在国内，我们也可以在网上接收到世界上很多国家的英文电台、电视台。
-把英语用起来，就是在真实的生活把英语用起来，就是在真实的生活中使用这门语言，要求听、说、读、中使用这门语言，要求听、说、读、写全部实现英文原著化。听，就听实时的英语新闻，从BBC、CNN到Al Jazeera；说，就用英语聊天，从身边的熟人到网络另一端的老外；读，就读老外的英文版，从短信、邮件到大部头的专著；写，就写英文邮件、短信给亲友同事乃至生意上的伙伴。 
-对一本英文原著而言，“读下去”比“学生词”的意义大得多。只有“读下去”，你才能获得英 文原著的种种好处，读不下去，一切都等于零。 
-核心操作：每2页查1个生词。
-首先可以跳过卷首，包括简介和评论，以免打击积极性。从原著的正文开始读，遇到生词的时候，使用电子词典查单词。每2页查1个生词，词组、短语等是与单词处于同等地位的词条，亦视为一个词。你也可根据手机、平板电脑等设备的屏幕大小自定词的数量，但总的原则是不可查太多，特别是不能每个生词都查。透析时，遇到生词认为需要查词典便可使用查词机会，而不是先挑出生词来查，也不是读完再回头找生词查。在电子词典上看懂生词解释后便可回到原著，不要试图停下来记忆单词。在每2页中无论碰到多少个生词，10个好，20个亦好，有且只需查1个（除非你找不到生词了）。这些措施都能尽可能减少查生词操作对阅读的干扰。
-你不禁要问：“多查几个不行吗？”“2页才查1个太少了吧？”……没商量！你想多查生词吗？可以，但你必须有阅读量的支持。例如，你若想迅速扩充词汇量，每天掌握50个生词，你就必须读够100页。千万别以为“每2页查1个生词”太少了，如果你只读一两页，就像在学校上英语课那样，查1个还是查10个，是没有什么区别的。但现在你每天要读几十页，或者电子版的几个百分点，日后你要读成千上万页、几百本书，就很有必要控制查词量，每2页查1个和每2页查2个的差别都是巨大的。多查生词，就会厌烦，进而有半途而废的风险，这正是无数人读不懂原著，长年停留在英语蒙昧状态的致命原因：你觉得几个生词重要，还是几百本原著重要？ 每2页才有1个查词机会，而生词多，如何选择？答案：随便。可以查重现率高的词，因为查明意义就能明白书中许多地方，可以查你认为“关键”的词，如小说关键情节中的生词，还可以从“功利”出发，优先查考试中可能出现的“大纲生词”，等等。
-第二天在读英文原著之前，你要在电子词典上复习查词的“历史”，但是不要超过5分钟。
-中译英打开《新2》，先别看英语原文，因为都是初中程度的句子，你一看就会。先看汉语翻译，一句一句从汉语向英语口译，口译完，再看英文原文。因为这本的内容很浅显，你有很大机率口译得跟原文差不多，但别大意，最好写下来，尤其那些be动词啊，单数第三人称啊，过去式啊，倒装啊，强调啊，和原文对比，跟原文不同的地方，就是你的进步之处！做过几篇，你就发现你变牛了，你觉得一个句子，自己的写法可以，书上的写法也可以。这时你就可以整篇小文地译了，译完，整体对比。如果你觉得新２比较散，可以口译带汉译的作文范文。那个句子土了点，不过见效快，一个搭配你没真掌握绝对译不出来，想破头再看原文，记忆效果加倍！
-衡中体利用真题作文，以原因或影响为切入点，使用衡中体，练习限时写作。
-学习资料通用：把你的英语用起来、真题、新概念英语。单词：欧路词典（优词词根词缀、English Etymology、Collins、Collins Thesaurus、Vocabulary.com Dictionary、LDOCE5、牛津词典、英汉-汉英词典、USE THE RIGHT WORD）、沙拉查词、1368个单词就够了、Word Power Made Easy、Merriam-Webster’s Vocabulary Builder听力：点滴复读机、ESLPod、EnglishPod、粉红猪小妹、老友记、生活大爆炸口语：赖世雄美语音标、ESLPod、EnglishPod、赖世雄语法阅读：BBC、VOA、newyorker写作：Writing Academic English、On Writing Well、The Chicago Manual of Style
-小结条条大路通罗马，方法只是让自己少走一些弯路，真正重要的是——坚持！有计划地坚持！所有泛泛而谈都是吹牛逼，去听，去说，去读，去写！每天完成什么，完成多少，量化，看到自己的进度，看到自己的进步！
-书签清北托福备考联盟慕课
-将英语变成母语
-怎么在一个月内让英语听力有明显的提高？
-如何在一个月内通过大学英语四级、大学英语六级考试？
-我的英语学习之路–影子跟读法
-句子读法“三剑客”：连读、失去爆破、弱读
-英语朗读技巧（连读、失去爆破和弱读/缩读 ）精华版
-怎样培养英语思维，尤其是在读英文文章的时候？-王捷
-怎样培养英语思维，尤其是在读英文文章的时候？-陈名豪
-The New Yorker
-Collins Dictionary
-老友记（Friends）（MP3+LRC）_VOA英语学习网
-]]></content>
-      <categories>
-        <category>英语</category>
-      </categories>
-      <tags>
-        <tag>英语</tag>
       </tags>
   </entry>
   <entry>
