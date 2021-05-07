@@ -49,6 +49,37 @@
   </entry>
   
   <entry>
+    <title>Hexo Next主题显示文章更新时间</title>
+    <link href="https://www.voidking.com/dev-hexo-next-update-time/"/>
+    <id>https://www.voidking.com/dev-hexo-next-update-time/</id>
+    <published>2021-05-01T01:00:00.000Z</published>
+    <updated>2021-05-01T01:00:00.000Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h1><p><a href="https://www.voidking.com/dev-hexo-theme-next/">《Hexo更换主题为Next》</a>一文中，关闭了文章的更新时间。因为next主题默认是使用markdown文件的修改时间作为更新时间，这个时间是不符合预期的。比如我换了电脑，clone下来markdown文件，写完后发布，那么所有文章的更新时间都会变成当前时间，这个就不符合预期，就不对。</p><p>但是，文章更新时间确实是有意义的，读者能够通过更新时间推断出一篇文章的有效性。比如很多工具和技术昨天可以用，文章写的没毛病，但是也许今天就不能用了。</p><p>本文就来研究一下，怎样让next主题显示符合预期的、准确的更新时间。</p><a id="more"></a><h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><p>首先，我们知道next主题是支持显示更新时间的，只不过显示的更新时间不对。那么，能不能显示对的更新时间呢？看代码。</p><p>1、<code>_config.yml</code>，其中关于更新时间的部分：</p><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Post meta display settings</span></span><br><span class="line"><span class="attr">post_meta:</span></span><br><span class="line">  <span class="attr">item_text:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">created_at:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">updated_at:</span></span><br><span class="line">    <span class="attr">enable:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">another_day:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">categories:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure><p>2、<code>layout/_macro/post.swig</code>，其中关于更新时间的部分：</p><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#123;%- if theme.post_meta.updated_at.enable and datetime_diff %&#125;</span><br><span class="line">  &#123;%- set display_updated = not theme.post_meta.updated_at.another_day or theme.post_meta.updated_at.another_day and date_diff %&#125;</span><br><span class="line"></span><br><span class="line">  &#123;%- if display_updated or not theme.post_meta.created_at %&#125;</span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">"post-meta-item"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">"post-meta-item-icon"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">i</span> <span class="attr">class</span>=<span class="string">"fa fa-calendar-check-o"</span>&gt;</span><span class="tag">&lt;/<span class="name">i</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">"post-meta-item-text"</span>&gt;</span>&#123;&#123; __('post.edited') &#125;&#125;<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">time</span> <span class="attr">title</span>=<span class="string">"&#123;&#123; __('post.modified') + __('symbol.colon') + full_date(post.updated) &#125;&#125;"</span> <span class="attr">itemprop</span>=<span class="string">"dateModified"</span> <span class="attr">datetime</span>=<span class="string">"&#123;&#123; moment(post.updated).format() &#125;&#125;"</span>&gt;</span>&#123;&#123; date(post.updated) &#125;&#125;<span class="tag">&lt;/<span class="name">time</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">  &#123;%- endif %&#125;</span><br><span class="line">&#123;%- endif %&#125;</span><br></pre></td></tr></table></figure><p>由上面的代码我们可以得知：</p><ul><li>只要在文章头部yaml定义中添加 updated 字段，就可以显示我们自己定义的更新时间，而不是文件的修改时间。</li><li>如果开启了 <code>post_meta.updated_at.another_day</code> ，当 date 和 updated 日期相同时，只会显示发布时间。</li></ul><p>因此，我们现在有两个思路来实现next主题显示符合预期的更新时间。<br>思路一：开启 <code>post_meta.updated_at.enable</code>，然后给所有的md文件添加 updated 字段。<br>思路二：开启 <code>post_meta.updated_at.enable</code>，修改 post.swig ，令没有 updated 字段的md文件只显示发布时间，有 updated 字段的md文件显示发布时间和更新时间。</p><p>这里选择思路一，因为实现的逻辑最简单，而且小编的shell脚本用的还不错。</p><h1 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h1><h2 id="开启更新时间显示"><a href="#开启更新时间显示" class="headerlink" title="开启更新时间显示"></a>开启更新时间显示</h2><p><code>_config.yml</code>，开启更新时间显示：</p><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Post meta display settings</span></span><br><span class="line"><span class="attr">post_meta:</span></span><br><span class="line">  <span class="attr">item_text:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">created_at:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">updated_at:</span></span><br><span class="line">    <span class="attr">enable:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">another_day:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">categories:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure><h2 id="添加updated字段"><a href="#添加updated字段" class="headerlink" title="添加updated字段"></a>添加updated字段</h2><p>1、准备脚本</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line">dir=<span class="string">"_posts"</span></span><br><span class="line"><span class="keyword">for</span> file <span class="keyword">in</span> `ls <span class="variable">$&#123;dir&#125;</span> | grep <span class="string">'.md'</span>`;<span class="keyword">do</span></span><br><span class="line">    content=$(cat <span class="variable">$&#123;dir&#125;</span>/<span class="variable">$&#123;file&#125;</span>| head -n 10 | grep <span class="string">'date: '</span>)</span><br><span class="line">    datestr=$(<span class="built_in">echo</span> <span class="string">"<span class="variable">$content</span>"</span> | awk <span class="string">'&#123;print $2" "$3&#125;'</span>)</span><br><span class="line">    newcontent=<span class="string">"updated: "</span><span class="variable">$datestr</span></span><br><span class="line">    sed -i <span class="string">"/<span class="variable">$content</span>/a\\<span class="variable">$newcontent</span>"</span> <span class="variable">$&#123;dir&#125;</span>/<span class="variable">$&#123;file&#125;</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure><p>2、执行脚本<br>把脚本放到 source 目录下，然后执行脚本 <code>bash modify.sh</code><br>备注：需要linux环境，mac环境的sed命令和linux环境的sed命令有差异。</p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;问题&quot;&gt;&lt;a href=&quot;#问题&quot; class=&quot;headerlink&quot; title=&quot;问题&quot;&gt;&lt;/a&gt;问题&lt;/h1&gt;&lt;p&gt;&lt;a href=&quot;https://www.voidking.com/dev-hexo-theme-next/&quot;&gt;《Hexo更换主题为Next》&lt;/a&gt;一文中，关闭了文章的更新时间。因为next主题默认是使用markdown文件的修改时间作为更新时间，这个时间是不符合预期的。比如我换了电脑，clone下来markdown文件，写完后发布，那么所有文章的更新时间都会变成当前时间，这个就不符合预期，就不对。&lt;/p&gt;
+&lt;p&gt;但是，文章更新时间确实是有意义的，读者能够通过更新时间推断出一篇文章的有效性。比如很多工具和技术昨天可以用，文章写的没毛病，但是也许今天就不能用了。&lt;/p&gt;
+&lt;p&gt;本文就来研究一下，怎样让next主题显示符合预期的、准确的更新时间。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="专业" scheme="https://www.voidking.com/categories/%E4%B8%93%E4%B8%9A/"/>
+    
+      <category term="开发" scheme="https://www.voidking.com/categories/%E4%B8%93%E4%B8%9A/%E5%BC%80%E5%8F%91/"/>
+    
+      <category term="hexo" scheme="https://www.voidking.com/categories/%E4%B8%93%E4%B8%9A/%E5%BC%80%E5%8F%91/hexo/"/>
+    
+    
+      <category term="hexo" scheme="https://www.voidking.com/tags/hexo/"/>
+    
+      <category term="shell" scheme="https://www.voidking.com/tags/shell/"/>
+    
+  </entry>
+  
+  <entry>
     <title>使用Travis CI部署项目到服务器</title>
     <link href="https://www.voidking.com/dev-travis-ci-deploy-to-server/"/>
     <id>https://www.voidking.com/dev-travis-ci-deploy-to-server/</id>
@@ -647,39 +678,6 @@
       <category term="源码" scheme="https://www.voidking.com/tags/%E6%BA%90%E7%A0%81/"/>
     
       <category term="golang" scheme="https://www.voidking.com/tags/golang/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>kube-controller-manager指标收集</title>
-    <link href="https://www.voidking.com/dev-kube-controller-manager-metrics/"/>
-    <id>https://www.voidking.com/dev-kube-controller-manager-metrics/</id>
-    <published>2020-06-22T12:00:00.000Z</published>
-    <updated>2020-06-22T12:00:00.000Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>大家都知道需要监控k8s指标，但是具体需要监控k8s的哪些组件的哪些指标？<br>本文，就来学习梳理kube-controller-mananger组件的监控指标。</p><a id="more"></a><h1 id="有哪些指标？"><a href="#有哪些指标？" class="headerlink" title="有哪些指标？"></a>有哪些指标？</h1><p>要收集指标，首先要知道有哪些指标可以收集。<br>方法一：使用curl命令</p><figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">k</span> <span class="built_in">get</span> pods -n kube-<span class="built_in">system</span> -<span class="keyword">o</span> wide | <span class="keyword">grep</span> kube-controller-manager</span><br><span class="line"><span class="keyword">k</span> <span class="built_in">get</span> svc -n kube-<span class="built_in">system</span> -<span class="keyword">o</span> wide | <span class="keyword">grep</span> kube-controller-manager</span><br><span class="line"></span><br><span class="line">ssh <span class="symbol">&lt;clusterhost&gt;</span></span><br><span class="line">curl localhos<span class="variable">t:</span><span class="symbol">&lt;nodeport&gt;</span>/metrics</span><br></pre></td></tr></table></figure><p>方法二：在prometheus使用promql</p><figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">count(&#123;job=<span class="string">"kube-controller-manager"</span>&#125;) by (<span class="name">__name__</span>)</span><br><span class="line">count(&#123;job=<span class="string">"kube-controller-manager"</span>,__name__!~<span class="string">"^go_.*"</span>&#125;) by (<span class="name">__name__</span>)</span><br></pre></td></tr></table></figure><h1 id="指标含义？"><a href="#指标含义？" class="headerlink" title="指标含义？"></a>指标含义？</h1><p>找到了指标，接下来需要知道指标的含义。<br>访问 <a href="https://docs.signalfx.com/en/latest/integrations/agent/monitors/kube-controller-manager.html" target="_blank" rel="noopener">Splunk doc - kube-controller-manager</a>，使用指标名称搜索即可。</p><p>比如搜索：<br>rest_client_request_duration_seconds_bucket<br>得到结果：<br>rest_client_request_duration_seconds_bucket (cumulative)<br>Request latency in seconds. Broken down by verb and URL. (bucket)</p>]]></content>
-    
-    <summary type="html">
-    
-      &lt;h1 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h1&gt;&lt;p&gt;大家都知道需要监控k8s指标，但是具体需要监控k8s的哪些组件的哪些指标？&lt;br&gt;本文，就来学习梳理kube-controller-mananger组件的监控指标。&lt;/p&gt;
-    
-    </summary>
-    
-    
-      <category term="专业" scheme="https://www.voidking.com/categories/%E4%B8%93%E4%B8%9A/"/>
-    
-      <category term="运维" scheme="https://www.voidking.com/categories/%E4%B8%93%E4%B8%9A/%E8%BF%90%E7%BB%B4/"/>
-    
-      <category term="k8s" scheme="https://www.voidking.com/categories/%E4%B8%93%E4%B8%9A/%E8%BF%90%E7%BB%B4/k8s/"/>
-    
-      <category term="监控" scheme="https://www.voidking.com/categories/%E4%B8%93%E4%B8%9A/%E8%BF%90%E7%BB%B4/%E7%9B%91%E6%8E%A7/"/>
-    
-    
-      <category term="k8s" scheme="https://www.voidking.com/tags/k8s/"/>
-    
-      <category term="监控" scheme="https://www.voidking.com/tags/%E7%9B%91%E6%8E%A7/"/>
-    
-      <category term="prometheus" scheme="https://www.voidking.com/tags/prometheus/"/>
     
   </entry>
   
