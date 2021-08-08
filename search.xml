@@ -2479,6 +2479,112 @@ public class ReportImpl extends Report&#123;    public void printTitle()    &#12
       </tags>
   </entry>
   <entry>
+    <title>基于JQuery实现滚动到页面底端时自动加载更多信息</title>
+    <url>/dev-auto-loading-when-scroll-to-the-bottom/</url>
+    <content><![CDATA[这篇文章主要介绍了基于JQuery实现滚动到页面底端时自动加载更多信息，类似微博，新浪新闻的评论等，都采用了这方法,需要的朋友可以参考下关键代码：
+var stop=true; $(window).scroll(function()&#123;     totalheight = parseFloat($(window).height()) + parseFloat($(window).scrollTop());     if($(document).height() &lt;= totalheight)&#123;         if(stop==true)&#123;             stop=false;             $.post("ajax.php", &#123;start:1, n:50&#125;,function(txt)&#123;                 $("#Loading").before(txt);                 stop=true;             &#125;,"text");         &#125;     &#125; &#125;);
+
+
+
+HTML代码如下:
+&lt;div id="Loading"&gt;Loading...&lt;/div&gt;
+
+实现方法是比较页面总高度和下滚高度以判断是否到达底端，若到达底端则通过ajax读取更多的内容，用before插入到Loading之前。stop参数是考虑到ajax读取耗时，防止在一次ajax读取过程中多次触发事件，造成多次加载内容。
+转载自http://www.3lian.com/edu/2014/02-10/127916.html
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>jquery</category>
+      </categories>
+      <tags>
+        <tag>前端</tag>
+        <tag>jquery</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>APP第三方登录QQ和微博配置</title>
+    <url>/dev-app-login-qq-sina/</url>
+    <content><![CDATA[需求使用hbuilder修改东北高师就业联盟网的app，完成了qq和微博第三方登录，真机调试正常。但是打包发布后，问题来了。使用qq登录时，会提示错误“该应用非官方正版应用，请去应用宝下载正版后进行qq登陆。（错误码：100044）”。使用微博登录时，会提示错误“21338:sso package or sign error”。
+因为就业联盟网在开放平台上是一个web应用，但是我们的app打包后是一个android应用和一个ios应用。所以，要解决这个问题，我们要在开放平台上添加android应用和ios应用。
+
+
+android打包签名在配置开放平台之前，我们先把android app打包发布，具体流程如下：
+安装java环境参考《全平台安装JDK》。
+生成keystorekeytool -genkey -alias dsjyw.keystore -keyalg RSA -validity 1000 -keystore dsjyw.keystore
+说明：keytool -genkey -alias 别名.keystore -keyalg RSA -validity 有效期限(天数) -keystore 别名.keystore
+dsjyw.store参数输入密钥库口令: voidking再次输入新口令: voidking您的名字与姓氏是什么?  [Unknown]:  VoidKing您的组织单位名称是什么?  [Unknown]:  Nenu您的组织名称是什么?  [Unknown]:  Nenu您所在的城市或区域名称是什么?  [Unknown]:  ChangChun您所在的省/市/自治区名称是什么?  [Unknown]:  JiLin该单位的双字母国家/地区代码是什么?  [Unknown]:  CNCN=VoidKing, OU=Nenu, O=Nenu, L=ChangChun, ST=JiLin, C=CN是否正确?  [否]:  y输入 &lt;dsjyw.keystore&gt; 的密钥口令        (如果和密钥库口令相同, 按回车):
+
+打包1、打开Hbuilder，发行，发行为原生安装包。
+2、使用自有证书；Android包名是自动生成的，不需要修改，也可以修改为自己喜欢的包名；证书别名和私钥密码是生成keystore时配置的；证书文件选择生成的keystore文件。
+3、打包，之后会自动上传源码，打包好后下载到app存放目录中。
+签名1、复制打包下载好的apk文件到dsjyw.keystore相同的目录，重命名apk文件为android-release-unsigned.apk。
+2、打开cmd，执行签名命令jarsigner -verbose -keystore dsjyw.keystore -signedjar dsjyw.apk android-release-unsigned.apk dsjyw.keystore
+说明：jarsigner -verbose -keystore 别名.keystore(密钥库位置) -signedjar 签名后产生的文件.apk要签名的文件.apk 别名.keystore(密钥库)
+查看签名keytool -v -list -keystore dsjyw.keystore
+找到MD5: 70:1D:81:1E:D3:A6:8B:28:66:82:BA:D8:EB:79:DC:63
+新浪创建移动应用时要求的是32位数字小写字母，把前面的这串数字中的冒号去掉，字母小写即可。
+腾讯开放平台创建安卓应用1、登录腾讯开放平台
+2、安卓应用，创建应用。
+3、关联QQ互联，输入联盟网web应用的appid和appkey，确定。之所以关联QQ互联，是为了统一appid，否则，web登录和app登录获得的是不同的openid。
+如果关联QQ互联后，创建应用失败，提示“对不起，您不是应用的创建者或协作者(1500401)”。
+可能一：不是协作者。请先使用联盟网web应用所在账号登录，在管理中心页面，滑动鼠标到右上角用户名，单击权限权限管理，添加协作者。
+可能二：账号冲突。之前的web应用在QQ互联上，此时，不要在浏览器中同时打开腾讯开放平台和QQ互联，也不要登录其他的QQ邮箱，有可能账号冲突。
+可能三：开发者资料未提交审核。
+4、选择移动应用 安卓，创建应用，选择应用类型，确定。此时创建的安卓应用，它的appid和appkey就和联盟网web应用相同了。
+5、按照提示，填写需要的字段即可。需要注意的是，上传安装包时，需要上传签名后的apk文件。
+6、填写好信息，保存即可，不需要提交审核。如果需要提交审核的话，请先根据提示加固应用。
+创建ios应用1、在安卓应用中，可以看到我们创建的联盟网app，单击它。
+2、鼠标滑到右上角平台信息，单击IOS应用，即可创建IOS应用。该IOS应用的appid和appkey就和联盟网web应用相同，也和安卓应用相同。
+警告，创建ios应用后，此时安卓应用和ios应用实际上是同一个应用。删除任意一个，两个应用就都没有了。
+3、按照提示填写各字段即可。其中比较难的是URL scheme、AppStore ID和Bundle ID，这些信息可以到Apple Developer和itunes connect上查看到。
+新浪开放平台1、登录新浪开放平台
+2、微连接，移动应用，立即接入。勾选Iphone和Android两个平台，创建。
+3、填写应用基本信息。其中比较难的是Android签名，不必使用新浪提供的签名工具，参考本文中的“查看签名”小节，填入得到的32位字符串。
+4、保存信息，提交审核。审核不通过会有详细提示，参考提示修改后再次提交审核。
+5、单击左侧导航栏应用信息，高级信息。OAuth2.0 授权设置中点击编辑，授权回调页和取消授权回调页都填入https://api.weibo.com/oauth2/default.html。
+书签HBuilder 打包流程
+腾讯开放平台创建应用的坑，安卓和iOS端如何共用同一个Appid？
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>android</category>
+      </categories>
+      <tags>
+        <tag>android</tag>
+        <tag>hbuilder</tag>
+        <tag>ios</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>artTemplate模板引擎</title>
+    <url>/dev-arttemplate/</url>
+    <content><![CDATA[前言在开发过程中，常常要实现这样一种效果：获取数据，并且插入到当前页面。最基本的做法是把获取到的数据拼接到一个字符串中，然后使用html()或者append()函数插入到页面中。这种做法，拼接字符串时很麻烦。本文中，小编要介绍一下ArtTemplate，一个超快的前端模板引擎。
+
+
+快速上手编写模板&lt;script id="test" type="text/html"&gt;&lt;h1&gt;&#123;&#123;title&#125;&#125;&lt;/h1&gt;&lt;ul&gt;    &#123;&#123;each list as value i&#125;&#125;        &lt;li&gt;索引 &#123;&#123;i + 1&#125;&#125; ：&#123;&#123;value&#125;&#125;&lt;/li&gt;    &#123;&#123;/each&#125;&#125;&lt;/ul&gt;&lt;/script&gt;
+
+渲染模板var data = &#123;    title: '标签',    list: ['文艺', '博客', '摄影', '电影', '民谣', '旅行', '吉他']&#125;;var html = template('test', data);document.getElementById('content').innerHTML = html;
+
+模板语法注意：简洁语法和原生语法引入的js文件不同。
+简洁语法&#123;&#123;if admin&#125;&#125;    &#123;&#123;include 'admin_content'&#125;&#125;    &#123;&#123;each list&#125;&#125;        &lt;div&gt;&#123;&#123;$index&#125;&#125;. &#123;&#123;$value.user&#125;&#125;&lt;/div&gt;    &#123;&#123;/each&#125;&#125;&#123;&#123;/if&#125;&#125;
+
+原生语法&lt;%if (admin)&#123;%&gt;    &lt;%include('admin_content')%&gt;    &lt;%for (var i=0;i&lt;list.length;i++) &#123;%&gt;        &lt;div&gt;&lt;%=i%&gt;. &lt;%=list[i].user%&gt;&lt;/div&gt;    &lt;%&#125;%&gt;&lt;%&#125;%&gt;
+
+参考文档Arttemplate by auihttp://aui.github.io/artTemplate/
+前端模版artTemplate的介绍及使用http://blog.csdn.net/playboyanta123/article/details/45536501
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+      </categories>
+      <tags>
+        <tag>前端</tag>
+        <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Django开发简单Blog系统——下</title>
     <url>/dev-django-blog-2/</url>
     <content><![CDATA[前言博客的基本功能完成了，接下来，我们来看一下还有哪些知识点可以加入我们的系统。
@@ -2773,111 +2879,6 @@ server &#123;    server_name wecms.voidking.com;     listen 80;    location / &#
       </tags>
   </entry>
   <entry>
-    <title>Docker-Compose入门篇</title>
-    <url>/dev-docker-compose/</url>
-    <content><![CDATA[Docker-Compose简介Compose是用于定义和运行多容器Docker应用程序的工具。通过Compose，可以使用YAML文件来配置应用程序的服务。然后使用一个命令，就可以从配置中创建并启动所有服务。Compose可在所有环境中工作：生产、模拟、开发、测试以及CI工作流。
-使用Compose基本上是三步流程：
-
-使用Dockerfile定义应用程序的环境，以便可以在任何地方复制它。
-在docker-compose.yml中定义组成您的应用程序的服务，以便它们可以在隔离的环境中一起运行。
-运行docker-compose up，然后Compose启动并运行整个应用程序。
-
-Docker-Compose项目由Python编写，调用Docker服务提供的API来对容器进行管理。因此，只要所操作的平台支持Docker API，就可以在其上利用Compose来进行编排管理。更多内容参考Overview of Docker Compose。
-
-
-安装Compose在CentOS7机器上，假设已经了Docker，参考Install Docker Compose安装Compose-Docker。如果没有安装Docker，那么参考Docker入门进行安装。
-1、安装docker-compose
-sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-
-2、添加执行权限
-sudo chmod +x /usr/local/bin/docker-composesudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-
-3、验证安装docker-compose --version
-Hello World1、创建测试目录
-mkdir composetestcd composetest
-
-2、在项目目录中创建一个名为app.py的文件，内容为：
-import timeimport redisfrom flask import Flaskapp = Flask(__name__)cache = redis.Redis(host='redis', port=6379)def get_hit_count():    retries = 5    while True:        try:            return cache.incr('hits')        except redis.exceptions.ConnectionError as exc:            if retries == 0:                raise exc            retries -= 1            time.sleep(0.5)@app.route('/')def hello():    count = get_hit_count()    return 'Hello World! I have been seen &#123;&#125; times.\n'.format(count)
-在此示例中，redis是应用程序网络上的redis容器的主机名，使用默认端口6379。
-3、创建requirements.txt文件，内容为：
-flaskredis
-
-4、创建Dockerfile，内容为：
-FROM python:3.7-alpineWORKDIR /codeENV FLASK_APP app.pyENV FLASK_RUN_HOST 0.0.0.0RUN apk add --no-cache gcc musl-dev linux-headersCOPY requirements.txt requirements.txtRUN pip install -r requirements.txtCOPY . .CMD ["flask", "run"]
-
-该文件说明：
-
-从Python 3.7映像开始构建映像。
-将工作目录设置为/code。
-设置flask命令使用的环境变量。
-安装gcc，以便诸如MarkupSafe和SQLAlchemy之类的Python包可以编译加速。
-复制requirements.txt并安装Python依赖项。
-复制当前目录中的所有文件到工作目录。
-将容器的默认命令设置为flask run。
-
-有关如何编写Dockerfile的更多信息，参考Docker用户指南和Dockerfile参考。
-5、创建docker-compose.yml，内容为：
-version: '3'services:  web:    build: .    ports:      - "15000:5000"  redis:    image: "redis:alpine"
-该Compose文件定义了两个服务：Web和Redis。Web服务从Dockerfile构建镜像，启动后容器在5000端口提供服务，然后将容器端口5000绑定到主机端口15000。
-6、使用Compose构建和运行应用docker-compose up
-7、测试应用curl http://127.0.0.1:15000
-Hello World 2.01、编辑docker-compose.yml，挂载当前目录到/code
-version: '3'services:  web:    build: .    ports:      - "5000:5000"    volumes:      - .:/code    environment:      FLASK_ENV: development  redis:    image: "redis:alpine"
-
-2、运行应用docker-compose up
-3、修改app.py
-import timeimport redisfrom flask import Flaskapp = Flask(__name__)cache = redis.Redis(host='redis', port=6379)def get_hit_count():    retries = 5    while True:        try:            return cache.incr('hits')        except redis.exceptions.ConnectionError as exc:            if retries == 0:                raise exc            retries -= 1            time.sleep(0.5)@app.route('/')def hello():    count = get_hit_count()    return 'Hello World 2.0! I have been seen &#123;&#125; times.\n'.format(count)
-
-4、测试应用curl http://127.0.0.1:15000
-常用命令# 构建和运行应用docker-compose up# 构建和后台运行应用docker-compose up -d# 关闭应用docker-compose down# 关闭应用，并删除Redis容器内数据docker-compose down --volumes# 查看容器docker-compose ps# 查看web服务的环境变量docker-compose run web env
-
-书签Overview of Docker Compose
-Docker 入门教程
-docker/compose
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>docker</category>
-      </categories>
-      <tags>
-        <tag>docker</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Docker中使用定时任务</title>
-    <url>/dev-docker-crontab/</url>
-    <content><![CDATA[前言《Linux设置定时任务》一文中学习了crontab的使用方法，但是同样的配置方法，在Docker中是不会生效的。因为Docker中默认只会启动一个进程，crond并不会启动。本文研究一下在Docker中配置定时任务的方法，踩踩坑。
-
-
-启动crond要想在容器中使用定时任务，有三个办法：
-
-把crond作为一号进程启动。
-supervisor作为一号进程启动，使用supervisor启动crond。
-进入容器手动启动crond。
-
-本文使用第一个方法启动crond，启动命令为：
-docker run --name vkcrond -d -it voidking/crond:v1.0 "/bin/bash" "-c" "/usr/sbin/crond &gt; start.log &amp;&amp; tail -f start.log"
-
-crond日志1、查看crond日志tail /var/log/cron报错没有这个文件，这是因为没有打开rsyslog。
-2、打开rsyslog
-# centos/etc/init.d/rsyslog start# centos7systemctl restart rsyslog.service# centos6service rsyslog restart
-
-再次查看，crond日志文件就存在了。
-使用crondcrond启动后，其他的配置参考《Linux设置定时任务》即可。
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>docker</category>
-        <category>linux</category>
-      </categories>
-      <tags>
-        <tag>docker</tag>
-        <tag>crontab</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>使用Docker安装配置GateOne</title>
     <url>/dev-docker-gateone/</url>
     <content><![CDATA[GateOne简介
@@ -3122,6 +3123,8 @@ docker exec -it vk-jupyter pip install ipywidgets
 server &#123;    listen 80;    server_name jupyter.voidking.com;    charset utf-8;    location /&#123;        proxy_set_header   Host             $host;        proxy_set_header   X-Real-IP        $remote_addr;        proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;        proxy_pass http://172.17.12.85:8888;        # WebSocket support        proxy_http_version 1.1;        proxy_set_header Upgrade $http_upgrade;        proxy_set_header Connection "upgrade";    &#125;&#125;
 
 jupyter小技巧执行bash在代码框里输入叹号+bash命令，即可执行bash，例如：!ls -l
+登录进容器docker exec -it vk-jupyter /bin/bashdocker exec --user root -it vk-jupyter /bin/bash
+
 安装插件Jupyter Notebook 扩展插件（nbextensions）是一些 JavaScript 模块，我们可以使用插件强化 Notebook 的功能。扩展插件本质上修改了 Jupyter UI，以实现更强大的功能。1、界面添加 Nbextensions
 docker exec -it vk-jupyter conda install -c conda-forge jupyter_nbextensions_configurator#docker exec -it vk-jupyter pip install jupyter_nbextensions_configurator -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple/docker exec -it vk-jupyter jupyter nbextensions_configurator enable --userdocker exec -it vk-jupyter jupyter nbextension listdocker restart vk-jupyter
 
@@ -4283,6 +4286,111 @@ Servlet 3.0笔记之使用Freemarker替代JSP，更快更轻更高效http://www.
       </tags>
   </entry>
   <entry>
+    <title>Docker中使用定时任务</title>
+    <url>/dev-docker-crontab/</url>
+    <content><![CDATA[前言《Linux设置定时任务》一文中学习了crontab的使用方法，但是同样的配置方法，在Docker中是不会生效的。因为Docker中默认只会启动一个进程，crond并不会启动。本文研究一下在Docker中配置定时任务的方法，踩踩坑。
+
+
+启动crond要想在容器中使用定时任务，有三个办法：
+
+把crond作为一号进程启动。
+supervisor作为一号进程启动，使用supervisor启动crond。
+进入容器手动启动crond。
+
+本文使用第一个方法启动crond，启动命令为：
+docker run --name vkcrond -d -it voidking/crond:v1.0 "/bin/bash" "-c" "/usr/sbin/crond &gt; start.log &amp;&amp; tail -f start.log"
+
+crond日志1、查看crond日志tail /var/log/cron报错没有这个文件，这是因为没有打开rsyslog。
+2、打开rsyslog
+# centos/etc/init.d/rsyslog start# centos7systemctl restart rsyslog.service# centos6service rsyslog restart
+
+再次查看，crond日志文件就存在了。
+使用crondcrond启动后，其他的配置参考《Linux设置定时任务》即可。
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>docker</category>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>crontab</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Docker-Compose入门篇</title>
+    <url>/dev-docker-compose/</url>
+    <content><![CDATA[Docker-Compose简介Compose是用于定义和运行多容器Docker应用程序的工具。通过Compose，可以使用YAML文件来配置应用程序的服务。然后使用一个命令，就可以从配置中创建并启动所有服务。Compose可在所有环境中工作：生产、模拟、开发、测试以及CI工作流。
+使用Compose基本上是三步流程：
+
+使用Dockerfile定义应用程序的环境，以便可以在任何地方复制它。
+在docker-compose.yml中定义组成您的应用程序的服务，以便它们可以在隔离的环境中一起运行。
+运行docker-compose up，然后Compose启动并运行整个应用程序。
+
+Docker-Compose项目由Python编写，调用Docker服务提供的API来对容器进行管理。因此，只要所操作的平台支持Docker API，就可以在其上利用Compose来进行编排管理。更多内容参考Overview of Docker Compose。
+
+
+安装Compose在CentOS7机器上，假设已经了Docker，参考Install Docker Compose安装Compose-Docker。如果没有安装Docker，那么参考Docker入门进行安装。
+1、安装docker-compose
+sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+2、添加执行权限
+sudo chmod +x /usr/local/bin/docker-composesudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+
+3、验证安装docker-compose --version
+Hello World1、创建测试目录
+mkdir composetestcd composetest
+
+2、在项目目录中创建一个名为app.py的文件，内容为：
+import timeimport redisfrom flask import Flaskapp = Flask(__name__)cache = redis.Redis(host='redis', port=6379)def get_hit_count():    retries = 5    while True:        try:            return cache.incr('hits')        except redis.exceptions.ConnectionError as exc:            if retries == 0:                raise exc            retries -= 1            time.sleep(0.5)@app.route('/')def hello():    count = get_hit_count()    return 'Hello World! I have been seen &#123;&#125; times.\n'.format(count)
+在此示例中，redis是应用程序网络上的redis容器的主机名，使用默认端口6379。
+3、创建requirements.txt文件，内容为：
+flaskredis
+
+4、创建Dockerfile，内容为：
+FROM python:3.7-alpineWORKDIR /codeENV FLASK_APP app.pyENV FLASK_RUN_HOST 0.0.0.0RUN apk add --no-cache gcc musl-dev linux-headersCOPY requirements.txt requirements.txtRUN pip install -r requirements.txtCOPY . .CMD ["flask", "run"]
+
+该文件说明：
+
+从Python 3.7映像开始构建映像。
+将工作目录设置为/code。
+设置flask命令使用的环境变量。
+安装gcc，以便诸如MarkupSafe和SQLAlchemy之类的Python包可以编译加速。
+复制requirements.txt并安装Python依赖项。
+复制当前目录中的所有文件到工作目录。
+将容器的默认命令设置为flask run。
+
+有关如何编写Dockerfile的更多信息，参考Docker用户指南和Dockerfile参考。
+5、创建docker-compose.yml，内容为：
+version: '3'services:  web:    build: .    ports:      - "15000:5000"  redis:    image: "redis:alpine"
+该Compose文件定义了两个服务：Web和Redis。Web服务从Dockerfile构建镜像，启动后容器在5000端口提供服务，然后将容器端口5000绑定到主机端口15000。
+6、使用Compose构建和运行应用docker-compose up
+7、测试应用curl http://127.0.0.1:15000
+Hello World 2.01、编辑docker-compose.yml，挂载当前目录到/code
+version: '3'services:  web:    build: .    ports:      - "5000:5000"    volumes:      - .:/code    environment:      FLASK_ENV: development  redis:    image: "redis:alpine"
+
+2、运行应用docker-compose up
+3、修改app.py
+import timeimport redisfrom flask import Flaskapp = Flask(__name__)cache = redis.Redis(host='redis', port=6379)def get_hit_count():    retries = 5    while True:        try:            return cache.incr('hits')        except redis.exceptions.ConnectionError as exc:            if retries == 0:                raise exc            retries -= 1            time.sleep(0.5)@app.route('/')def hello():    count = get_hit_count()    return 'Hello World 2.0! I have been seen &#123;&#125; times.\n'.format(count)
+
+4、测试应用curl http://127.0.0.1:15000
+常用命令# 构建和运行应用docker-compose up# 构建和后台运行应用docker-compose up -d# 关闭应用docker-compose down# 关闭应用，并删除Redis容器内数据docker-compose down --volumes# 查看容器docker-compose ps# 查看web服务的环境变量docker-compose run web env
+
+书签Overview of Docker Compose
+Docker 入门教程
+docker/compose
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>docker</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>前端开发常用插件</title>
     <url>/dev-front-end-plugin/</url>
     <content><![CDATA[前言最近在阅读公司官网的前端代码，使用了很多插件。挨个百度，简单记录下，看看他们都是干什么的。
@@ -5376,112 +5484,6 @@ Hive安装配置指北（含Hive Metastore详解）
       </tags>
   </entry>
   <entry>
-    <title>基于JQuery实现滚动到页面底端时自动加载更多信息</title>
-    <url>/dev-auto-loading-when-scroll-to-the-bottom/</url>
-    <content><![CDATA[这篇文章主要介绍了基于JQuery实现滚动到页面底端时自动加载更多信息，类似微博，新浪新闻的评论等，都采用了这方法,需要的朋友可以参考下关键代码：
-var stop=true; $(window).scroll(function()&#123;     totalheight = parseFloat($(window).height()) + parseFloat($(window).scrollTop());     if($(document).height() &lt;= totalheight)&#123;         if(stop==true)&#123;             stop=false;             $.post("ajax.php", &#123;start:1, n:50&#125;,function(txt)&#123;                 $("#Loading").before(txt);                 stop=true;             &#125;,"text");         &#125;     &#125; &#125;);
-
-
-
-HTML代码如下:
-&lt;div id="Loading"&gt;Loading...&lt;/div&gt;
-
-实现方法是比较页面总高度和下滚高度以判断是否到达底端，若到达底端则通过ajax读取更多的内容，用before插入到Loading之前。stop参数是考虑到ajax读取耗时，防止在一次ajax读取过程中多次触发事件，造成多次加载内容。
-转载自http://www.3lian.com/edu/2014/02-10/127916.html
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>jquery</category>
-      </categories>
-      <tags>
-        <tag>前端</tag>
-        <tag>jquery</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>artTemplate模板引擎</title>
-    <url>/dev-arttemplate/</url>
-    <content><![CDATA[前言在开发过程中，常常要实现这样一种效果：获取数据，并且插入到当前页面。最基本的做法是把获取到的数据拼接到一个字符串中，然后使用html()或者append()函数插入到页面中。这种做法，拼接字符串时很麻烦。本文中，小编要介绍一下ArtTemplate，一个超快的前端模板引擎。
-
-
-快速上手编写模板&lt;script id="test" type="text/html"&gt;&lt;h1&gt;&#123;&#123;title&#125;&#125;&lt;/h1&gt;&lt;ul&gt;    &#123;&#123;each list as value i&#125;&#125;        &lt;li&gt;索引 &#123;&#123;i + 1&#125;&#125; ：&#123;&#123;value&#125;&#125;&lt;/li&gt;    &#123;&#123;/each&#125;&#125;&lt;/ul&gt;&lt;/script&gt;
-
-渲染模板var data = &#123;    title: '标签',    list: ['文艺', '博客', '摄影', '电影', '民谣', '旅行', '吉他']&#125;;var html = template('test', data);document.getElementById('content').innerHTML = html;
-
-模板语法注意：简洁语法和原生语法引入的js文件不同。
-简洁语法&#123;&#123;if admin&#125;&#125;    &#123;&#123;include 'admin_content'&#125;&#125;    &#123;&#123;each list&#125;&#125;        &lt;div&gt;&#123;&#123;$index&#125;&#125;. &#123;&#123;$value.user&#125;&#125;&lt;/div&gt;    &#123;&#123;/each&#125;&#125;&#123;&#123;/if&#125;&#125;
-
-原生语法&lt;%if (admin)&#123;%&gt;    &lt;%include('admin_content')%&gt;    &lt;%for (var i=0;i&lt;list.length;i++) &#123;%&gt;        &lt;div&gt;&lt;%=i%&gt;. &lt;%=list[i].user%&gt;&lt;/div&gt;    &lt;%&#125;%&gt;&lt;%&#125;%&gt;
-
-参考文档Arttemplate by auihttp://aui.github.io/artTemplate/
-前端模版artTemplate的介绍及使用http://blog.csdn.net/playboyanta123/article/details/45536501
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-      </categories>
-      <tags>
-        <tag>前端</tag>
-        <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>APP第三方登录QQ和微博配置</title>
-    <url>/dev-app-login-qq-sina/</url>
-    <content><![CDATA[需求使用hbuilder修改东北高师就业联盟网的app，完成了qq和微博第三方登录，真机调试正常。但是打包发布后，问题来了。使用qq登录时，会提示错误“该应用非官方正版应用，请去应用宝下载正版后进行qq登陆。（错误码：100044）”。使用微博登录时，会提示错误“21338:sso package or sign error”。
-因为就业联盟网在开放平台上是一个web应用，但是我们的app打包后是一个android应用和一个ios应用。所以，要解决这个问题，我们要在开放平台上添加android应用和ios应用。
-
-
-android打包签名在配置开放平台之前，我们先把android app打包发布，具体流程如下：
-安装java环境参考《全平台安装JDK》。
-生成keystorekeytool -genkey -alias dsjyw.keystore -keyalg RSA -validity 1000 -keystore dsjyw.keystore
-说明：keytool -genkey -alias 别名.keystore -keyalg RSA -validity 有效期限(天数) -keystore 别名.keystore
-dsjyw.store参数输入密钥库口令: voidking再次输入新口令: voidking您的名字与姓氏是什么?  [Unknown]:  VoidKing您的组织单位名称是什么?  [Unknown]:  Nenu您的组织名称是什么?  [Unknown]:  Nenu您所在的城市或区域名称是什么?  [Unknown]:  ChangChun您所在的省/市/自治区名称是什么?  [Unknown]:  JiLin该单位的双字母国家/地区代码是什么?  [Unknown]:  CNCN=VoidKing, OU=Nenu, O=Nenu, L=ChangChun, ST=JiLin, C=CN是否正确?  [否]:  y输入 &lt;dsjyw.keystore&gt; 的密钥口令        (如果和密钥库口令相同, 按回车):
-
-打包1、打开Hbuilder，发行，发行为原生安装包。
-2、使用自有证书；Android包名是自动生成的，不需要修改，也可以修改为自己喜欢的包名；证书别名和私钥密码是生成keystore时配置的；证书文件选择生成的keystore文件。
-3、打包，之后会自动上传源码，打包好后下载到app存放目录中。
-签名1、复制打包下载好的apk文件到dsjyw.keystore相同的目录，重命名apk文件为android-release-unsigned.apk。
-2、打开cmd，执行签名命令jarsigner -verbose -keystore dsjyw.keystore -signedjar dsjyw.apk android-release-unsigned.apk dsjyw.keystore
-说明：jarsigner -verbose -keystore 别名.keystore(密钥库位置) -signedjar 签名后产生的文件.apk要签名的文件.apk 别名.keystore(密钥库)
-查看签名keytool -v -list -keystore dsjyw.keystore
-找到MD5: 70:1D:81:1E:D3:A6:8B:28:66:82:BA:D8:EB:79:DC:63
-新浪创建移动应用时要求的是32位数字小写字母，把前面的这串数字中的冒号去掉，字母小写即可。
-腾讯开放平台创建安卓应用1、登录腾讯开放平台
-2、安卓应用，创建应用。
-3、关联QQ互联，输入联盟网web应用的appid和appkey，确定。之所以关联QQ互联，是为了统一appid，否则，web登录和app登录获得的是不同的openid。
-如果关联QQ互联后，创建应用失败，提示“对不起，您不是应用的创建者或协作者(1500401)”。
-可能一：不是协作者。请先使用联盟网web应用所在账号登录，在管理中心页面，滑动鼠标到右上角用户名，单击权限权限管理，添加协作者。
-可能二：账号冲突。之前的web应用在QQ互联上，此时，不要在浏览器中同时打开腾讯开放平台和QQ互联，也不要登录其他的QQ邮箱，有可能账号冲突。
-可能三：开发者资料未提交审核。
-4、选择移动应用 安卓，创建应用，选择应用类型，确定。此时创建的安卓应用，它的appid和appkey就和联盟网web应用相同了。
-5、按照提示，填写需要的字段即可。需要注意的是，上传安装包时，需要上传签名后的apk文件。
-6、填写好信息，保存即可，不需要提交审核。如果需要提交审核的话，请先根据提示加固应用。
-创建ios应用1、在安卓应用中，可以看到我们创建的联盟网app，单击它。
-2、鼠标滑到右上角平台信息，单击IOS应用，即可创建IOS应用。该IOS应用的appid和appkey就和联盟网web应用相同，也和安卓应用相同。
-警告，创建ios应用后，此时安卓应用和ios应用实际上是同一个应用。删除任意一个，两个应用就都没有了。
-3、按照提示填写各字段即可。其中比较难的是URL scheme、AppStore ID和Bundle ID，这些信息可以到Apple Developer和itunes connect上查看到。
-新浪开放平台1、登录新浪开放平台
-2、微连接，移动应用，立即接入。勾选Iphone和Android两个平台，创建。
-3、填写应用基本信息。其中比较难的是Android签名，不必使用新浪提供的签名工具，参考本文中的“查看签名”小节，填入得到的32位字符串。
-4、保存信息，提交审核。审核不通过会有详细提示，参考提示修改后再次提交审核。
-5、单击左侧导航栏应用信息，高级信息。OAuth2.0 授权设置中点击编辑，授权回调页和取消授权回调页都填入https://api.weibo.com/oauth2/default.html。
-书签HBuilder 打包流程
-腾讯开放平台创建应用的坑，安卓和iOS端如何共用同一个Appid？
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>android</category>
-      </categories>
-      <tags>
-        <tag>android</tag>
-        <tag>hbuilder</tag>
-        <tag>ios</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>在Ubuntu16.04上安装Hadoop</title>
     <url>/dev-hadoop-on-ubuntu/</url>
     <content><![CDATA[前言专业方向，选择了大数据，那就在这方面深入研究一下。什么是大数据？正如字面意思，大量的数据。举个例子，Mysql的一张表里存了1万条数据，查询没问题；100万条数据，查询也没问题；那么，1亿条数据？100亿条数据？更大的数据？
@@ -6458,6 +6460,64 @@ hexo干货系列：（六）hexo提交搜索引擎（百度+谷歌）http://www.
       </categories>
       <tags>
         <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Travis CI失效</title>
+    <url>/dev-hexo-travis-ci-not-work-anymore/</url>
+    <content><![CDATA[问题描述2021年8月8日，趁着周末空闲修改了一些文章，然后发了新版。但是，发现网站没有更新。看看邮件，没有收到travis ci的邮件，再仔细想想，貌似好久没有收到travis ci的邮件了。登录Travis CI查看构建记录，好家伙，上次构建还是5月份的！问题大了！
+到底是怎么回事？Travis CI有bug不能用了？GitHub封杀了Travis CI？Travis CI规则改了，开源项目也有构建次数限制？…不知道具体什么原因，本文我们就来排查一下。
+
+
+手动触发1、登录Travis CI
+2、点击 voidking/hexo-deploy 项目，点击右上角 More options，点击 Trigger build 进行手动触发构建
+3、Branch 保持默认 master ，CUSTOM COMMIT MESSAGE 输入随意内容，CUSTOM CONFIG 不填
+4、点击 Trigger custom build，就看到了具体的报错了弹框提示 Oh no! You tried to trigger a build for voidking/hexo-deploy but the request was rejected.Requests Tab页提示 Could not authorize build request for voidking/hexo-deploy.从5月7日至今，一直是这个错误。
+猜想和验证Travis CI授权过期了？根据报错信息，很容易联想到授权过期，因为之前还好好的，突然不能用了。
+1、进入GitHub Applications settings页面，配置Travis CI。2、检查了一遍，并没有授权过期一说，没有什么问题。3、保险起见，调整了一下 Repository access ，保存。然而问题并没有解决，说明不是授权过期问题。
+缺少 .travis.yml ？Travis CI论坛上有人是因为缺少 .travis.yml 文件导致。
+
+In your case, it’s due to a missing .travis.yml.
+
+怀疑自己也是误删了 .travis.yml 文件，但是检查了一遍，并没有误删。
+需要换免费版？Travis CI论坛上还有人没有找到原因，最终换了Github Actions。
+
+I kept struggling on this, and finally left travis.com for Github Actions :persevere: Now I can build &amp; deploy again 
+
+如果非换不可的话，我打算换成Travis CI免费版，毕竟更加熟悉。但是工作量很大，很多地方都需要重新配置。我不信需要这么麻烦！
+需要加入组织？stackoverflow上有人说需要为组织选择一个plan，莫非现在必须要加入组织才能使用Travis CI？
+
+It’s also worth mentioning that this happens if you do not have a plan selected for your organization. First, you need to select a plan (Travis does not automatically select the free plan for you). Then, you can trigger a build and see if things work.
+
+
+If that does not work, you’re likely out of builds and will need to upgrade the account.
+
+于是，创建了一个Organizations：begoodcoder。然而创建组织后并没有解决问题。PS：个人感觉组织和个人账号的区别，主要是组织可以创建团队。
+Plan! Plan! Plan!stackoverflow上有多个优质回答提到了Plan，这个Plan是个啥？
+
+‘Could not authorize build request …’ usually occurs due to
+
+Has not activated either a free plan or a paid plan.
+Expiration of the subscription.
+Ran out of free trial build credits available for private repositories.Travis CI is always-free only for public repositories. The free plan also provides 10,000 build credits try out building private repositories. Read updated info on Billing FAQ.
+
+
+1、Travis CI右上角点击账号，选择Settings
+2、点击页面上的Plan
+3、选择Free plan
+4、再次手动触发配送，成功！
+以上，Travis CI失效的问题就定位并解决了，需要选择一个Plan！
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>开发</category>
+        <category>hexo</category>
+        <category>CICD</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+        <tag>cicd</tag>
       </tags>
   </entry>
   <entry>
@@ -7907,22 +7967,42 @@ HTML5+JS手机web开发之jQuery Mobile初涉
       </tags>
   </entry>
   <entry>
-    <title>仿淘宝图片放大器</title>
-    <url>/dev-jquery-image-zoom/</url>
-    <content><![CDATA[原理两个盒子，盒子1放小图片，盒子2放对应的大图片。盒子1里的图片正常显示，盒子2里的图片隐藏。在盒子1的图片标签中，加入大图的数据链接。当鼠标在盒子1上移动时，通过鼠标在盒子1的位置计算出盒子2中应该显示的大图的部分。
+    <title>jQuery学习笔记——概述篇</title>
+    <url>/dev-jquery-start/</url>
+    <content><![CDATA[jQuery是什么jQuery是一个兼容多浏览器的Javascript库，类似于C语言中的”.h”文件和Java中的”.jar” 文件。
+核心理念是write less,do more(写得更少,做得更多)。
+jQuery是免费、开源的，使用MIT许可协议。jQuery的语法设计可以使开发者更加便捷，例如操作文档对象、选择DOM元素、制作动画效果、事件处理、使用Ajax以及其他功能。除此以外，jQuery提供API让开发者编写插件。其模块化的使用方式使开发者可以很轻松的开发出功能强大的静态或动态网页。
+jQuery能够做什么1、简化编程。jQuery最大的优点，是简化了Javascript编程。本来需要很多行代码才能完成的功能，使用jQuery，时常一两行就够了。
+2、跨平台。使用Javascript开发，是一件痛苦的事情，因为你不得不考虑到各种浏览器的兼容问题。而使用jQuery，你编写的程序可以很容易地实现跨浏览器平台。
 
+jQuery简史jQuery在2006年1月由美国人John Resig在纽约的barcamp发布，吸引了来自世界各地的众多JavaScript高手加入，由Dave Methvin率领团队进行开发。
+如今，jQuery已经成为最流行的javascript库，在世界前10000个访问最多的网站中，有超过55%在使用jQuery。
+在写这篇文章的时候，在谷歌搜索jQuery，返回大约 85,900,000条结果。jQuery每天都有新的官方插件和第三方插件产生，它们不断扩展jQuery的核心功能。
+hello voidkingC语言写的第一个程序是helloworld，今天，void自恋一把，第一个程序就和自己打招呼了！
+1、官网下载jQuery文件（这里我使用的是jquery-1.10.2.js）。
+2、新建index.html文件，内容如下：
+&lt;html&gt;&lt;head&gt;		&lt;script type="text/javascript" src="jquery-1.10.2.js"&gt;&lt;/script&gt;	&lt;script type="text/javascript"&gt;		$(function()&#123;			alert("hello voidking");			$("p").css("color","red");		&#125;);	&lt;/script&gt;&lt;/head&gt;&lt;body&gt;	&lt;p&gt;		welcome to jQuery world !	&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
 
-以下代码中，利用到了jquery.jqzoom.js插件。
-代码&lt;div id="preview" class="spec-preview"&gt;     &lt;span class="jqzoom"&gt;        &lt;img jqimg="images/b1.jpg" src="images/s1.jpg" /&gt;    &lt;/span&gt; &lt;/div&gt;
+3、打开浏览器，看到弹出的对话框了吧？大功告成！下面的内容，会对此程序作出解释。
+$jQuery的一切功能都源自”$”对象，即一个美元符号对象（或美元符号方法），它可以用”jQuery”来代替。
+美元符号既是一个对象，也是一个方法。这是因为它具有很多成员属性和方法可以调用，同时可以把它当成一个函数来调用。
+延迟加载我们在hellovoidking的代码中，使用$(function(){});进行首尾包裹，那么为什么要包裹这段代码呢？原因是，jQuery库文件是在body元素之前加载的，我们必须等待所有的DOM元素加载后，延迟支持DOM操作，否则就无法获取到。
+为了延迟等待加载，JavaScript提供了一个事件为load，方法如下：
+window.onload = function()&#123;&#125;;
+而jQuery提供的方法如下：
+$(document).ready(function()&#123;&#125;);
+什么东东？和hello voidking中的代码不一样啊？原来，jQuery的延迟加载方法可以简写为：
+$(function()&#123;&#125;);
 
-$(function()&#123;    $(".jqzoom").jqueryzoom(&#123;xzoom:380,yzoom:380&#125;);&#125;);
-
-
-参考文档jquery.jqzoom.js图片放大镜http://www.cnblogs.com/sydeveloper/p/3796330.html
-ImageZoom 图片放大效果http://www.cnblogs.com/cloudgamer/archive/ImageZoom.html
-jQuery-实现图片的放大镜显示效果
-jquery插件 放大镜http://www.jq-school.com/Article.aspx?kid=41
-jQzoom简介http://www.oschina.net/p/jqzoom?fromerr=tUayHgqO
+jQuery选择器jQuery最核心的组成部分就是：选择器引擎。用iPhone式的格言来说，“让选择器完成一切”就是jQuery的座右铭。
+在使用jQuery的任何方法时，首先要做的就是选择页面中要操作的那些元素。
+jQuery选择器继承了CSS的语法，可以对DOM元素的标签名、属性名、状态等进行快速准确的选择，并且不必担心浏览器的兼容性。jQuery选择器实现了CSS1~CSS3的大部分规则之外，还实现了一些自定义的选择器，用于各种特殊状态的选择。
+选择器部分内容很多，我会在下一篇文章中详细研究探讨。
+事件处理对于事件的概念，我在《Javascript学习笔记——基础篇》中已经解释过，这里不再赘述。jQuery的事件处理，内容也很多，我会在接下来的文章中探究。
+AjaxjQuery的Ajax也是重点，必须的展开。我靠，肿么这么多！别吐槽了帅哥，写教程的void都快哭了，赶着去搞XMPP呢！
+调试个人喜欢的工具是：火狐浏览器 + firebug。
+结束语jQuery博大精深，还有什么单元测试、插件、特效制作啥的，void就不多说了，感兴趣的小伙伴自己查找资料吧！
+参考文档李炎恢的jQuery视频教程《jQuery攻略（作者B.M.Harwani）》《jQuery实战（作者Bear Bibeault、Yehuda Katz）》《jQuery高级编程（作者 Cesar Otero、Rob Larsen）》《jQuery Javascript 与CSS开发入门经典（作者Richard York）》
 ]]></content>
       <categories>
         <category>专业</category>
@@ -7930,9 +8010,8 @@ jQzoom简介http://www.oschina.net/p/jqzoom?fromerr=tUayHgqO
         <category>jquery</category>
       </categories>
       <tags>
-        <tag>前端</tag>
-        <tag>插件</tag>
         <tag>jquery</tag>
+        <tag>javascript</tag>
       </tags>
   </entry>
   <entry>
@@ -9017,96 +9096,6 @@ IT技术认证考试
       </tags>
   </entry>
   <entry>
-    <title>jQuery学习笔记——概述篇</title>
-    <url>/dev-jquery-start/</url>
-    <content><![CDATA[jQuery是什么jQuery是一个兼容多浏览器的Javascript库，类似于C语言中的”.h”文件和Java中的”.jar” 文件。
-核心理念是write less,do more(写得更少,做得更多)。
-jQuery是免费、开源的，使用MIT许可协议。jQuery的语法设计可以使开发者更加便捷，例如操作文档对象、选择DOM元素、制作动画效果、事件处理、使用Ajax以及其他功能。除此以外，jQuery提供API让开发者编写插件。其模块化的使用方式使开发者可以很轻松的开发出功能强大的静态或动态网页。
-jQuery能够做什么1、简化编程。jQuery最大的优点，是简化了Javascript编程。本来需要很多行代码才能完成的功能，使用jQuery，时常一两行就够了。
-2、跨平台。使用Javascript开发，是一件痛苦的事情，因为你不得不考虑到各种浏览器的兼容问题。而使用jQuery，你编写的程序可以很容易地实现跨浏览器平台。
-
-jQuery简史jQuery在2006年1月由美国人John Resig在纽约的barcamp发布，吸引了来自世界各地的众多JavaScript高手加入，由Dave Methvin率领团队进行开发。
-如今，jQuery已经成为最流行的javascript库，在世界前10000个访问最多的网站中，有超过55%在使用jQuery。
-在写这篇文章的时候，在谷歌搜索jQuery，返回大约 85,900,000条结果。jQuery每天都有新的官方插件和第三方插件产生，它们不断扩展jQuery的核心功能。
-hello voidkingC语言写的第一个程序是helloworld，今天，void自恋一把，第一个程序就和自己打招呼了！
-1、官网下载jQuery文件（这里我使用的是jquery-1.10.2.js）。
-2、新建index.html文件，内容如下：
-&lt;html&gt;&lt;head&gt;		&lt;script type="text/javascript" src="jquery-1.10.2.js"&gt;&lt;/script&gt;	&lt;script type="text/javascript"&gt;		$(function()&#123;			alert("hello voidking");			$("p").css("color","red");		&#125;);	&lt;/script&gt;&lt;/head&gt;&lt;body&gt;	&lt;p&gt;		welcome to jQuery world !	&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
-
-3、打开浏览器，看到弹出的对话框了吧？大功告成！下面的内容，会对此程序作出解释。
-$jQuery的一切功能都源自”$”对象，即一个美元符号对象（或美元符号方法），它可以用”jQuery”来代替。
-美元符号既是一个对象，也是一个方法。这是因为它具有很多成员属性和方法可以调用，同时可以把它当成一个函数来调用。
-延迟加载我们在hellovoidking的代码中，使用$(function(){});进行首尾包裹，那么为什么要包裹这段代码呢？原因是，jQuery库文件是在body元素之前加载的，我们必须等待所有的DOM元素加载后，延迟支持DOM操作，否则就无法获取到。
-为了延迟等待加载，JavaScript提供了一个事件为load，方法如下：
-window.onload = function()&#123;&#125;;
-而jQuery提供的方法如下：
-$(document).ready(function()&#123;&#125;);
-什么东东？和hello voidking中的代码不一样啊？原来，jQuery的延迟加载方法可以简写为：
-$(function()&#123;&#125;);
-
-jQuery选择器jQuery最核心的组成部分就是：选择器引擎。用iPhone式的格言来说，“让选择器完成一切”就是jQuery的座右铭。
-在使用jQuery的任何方法时，首先要做的就是选择页面中要操作的那些元素。
-jQuery选择器继承了CSS的语法，可以对DOM元素的标签名、属性名、状态等进行快速准确的选择，并且不必担心浏览器的兼容性。jQuery选择器实现了CSS1~CSS3的大部分规则之外，还实现了一些自定义的选择器，用于各种特殊状态的选择。
-选择器部分内容很多，我会在下一篇文章中详细研究探讨。
-事件处理对于事件的概念，我在《Javascript学习笔记——基础篇》中已经解释过，这里不再赘述。jQuery的事件处理，内容也很多，我会在接下来的文章中探究。
-AjaxjQuery的Ajax也是重点，必须的展开。我靠，肿么这么多！别吐槽了帅哥，写教程的void都快哭了，赶着去搞XMPP呢！
-调试个人喜欢的工具是：火狐浏览器 + firebug。
-结束语jQuery博大精深，还有什么单元测试、插件、特效制作啥的，void就不多说了，感兴趣的小伙伴自己查找资料吧！
-参考文档李炎恢的jQuery视频教程《jQuery攻略（作者B.M.Harwani）》《jQuery实战（作者Bear Bibeault、Yehuda Katz）》《jQuery高级编程（作者 Cesar Otero、Rob Larsen）》《jQuery Javascript 与CSS开发入门经典（作者Richard York）》
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>jquery</category>
-      </categories>
-      <tags>
-        <tag>jquery</tag>
-        <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Javascript学习笔记——实践篇</title>
-    <url>/dev-jquery-practice/</url>
-    <content><![CDATA[注释本文中的文件名，写在了代码注释中。既然用到了三种文件，就把这三种文件的注释方法先说明一下。
-HTML注释语法&lt;!--注释的内容--&gt;,示例如下：
-&lt;!--欢迎来到VoidKing的主页--&gt;
-
-CSS注释语法/*注释的内容*/，示例如下：
-/*这是注释*//*这也是注释可以分段*/
-
-Javascript注释和C语言相同，语法//注释的内容或者/*注释的内容*/，示例如下：
-//这是注释/*这也是注释*/
-使用Javascript在html页面中使用Javascript，有三种方法：
-body中body中的Javascript代码，相当于C语言中位于main函数内代码，格式如下：
-&lt;!--index.html--&gt;&lt;html&gt;	&lt;head&gt;	&lt;/head&gt;	&lt;body&gt;		&lt;script type="text/javascript"&gt;		document.write("voidking.com");		alert("voidking.com");		&lt;/script&gt;	&lt;/body&gt;&lt;/html&gt;
-head中head中的Javascript代码，相当于C语言中位于main函数外的代码，一般是封装好的函数。格式如下：
-&lt;!--index.html--&gt;&lt;html&gt;	&lt;head&gt;		&lt;meta http-equiv="Content-Type" content="charset=utf-8" /&gt;		&lt;script type="text/javascript"&gt;		function hello()&#123;			var str=prompt("VoidKing的网址是什么？","请在这里输入");			if(str!=null &amp;&amp; str!="")			&#123;				alert("你输入的是："+str);			&#125;			else			&#123;				alert("你什么也没有输入！");			&#125;		&#125;		&lt;/script&gt;	&lt;/head&gt;	&lt;body&gt;		&lt;script type="text/javascript"&gt;			hello();		&lt;/script&gt;	&lt;/body&gt;&lt;/html&gt;
-外部head中的Javascript代码不易维护，所以多数情况下我们会使用外部引用来代替。格式如下：
-&lt;!--index.html--&gt;&lt;html&gt;	&lt;head&gt;		&lt;meta http-equiv="Content-Type" content="charset=utf-8" /&gt;		&lt;script type="text/javascript" src="javascript.js"&gt;&lt;/script&gt;	&lt;/head&gt;	&lt;body&gt;		&lt;script type="text/javascript"&gt;			hello();		&lt;/script&gt;	&lt;/body&gt;&lt;/html&gt;
-//javascript.jsfunction hello()&#123;			var str=prompt("VoidKing的网址是什么？","请在这里输入");			if(str!=null &amp;&amp; str!="")			&#123;				alert("你输入的是："+str);			&#125;			else			&#123;				alert("你什么也没有输入！");			&#125;		&#125;
-使用CSS上面我们已经说完了使用Javascript的三种方式，爱思考的小伙伴肯定想到了CSS的使用方法，在这里，我也总结一下。
-内联样式当特殊的样式需要应用到个别元素时，就可以使用内联样式。格式如下：
-&lt;!--index.html--&gt;&lt;html&gt;	&lt;head&gt;	&lt;/head&gt;	&lt;body&gt;		&lt;p style="color:red;margin-left:20px"&gt;		This is a paragraph.		&lt;/p&gt;	&lt;/body&gt;&lt;/html&gt;
-
-内部样式当单个文件需要特别样式的时候，就可以使用内部样式表。格式如下:
-&lt;!--index.html--&gt;&lt;html&gt;	&lt;head&gt;		&lt;style type="text/css"&gt;		body&#123;background-color:red&#125;		p&#123;margin-left:20px&#125;		&lt;/style&gt;	&lt;/head&gt;	&lt;body&gt;		&lt;p&gt;		This is a paragraph.		&lt;/p&gt;	&lt;/body&gt;&lt;/html&gt;
-外部样式当样式需要被应用到很多页面的时候，外部样式表最适合。格式如下：
-&lt;!--index.html--&gt;&lt;html&gt;	&lt;head&gt;		&lt;link rel="stylesheet" type="text/css" href="style.css"/&gt;	&lt;/head&gt;	&lt;body&gt;		&lt;p&gt;		This is a paragraph.		&lt;/p&gt;	&lt;/body&gt;&lt;/html&gt;
-/*style.css*/body&#123;background-color:red&#125;p&#123;margin-left:20px&#125;
-
-借花献佛本来想自己整理出一批好的例子，但是，无意中发现了一个网站，已经做得非常好了。所以，void在这里就偷懒一下。例子精品，还附有教程讲解，分享给大家——梦之都！
-结束语这篇文章比预期的用时要短上很多，主要因为，我把痛苦的工作全部交给梦之都了，好机智地说！还想写个提高篇来着，但是能力有限，不能误人子弟啊！所以，Javascript笔记至此结束，接下来，该是jQuery了！
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>jquery</category>
-      </categories>
-      <tags>
-        <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Linux下使用VirtualBox</title>
     <url>/dev-linux-virtualbox/</url>
     <content><![CDATA[前言一直以来，都是在windows系统上使用虚拟机。今天和树添聊天时发现，在linux系统上，没有图形界面，同样可以使用虚拟机，只不过操作方式变成了命令行。
@@ -9507,6 +9496,77 @@ MAVEN安装JAR文件到本地仓库
         <tag>java</tag>
         <tag>eclipse</tag>
         <tag>maven</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Javascript学习笔记——实践篇</title>
+    <url>/dev-jquery-practice/</url>
+    <content><![CDATA[注释本文中的文件名，写在了代码注释中。既然用到了三种文件，就把这三种文件的注释方法先说明一下。
+HTML注释语法&lt;!--注释的内容--&gt;,示例如下：
+&lt;!--欢迎来到VoidKing的主页--&gt;
+
+CSS注释语法/*注释的内容*/，示例如下：
+/*这是注释*//*这也是注释可以分段*/
+
+Javascript注释和C语言相同，语法//注释的内容或者/*注释的内容*/，示例如下：
+//这是注释/*这也是注释*/
+使用Javascript在html页面中使用Javascript，有三种方法：
+body中body中的Javascript代码，相当于C语言中位于main函数内代码，格式如下：
+&lt;!--index.html--&gt;&lt;html&gt;	&lt;head&gt;	&lt;/head&gt;	&lt;body&gt;		&lt;script type="text/javascript"&gt;		document.write("voidking.com");		alert("voidking.com");		&lt;/script&gt;	&lt;/body&gt;&lt;/html&gt;
+head中head中的Javascript代码，相当于C语言中位于main函数外的代码，一般是封装好的函数。格式如下：
+&lt;!--index.html--&gt;&lt;html&gt;	&lt;head&gt;		&lt;meta http-equiv="Content-Type" content="charset=utf-8" /&gt;		&lt;script type="text/javascript"&gt;		function hello()&#123;			var str=prompt("VoidKing的网址是什么？","请在这里输入");			if(str!=null &amp;&amp; str!="")			&#123;				alert("你输入的是："+str);			&#125;			else			&#123;				alert("你什么也没有输入！");			&#125;		&#125;		&lt;/script&gt;	&lt;/head&gt;	&lt;body&gt;		&lt;script type="text/javascript"&gt;			hello();		&lt;/script&gt;	&lt;/body&gt;&lt;/html&gt;
+外部head中的Javascript代码不易维护，所以多数情况下我们会使用外部引用来代替。格式如下：
+&lt;!--index.html--&gt;&lt;html&gt;	&lt;head&gt;		&lt;meta http-equiv="Content-Type" content="charset=utf-8" /&gt;		&lt;script type="text/javascript" src="javascript.js"&gt;&lt;/script&gt;	&lt;/head&gt;	&lt;body&gt;		&lt;script type="text/javascript"&gt;			hello();		&lt;/script&gt;	&lt;/body&gt;&lt;/html&gt;
+//javascript.jsfunction hello()&#123;			var str=prompt("VoidKing的网址是什么？","请在这里输入");			if(str!=null &amp;&amp; str!="")			&#123;				alert("你输入的是："+str);			&#125;			else			&#123;				alert("你什么也没有输入！");			&#125;		&#125;
+使用CSS上面我们已经说完了使用Javascript的三种方式，爱思考的小伙伴肯定想到了CSS的使用方法，在这里，我也总结一下。
+内联样式当特殊的样式需要应用到个别元素时，就可以使用内联样式。格式如下：
+&lt;!--index.html--&gt;&lt;html&gt;	&lt;head&gt;	&lt;/head&gt;	&lt;body&gt;		&lt;p style="color:red;margin-left:20px"&gt;		This is a paragraph.		&lt;/p&gt;	&lt;/body&gt;&lt;/html&gt;
+
+内部样式当单个文件需要特别样式的时候，就可以使用内部样式表。格式如下:
+&lt;!--index.html--&gt;&lt;html&gt;	&lt;head&gt;		&lt;style type="text/css"&gt;		body&#123;background-color:red&#125;		p&#123;margin-left:20px&#125;		&lt;/style&gt;	&lt;/head&gt;	&lt;body&gt;		&lt;p&gt;		This is a paragraph.		&lt;/p&gt;	&lt;/body&gt;&lt;/html&gt;
+外部样式当样式需要被应用到很多页面的时候，外部样式表最适合。格式如下：
+&lt;!--index.html--&gt;&lt;html&gt;	&lt;head&gt;		&lt;link rel="stylesheet" type="text/css" href="style.css"/&gt;	&lt;/head&gt;	&lt;body&gt;		&lt;p&gt;		This is a paragraph.		&lt;/p&gt;	&lt;/body&gt;&lt;/html&gt;
+/*style.css*/body&#123;background-color:red&#125;p&#123;margin-left:20px&#125;
+
+借花献佛本来想自己整理出一批好的例子，但是，无意中发现了一个网站，已经做得非常好了。所以，void在这里就偷懒一下。例子精品，还附有教程讲解，分享给大家——梦之都！
+结束语这篇文章比预期的用时要短上很多，主要因为，我把痛苦的工作全部交给梦之都了，好机智地说！还想写个提高篇来着，但是能力有限，不能误人子弟啊！所以，Javascript笔记至此结束，接下来，该是jQuery了！
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>jquery</category>
+      </categories>
+      <tags>
+        <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>仿淘宝图片放大器</title>
+    <url>/dev-jquery-image-zoom/</url>
+    <content><![CDATA[原理两个盒子，盒子1放小图片，盒子2放对应的大图片。盒子1里的图片正常显示，盒子2里的图片隐藏。在盒子1的图片标签中，加入大图的数据链接。当鼠标在盒子1上移动时，通过鼠标在盒子1的位置计算出盒子2中应该显示的大图的部分。
+
+
+以下代码中，利用到了jquery.jqzoom.js插件。
+代码&lt;div id="preview" class="spec-preview"&gt;     &lt;span class="jqzoom"&gt;        &lt;img jqimg="images/b1.jpg" src="images/s1.jpg" /&gt;    &lt;/span&gt; &lt;/div&gt;
+
+$(function()&#123;    $(".jqzoom").jqueryzoom(&#123;xzoom:380,yzoom:380&#125;);&#125;);
+
+
+参考文档jquery.jqzoom.js图片放大镜http://www.cnblogs.com/sydeveloper/p/3796330.html
+ImageZoom 图片放大效果http://www.cnblogs.com/cloudgamer/archive/ImageZoom.html
+jQuery-实现图片的放大镜显示效果
+jquery插件 放大镜http://www.jq-school.com/Article.aspx?kid=41
+jQzoom简介http://www.oschina.net/p/jqzoom?fromerr=tUayHgqO
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>jquery</category>
+      </categories>
+      <tags>
+        <tag>前端</tag>
+        <tag>插件</tag>
+        <tag>jquery</tag>
       </tags>
   </entry>
   <entry>
@@ -12376,6 +12436,29 @@ django调试django的调试，需要对PyCharm进行设置，这里以调试djsi
       </tags>
   </entry>
   <entry>
+    <title>使用Python操作Excel表格</title>
+    <url>/dev-python-excel/</url>
+    <content><![CDATA[前言最近疫情又变得严重，多地都推迟了开学，改为上网课。这样一来，老师们就需要每次上完课后统计学生的出勤情况，包括未上课的同学和上课时间不足40分钟的同学。
+为了方便我们家谭老师的统计工作，决定趁周末写一个脚本，把人工统计变成自动统计。
+
+
+思路1、选择excel读写模块，经过简单比较决定选择 xlrd 和 xlwt 。2、已知学生没有重名，因此全体学生姓名作为集合A，上课学生作为集合B，上课满40分钟学生作为集合C。未上课学生为A-B，上课时间不足40分钟的学生为A-C-(A-B)。3、因为两个班级需要分开统计，因此使用学生姓名作为dict的key，班级作为dict的value。
+实现1、安装依赖
+pip3 install xlrd==1.2.0pip3 install xlwt
+之所以指定xlrd的版本，是因为更高的版本不支持读取xlsx格式的表格。
+2、代码实现统计缺勤学生
+3、代码执行./main.py xxx.xlsx
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>python</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>加快Android离线文档的访问速度</title>
     <url>/dev-quickly-open-android-offline-document/</url>
     <content><![CDATA[前言学习编程三年，已经确信，学习一门技术最好的资料就是官方文档。如今，拖沓了很久的Android学习计划，终于启动。学习资料：Android官方文档；学习方法：写demo写博客（总结）。
@@ -14883,6 +14966,65 @@ openstack image delete "ubuntu16-server-modified"openstack image create "ubuntu1
       </tags>
   </entry>
   <entry>
+    <title>把UEditor整合进ThinkPHP</title>
+    <url>/dev-ueditor-in-thinkphp/</url>
+    <content><![CDATA[前言
+UEditor是由百度web前端研发部开发所见即所得富文本web编辑器，具有轻量，可定制，注重用户体验等特点，开源基于MIT协议，允许自由使用和修改代码…
+
+
+
+巾帼志愿者项目，需要发布一些带图片的文章，使用UEditor很合适。同时，UEditor还可以当做图片上传插件使用。下面，我们把UEditor整合进ThinkPHP框架中。
+准备1、登录UEditor官网，下载PHP版本（UTF-8版）的代码。2、解压文件，重命名文件夹utf8-php为ueditor。3、拷贝ueditor到项目中的Public/libs文件夹下。4、修改ueditor/php/config.json里的路径。
+编辑器新建表在数据库中新建表volun_culture，content字段的类型选择longtext。
+Controller在Application/Admin/Controller/TestController.class.php中，添加函数ueditor、cultureAdd和ueditorshow。
+public function ueditor()&#123;    $this-&gt;display();&#125;public function cultureAdd($title, $content)&#123;    $data['title'] = $title;    $data['content'] = $content;    $culture = D('culture');    if($culture-&gt;create($data))&#123;        $id = $culture-&gt;add();        if($id)&#123;            $data = array(                'code'=&gt;'0',                'id'=&gt;$id            );            echo json_encode($data);        &#125;    &#125;&#125;public function ueditorshow()&#123;    $culture = D('culture');    $cultureArr = $culture-&gt;select();    $this-&gt;assign('cultureArr',$cultureArr);    $this-&gt;display();&#125;
+
+
+页面在Application/Admin/View/Test文件夹中，新建文件ueditor.html和ueditorshow.html。
+&lt;!--ueditor.html--&gt;&lt;!DOCTYPE html&gt;&lt;html lang="zh"&gt;&lt;head&gt;    &lt;meta charset="UTF-8"&gt;    &lt;title&gt;UEditor&lt;/title&gt;&lt;/head&gt;&lt;body&gt;    &lt;!-- 加载编辑器的容器 --&gt;    &lt;script id="container" name="content" type="text/plain"&gt;        这里写你的初始化内容    &lt;/script&gt;    &lt;button id="getContent"&gt;获取内容&lt;/button&gt;    &lt;button id="saveContent"&gt;保存&lt;/button&gt;    &lt;script src="/volunteer/Public/libs/jquery/jquery.min.js"&gt;&lt;/script&gt;    &lt;!-- 配置文件 --&gt;    &lt;script type="text/javascript" src="/volunteer/Public/libs/ueditor/ueditor.config.js"&gt;&lt;/script&gt;    &lt;!-- 编辑器源码文件 --&gt;    &lt;script type="text/javascript" src="/volunteer/Public/libs/ueditor/ueditor.all.js"&gt;&lt;/script&gt;    &lt;!-- 实例化编辑器 --&gt;    &lt;script type="text/javascript"&gt;        $(function()&#123;            var ue = UE.getEditor('container');            $('#getContent').click(function()&#123;                var html = ue.getContent();                alert(html);            &#125;);            $('#saveContent').click(function()&#123;                var html = ue.getContent();                var param = &#123;                    title: '测试',                    content: html                &#125;;                $.ajax(&#123;                    url: '/volunteer/index.php/Admin/Test/cultureAdd',                    type: 'POST',                    dataType: 'json',                    data: param,                    success: function(data)&#123;                        console.log(data);                    &#125;,                    error: function(xhr)&#123;                        console.log(xhr);                    &#125;                &#125;);                            &#125;);        &#125;);    &lt;/script&gt;&lt;/body&gt;&lt;/html&gt;
+显示效果如下：点击“获取内容”：我们可以看到，上传的图片路径为/volunteer/Public/libs/ueditor/php/upload/image/*，这个路径是我们在准备工作的第四步中配置的。查看一下该路径，果然可以找到上传的图片。点击“保存”：
+&lt;!--ueditorshow.html--&gt;&lt;!DOCTYPE html&gt;&lt;html lang="zh"&gt;&lt;head&gt;    &lt;meta charset="UTF-8"&gt;    &lt;title&gt;文章展示&lt;/title&gt;&lt;/head&gt;&lt;body&gt;    &lt;volist name="cultureArr" id="item"&gt;        &lt;div class="article"&gt;            &lt;h2&gt;&#123;$item.title&#125;&lt;/h2&gt;            &#123;$item.content&#125;        &lt;/div&gt;        &lt;hr/&gt;    &lt;/volist&gt;&lt;/body&gt;&lt;/html&gt;
+
+显示效果如下：
+图片上传插件Controller在Application/Admin/Controller/TestController.class.php中，添加函数imgupload。
+public function imgupload()&#123;    $this-&gt;display();&#125;
+
+页面在Application/Admin/View/Test文件夹中，新建文件imgupload.html。
+&lt;!DOCTYPE html&gt;&lt;html lang="zh"&gt;&lt;head&gt;    &lt;meta charset="UTF-8"&gt;    &lt;title&gt;图片上传&lt;/title&gt;&lt;/head&gt;&lt;body&gt;    &lt;tr&gt;        &lt;th&gt;上传图片&lt;/th&gt;        &lt;td&gt;            &lt;input type="text" id="path" /&gt;            &lt;input type="button" id="addPic" value="上传图片"/&gt;        &lt;/td&gt;    &lt;/tr&gt;    &lt;div id="myeditor" style="display: none;"&gt;&lt;/div&gt;&lt;js file="__ROOT__/Public/libs/ueditor/ueditor.config.js"/&gt;&lt;js file="__ROOT__/Public/libs/ueditor/ueditor.all.js"/&gt;&lt;js file="__ROOT__/Public/libs/jquery/jquery.min.js"/&gt;&lt;script&gt;    $(function()&#123;        var editor = UE.getEditor('myeditor');        editor.ready(function () &#123;            //editor.setDisabled();            editor.hide();            editor.addListener('beforeInsertImage', function (t, arg) &#123;                $("#path").val(arg[0].src);                //$("#preview").attr("src", arg[0].src);                console.log(arg);            &#125;);        &#125;);        $('#addPic').click(function()&#123;            var myImage = editor.getDialog("insertimage");            myImage.open();        &#125;);    &#125;);&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;
+
+UEditor优化上传图片弹框延迟问题描述：在最新版Chrome浏览器中，点击上传图片时，等待非常久，大概10秒左右，才弹出选择图片的对话框。
+解决方案：打开ueditor.all.js，找到：
+accept="image/*"
+修改为：
+accept="image/jpg,image/jpeg,image/png,image/gif"
+
+点击选择图片弹框延迟问题描述：和上传图片弹框延迟基本相同，但是，点击的按钮有所差别。
+解决方案：打开dialogs/images/images.js，找到：
+accept: &#123;    title: 'Images',    extensions: acceptExtensions,    mimeTypes: 'image/*'&#125;
+修改为：
+accept: &#123;    title: 'Images',    extensions: acceptExtensions,    mimeTypes: 'image/jpg,image/jpeg,image/png,image/gif'&#125;
+
+后记为什么我会知道修改哪个js文件？两个原因：
+第一，查找资料，资料指明了修改ueditor.all.js（ueditor.all.min.js）和webuploader.js（webuploader.min.js）。
+第二，按照资料给的方法，并没有解决我的问题。仔细研读资料，关键在于accept参数的修改。问题没有解决，极大的可能是accept参数没有修改正确。检查后，确信accept参数已经修改正确。清掉缓存，确保修改后的代码生效。然而，问题依然没有解决。那么，只剩下一种可能，版本问题，accept参数也许移动到其他js中了。
+右键“单击选择图片”按钮，检查，选择Event Listener，便可以定位到相关的js。
+书签UEditor - 首页http://ueditor.baidu.com/website/
+UEditor Docshttp://fex-team.github.io/ueditor/#start-config
+Web Uploaderhttp://fex.baidu.com/webuploader/
+WebUploader UEditor chrome 点击上传文件选择框会延迟几秒才会显示 反应很慢http://www.cnblogs.com/liangjiang/p/5799984.html
+FAQ · fex-team/ueditor Wiki · GitHubhttps://github.com/fex-team/ueditor/wiki/FAQ
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>php</category>
+      </categories>
+      <tags>
+        <tag>php</tag>
+        <tag>thinkphp</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>vsftpd下错误之:500 OOPS</title>
     <url>/dev-vftpd-error-500-oops/</url>
     <content><![CDATA[前言vsftpd下错误之：500 OOPS。vsftpd是在Linux发行版中最推崇的一种FTP服务器程序，vsftpd的特点：小巧轻快、安全易用等。 这里主要讲的是如何解决vsftpd下错误之：500 OOPS　
@@ -15036,65 +15178,6 @@ Ubuntu14.04下载地址2
         <tag>ssh</tag>
         <tag>openstack</tag>
         <tag>virtualbox</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>把UEditor整合进ThinkPHP</title>
-    <url>/dev-ueditor-in-thinkphp/</url>
-    <content><![CDATA[前言
-UEditor是由百度web前端研发部开发所见即所得富文本web编辑器，具有轻量，可定制，注重用户体验等特点，开源基于MIT协议，允许自由使用和修改代码…
-
-
-
-巾帼志愿者项目，需要发布一些带图片的文章，使用UEditor很合适。同时，UEditor还可以当做图片上传插件使用。下面，我们把UEditor整合进ThinkPHP框架中。
-准备1、登录UEditor官网，下载PHP版本（UTF-8版）的代码。2、解压文件，重命名文件夹utf8-php为ueditor。3、拷贝ueditor到项目中的Public/libs文件夹下。4、修改ueditor/php/config.json里的路径。
-编辑器新建表在数据库中新建表volun_culture，content字段的类型选择longtext。
-Controller在Application/Admin/Controller/TestController.class.php中，添加函数ueditor、cultureAdd和ueditorshow。
-public function ueditor()&#123;    $this-&gt;display();&#125;public function cultureAdd($title, $content)&#123;    $data['title'] = $title;    $data['content'] = $content;    $culture = D('culture');    if($culture-&gt;create($data))&#123;        $id = $culture-&gt;add();        if($id)&#123;            $data = array(                'code'=&gt;'0',                'id'=&gt;$id            );            echo json_encode($data);        &#125;    &#125;&#125;public function ueditorshow()&#123;    $culture = D('culture');    $cultureArr = $culture-&gt;select();    $this-&gt;assign('cultureArr',$cultureArr);    $this-&gt;display();&#125;
-
-
-页面在Application/Admin/View/Test文件夹中，新建文件ueditor.html和ueditorshow.html。
-&lt;!--ueditor.html--&gt;&lt;!DOCTYPE html&gt;&lt;html lang="zh"&gt;&lt;head&gt;    &lt;meta charset="UTF-8"&gt;    &lt;title&gt;UEditor&lt;/title&gt;&lt;/head&gt;&lt;body&gt;    &lt;!-- 加载编辑器的容器 --&gt;    &lt;script id="container" name="content" type="text/plain"&gt;        这里写你的初始化内容    &lt;/script&gt;    &lt;button id="getContent"&gt;获取内容&lt;/button&gt;    &lt;button id="saveContent"&gt;保存&lt;/button&gt;    &lt;script src="/volunteer/Public/libs/jquery/jquery.min.js"&gt;&lt;/script&gt;    &lt;!-- 配置文件 --&gt;    &lt;script type="text/javascript" src="/volunteer/Public/libs/ueditor/ueditor.config.js"&gt;&lt;/script&gt;    &lt;!-- 编辑器源码文件 --&gt;    &lt;script type="text/javascript" src="/volunteer/Public/libs/ueditor/ueditor.all.js"&gt;&lt;/script&gt;    &lt;!-- 实例化编辑器 --&gt;    &lt;script type="text/javascript"&gt;        $(function()&#123;            var ue = UE.getEditor('container');            $('#getContent').click(function()&#123;                var html = ue.getContent();                alert(html);            &#125;);            $('#saveContent').click(function()&#123;                var html = ue.getContent();                var param = &#123;                    title: '测试',                    content: html                &#125;;                $.ajax(&#123;                    url: '/volunteer/index.php/Admin/Test/cultureAdd',                    type: 'POST',                    dataType: 'json',                    data: param,                    success: function(data)&#123;                        console.log(data);                    &#125;,                    error: function(xhr)&#123;                        console.log(xhr);                    &#125;                &#125;);                            &#125;);        &#125;);    &lt;/script&gt;&lt;/body&gt;&lt;/html&gt;
-显示效果如下：点击“获取内容”：我们可以看到，上传的图片路径为/volunteer/Public/libs/ueditor/php/upload/image/*，这个路径是我们在准备工作的第四步中配置的。查看一下该路径，果然可以找到上传的图片。点击“保存”：
-&lt;!--ueditorshow.html--&gt;&lt;!DOCTYPE html&gt;&lt;html lang="zh"&gt;&lt;head&gt;    &lt;meta charset="UTF-8"&gt;    &lt;title&gt;文章展示&lt;/title&gt;&lt;/head&gt;&lt;body&gt;    &lt;volist name="cultureArr" id="item"&gt;        &lt;div class="article"&gt;            &lt;h2&gt;&#123;$item.title&#125;&lt;/h2&gt;            &#123;$item.content&#125;        &lt;/div&gt;        &lt;hr/&gt;    &lt;/volist&gt;&lt;/body&gt;&lt;/html&gt;
-
-显示效果如下：
-图片上传插件Controller在Application/Admin/Controller/TestController.class.php中，添加函数imgupload。
-public function imgupload()&#123;    $this-&gt;display();&#125;
-
-页面在Application/Admin/View/Test文件夹中，新建文件imgupload.html。
-&lt;!DOCTYPE html&gt;&lt;html lang="zh"&gt;&lt;head&gt;    &lt;meta charset="UTF-8"&gt;    &lt;title&gt;图片上传&lt;/title&gt;&lt;/head&gt;&lt;body&gt;    &lt;tr&gt;        &lt;th&gt;上传图片&lt;/th&gt;        &lt;td&gt;            &lt;input type="text" id="path" /&gt;            &lt;input type="button" id="addPic" value="上传图片"/&gt;        &lt;/td&gt;    &lt;/tr&gt;    &lt;div id="myeditor" style="display: none;"&gt;&lt;/div&gt;&lt;js file="__ROOT__/Public/libs/ueditor/ueditor.config.js"/&gt;&lt;js file="__ROOT__/Public/libs/ueditor/ueditor.all.js"/&gt;&lt;js file="__ROOT__/Public/libs/jquery/jquery.min.js"/&gt;&lt;script&gt;    $(function()&#123;        var editor = UE.getEditor('myeditor');        editor.ready(function () &#123;            //editor.setDisabled();            editor.hide();            editor.addListener('beforeInsertImage', function (t, arg) &#123;                $("#path").val(arg[0].src);                //$("#preview").attr("src", arg[0].src);                console.log(arg);            &#125;);        &#125;);        $('#addPic').click(function()&#123;            var myImage = editor.getDialog("insertimage");            myImage.open();        &#125;);    &#125;);&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;
-
-UEditor优化上传图片弹框延迟问题描述：在最新版Chrome浏览器中，点击上传图片时，等待非常久，大概10秒左右，才弹出选择图片的对话框。
-解决方案：打开ueditor.all.js，找到：
-accept="image/*"
-修改为：
-accept="image/jpg,image/jpeg,image/png,image/gif"
-
-点击选择图片弹框延迟问题描述：和上传图片弹框延迟基本相同，但是，点击的按钮有所差别。
-解决方案：打开dialogs/images/images.js，找到：
-accept: &#123;    title: 'Images',    extensions: acceptExtensions,    mimeTypes: 'image/*'&#125;
-修改为：
-accept: &#123;    title: 'Images',    extensions: acceptExtensions,    mimeTypes: 'image/jpg,image/jpeg,image/png,image/gif'&#125;
-
-后记为什么我会知道修改哪个js文件？两个原因：
-第一，查找资料，资料指明了修改ueditor.all.js（ueditor.all.min.js）和webuploader.js（webuploader.min.js）。
-第二，按照资料给的方法，并没有解决我的问题。仔细研读资料，关键在于accept参数的修改。问题没有解决，极大的可能是accept参数没有修改正确。检查后，确信accept参数已经修改正确。清掉缓存，确保修改后的代码生效。然而，问题依然没有解决。那么，只剩下一种可能，版本问题，accept参数也许移动到其他js中了。
-右键“单击选择图片”按钮，检查，选择Event Listener，便可以定位到相关的js。
-书签UEditor - 首页http://ueditor.baidu.com/website/
-UEditor Docshttp://fex-team.github.io/ueditor/#start-config
-Web Uploaderhttp://fex.baidu.com/webuploader/
-WebUploader UEditor chrome 点击上传文件选择框会延迟几秒才会显示 反应很慢http://www.cnblogs.com/liangjiang/p/5799984.html
-FAQ · fex-team/ueditor Wiki · GitHubhttps://github.com/fex-team/ueditor/wiki/FAQ
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>php</category>
-      </categories>
-      <tags>
-        <tag>php</tag>
-        <tag>thinkphp</tag>
       </tags>
   </entry>
   <entry>
@@ -16017,102 +16100,22 @@ Redhat Linux下用yum升级系统yum也可以升级Redhat Linux系统，在Redha
       </tags>
   </entry>
   <entry>
-    <title>左神排序算法文字总结</title>
-    <url>/dev-zuo-sort/</url>
-    <content><![CDATA[前言相见恨晚！看了左神的算法视频，才知道自己到底浪费了多少时间。算法，居然能讲的这么有意思，居然能讲的这么通俗易懂！左神，不愧是左“神”！
-《leetcode刷题记录-排序算法总结》一文中，也总结过排序算法，但是和左神的讲解一比，简直就是渣渣。所以，本文按照左神的讲解，再次总结一下排序算法。
+    <title>13-14寒假学习计划</title>
+    <url>/essay-13-14-the-winter-vacation-learning-plan/</url>
+    <content><![CDATA[一、Java1、线程√2、集合√3、泛型√4、反射机制√5、网络编程√6、枚举√7、持久化Hibernate√
+1、jsp serverlet Tomcat√2、java webservice————————————3、javaAPIrestful4、服务器 jboss jetty glassfish5、框架 Struts JPA spring framework6、23种设计模式√
 
-
-排序算法常见的排序算法有9个，分别是冒泡排序、选择排序、插入排序、归并排序、快速排序、堆排序、希尔排序、计数排序和基数排序。它们的时间空间复杂度如下：
-
-
-
-算法
-时间复杂度
-空间复杂度
-稳定性
-
-
-
-冒泡排序
-$O(N^2)$
-$O(1)$
-稳定
-
-
-选择排序
-$O(N^2)$
-$O(1)$
-不稳定
-
-
-插入排序
-$O(N^2)$
-$O(1)$
-稳定
-
-
-归并排序
-$O(N*logN)$
-$O(N)$
-稳定
-
-
-快速排序
-$O(N*logN)$
-$O(logN)到O(N)$
-不稳定
-
-
-堆排序
-$O(N*logN)$
-$O(1)$
-不稳定
-
-
-希尔排序
-$O(N*logN)$
-$O(1)$
-不稳定
-
-
-计数排序
-$O(N)$
-$O(M)$
-稳定
-
-
-基数排序
-$O(N)$
-$O(M)$
-稳定
-
-
-注：M代表桶数量。
-如上图，按照时间复杂度的不同，分为三大类。以下算法描述，实现的都是升序排序，N代表元素个数，a[i]代表i位置的元素。
-笨蛋算法冒泡排序1、依次比较，a[i] &lt; a[i+1] 则交换元素，结果最大元素位于N-1位置2、范围缩小1
-选择排序1、0到N-1选出最小元素放在0位置（交换元素即可）2、1到N-1选出最小元素放在1位置
-插入排序1、1位置和0位置元素比较，小则交换2、2位置和1位置元素比较，小则交换；1位置和0位置元素比较，小则交换
-聪明算法归并排序1、数组分割成长度为1的有序区间2、有序区间两两合并，得到长度为2的有序区间
-快速排序1、数组中随机选择一个数，小于等于这个数的元素放左，大于这个数的元素放右2、左右两边递归
-快速划分过程：（1）左区间初始值为0，划分值放在N-1位置（2）遍历数组，元素大于划分值则跳过，小于等于划分值则交换该元素与左区间加一的元素，到N-1位置则交换划分值与左区间加一的元素。
-堆排序1、已有大根堆（数组表示），把堆顶元素与最后一个元素交换，交换后最后一个元素有序2、调整后，把堆顶元素与倒第二个元素交换，交换后最后两个元素有序
-希尔排序1、设定初始步长，按照步长比较元素大小并交换2、步长减一，比较元素大小并交换
-注：希尔排序是改良版的插入排序
-变态算法计数排序1、建立0-M号桶2、把元素按大小放入对应桶3、依次把0-M号桶中的元素倒出
-基数排序1、准备0-9号桶2、元素按个位数放入对应桶3、依次把0-9号桶中的元素倒出（先进先出），成为序列4、按序列把元素按十位数放入对应桶
-注：计数排序和基数排序都属于桶排序的实现，桶排序是一种排序思想。
-后记好记性不如烂笔头，后续计划对其他算法也进行总结。
-书签牛客算法基础班
-牛客算法进阶班
-直通BAT — 求职算法精品课
+二、前端1、html2、css3、javascript————————1、jquery2、extjs3、angularjs
+三、Android
+四、数据库1、基本操作 mysql oracle db2 sqlite √2、优化3、事务
+五、帮助1、stackoverflow2、谷歌开发者3、插件4、5431156375、oracle官网
+java基础看完。23种设计模式junit或者testng单元测试hudson集成测试subversion版本控制和管理maven依赖管理尽可能对软件研发有一个总体的了解
 ]]></content>
       <categories>
-        <category>专业</category>
-        <category>算法</category>
+        <category>随笔</category>
       </categories>
       <tags>
-        <tag>算法</tag>
+        <tag>随笔</tag>
       </tags>
   </entry>
   <entry>
@@ -18100,25 +18103,6 @@ win8win8是今后的趋势系统，下面这个工具，是小编认为最好用
       </tags>
   </entry>
   <entry>
-    <title>13-14寒假学习计划</title>
-    <url>/essay-13-14-the-winter-vacation-learning-plan/</url>
-    <content><![CDATA[一、Java1、线程√2、集合√3、泛型√4、反射机制√5、网络编程√6、枚举√7、持久化Hibernate√
-1、jsp serverlet Tomcat√2、java webservice————————————3、javaAPIrestful4、服务器 jboss jetty glassfish5、框架 Struts JPA spring framework6、23种设计模式√
-
-二、前端1、html2、css3、javascript————————1、jquery2、extjs3、angularjs
-三、Android
-四、数据库1、基本操作 mysql oracle db2 sqlite √2、优化3、事务
-五、帮助1、stackoverflow2、谷歌开发者3、插件4、5431156375、oracle官网
-java基础看完。23种设计模式junit或者testng单元测试hudson集成测试subversion版本控制和管理maven依赖管理尽可能对软件研发有一个总体的了解
-]]></content>
-      <categories>
-        <category>随笔</category>
-      </categories>
-      <tags>
-        <tag>随笔</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>安装系统之双系统</title>
     <url>/hobby-install-os-double-os/</url>
     <content><![CDATA[前言安装双系统，和安装单一系统类似。有时候会失败，如果实在没办法了，就安装虚拟机吧，也是个不错的选择。
@@ -19662,6 +19646,105 @@ linux系统很多，但是使用的linux内核一样，内核就相当于引擎�
       <tags>
         <tag>思考</tag>
         <tag>读者</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>左神排序算法文字总结</title>
+    <url>/dev-zuo-sort/</url>
+    <content><![CDATA[前言相见恨晚！看了左神的算法视频，才知道自己到底浪费了多少时间。算法，居然能讲的这么有意思，居然能讲的这么通俗易懂！左神，不愧是左“神”！
+《leetcode刷题记录-排序算法总结》一文中，也总结过排序算法，但是和左神的讲解一比，简直就是渣渣。所以，本文按照左神的讲解，再次总结一下排序算法。
+
+
+排序算法常见的排序算法有9个，分别是冒泡排序、选择排序、插入排序、归并排序、快速排序、堆排序、希尔排序、计数排序和基数排序。它们的时间空间复杂度如下：
+
+
+
+算法
+时间复杂度
+空间复杂度
+稳定性
+
+
+
+冒泡排序
+$O(N^2)$
+$O(1)$
+稳定
+
+
+选择排序
+$O(N^2)$
+$O(1)$
+不稳定
+
+
+插入排序
+$O(N^2)$
+$O(1)$
+稳定
+
+
+归并排序
+$O(N*logN)$
+$O(N)$
+稳定
+
+
+快速排序
+$O(N*logN)$
+$O(logN)到O(N)$
+不稳定
+
+
+堆排序
+$O(N*logN)$
+$O(1)$
+不稳定
+
+
+希尔排序
+$O(N*logN)$
+$O(1)$
+不稳定
+
+
+计数排序
+$O(N)$
+$O(M)$
+稳定
+
+
+基数排序
+$O(N)$
+$O(M)$
+稳定
+
+
+注：M代表桶数量。
+如上图，按照时间复杂度的不同，分为三大类。以下算法描述，实现的都是升序排序，N代表元素个数，a[i]代表i位置的元素。
+笨蛋算法冒泡排序1、依次比较，a[i] &lt; a[i+1] 则交换元素，结果最大元素位于N-1位置2、范围缩小1
+选择排序1、0到N-1选出最小元素放在0位置（交换元素即可）2、1到N-1选出最小元素放在1位置
+插入排序1、1位置和0位置元素比较，小则交换2、2位置和1位置元素比较，小则交换；1位置和0位置元素比较，小则交换
+聪明算法归并排序1、数组分割成长度为1的有序区间2、有序区间两两合并，得到长度为2的有序区间
+快速排序1、数组中随机选择一个数，小于等于这个数的元素放左，大于这个数的元素放右2、左右两边递归
+快速划分过程：（1）左区间初始值为0，划分值放在N-1位置（2）遍历数组，元素大于划分值则跳过，小于等于划分值则交换该元素与左区间加一的元素，到N-1位置则交换划分值与左区间加一的元素。
+堆排序1、已有大根堆（数组表示），把堆顶元素与最后一个元素交换，交换后最后一个元素有序2、调整后，把堆顶元素与倒第二个元素交换，交换后最后两个元素有序
+希尔排序1、设定初始步长，按照步长比较元素大小并交换2、步长减一，比较元素大小并交换
+注：希尔排序是改良版的插入排序
+变态算法计数排序1、建立0-M号桶2、把元素按大小放入对应桶3、依次把0-M号桶中的元素倒出
+基数排序1、准备0-9号桶2、元素按个位数放入对应桶3、依次把0-9号桶中的元素倒出（先进先出），成为序列4、按序列把元素按十位数放入对应桶
+注：计数排序和基数排序都属于桶排序的实现，桶排序是一种排序思想。
+后记好记性不如烂笔头，后续计划对其他算法也进行总结。
+书签牛客算法基础班
+牛客算法进阶班
+直通BAT — 求职算法精品课
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>算法</tag>
       </tags>
   </entry>
   <entry>
@@ -22426,110 +22509,6 @@ Django 部署(Nginx)
       </tags>
   </entry>
   <entry>
-    <title>使用Docker安装配置Apache和PHP环境（微擎环境）</title>
-    <url>/dev-docker-apache-php/</url>
-    <content><![CDATA[前言《在CentOS7上配置PHP运行环境》一文中学习了安装配置LNMP环境，《CentOS安装Apache和PHP环境》一文中学习了安装配置Apache和PHP环境。
-本文学习使用Docker安装配置Apache和PHP，与Mysql结合，搭建一个容器化的LAMP环境，部署微擎服务。
-前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。已知docker宿主机IP为192.168.56.130。
-
-
-安装Mysql参考《使用Docker安装配置Mysql》，安装好mysql server和mysql client。
-1、登录mysql servermysql -h 127.0.0.1 -u root -p
-2、创建数据库
-create database `w7` default character set utf8 collate utf8_general_ci;
-
-安装PHP1、登录dockerhub查看需要的PHP - Docker Official Images。
-2、下载php镜像（以7.2-apache为例）docker pull php:7.2-apache
-选择带有apache的版本，省去了安装apache的步骤。
-3、启动php和apache服务
-docker run --name vk-php -d \-p 8080:80 \-v /opt/php/w7:/var/www/html \php:7.2-apache
-
-以上命令：
-
-命名容器为vk-php，后台运行
-映射宿主机8080端口到容器的80端口
-挂载宿主机目录/opt/php/w7到容器目录/var/www/html
-
-更多启动命令参数可以参考How to use this image。
-4、创建测试文件vim /opt/php/w7/index.php，内容为：
-&lt;?php    echo 'hello php7.2';?&gt;
-
-5、验证安装curl localhost:8080，可以看到hello php7.2。浏览器访问 http://192.168.56.130:8080 ，可以看到hello php7.2。
-以上，apache和php环境安装配置完成。
-安装微擎初始尝试主要参考《微擎系统搭建》和微擎linux服务器安装。1、下载微擎安装引导文件
-cd /opt/php/w7wget https://cdn.w7.cc/download/WeEngine-Laster-Online.zipunzip WeEngine-Laster-Online.zip
-
-2、浏览器访问安装页面http://192.168.56.130:8080/install.php填入用户名密码后，点击验证后安装微擎。没有通过验证，如下图：由报错看，主要是目录权限问题和缺少扩展问题。
-重做镜像1、修改sources.list在容器中查看/etc/apt/sources.list，发现镜像版本是debian buster，因此新建一个sources.list为：
-deb http://mirrors.aliyun.com/debian/ buster main non-free contribdeb-src http://mirrors.aliyun.com/debian/ buster main non-free contribdeb http://mirrors.aliyun.com/debian-security buster/updates maindeb-src http://mirrors.aliyun.com/debian-security buster/updates maindeb http://mirrors.aliyun.com/debian/ buster-updates main non-free contribdeb-src http://mirrors.aliyun.com/debian/ buster-updates main non-free contribdeb http://mirrors.aliyun.com/debian/ buster-backports main non-free contribdeb-src http://mirrors.aliyun.com/debian/ buster-backports main non-free contrib
-
-2、编写Dockerfile
-FROM php:7.2-apacheCOPY sources.list /etc/apt/sources.listRUN apt-get update &amp;&amp; apt-get install -y libpng-dev libzip-dev \    &amp;&amp; docker-php-ext-install zip gd pdo pdo_mysqlRUN chmod 777 /var/www/html
-
-3、生成新镜像docker build -t voidking/w7:v1.0 .
-再次尝试1、删除原有容器
-docker stop vk-phpdocker rm vk-php
-
-2、启动新的容器
-docker run --name vk-php -d \-p 8080:80 \-v /opt/php/w7:/var/www/html \voidking/w7:v1.0
-
-3、再次安装，再次验证可以看到，这次还剩一个问题：外网不可访问。这就奇怪了，在容器内明明是可以正常访问外网的，为啥报这个错？既然没错，那就忽略它好了。但是这个错存在，就无法进行下一步，因此这里我们换一种安装方式：源码安装。
-源码安装1、下载源码
-cd /opt/php/w7rm -rf ./*cd ..git clone https://gitee.com/we7coreteam/pros.git w7
-
-2、再次安装，再次验证nice，完美跳过了外网不可访问这个坑。然后，data目录权限报错。修改data目录权限，chmod 777 /opt/php/w7/data/，问题解决。
-3、填入数据库连接信息，以及管理员用户名密码
-4、然后，安装完成。
-5、测试访问浏览器访问首页 http://192.168.56.130:8080/index.php ，即会跳转到微擎登录页。
-以上，微擎系统安装配置完成，可以愉快地使用了。
-百度云解析备案失败百度智能云年终盛典，全场云服务器一折起，于是151块钱入手了一台1C2G2M的百度云BCC主机。但是，没有想到的是，网站需要新增接入备案，否则无法使用域名！！！这个不怪百度，如果使用百度云备案成功，以后想要接入阿里云或者腾讯云，也需要新增接入备案。
-不过百度云比较坑的有两点：第一点是备案期间域名不能解析，而阿里云备案期间可以正常解析。第二点是无法通过百度云的备案审核，提交备案后百度云给出了六条不符合审核条件的理由，而同样的审核材料，一个月前在阿里云通过了备案审核。
-真的是没有对比就没有伤害，第一个念头是退货，然而退货失败。不能退货，那该怎样使用这台服务器呢？那该怎样在这台服务器上部署服务，然后通过域名访问呢？
-在github找到了一些项目，awesome-selfhosted，想要部署一些不需要域名的服务，好歹给利用起来了。但是，依然不甘心，想要给这些服务加上域名！然后，真的找到了办法！前提是你还有一台可以进行域名接入的主机，无论是备案过的阿里云主机，还是不需要备案的海外主机，都可以。
-解析方案已知两台主机：可以域名接入的主机（主机A），百度云主机（主机B）。我们在主机B上部署好了微擎服务，想要给这个服务添加一个域名：w7.voidking.com 
-1、安装frp参考《使用frp进行内网穿透》，在主机A上安装配置好frp server，在主机B上安装配置好frp client。主机B上的8080端口，映射为主机A上的3480端口。
-2、nginx配置在主机A上，添加nginx解析 w7.voidking.com.conf ，内容为：
-server &#123;    server_name w7.voidking.com;    listen 80;    location / &#123;        proxy_pass http://127.0.0.1:3480/;        proxy_set_header X-Real-IP $remote_addr;    &#125;&#125;
-
-注意，不用多加其他参数，不然会出现502等错误。
-3、域名解析在dnspod上添加A记录解析到主机A。
-以上，可以通过域名访问百度云上的微擎服务了。
-微擎后续问题站点URL问题确实可以通过域名访问微擎服务了，但是站点的很多请求地址为 127.0.0.1:3480 ，因为微擎服务使用proxy_pass里的URL作为了站点URL。我们想让微擎服务把域名作为站点URL，解决办法很简单，添加：
-proxy_set_header Host $http_host;
-但是，添加完这个参数，就会出现502错误，尴尬了吧。。。nginx层没法进行修复，看来这个问题只能通过修改微擎源码来修复了。编辑/opt/php/w7/framework/bootstrap.inc.php，如下修改：
-# line 90, change// $_W['siteroot'] = htmlspecialchars($_W['sitescheme'] . (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '') . $sitepath);$_W['siteroot'] = 'w7.voidking.com';
-
-然后，请求地址就全部变成 w7.voidking.com ，nice。
-跨域问题但是，一些请求报错：
-Access to XMLHttpRequest at 'javascript:;' from origin 'http://w7.voidking.com' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, chrome-extension, https.
-
-明明都是同一个url，居然还是跨域错误，没有找到解决办法。
-重装微擎既然自己安装微擎问题这么多，那就使用官网给的docker镜像好了，参考docker安装微擎。
-1、删除原有环境
-docker stop vk-phpdocker rm vk-php
-
-2、启动新的容器
-docker run -it --name vk-php -d \-p 8080:80 \-v /opt/w7/mysql:/var/lib/mysql \-v /opt/w7/html:/var/www/html \-e MYSQL\_ROOT\_PASSWORD=123456 -d \--restart=always \ccr.ccs.tencentyun.com/weiqing/nginxphpmysql:1.0
-
-3、重新安装微擎http://ip:8080/install.php
-4、设置用户名密码
-5、同样修改微擎源码，修改站点URL。
-然后，同样有跨域问题，但是站点已经可以正常使用了，就先这么滴吧。
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>开发</category>
-        <category>docker</category>
-        <category>php</category>
-      </categories>
-      <tags>
-        <tag>docker</tag>
-        <tag>apache</tag>
-        <tag>php</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Docker部署JavaWeb项目</title>
     <url>/dev-docker-deploy-javaweb/</url>
     <content><![CDATA[部署要求宿主机为CentOS7，上面安装了docker、nginx和mysql。
@@ -22960,6 +22939,110 @@ $1
       </categories>
       <tags>
         <tag>markdown</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用Docker安装配置Apache和PHP环境（微擎环境）</title>
+    <url>/dev-docker-apache-php/</url>
+    <content><![CDATA[前言《在CentOS7上配置PHP运行环境》一文中学习了安装配置LNMP环境，《CentOS安装Apache和PHP环境》一文中学习了安装配置Apache和PHP环境。
+本文学习使用Docker安装配置Apache和PHP，与Mysql结合，搭建一个容器化的LAMP环境，部署微擎服务。
+前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。已知docker宿主机IP为192.168.56.130。
+
+
+安装Mysql参考《使用Docker安装配置Mysql》，安装好mysql server和mysql client。
+1、登录mysql servermysql -h 127.0.0.1 -u root -p
+2、创建数据库
+create database `w7` default character set utf8 collate utf8_general_ci;
+
+安装PHP1、登录dockerhub查看需要的PHP - Docker Official Images。
+2、下载php镜像（以7.2-apache为例）docker pull php:7.2-apache
+选择带有apache的版本，省去了安装apache的步骤。
+3、启动php和apache服务
+docker run --name vk-php -d \-p 8080:80 \-v /opt/php/w7:/var/www/html \php:7.2-apache
+
+以上命令：
+
+命名容器为vk-php，后台运行
+映射宿主机8080端口到容器的80端口
+挂载宿主机目录/opt/php/w7到容器目录/var/www/html
+
+更多启动命令参数可以参考How to use this image。
+4、创建测试文件vim /opt/php/w7/index.php，内容为：
+&lt;?php    echo 'hello php7.2';?&gt;
+
+5、验证安装curl localhost:8080，可以看到hello php7.2。浏览器访问 http://192.168.56.130:8080 ，可以看到hello php7.2。
+以上，apache和php环境安装配置完成。
+安装微擎初始尝试主要参考《微擎系统搭建》和微擎linux服务器安装。1、下载微擎安装引导文件
+cd /opt/php/w7wget https://cdn.w7.cc/download/WeEngine-Laster-Online.zipunzip WeEngine-Laster-Online.zip
+
+2、浏览器访问安装页面http://192.168.56.130:8080/install.php填入用户名密码后，点击验证后安装微擎。没有通过验证，如下图：由报错看，主要是目录权限问题和缺少扩展问题。
+重做镜像1、修改sources.list在容器中查看/etc/apt/sources.list，发现镜像版本是debian buster，因此新建一个sources.list为：
+deb http://mirrors.aliyun.com/debian/ buster main non-free contribdeb-src http://mirrors.aliyun.com/debian/ buster main non-free contribdeb http://mirrors.aliyun.com/debian-security buster/updates maindeb-src http://mirrors.aliyun.com/debian-security buster/updates maindeb http://mirrors.aliyun.com/debian/ buster-updates main non-free contribdeb-src http://mirrors.aliyun.com/debian/ buster-updates main non-free contribdeb http://mirrors.aliyun.com/debian/ buster-backports main non-free contribdeb-src http://mirrors.aliyun.com/debian/ buster-backports main non-free contrib
+
+2、编写Dockerfile
+FROM php:7.2-apacheCOPY sources.list /etc/apt/sources.listRUN apt-get update &amp;&amp; apt-get install -y libpng-dev libzip-dev \    &amp;&amp; docker-php-ext-install zip gd pdo pdo_mysqlRUN chmod 777 /var/www/html
+
+3、生成新镜像docker build -t voidking/w7:v1.0 .
+再次尝试1、删除原有容器
+docker stop vk-phpdocker rm vk-php
+
+2、启动新的容器
+docker run --name vk-php -d \-p 8080:80 \-v /opt/php/w7:/var/www/html \voidking/w7:v1.0
+
+3、再次安装，再次验证可以看到，这次还剩一个问题：外网不可访问。这就奇怪了，在容器内明明是可以正常访问外网的，为啥报这个错？既然没错，那就忽略它好了。但是这个错存在，就无法进行下一步，因此这里我们换一种安装方式：源码安装。
+源码安装1、下载源码
+cd /opt/php/w7rm -rf ./*cd ..git clone https://gitee.com/we7coreteam/pros.git w7
+
+2、再次安装，再次验证nice，完美跳过了外网不可访问这个坑。然后，data目录权限报错。修改data目录权限，chmod 777 /opt/php/w7/data/，问题解决。
+3、填入数据库连接信息，以及管理员用户名密码
+4、然后，安装完成。
+5、测试访问浏览器访问首页 http://192.168.56.130:8080/index.php ，即会跳转到微擎登录页。
+以上，微擎系统安装配置完成，可以愉快地使用了。
+百度云解析备案失败百度智能云年终盛典，全场云服务器一折起，于是151块钱入手了一台1C2G2M的百度云BCC主机。但是，没有想到的是，网站需要新增接入备案，否则无法使用域名！！！这个不怪百度，如果使用百度云备案成功，以后想要接入阿里云或者腾讯云，也需要新增接入备案。
+不过百度云比较坑的有两点：第一点是备案期间域名不能解析，而阿里云备案期间可以正常解析。第二点是无法通过百度云的备案审核，提交备案后百度云给出了六条不符合审核条件的理由，而同样的审核材料，一个月前在阿里云通过了备案审核。
+真的是没有对比就没有伤害，第一个念头是退货，然而退货失败。不能退货，那该怎样使用这台服务器呢？那该怎样在这台服务器上部署服务，然后通过域名访问呢？
+在github找到了一些项目，awesome-selfhosted，想要部署一些不需要域名的服务，好歹给利用起来了。但是，依然不甘心，想要给这些服务加上域名！然后，真的找到了办法！前提是你还有一台可以进行域名接入的主机，无论是备案过的阿里云主机，还是不需要备案的海外主机，都可以。
+解析方案已知两台主机：可以域名接入的主机（主机A），百度云主机（主机B）。我们在主机B上部署好了微擎服务，想要给这个服务添加一个域名：w7.voidking.com 
+1、安装frp参考《使用frp进行内网穿透》，在主机A上安装配置好frp server，在主机B上安装配置好frp client。主机B上的8080端口，映射为主机A上的3480端口。
+2、nginx配置在主机A上，添加nginx解析 w7.voidking.com.conf ，内容为：
+server &#123;    server_name w7.voidking.com;    listen 80;    location / &#123;        proxy_pass http://127.0.0.1:3480/;        proxy_set_header X-Real-IP $remote_addr;    &#125;&#125;
+
+注意，不用多加其他参数，不然会出现502等错误。
+3、域名解析在dnspod上添加A记录解析到主机A。
+以上，可以通过域名访问百度云上的微擎服务了。
+微擎后续问题站点URL问题确实可以通过域名访问微擎服务了，但是站点的很多请求地址为 127.0.0.1:3480 ，因为微擎服务使用proxy_pass里的URL作为了站点URL。我们想让微擎服务把域名作为站点URL，解决办法很简单，添加：
+proxy_set_header Host $http_host;
+但是，添加完这个参数，就会出现502错误，尴尬了吧。。。nginx层没法进行修复，看来这个问题只能通过修改微擎源码来修复了。编辑/opt/php/w7/framework/bootstrap.inc.php，如下修改：
+# line 90, change// $_W['siteroot'] = htmlspecialchars($_W['sitescheme'] . (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '') . $sitepath);$_W['siteroot'] = 'w7.voidking.com';
+
+然后，请求地址就全部变成 w7.voidking.com ，nice。
+跨域问题但是，一些请求报错：
+Access to XMLHttpRequest at 'javascript:;' from origin 'http://w7.voidking.com' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, chrome-extension, https.
+
+明明都是同一个url，居然还是跨域错误，没有找到解决办法。
+重装微擎既然自己安装微擎问题这么多，那就使用官网给的docker镜像好了，参考docker安装微擎。
+1、删除原有环境
+docker stop vk-phpdocker rm vk-php
+
+2、启动新的容器
+docker run -it --name vk-php -d \-p 8080:80 \-v /opt/w7/mysql:/var/lib/mysql \-v /opt/w7/html:/var/www/html \-e MYSQL\_ROOT\_PASSWORD=123456 -d \--restart=always \ccr.ccs.tencentyun.com/weiqing/nginxphpmysql:1.0
+
+3、重新安装微擎http://ip:8080/install.php
+4、设置用户名密码
+5、同样修改微擎源码，修改站点URL。
+然后，同样有跨域问题，但是站点已经可以正常使用了，就先这么滴吧。
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>开发</category>
+        <category>docker</category>
+        <category>php</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>apache</tag>
+        <tag>php</tag>
       </tags>
   </entry>
   <entry>
@@ -26575,6 +26658,306 @@ ubuntu配置静态路由及重启生效
       </tags>
   </entry>
   <entry>
+    <title>Markdown编辑器</title>
+    <url>/dev-markdown-editor/</url>
+    <content><![CDATA[前言假设现在要写一篇markdown格式文章，使用什么编辑器比较好？答：sublime或者typora。
+假设现在要把一篇markdown格式文章导出成pdf文档，使用什么编辑器比较好？答：typora。
+假设现在要把一篇markdown格式文章发布成微信公众号文章，使用什么编辑器比较好？答：wechat-format。
+本文主要介绍三款 markdown 编辑器，分别是 sublime、typora和wechat-format。此外，还会介绍几个在线markdown编辑器，测试和预览都很方便。
+
+
+sublime.md 结尾的文件，在使用 sublime 进行编辑时会自动语法高亮。之所以推荐sublime，是因为这个编辑器是个万能的编辑器，而且非常轻量。使用了六年了，依然情有独钟。
+typora简介typora是近两年崛起的markdown编辑器神器。传统的markdown编辑器，左边是编辑器，右边是预览。typora另辟蹊径，没有左右分开，而是把编辑和预览结合在一起，随时切换（command+/），更可以在预览时进行编辑。
+自定义主题typora提供各种主题，更是支持用户自定义主题，简单好用。下面我们按照自己的需求来定制主题，熟悉一下自定义主题的流程。
+已知需求为：
+
+github主题自己很喜欢，但是标题字号太大，想要改小一点。
+标题在显示的时候自动编号。
+
+1、Typora，偏好设置，外观，打开主题文件夹
+2、备份github.css为github.css.bak
+3、编辑github.css，修改字号
+h1 &#123;    font-size: 1.5em;    line-height: 1.2;    border-bottom: 1px solid #eee;&#125;h2 &#123;    font-size: 1.25em;    line-height: 1.225;    border-bottom: 1px solid #eee;&#125;h3 &#123;    font-size: 1.15em;    line-height: 1.43;&#125;h4 &#123;    font-size: 1.05em;&#125;h5 &#123;    font-size: 1em;&#125;h6 &#123;   font-size: 1em;    color: #777;&#125;
+
+4、编辑github.css，给标题前添加自动编号
+/* 标题自动编号 */body &#123; counter-reset: h1counter; &#125;h1 &#123; counter-reset: h2counter; &#125;h2 &#123; counter-reset: h3counter; &#125;h3 &#123; counter-reset: h4counter; &#125;h4 &#123; counter-reset: h5counter; &#125;h5 &#123; counter-reset: h6counter; &#125;h6 &#123; &#125;h1:before &#123;  counter-increment: h1counter;  content: counter(h1counter) ".\0000a0\0000a0";&#125;h2:before &#123;  counter-increment: h2counter;  content: counter(h1counter) "."            counter(h2counter) ".\0000a0\0000a0";&#125;h3:before &#123;  counter-increment: h3counter;  content: counter(h1counter) "."            counter(h2counter) "."            counter(h3counter) ".\0000a0\0000a0";&#125;h4:before &#123;  counter-increment: h4counter;  content: counter(h1counter) "."            counter(h2counter) "."            counter(h3counter) "."            counter(h4counter) ".\0000a0\0000a0";&#125;h5:before &#123;  counter-increment: h5counter;  content: counter(h1counter) "."            counter(h2counter) "."            counter(h3counter) "."            counter(h4counter) "."            counter(h5counter) ".\0000a0\0000a0";&#125;h6:before &#123;  counter-increment: h6counter;  content: counter(h1counter) "."            counter(h2counter) "."            counter(h3counter) "."            counter(h4counter) "."            counter(h5counter) "."            counter(h6counter) ".\0000a0\0000a0";&#125;
+
+5、重启typora可见标题字号变小了，同时添加了编号。但是，如果直接复制粘贴内容到微信公众号，这些标题编号不会被复制。而且，换行效果也没有了。因此，从typora直接复制粘贴到微信公众号，不是一个好的方案。
+导出pdf文件，导出，PDF。如上，typora导出的pdf文档，简直完美。
+wechat-format简介wechat-format最大的优点是：适应微信公众号。比如，微信不支持外链，wechat-format生成的预览会包含 reference。但是，标题居中效果不是我想要的，标题也没有自动编号，所以也需要自定义一下。
+自定义主题下载wechat-format源码，主要修改：
+
+src/assets/scripts/themes/default.js
+src/assets/scripts/renderers/wx-renderer.js
+src/assets/css/app.css
+
+修改后的代码参考 wechat-format，最终效果如下
+失败的尝试但是，修改完成之后，复制粘贴到微信公众号，这些标题编号依然不会被复制。那么，怎样才能复制到这些编号？答：使这些编号变成元素，而不是样式。所以，需要使用js给页面添加编号元素。代码如下：
+// https://www.cnblogs.com/qiudeqing/p/3229583.htmlfunction number()&#123;    var headings;    if (document.querySelectorAll)        headings = document.querySelectorAll("h1,h2,h3,h4,h5,h6");    else        headings = findHeadings(document.body, []);    function findHeadings(root, sects) &#123;        for(var c = root.firstChild; c != null; c = c.nextSibling) &#123;            if (c.nodeType !== 1) continue;            if (c.tagName.length == 2 &amp;&amp; c.tagName.charAt(0) == "H")                sects.push(c);            else                findHeadings(c, sects);        &#125;        return sects;    &#125;    var sectionNumbers = [0,0,0,0,0,0];    for(var h = 0; h &lt; headings.length; h++) &#123;        var heading = headings[h];        var level = parseInt(heading.tagName.charAt(1));        if (isNaN(level) || level &lt; 1 || level &gt; 6) continue;        sectionNumbers[level-1]++;        for(var i = level; i &lt; 6; i++) sectionNumbers[i] = 0;        var sectionNumber = sectionNumbers.slice(0,level).join(".") + ". ";        var span = document.createElement("span");        span.className = "TOCSectNum";        span.innerHTML = sectionNumber;        heading.insertBefore(span, heading.firstChild);    &#125;&#125;
+
+但是，想要把这个代码应用到wechat-format，是有难度的，假期搞了一天，最终效果不理想，暂时放弃。思路：修改 src/assets/scripts/editor.js ，把number函数改写到这个文件里。中间会用到dom转str和str转dom，代码附上。
+// https://developer.mozilla.org/zh-CN/docs/Web/API/DOMParser// https://developer.mozilla.org/zh-CN/docs/XMLSerializerfunction trans(str)&#123;      var parser = new DOMParser();    var doc=parser.parseFromString(str, "text/xml");    doc = number(doc);    var s = new XMLSerializer();    return s.serializeToString(doc);&#125;
+
+在线markdown编辑器mdniceMarkdown Nice是一个支持自定义样式的 Markdown 编辑器，支持导出成微信公众号文章和知乎文章。
+值得一提的是，mdnice导出的微信公众号文章，排版非常nice，比 wechat-format 还要美观。尝试了自定义样式，添加了标题编号，同样无法复制到微信公众号。
+openwriteOpenWrite是一个博客群发平台，支持一键发文到微信公众号、知乎、头条、博客园、CSDN等平台。其中一项功能是Markdown格式文章导出微信公众号预览。
+Cmd MarkdownCmd Markdown是一个用了很多年的在线markdown编辑器，稳定靠谱，支持高亮代码块、LaTeX 公式、流程图。
+马克飞象马克飞象是一款专为印象笔记（Evernote）打造的Markdown编辑器，支持高亮代码块、LaTeX 公式、流程图，本地图片以及附件上传。马克飞象同时提供桌面客户端以及离线Chrome App，支持移动端 Web。
+StackEditStackEdit支持google登录，发布文章到web（github、gitlab、wordpress等），支持高亮代码块、LaTeX 公式、流程图。
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>工具</category>
+        <category>编辑器</category>
+      </categories>
+      <tags>
+        <tag>markdown</tag>
+        <tag>编辑器</tag>
+        <tag>sublime</tag>
+        <tag>typora</tag>
+        <tag>wechat-format</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>matlab入门</title>
+    <url>/dev-matlab-start/</url>
+    <content><![CDATA[前言
+MATLAB是美国MathWorks公司出品的商业数学软件，用于算法开发、数据可视化、数据分析以及数值计算的高级技术计算语言和交互式环境，主要包括MATLAB和Simulink两大部分。
+
+读研以来，耳边不时听到“matlab”，被老师和同学普遍推崇。今天，小编就来学习一下matlab的基础操作。
+
+
+基础设置显示类型计算圆面积时，面积的结果显示，默认是short类型（保留小数点后4位），我们可以通过设置为long类型，来显示更精确的结果。1）通过命令设置format long，这种设置方式临时性的。
+2）通过界面设置File，Preferences，Command Window，Numeric format选择long，之后Apply即可。
+清屏清屏命令：clc
+清数据清数据命令：clear
+修改变量在workspace中，双击变量，可以在图形化界面修改变量值。
+绘图在workspace中，单击变量，然后点击plot。
+查看变量信息who，whos，whos a
+重新执行命令在command history中，找到一条命令，右键选择evaluate selection。
+保存变量save a，保存变量到当前工作路径，文件名为a.mat。
+加载数据文件load a或者load a.mat。
+编辑器窗口edit，打开编辑窗口，新建matlab程序。
+图像窗口figure
+GUI窗口guide
+添加搜索路径File，Set Path，Add Folder。
+设置初始路径右键matlab快捷方式，在快捷方式选项卡中，修改起始位置。
+查找函数路径which sin
+设置默认编码中文时，Matlab默认编码格式为GB2312。使用sublime打开文件，显示乱码，小编想把Mablab默认编码修改为UTF-8。
+1、在Matlab安装目录下的bin目录下（例如D:\Program Files\MATLAB\R2010b\bin），找到lcdata.xml文件。
+2、在matlab中，输入命令feature(&#39;locale&#39;)，查看当前使用的编码。
+3、编辑lcdata.xml，找到如下一段：
+&lt;locale name="zh_CN" encoding="GB2312" xpg_name="zh_CN.GB2312"&gt;    &lt;alias name="zh-Hans"/&gt;&lt;/locale&gt;
+
+修改为：
+&lt;locale name="zh_CN" encoding="UTF-8" xpg_name="zh_CN.UTF-8"&gt;    &lt;alias name="zh-Hans"/&gt;&lt;/locale&gt;
+
+然而，修改后重启，matlab依然使用GBK编码。而且，把.m文件转换成UTF-8格式后，Matlab中会出现乱码。
+无奈，从另一个方面入手，让sublime支持GBK编码文件，安装插件ConvertToUTF8即可。
+Matlab语言基础变量和常量matlab遵循弱类型语言的变量初始化和赋值语法，和python基本相同。
+输入数据x = input(&#39;请输入数据&#39;)，输入数据后，数据存入x。
+默认赋值如果输入数值，没有赋值给变量，那么默认赋值给内置的ans变量。
+基本数据结构输入行矩阵a = [1 2 3]或a = [1,2,3]
+输入列矩阵b = [1 2 3]&#39;或b = [1,2,3]&#39;或b = [1;2;3]
+输入2*2矩阵c = [1 2; 3 4]
+输入特定值矩阵d(2,3) = 8，生成2*3的矩阵，第二行第三列的元素为8，其他元素为0。
+内置函数生成矩阵ones(4)，生成4*4的矩阵，所有元素为1。
+ones(4,3)，生成4*3的矩阵，所有元素为1。
+zeros(4)，生成4*4的矩阵，所有元素为0。
+zeros(4,3)，生成4*3的矩阵，所有元素为0。
+eye(4)，生成4*4的单位矩阵。
+eye(4,3)，生成4*3的矩阵，前三行前三列组成单位矩阵，第四行为0。
+magic(4)，生成4*4的魔方数组。
+冒号表达式生成矩阵3:9，生成3到9的行向量，增量为1。
+3:2:9，生成3到9的行向量，增量为2。
+(3:9)&#39;，生成3到9的列向量，增量为1。
+读取矩阵数据a = [1 2 3]，a(2)，读取第二个数据。
+c = [1 2; 3 4]，c(1,2)，读取第一行第二列的数据。
+c(:,2)，读取二列的数据。
+c(1,:)，读取第一行的数据。
+k = [1 2 3;4 5 6;7 8 9;10 11 12]，k(2:4,2)，读取第二列中第二行到第四行的数据。
+拼接矩阵m = [c,c]，横向拼接两个c矩阵。
+n = [c:c]，纵向拼接两个c矩阵。
+矩阵函数size(n)，返回行列数。
+length(n)，返回行数和列数中的较大者。
+空数组和子数组空数组nullmatrix = []，创建空数组。
+子数组magicmatrix = magic(4)，child = magicmatrix(3,[2,4])
+child = magicmatrix(3,2:end)
+magicmatrix(3,2) = 3，单个元素赋值。
+等差数列linspace(1,99,50)，生成1到99的50个数，等差为2。
+等比数列logspace(1,3,3)，生成10 100 1000三个数。
+数组变形1:1:9，reshape(ans,3,3)，按列排列变形成为方数组。
+时间变量data，clock，year(now)，month(now)，day(now)，day(today)
+算术运算符标量运算正常加减乘除，和python基本相同。需要注意的是5/6代表5除以6，5\6代表6除以5。
+5^2和power(5,2)都是代表5的平方。
+矩阵运算A=[1 2 3; 4 5 6; 7 8 9]，B=magic(3)
+A+B，A-B，A*B，A+3，A*3
+inv(B)，求B矩阵的逆矩阵。
+A/B和A*inv(B)相同。
+A.*B，对应位置相乘。
+运算函数matlab的运算函数包括幂次方、指数与对数函数、三角与反三角函数等等。
+幂次方幂次方的符号就是常用的^记号。指数部分可以是任意数。2^2，2^(-1)，2^(1/2)，2^(1.25) 
+指数与对数科学与工程领域惯用「标准指数函数」，也就是以e为底的指数函数。其中，e是一个无理数，大约等于2.71828。Matlab并不提供e这个常数，而是以函数exp()来计算以e为底的指数函数。exp(1)
+Matlab 分别提供三个函数 log()、log10()和log2()，分别表示以e为底的对数（自然对数），以10为底的对数（常用对数），以2为底的对数。log(exp(2))，log10(100)，log2(4)，答案都是2。
+三角与反三角函数六个三角函数在Matlab 中对应的函数分别为：正弦：sin()余弦：cos()正切：tan()余切：cot()正割：sec()余割：csc()
+六个反三角函数在Matlab 中对应的函数分别为：反正弦：asin()反余弦：acos()反正切：atan()反余切：acot()反正割：asec()反余割：acsc()
+需要注意的就是使用三角函数时，角度的单位是“弧度”。
+复数Matlab 的所有运算符号、所有函数，都懂得如何做复数计算。sqrt(-1)
+abs(3+4i)
+微积分极限求极限是微积分的基础，求极限的函数limit。limit(f,x,a)，x趋近于a时，f 的极限。limit(f,x,a,&#39;left&#39;)，x左趋近于a时，f 的极限。limit(f,x,a,&#39;right&#39;)，x右趋近于a时，f的极限。
+微分diff(f,t,n)，求f 对独立变量t的n次微分值。
+积分int(f,&#39;t&#39;,a,b)，求f 对独立变量t 在积分区间[a，b]的积分值。
+级数自变量v在[a，b]之间取值时，对通项s求和，用函数symsum(s,v,a,b)。
+方程求解代数方程solve(f)
+solve(f,a)
+常微分方程dsolve(&#39;常微分方程式&#39;,&#39;初始条件&#39;,&#39;自变量&#39;)
+可视化二维平面图形折线图plot(x,y)函数，x，y是维度相同的序列或向量。
+x=[0 1 2];y=[0 1 0];plot(x,y);
+
+用300段折线画出sin(x)在[-pi,pi]区间内的折线图。
+x = linspace(-pi, pi, 301);plot(x, sin(x));
+
+如果要画多条曲线，也可以用plot函数。
+x=0:pi/10:2*pi;y1=sin(x);y2=cos(x);plot(x,y1,x,y2);plot(x,y1,'r + -',x,y2,'k * :');
+图形是以公共的x元素为横坐标值，y1、y2为纵坐标值绘制曲线图的。如果想要图形更加完美，我们可以用一些特殊的图形函数对它进行修饰。
+xlabel('独立变量X');ylabel('变量Y');title('正弦和余弦曲线');text(1.5,0.3,'cos(x)');text(0,0,'sin(x)');%axis([0 2*pi -0.9 0.9]);
+
+如果只给plot()一个参数，例如plot(y)，而y是一个n维向量或列，则它的效果就相当于plot((1:n), y)。
+y = [ 1 4 0 2 3 5];plot(y);
+
+多重折线图Matlab在一张图片上可以重复制图。基本上，画一张图的指令，将会自动清除前一张图。但是，如果下了指令hold on，将不会清除前一张图，而是重复画上去。下了hold on指令的所有图将会重迭在一张图片里，直到你下了hold off为止。
+我们以 300 个折线段，在一张图片中，画出以下三个函数在[-pi, pi]区间内的曲线图：sin(x)，cos(x)，x。
+x = linspace(0, 2*pi, 301);y = sin(x);plot(x, y, 'r');axis([0 2*pi -1.2 1.2]);hold ony = cos(x);plot(x, y, 'g');y = x; plot(x, y, 'b');hold off;
+
+我们还可以采用图形窗口分割的方法，在同一个视图窗口中画出多个小图形。这时要用到subplot(n,m,k)。如果写subplot(2,2,1),即就是把图形窗口分割成2行2列，在第1个位置（第1行第1列）画图。
+x = linspace(0, 2*pi, 301);y = sin(x);subplot(2,2,1);plot(x, y);y = cos(x);subplot(2,2,2);plot(x, y);
+Matlab对数据是按列存储和计算的。
+三维立体图形三维曲线图plot3函数调用格式：plot3(x1,y1,z1,x2,y2,z2,…)。其中x1，y1，z1，x2，y2，z2…等分别为维数相同的向量，分别存储着曲线的三个坐标值。
+绘制方程在t=[0,2π]的空间方程。
+\begin{cases}x=t \y=sin(t) \z=cos(t)\end{cases}
+t=0:pi/10:2*pi;x=t;y=sin(t);z=cos(t);plot3(x,y,z,'r:p');grid on;xlabel('X');ylabel('Y');zlabel('Z');title('sine and cosine');
+
+三维网格图和曲面图Matlab在绘制三维网格图与曲面图时，往往先将要绘制图形的定义区域分成若干网格，然后计算这些网格节点上的二元函数值，最后才能使用mesh和surf函数绘制相应的图形。生成网格矩阵使用meshgrid函数，其调用格式为：
+[U, V]=meshgrid(x,y)
+
+函数说明：利用向量x和y生成网格矩阵U和V，以便mesh和surf等函数用来绘图。其中x、y分别是长度为n和m升序排列的行向量。
+生成的方法是将x复制n次生成网格矩阵U，将y转置成列向量后复制m次生成网格矩阵V。坐标(uij,vij)表示xoy平面上网格节点的坐标，第三维坐标zij=f(uij,vij)。
+例：给定向量x=[1 2 3 4]，y=[10 11 12 13 14]，试由向量x、y生成网格矩阵。
+x=[1 2 3 4]; %输入向量xy=[10 11 12 13 14]; %输入向量y[U,V]=meshgrid(x,y); %生成网格矩阵Z=peaks(U,V);mesh(U,V,Z); %绘制三维网格图
+
+Matlab提供了一个peaks函数，可产生一个凹凸有致的曲面，包含了三个局部极大点及三个局部极小点。在matlab中输入peaks()、peaks(5)就可以看到效果。
+例：在 -4&lt;x&lt;4，-4&lt;y&lt;4 上绘制 $z=x^2+y^2$ 的三维网格图。
+[x,y]=meshgrid(-4:4, -4:4); %定义网格数据向量x,yz=x.^2+y.^2; %计算二元函数值mesh(x,y,z); %绘制三维网格图% surf(x,y,z); %绘制三维曲面图
+
+观察点函数view(azinmuth,elevation)azinmuth：方位角。观察点与坐标原点的连线在水平面上的投影和y轴负方向的夹角。（在水平面上）elevation：仰角。观察点与坐标原点的连线和水平面的夹角。（与水平面垂直）
+使用循环和观察点设定来实现动画效果。
+Matlab程序设计命令文件Matlab提供两种源程序文件格式：命令文件和函数文件。这两种文件的扩展名相同，均为“.m”，又称为“M文件”。命令文件的执行方式：在提示符后键入命令文件的文件名。命令文件适合于用户做需要理解得到结果的小规模运算。
+函数文件函数文件由function语句引导。其格式为：
+function [返回变量列表]=函数名(输入变量列表)
+
+1、新建一个求阶乘的函数文件myFunc.m：
+function value = myFunc(n);if n&lt;=1    value = 1;else    value = myFunc(n-1)*n;end
+
+2、重写求阶乘的函数文件myFunc2.m：
+function value = myFunc2(n);value = 1;while n &gt; 1    value = value*n;    n = n - 1;end
+
+3、重写求阶乘的函数文件myFunc3.m：
+function value = myFunc3(n);value = 1;for i=1:1:n    value = value*i;end%for i=n:-1:1%    value = value*i;%end
+
+4、新建传入数值显示结果的函数文件showNum.m：
+function showNum(input_var);switch input_var    case 1        disp('1');    case &#123;2,3,4&#125;        disp('2 or 3 or 4');    case 5        disp('5');    otherwise        disp('something else');end
+
+源码分享https://github.com/voidking/matlab-start.git
+书签Matlab视频教程http://www.51zxw.net/list.aspx?cid=456
+我的学习资料http://pan.baidu.com/s/1bp1oyXT
+Mathjax与LaTex公式简介http://mlworks.cn/posts/introduction-to-mathjax-and-latex-expression/
+]]></content>
+      <categories>
+        <category>专业</category>
+      </categories>
+      <tags>
+        <tag>matlab</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Maven之pom.xml</title>
+    <url>/dev-maven-pom/</url>
+    <content><![CDATA[pom.xml速览&lt;project&gt;    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;    &lt;groupId&gt;...&lt;/groupId&gt;    &lt;artifactId&gt;...&lt;/artifactId&gt;    &lt;version&gt;...&lt;/version&gt;    &lt;packaging&gt;...&lt;/packaging&gt;    &lt;dependencies&gt;...&lt;/dependencies&gt;    &lt;parent&gt;...&lt;/parent&gt;    &lt;dependencyManagement&gt;...&lt;/dependencyManagement&gt;    &lt;modules&gt;...&lt;/modules&gt;    &lt;properties&gt;...&lt;/properties&gt;      &lt;build&gt;...&lt;/build&gt;    &lt;reporting&gt;...&lt;/reporting&gt;      &lt;name&gt;...&lt;/name&gt;    &lt;description&gt;...&lt;/description&gt;    &lt;url&gt;...&lt;/url&gt;    &lt;inceptionYear&gt;...&lt;/inceptionYear&gt;    &lt;licenses&gt;...&lt;/licenses&gt;    &lt;organization&gt;...&lt;/organization&gt;    &lt;developers&gt;...&lt;/developers&gt;    &lt;contributors&gt;...&lt;/contributors&gt;      &lt;issueManagement&gt;...&lt;/issueManagement&gt;    &lt;ciManagement&gt;...&lt;/ciManagement&gt;    &lt;mailingLists&gt;...&lt;/mailingLists&gt;    &lt;scm&gt;...&lt;/scm&gt;    &lt;prerequisites&gt;...&lt;/prerequisites&gt;    &lt;repositories&gt;...&lt;/repositories&gt;    &lt;pluginRepositories&gt;...&lt;/pluginRepositories&gt;    &lt;distributionManagement&gt;...&lt;/distributionManagement&gt;    &lt;profiles&gt;...&lt;/profiles&gt;  &lt;/project&gt;
+
+POM包括了所有的项目信息：
+
+groupId：项目或者组织的唯一标志，并且配置时生成的路径也是由此生成，如org.codehaus.mojo生成的相对路径为：/org/codehaus/mojo
+artifactId：项目的通用名称
+version：项目的版本
+packaging：打包的机制，如pom, jar, maven-plugin, ejb, war, ear, rar, par
+classifier：分类
+
+
+
+POM关系依赖&lt;dependencies&gt;      &lt;dependency&gt;        &lt;groupId&gt;junit&lt;/groupId&gt;        &lt;artifactId&gt;junit&lt;/artifactId&gt;        &lt;version&gt;4.0&lt;/version&gt;        &lt;type&gt;jar&lt;/type&gt;        &lt;scope&gt;test&lt;/scope&gt;        &lt;optional&gt;true&lt;/optional&gt;      &lt;/dependency&gt;      ...  &lt;/dependencies&gt;
+
+
+groupId, artifactId, version:描述了依赖的项目唯一标志
+type:相应的依赖产品包形式，如jar，war
+scope:用于限制相应的依赖范围，包括以下的几种变量：
+
+
+compile ：默认范围，用于编译provided：类似于编译，但支持你期待jdk或者容器提供，类似于classpathruntime:在执行时，需要使用test:用于test任务时使用system:需要外在提供相应得元素。通过systemPath来取得
+
+
+systemPath: 仅用于范围为system。提供相应的路径
+optional: 标注可选，当项目自身也是依赖时。用于连续依赖时使用
+
+独占性外在告诉maven你只包括指定的项目，不包括相关的依赖。此因素主要用于解决版本冲突问题。
+&lt;dependencies&gt;      &lt;dependency&gt;        &lt;groupId&gt;org.apache.maven&lt;/groupId&gt;        &lt;artifactId&gt;maven-embedder&lt;/artifactId&gt;        &lt;version&gt;2.0&lt;/version&gt;        &lt;exclusions&gt;          &lt;exclusion&gt;            &lt;groupId&gt;org.apache.maven&lt;/groupId&gt;            &lt;artifactId&gt;maven-core&lt;/artifactId&gt;          &lt;/exclusion&gt;        &lt;/exclusions&gt;      &lt;/dependency&gt; &lt;/dependencies&gt;
+表示项目maven-embedder需要项目maven-core，但我们不想引用maven-core。
+聚合为了能够使用一条命令就能构建account-email和account-persist两个模块，我们需要建立一个额外的名为account-aggregator的模块，然后通过该模块构建整个项目的所有模块。account-aggregator本身也是个 Maven项目，它的 POM如下
+&lt;project&gt;	&lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;	&lt;groupId&gt;com.juvenxu.mvnbook.account&lt;/groupId&gt;	&lt;artifactId&gt;account-aggregator&lt;/artifactId&gt;	&lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;	&lt;packaging&gt; pom &lt;/packaging&gt;	&lt;name&gt;Account Aggregator&lt;/name&gt;	 &lt;modules&gt;		&lt;module&gt;account-email&lt;/module&gt;		&lt;module&gt;account-persist&lt;/module&gt;	 &lt;/modules&gt;&lt;/project&gt;
+
+注意：packaging的类型为pom ，module的值是一个以当前POM为主目录的相对路径。
+继承父模块配置&lt;project&gt;	&lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;	&lt;groupId&gt;com.juvenxu.mvnbook.account&lt;/groupId&gt;	&lt;artifactId&gt; account-parent &lt;/artifactId&gt;	&lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;	&lt;packaging&gt;pom&lt;/packaging&gt;	&lt;name&gt;Account Parent&lt;/name&gt;		&lt;dependencyManagement&gt;...&lt;/dependencyManagement&gt;  &lt;/project&gt;
+
+
+
+子模块配置&lt;project&gt;	&lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;		&lt; parent &gt;		&lt;groupId&gt;com.juvenxu.mvnbook.account&lt;/groupId&gt;		&lt;artifactId&gt; account-parent &lt;/artifactId&gt;		&lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;		&lt; relativePath &gt;../account-parent/pom.xml&lt;/ relativePath&gt;	&lt;/ parent &gt;		&lt;artifactId&gt; account-email &lt;/artifactId&gt;	&lt;name&gt;Account Email&lt;/name&gt;  ...&lt;/project&gt;
+
+注意：1、子模块没有声明groupId和version，这两个属性继承至父模块。但如果子模块有不同与父模块的 groupId、version ，也可指定；2、不应该继承artifactId,如果groupId ，version，artifactId 完全继承的话会造成坐标冲突；另外即使使用不同的 groupId或version，同样的 artifactId也容易产生混淆。
+聚合使用继承后，parent也必须像子模块一样加入到聚合模块中。也就是在在聚合模块的 pom中加入&lt;module&gt;account-parent&lt;/module&gt;。聚合的 POM如下：
+&lt;project&gt;	&lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;	&lt;groupId&gt;com.juvenxu.mvnbook.account&lt;/groupId&gt;	&lt;artifactId&gt;account-aggregator&lt;/artifactId&gt;	&lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;	&lt;packaging&gt; pom &lt;/packaging&gt;	&lt;name&gt;Account Aggregator&lt;/name&gt;	&lt;modules&gt;		&lt;module&gt;account-email&lt;/module&gt;		&lt;module&gt;account-persist&lt;/module&gt;		&lt;module&gt; account-parent&lt;/module&gt;	&lt;/modules&gt;&lt;/project&gt;
+
+可继承的元素groupId ：项目组 ID ，项目坐标的核心元素；version ：项目版本，项目坐标的核心元素；description ：项目的描述信息；organization ：项目的组织信息；inceptionYear ：项目的创始年份；url ：项目的 url 地址develoers ：项目的开发者信息；contributors ：项目的贡献者信息；distributionManagerment ：项目的部署信息；issueManagement ：缺陷跟踪系统信息；ciManagement ：项目的持续继承信息；scm ：项目的版本控制信息；mailingListserv ：项目的邮件列表信息；properties ：自定义的 Maven 属性；dependencies ：项目的依赖配置；dependencyManagement ：醒目的依赖管理配置；repositories ：项目的仓库配置；build ：包括项目的源码目录配置、输出目录配置、插件配置、插件管理配置等；reporting ：包括项目的报告输出目录配置、报告插件配置等。
+
+我们知道dependencies是可以被继承的，这个时候我们就想到让我们的发生了共用的依赖元素转移到parent中，这样我们又进一步的优化了配置。可是问题也随之而来，如果有一天我创建了一个新的模块，但是这个模块不需要这些parent的依赖，这时候如何处理？
+是的，maven的依赖管理就是来解决这个问题的：dependencyManagement。从上面的列表中我们发现dependencyManagement也是可以被继承的，这恰恰满足了我们的需要，它既能够让子模块继承到父模块的依赖配置，又能保证子模块依赖使用的灵活性。
+dependencyManagement的特性：在dependencyManagement中配置的元素既不会给parent引入依赖，也不会给它的子模块引入依赖，仅仅是它的配置是可继承的。
+最佳实践：这时候我们就可以在父POM中声明这些依赖：
+&lt;properties&gt;	&lt;target.version&gt;2.5.6&lt;/target.version&gt;&lt;/properties&gt;&lt;dependencyManagement&gt;	&lt;dependencies&gt;		&lt;dependency&gt;			&lt;groupId&gt;your groupId&lt;/groupId&gt;			&lt;artifactId&gt;your artifactId&lt;/artifactId&gt;			&lt;version&gt;$&#123;target.version&#125;&lt;/version&gt;		&lt;/dependency&gt;	&lt;/dependencies&gt;&lt;/dependencyManagement&gt;
+
+子模块的POM继承这些配置：子模块继承这些配置的时候，仍然要声明groupId和artifactId，表示当前配置是继承于父POM的，从而直接使用父POM的版本对应的资源。
+&lt;dependencies&gt;	&lt;dependency&gt;		&lt;groupId&gt;your groupId&lt;/groupId&gt;		&lt;artifactId&gt;your artifactId&lt;/artifactId&gt;	&lt;/dependency&gt;&lt;/dependencies&gt;
+这个可以有效的避免多个子模块使用依赖版本不一致的情况，有助于降低依赖冲突的几率。
+注：只有子模块配置了继承的元素，才会真正的有效，否则maven是不会加载父模块中声明的元素。
+pluginManagement和dependencyManagement相类似，它是用来进行插件管理的。
+聚合和继承的关系区别 ：1、对于聚合模块来说，它知道有哪些被聚合的模块，但那些被聚合的模块不知道这个聚合模块的存在。2、对于继承关系的父POM来说，它不知道有哪些子模块继承与它，但那些子模块都必须知道自己的父 POM是什么。
+共同点 ：1.聚合 POM与继承关系中的父POM的packaging都是pom2.聚合模块与继承关系中的父模块除了 POM之外都没有实际的内容。注：在现有的实际项目中一个 POM既是聚合POM，又是父 POM，这么做主要是为了方便。
+参考文档Maven POM
+maven核心，pom.xml详解
+maven 配置篇 之pom.xml(一）
+史上最全的maven pom.xml文件教程详解
+Maven聚合与继承
+Maven详解之聚合与继承
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>java</category>
+      </categories>
+      <tags>
+        <tag>java</tag>
+        <tag>maven</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>jQuery学习笔记——选择器篇</title>
     <url>/dev-jquery-selector/</url>
     <content><![CDATA[选择器语法jQuery选择元素的语法为：$(selector,[content]);
@@ -26877,306 +27260,6 @@ $(“li:lt(3)”)
       <tags>
         <tag>jquery</tag>
         <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Markdown编辑器</title>
-    <url>/dev-markdown-editor/</url>
-    <content><![CDATA[前言假设现在要写一篇markdown格式文章，使用什么编辑器比较好？答：sublime或者typora。
-假设现在要把一篇markdown格式文章导出成pdf文档，使用什么编辑器比较好？答：typora。
-假设现在要把一篇markdown格式文章发布成微信公众号文章，使用什么编辑器比较好？答：wechat-format。
-本文主要介绍三款 markdown 编辑器，分别是 sublime、typora和wechat-format。此外，还会介绍几个在线markdown编辑器，测试和预览都很方便。
-
-
-sublime.md 结尾的文件，在使用 sublime 进行编辑时会自动语法高亮。之所以推荐sublime，是因为这个编辑器是个万能的编辑器，而且非常轻量。使用了六年了，依然情有独钟。
-typora简介typora是近两年崛起的markdown编辑器神器。传统的markdown编辑器，左边是编辑器，右边是预览。typora另辟蹊径，没有左右分开，而是把编辑和预览结合在一起，随时切换（command+/），更可以在预览时进行编辑。
-自定义主题typora提供各种主题，更是支持用户自定义主题，简单好用。下面我们按照自己的需求来定制主题，熟悉一下自定义主题的流程。
-已知需求为：
-
-github主题自己很喜欢，但是标题字号太大，想要改小一点。
-标题在显示的时候自动编号。
-
-1、Typora，偏好设置，外观，打开主题文件夹
-2、备份github.css为github.css.bak
-3、编辑github.css，修改字号
-h1 &#123;    font-size: 1.5em;    line-height: 1.2;    border-bottom: 1px solid #eee;&#125;h2 &#123;    font-size: 1.25em;    line-height: 1.225;    border-bottom: 1px solid #eee;&#125;h3 &#123;    font-size: 1.15em;    line-height: 1.43;&#125;h4 &#123;    font-size: 1.05em;&#125;h5 &#123;    font-size: 1em;&#125;h6 &#123;   font-size: 1em;    color: #777;&#125;
-
-4、编辑github.css，给标题前添加自动编号
-/* 标题自动编号 */body &#123; counter-reset: h1counter; &#125;h1 &#123; counter-reset: h2counter; &#125;h2 &#123; counter-reset: h3counter; &#125;h3 &#123; counter-reset: h4counter; &#125;h4 &#123; counter-reset: h5counter; &#125;h5 &#123; counter-reset: h6counter; &#125;h6 &#123; &#125;h1:before &#123;  counter-increment: h1counter;  content: counter(h1counter) ".\0000a0\0000a0";&#125;h2:before &#123;  counter-increment: h2counter;  content: counter(h1counter) "."            counter(h2counter) ".\0000a0\0000a0";&#125;h3:before &#123;  counter-increment: h3counter;  content: counter(h1counter) "."            counter(h2counter) "."            counter(h3counter) ".\0000a0\0000a0";&#125;h4:before &#123;  counter-increment: h4counter;  content: counter(h1counter) "."            counter(h2counter) "."            counter(h3counter) "."            counter(h4counter) ".\0000a0\0000a0";&#125;h5:before &#123;  counter-increment: h5counter;  content: counter(h1counter) "."            counter(h2counter) "."            counter(h3counter) "."            counter(h4counter) "."            counter(h5counter) ".\0000a0\0000a0";&#125;h6:before &#123;  counter-increment: h6counter;  content: counter(h1counter) "."            counter(h2counter) "."            counter(h3counter) "."            counter(h4counter) "."            counter(h5counter) "."            counter(h6counter) ".\0000a0\0000a0";&#125;
-
-5、重启typora可见标题字号变小了，同时添加了编号。但是，如果直接复制粘贴内容到微信公众号，这些标题编号不会被复制。而且，换行效果也没有了。因此，从typora直接复制粘贴到微信公众号，不是一个好的方案。
-导出pdf文件，导出，PDF。如上，typora导出的pdf文档，简直完美。
-wechat-format简介wechat-format最大的优点是：适应微信公众号。比如，微信不支持外链，wechat-format生成的预览会包含 reference。但是，标题居中效果不是我想要的，标题也没有自动编号，所以也需要自定义一下。
-自定义主题下载wechat-format源码，主要修改：
-
-src/assets/scripts/themes/default.js
-src/assets/scripts/renderers/wx-renderer.js
-src/assets/css/app.css
-
-修改后的代码参考 wechat-format，最终效果如下
-失败的尝试但是，修改完成之后，复制粘贴到微信公众号，这些标题编号依然不会被复制。那么，怎样才能复制到这些编号？答：使这些编号变成元素，而不是样式。所以，需要使用js给页面添加编号元素。代码如下：
-// https://www.cnblogs.com/qiudeqing/p/3229583.htmlfunction number()&#123;    var headings;    if (document.querySelectorAll)        headings = document.querySelectorAll("h1,h2,h3,h4,h5,h6");    else        headings = findHeadings(document.body, []);    function findHeadings(root, sects) &#123;        for(var c = root.firstChild; c != null; c = c.nextSibling) &#123;            if (c.nodeType !== 1) continue;            if (c.tagName.length == 2 &amp;&amp; c.tagName.charAt(0) == "H")                sects.push(c);            else                findHeadings(c, sects);        &#125;        return sects;    &#125;    var sectionNumbers = [0,0,0,0,0,0];    for(var h = 0; h &lt; headings.length; h++) &#123;        var heading = headings[h];        var level = parseInt(heading.tagName.charAt(1));        if (isNaN(level) || level &lt; 1 || level &gt; 6) continue;        sectionNumbers[level-1]++;        for(var i = level; i &lt; 6; i++) sectionNumbers[i] = 0;        var sectionNumber = sectionNumbers.slice(0,level).join(".") + ". ";        var span = document.createElement("span");        span.className = "TOCSectNum";        span.innerHTML = sectionNumber;        heading.insertBefore(span, heading.firstChild);    &#125;&#125;
-
-但是，想要把这个代码应用到wechat-format，是有难度的，假期搞了一天，最终效果不理想，暂时放弃。思路：修改 src/assets/scripts/editor.js ，把number函数改写到这个文件里。中间会用到dom转str和str转dom，代码附上。
-// https://developer.mozilla.org/zh-CN/docs/Web/API/DOMParser// https://developer.mozilla.org/zh-CN/docs/XMLSerializerfunction trans(str)&#123;      var parser = new DOMParser();    var doc=parser.parseFromString(str, "text/xml");    doc = number(doc);    var s = new XMLSerializer();    return s.serializeToString(doc);&#125;
-
-在线markdown编辑器mdniceMarkdown Nice是一个支持自定义样式的 Markdown 编辑器，支持导出成微信公众号文章和知乎文章。
-值得一提的是，mdnice导出的微信公众号文章，排版非常nice，比 wechat-format 还要美观。尝试了自定义样式，添加了标题编号，同样无法复制到微信公众号。
-openwriteOpenWrite是一个博客群发平台，支持一键发文到微信公众号、知乎、头条、博客园、CSDN等平台。其中一项功能是Markdown格式文章导出微信公众号预览。
-Cmd MarkdownCmd Markdown是一个用了很多年的在线markdown编辑器，稳定靠谱，支持高亮代码块、LaTeX 公式、流程图。
-马克飞象马克飞象是一款专为印象笔记（Evernote）打造的Markdown编辑器，支持高亮代码块、LaTeX 公式、流程图，本地图片以及附件上传。马克飞象同时提供桌面客户端以及离线Chrome App，支持移动端 Web。
-StackEditStackEdit支持google登录，发布文章到web（github、gitlab、wordpress等），支持高亮代码块、LaTeX 公式、流程图。
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>工具</category>
-        <category>编辑器</category>
-      </categories>
-      <tags>
-        <tag>markdown</tag>
-        <tag>编辑器</tag>
-        <tag>sublime</tag>
-        <tag>typora</tag>
-        <tag>wechat-format</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>matlab入门</title>
-    <url>/dev-matlab-start/</url>
-    <content><![CDATA[前言
-MATLAB是美国MathWorks公司出品的商业数学软件，用于算法开发、数据可视化、数据分析以及数值计算的高级技术计算语言和交互式环境，主要包括MATLAB和Simulink两大部分。
-
-读研以来，耳边不时听到“matlab”，被老师和同学普遍推崇。今天，小编就来学习一下matlab的基础操作。
-
-
-基础设置显示类型计算圆面积时，面积的结果显示，默认是short类型（保留小数点后4位），我们可以通过设置为long类型，来显示更精确的结果。1）通过命令设置format long，这种设置方式临时性的。
-2）通过界面设置File，Preferences，Command Window，Numeric format选择long，之后Apply即可。
-清屏清屏命令：clc
-清数据清数据命令：clear
-修改变量在workspace中，双击变量，可以在图形化界面修改变量值。
-绘图在workspace中，单击变量，然后点击plot。
-查看变量信息who，whos，whos a
-重新执行命令在command history中，找到一条命令，右键选择evaluate selection。
-保存变量save a，保存变量到当前工作路径，文件名为a.mat。
-加载数据文件load a或者load a.mat。
-编辑器窗口edit，打开编辑窗口，新建matlab程序。
-图像窗口figure
-GUI窗口guide
-添加搜索路径File，Set Path，Add Folder。
-设置初始路径右键matlab快捷方式，在快捷方式选项卡中，修改起始位置。
-查找函数路径which sin
-设置默认编码中文时，Matlab默认编码格式为GB2312。使用sublime打开文件，显示乱码，小编想把Mablab默认编码修改为UTF-8。
-1、在Matlab安装目录下的bin目录下（例如D:\Program Files\MATLAB\R2010b\bin），找到lcdata.xml文件。
-2、在matlab中，输入命令feature(&#39;locale&#39;)，查看当前使用的编码。
-3、编辑lcdata.xml，找到如下一段：
-&lt;locale name="zh_CN" encoding="GB2312" xpg_name="zh_CN.GB2312"&gt;    &lt;alias name="zh-Hans"/&gt;&lt;/locale&gt;
-
-修改为：
-&lt;locale name="zh_CN" encoding="UTF-8" xpg_name="zh_CN.UTF-8"&gt;    &lt;alias name="zh-Hans"/&gt;&lt;/locale&gt;
-
-然而，修改后重启，matlab依然使用GBK编码。而且，把.m文件转换成UTF-8格式后，Matlab中会出现乱码。
-无奈，从另一个方面入手，让sublime支持GBK编码文件，安装插件ConvertToUTF8即可。
-Matlab语言基础变量和常量matlab遵循弱类型语言的变量初始化和赋值语法，和python基本相同。
-输入数据x = input(&#39;请输入数据&#39;)，输入数据后，数据存入x。
-默认赋值如果输入数值，没有赋值给变量，那么默认赋值给内置的ans变量。
-基本数据结构输入行矩阵a = [1 2 3]或a = [1,2,3]
-输入列矩阵b = [1 2 3]&#39;或b = [1,2,3]&#39;或b = [1;2;3]
-输入2*2矩阵c = [1 2; 3 4]
-输入特定值矩阵d(2,3) = 8，生成2*3的矩阵，第二行第三列的元素为8，其他元素为0。
-内置函数生成矩阵ones(4)，生成4*4的矩阵，所有元素为1。
-ones(4,3)，生成4*3的矩阵，所有元素为1。
-zeros(4)，生成4*4的矩阵，所有元素为0。
-zeros(4,3)，生成4*3的矩阵，所有元素为0。
-eye(4)，生成4*4的单位矩阵。
-eye(4,3)，生成4*3的矩阵，前三行前三列组成单位矩阵，第四行为0。
-magic(4)，生成4*4的魔方数组。
-冒号表达式生成矩阵3:9，生成3到9的行向量，增量为1。
-3:2:9，生成3到9的行向量，增量为2。
-(3:9)&#39;，生成3到9的列向量，增量为1。
-读取矩阵数据a = [1 2 3]，a(2)，读取第二个数据。
-c = [1 2; 3 4]，c(1,2)，读取第一行第二列的数据。
-c(:,2)，读取二列的数据。
-c(1,:)，读取第一行的数据。
-k = [1 2 3;4 5 6;7 8 9;10 11 12]，k(2:4,2)，读取第二列中第二行到第四行的数据。
-拼接矩阵m = [c,c]，横向拼接两个c矩阵。
-n = [c:c]，纵向拼接两个c矩阵。
-矩阵函数size(n)，返回行列数。
-length(n)，返回行数和列数中的较大者。
-空数组和子数组空数组nullmatrix = []，创建空数组。
-子数组magicmatrix = magic(4)，child = magicmatrix(3,[2,4])
-child = magicmatrix(3,2:end)
-magicmatrix(3,2) = 3，单个元素赋值。
-等差数列linspace(1,99,50)，生成1到99的50个数，等差为2。
-等比数列logspace(1,3,3)，生成10 100 1000三个数。
-数组变形1:1:9，reshape(ans,3,3)，按列排列变形成为方数组。
-时间变量data，clock，year(now)，month(now)，day(now)，day(today)
-算术运算符标量运算正常加减乘除，和python基本相同。需要注意的是5/6代表5除以6，5\6代表6除以5。
-5^2和power(5,2)都是代表5的平方。
-矩阵运算A=[1 2 3; 4 5 6; 7 8 9]，B=magic(3)
-A+B，A-B，A*B，A+3，A*3
-inv(B)，求B矩阵的逆矩阵。
-A/B和A*inv(B)相同。
-A.*B，对应位置相乘。
-运算函数matlab的运算函数包括幂次方、指数与对数函数、三角与反三角函数等等。
-幂次方幂次方的符号就是常用的^记号。指数部分可以是任意数。2^2，2^(-1)，2^(1/2)，2^(1.25) 
-指数与对数科学与工程领域惯用「标准指数函数」，也就是以e为底的指数函数。其中，e是一个无理数，大约等于2.71828。Matlab并不提供e这个常数，而是以函数exp()来计算以e为底的指数函数。exp(1)
-Matlab 分别提供三个函数 log()、log10()和log2()，分别表示以e为底的对数（自然对数），以10为底的对数（常用对数），以2为底的对数。log(exp(2))，log10(100)，log2(4)，答案都是2。
-三角与反三角函数六个三角函数在Matlab 中对应的函数分别为：正弦：sin()余弦：cos()正切：tan()余切：cot()正割：sec()余割：csc()
-六个反三角函数在Matlab 中对应的函数分别为：反正弦：asin()反余弦：acos()反正切：atan()反余切：acot()反正割：asec()反余割：acsc()
-需要注意的就是使用三角函数时，角度的单位是“弧度”。
-复数Matlab 的所有运算符号、所有函数，都懂得如何做复数计算。sqrt(-1)
-abs(3+4i)
-微积分极限求极限是微积分的基础，求极限的函数limit。limit(f,x,a)，x趋近于a时，f 的极限。limit(f,x,a,&#39;left&#39;)，x左趋近于a时，f 的极限。limit(f,x,a,&#39;right&#39;)，x右趋近于a时，f的极限。
-微分diff(f,t,n)，求f 对独立变量t的n次微分值。
-积分int(f,&#39;t&#39;,a,b)，求f 对独立变量t 在积分区间[a，b]的积分值。
-级数自变量v在[a，b]之间取值时，对通项s求和，用函数symsum(s,v,a,b)。
-方程求解代数方程solve(f)
-solve(f,a)
-常微分方程dsolve(&#39;常微分方程式&#39;,&#39;初始条件&#39;,&#39;自变量&#39;)
-可视化二维平面图形折线图plot(x,y)函数，x，y是维度相同的序列或向量。
-x=[0 1 2];y=[0 1 0];plot(x,y);
-
-用300段折线画出sin(x)在[-pi,pi]区间内的折线图。
-x = linspace(-pi, pi, 301);plot(x, sin(x));
-
-如果要画多条曲线，也可以用plot函数。
-x=0:pi/10:2*pi;y1=sin(x);y2=cos(x);plot(x,y1,x,y2);plot(x,y1,'r + -',x,y2,'k * :');
-图形是以公共的x元素为横坐标值，y1、y2为纵坐标值绘制曲线图的。如果想要图形更加完美，我们可以用一些特殊的图形函数对它进行修饰。
-xlabel('独立变量X');ylabel('变量Y');title('正弦和余弦曲线');text(1.5,0.3,'cos(x)');text(0,0,'sin(x)');%axis([0 2*pi -0.9 0.9]);
-
-如果只给plot()一个参数，例如plot(y)，而y是一个n维向量或列，则它的效果就相当于plot((1:n), y)。
-y = [ 1 4 0 2 3 5];plot(y);
-
-多重折线图Matlab在一张图片上可以重复制图。基本上，画一张图的指令，将会自动清除前一张图。但是，如果下了指令hold on，将不会清除前一张图，而是重复画上去。下了hold on指令的所有图将会重迭在一张图片里，直到你下了hold off为止。
-我们以 300 个折线段，在一张图片中，画出以下三个函数在[-pi, pi]区间内的曲线图：sin(x)，cos(x)，x。
-x = linspace(0, 2*pi, 301);y = sin(x);plot(x, y, 'r');axis([0 2*pi -1.2 1.2]);hold ony = cos(x);plot(x, y, 'g');y = x; plot(x, y, 'b');hold off;
-
-我们还可以采用图形窗口分割的方法，在同一个视图窗口中画出多个小图形。这时要用到subplot(n,m,k)。如果写subplot(2,2,1),即就是把图形窗口分割成2行2列，在第1个位置（第1行第1列）画图。
-x = linspace(0, 2*pi, 301);y = sin(x);subplot(2,2,1);plot(x, y);y = cos(x);subplot(2,2,2);plot(x, y);
-Matlab对数据是按列存储和计算的。
-三维立体图形三维曲线图plot3函数调用格式：plot3(x1,y1,z1,x2,y2,z2,…)。其中x1，y1，z1，x2，y2，z2…等分别为维数相同的向量，分别存储着曲线的三个坐标值。
-绘制方程在t=[0,2π]的空间方程。
-\begin{cases}x=t \y=sin(t) \z=cos(t)\end{cases}
-t=0:pi/10:2*pi;x=t;y=sin(t);z=cos(t);plot3(x,y,z,'r:p');grid on;xlabel('X');ylabel('Y');zlabel('Z');title('sine and cosine');
-
-三维网格图和曲面图Matlab在绘制三维网格图与曲面图时，往往先将要绘制图形的定义区域分成若干网格，然后计算这些网格节点上的二元函数值，最后才能使用mesh和surf函数绘制相应的图形。生成网格矩阵使用meshgrid函数，其调用格式为：
-[U, V]=meshgrid(x,y)
-
-函数说明：利用向量x和y生成网格矩阵U和V，以便mesh和surf等函数用来绘图。其中x、y分别是长度为n和m升序排列的行向量。
-生成的方法是将x复制n次生成网格矩阵U，将y转置成列向量后复制m次生成网格矩阵V。坐标(uij,vij)表示xoy平面上网格节点的坐标，第三维坐标zij=f(uij,vij)。
-例：给定向量x=[1 2 3 4]，y=[10 11 12 13 14]，试由向量x、y生成网格矩阵。
-x=[1 2 3 4]; %输入向量xy=[10 11 12 13 14]; %输入向量y[U,V]=meshgrid(x,y); %生成网格矩阵Z=peaks(U,V);mesh(U,V,Z); %绘制三维网格图
-
-Matlab提供了一个peaks函数，可产生一个凹凸有致的曲面，包含了三个局部极大点及三个局部极小点。在matlab中输入peaks()、peaks(5)就可以看到效果。
-例：在 -4&lt;x&lt;4，-4&lt;y&lt;4 上绘制 $z=x^2+y^2$ 的三维网格图。
-[x,y]=meshgrid(-4:4, -4:4); %定义网格数据向量x,yz=x.^2+y.^2; %计算二元函数值mesh(x,y,z); %绘制三维网格图% surf(x,y,z); %绘制三维曲面图
-
-观察点函数view(azinmuth,elevation)azinmuth：方位角。观察点与坐标原点的连线在水平面上的投影和y轴负方向的夹角。（在水平面上）elevation：仰角。观察点与坐标原点的连线和水平面的夹角。（与水平面垂直）
-使用循环和观察点设定来实现动画效果。
-Matlab程序设计命令文件Matlab提供两种源程序文件格式：命令文件和函数文件。这两种文件的扩展名相同，均为“.m”，又称为“M文件”。命令文件的执行方式：在提示符后键入命令文件的文件名。命令文件适合于用户做需要理解得到结果的小规模运算。
-函数文件函数文件由function语句引导。其格式为：
-function [返回变量列表]=函数名(输入变量列表)
-
-1、新建一个求阶乘的函数文件myFunc.m：
-function value = myFunc(n);if n&lt;=1    value = 1;else    value = myFunc(n-1)*n;end
-
-2、重写求阶乘的函数文件myFunc2.m：
-function value = myFunc2(n);value = 1;while n &gt; 1    value = value*n;    n = n - 1;end
-
-3、重写求阶乘的函数文件myFunc3.m：
-function value = myFunc3(n);value = 1;for i=1:1:n    value = value*i;end%for i=n:-1:1%    value = value*i;%end
-
-4、新建传入数值显示结果的函数文件showNum.m：
-function showNum(input_var);switch input_var    case 1        disp('1');    case &#123;2,3,4&#125;        disp('2 or 3 or 4');    case 5        disp('5');    otherwise        disp('something else');end
-
-源码分享https://github.com/voidking/matlab-start.git
-书签Matlab视频教程http://www.51zxw.net/list.aspx?cid=456
-我的学习资料http://pan.baidu.com/s/1bp1oyXT
-Mathjax与LaTex公式简介http://mlworks.cn/posts/introduction-to-mathjax-and-latex-expression/
-]]></content>
-      <categories>
-        <category>专业</category>
-      </categories>
-      <tags>
-        <tag>matlab</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Maven之pom.xml</title>
-    <url>/dev-maven-pom/</url>
-    <content><![CDATA[pom.xml速览&lt;project&gt;    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;    &lt;groupId&gt;...&lt;/groupId&gt;    &lt;artifactId&gt;...&lt;/artifactId&gt;    &lt;version&gt;...&lt;/version&gt;    &lt;packaging&gt;...&lt;/packaging&gt;    &lt;dependencies&gt;...&lt;/dependencies&gt;    &lt;parent&gt;...&lt;/parent&gt;    &lt;dependencyManagement&gt;...&lt;/dependencyManagement&gt;    &lt;modules&gt;...&lt;/modules&gt;    &lt;properties&gt;...&lt;/properties&gt;      &lt;build&gt;...&lt;/build&gt;    &lt;reporting&gt;...&lt;/reporting&gt;      &lt;name&gt;...&lt;/name&gt;    &lt;description&gt;...&lt;/description&gt;    &lt;url&gt;...&lt;/url&gt;    &lt;inceptionYear&gt;...&lt;/inceptionYear&gt;    &lt;licenses&gt;...&lt;/licenses&gt;    &lt;organization&gt;...&lt;/organization&gt;    &lt;developers&gt;...&lt;/developers&gt;    &lt;contributors&gt;...&lt;/contributors&gt;      &lt;issueManagement&gt;...&lt;/issueManagement&gt;    &lt;ciManagement&gt;...&lt;/ciManagement&gt;    &lt;mailingLists&gt;...&lt;/mailingLists&gt;    &lt;scm&gt;...&lt;/scm&gt;    &lt;prerequisites&gt;...&lt;/prerequisites&gt;    &lt;repositories&gt;...&lt;/repositories&gt;    &lt;pluginRepositories&gt;...&lt;/pluginRepositories&gt;    &lt;distributionManagement&gt;...&lt;/distributionManagement&gt;    &lt;profiles&gt;...&lt;/profiles&gt;  &lt;/project&gt;
-
-POM包括了所有的项目信息：
-
-groupId：项目或者组织的唯一标志，并且配置时生成的路径也是由此生成，如org.codehaus.mojo生成的相对路径为：/org/codehaus/mojo
-artifactId：项目的通用名称
-version：项目的版本
-packaging：打包的机制，如pom, jar, maven-plugin, ejb, war, ear, rar, par
-classifier：分类
-
-
-
-POM关系依赖&lt;dependencies&gt;      &lt;dependency&gt;        &lt;groupId&gt;junit&lt;/groupId&gt;        &lt;artifactId&gt;junit&lt;/artifactId&gt;        &lt;version&gt;4.0&lt;/version&gt;        &lt;type&gt;jar&lt;/type&gt;        &lt;scope&gt;test&lt;/scope&gt;        &lt;optional&gt;true&lt;/optional&gt;      &lt;/dependency&gt;      ...  &lt;/dependencies&gt;
-
-
-groupId, artifactId, version:描述了依赖的项目唯一标志
-type:相应的依赖产品包形式，如jar，war
-scope:用于限制相应的依赖范围，包括以下的几种变量：
-
-
-compile ：默认范围，用于编译provided：类似于编译，但支持你期待jdk或者容器提供，类似于classpathruntime:在执行时，需要使用test:用于test任务时使用system:需要外在提供相应得元素。通过systemPath来取得
-
-
-systemPath: 仅用于范围为system。提供相应的路径
-optional: 标注可选，当项目自身也是依赖时。用于连续依赖时使用
-
-独占性外在告诉maven你只包括指定的项目，不包括相关的依赖。此因素主要用于解决版本冲突问题。
-&lt;dependencies&gt;      &lt;dependency&gt;        &lt;groupId&gt;org.apache.maven&lt;/groupId&gt;        &lt;artifactId&gt;maven-embedder&lt;/artifactId&gt;        &lt;version&gt;2.0&lt;/version&gt;        &lt;exclusions&gt;          &lt;exclusion&gt;            &lt;groupId&gt;org.apache.maven&lt;/groupId&gt;            &lt;artifactId&gt;maven-core&lt;/artifactId&gt;          &lt;/exclusion&gt;        &lt;/exclusions&gt;      &lt;/dependency&gt; &lt;/dependencies&gt;
-表示项目maven-embedder需要项目maven-core，但我们不想引用maven-core。
-聚合为了能够使用一条命令就能构建account-email和account-persist两个模块，我们需要建立一个额外的名为account-aggregator的模块，然后通过该模块构建整个项目的所有模块。account-aggregator本身也是个 Maven项目，它的 POM如下
-&lt;project&gt;	&lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;	&lt;groupId&gt;com.juvenxu.mvnbook.account&lt;/groupId&gt;	&lt;artifactId&gt;account-aggregator&lt;/artifactId&gt;	&lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;	&lt;packaging&gt; pom &lt;/packaging&gt;	&lt;name&gt;Account Aggregator&lt;/name&gt;	 &lt;modules&gt;		&lt;module&gt;account-email&lt;/module&gt;		&lt;module&gt;account-persist&lt;/module&gt;	 &lt;/modules&gt;&lt;/project&gt;
-
-注意：packaging的类型为pom ，module的值是一个以当前POM为主目录的相对路径。
-继承父模块配置&lt;project&gt;	&lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;	&lt;groupId&gt;com.juvenxu.mvnbook.account&lt;/groupId&gt;	&lt;artifactId&gt; account-parent &lt;/artifactId&gt;	&lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;	&lt;packaging&gt;pom&lt;/packaging&gt;	&lt;name&gt;Account Parent&lt;/name&gt;		&lt;dependencyManagement&gt;...&lt;/dependencyManagement&gt;  &lt;/project&gt;
-
-
-
-子模块配置&lt;project&gt;	&lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;		&lt; parent &gt;		&lt;groupId&gt;com.juvenxu.mvnbook.account&lt;/groupId&gt;		&lt;artifactId&gt; account-parent &lt;/artifactId&gt;		&lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;		&lt; relativePath &gt;../account-parent/pom.xml&lt;/ relativePath&gt;	&lt;/ parent &gt;		&lt;artifactId&gt; account-email &lt;/artifactId&gt;	&lt;name&gt;Account Email&lt;/name&gt;  ...&lt;/project&gt;
-
-注意：1、子模块没有声明groupId和version，这两个属性继承至父模块。但如果子模块有不同与父模块的 groupId、version ，也可指定；2、不应该继承artifactId,如果groupId ，version，artifactId 完全继承的话会造成坐标冲突；另外即使使用不同的 groupId或version，同样的 artifactId也容易产生混淆。
-聚合使用继承后，parent也必须像子模块一样加入到聚合模块中。也就是在在聚合模块的 pom中加入&lt;module&gt;account-parent&lt;/module&gt;。聚合的 POM如下：
-&lt;project&gt;	&lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;	&lt;groupId&gt;com.juvenxu.mvnbook.account&lt;/groupId&gt;	&lt;artifactId&gt;account-aggregator&lt;/artifactId&gt;	&lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;	&lt;packaging&gt; pom &lt;/packaging&gt;	&lt;name&gt;Account Aggregator&lt;/name&gt;	&lt;modules&gt;		&lt;module&gt;account-email&lt;/module&gt;		&lt;module&gt;account-persist&lt;/module&gt;		&lt;module&gt; account-parent&lt;/module&gt;	&lt;/modules&gt;&lt;/project&gt;
-
-可继承的元素groupId ：项目组 ID ，项目坐标的核心元素；version ：项目版本，项目坐标的核心元素；description ：项目的描述信息；organization ：项目的组织信息；inceptionYear ：项目的创始年份；url ：项目的 url 地址develoers ：项目的开发者信息；contributors ：项目的贡献者信息；distributionManagerment ：项目的部署信息；issueManagement ：缺陷跟踪系统信息；ciManagement ：项目的持续继承信息；scm ：项目的版本控制信息；mailingListserv ：项目的邮件列表信息；properties ：自定义的 Maven 属性；dependencies ：项目的依赖配置；dependencyManagement ：醒目的依赖管理配置；repositories ：项目的仓库配置；build ：包括项目的源码目录配置、输出目录配置、插件配置、插件管理配置等；reporting ：包括项目的报告输出目录配置、报告插件配置等。
-
-我们知道dependencies是可以被继承的，这个时候我们就想到让我们的发生了共用的依赖元素转移到parent中，这样我们又进一步的优化了配置。可是问题也随之而来，如果有一天我创建了一个新的模块，但是这个模块不需要这些parent的依赖，这时候如何处理？
-是的，maven的依赖管理就是来解决这个问题的：dependencyManagement。从上面的列表中我们发现dependencyManagement也是可以被继承的，这恰恰满足了我们的需要，它既能够让子模块继承到父模块的依赖配置，又能保证子模块依赖使用的灵活性。
-dependencyManagement的特性：在dependencyManagement中配置的元素既不会给parent引入依赖，也不会给它的子模块引入依赖，仅仅是它的配置是可继承的。
-最佳实践：这时候我们就可以在父POM中声明这些依赖：
-&lt;properties&gt;	&lt;target.version&gt;2.5.6&lt;/target.version&gt;&lt;/properties&gt;&lt;dependencyManagement&gt;	&lt;dependencies&gt;		&lt;dependency&gt;			&lt;groupId&gt;your groupId&lt;/groupId&gt;			&lt;artifactId&gt;your artifactId&lt;/artifactId&gt;			&lt;version&gt;$&#123;target.version&#125;&lt;/version&gt;		&lt;/dependency&gt;	&lt;/dependencies&gt;&lt;/dependencyManagement&gt;
-
-子模块的POM继承这些配置：子模块继承这些配置的时候，仍然要声明groupId和artifactId，表示当前配置是继承于父POM的，从而直接使用父POM的版本对应的资源。
-&lt;dependencies&gt;	&lt;dependency&gt;		&lt;groupId&gt;your groupId&lt;/groupId&gt;		&lt;artifactId&gt;your artifactId&lt;/artifactId&gt;	&lt;/dependency&gt;&lt;/dependencies&gt;
-这个可以有效的避免多个子模块使用依赖版本不一致的情况，有助于降低依赖冲突的几率。
-注：只有子模块配置了继承的元素，才会真正的有效，否则maven是不会加载父模块中声明的元素。
-pluginManagement和dependencyManagement相类似，它是用来进行插件管理的。
-聚合和继承的关系区别 ：1、对于聚合模块来说，它知道有哪些被聚合的模块，但那些被聚合的模块不知道这个聚合模块的存在。2、对于继承关系的父POM来说，它不知道有哪些子模块继承与它，但那些子模块都必须知道自己的父 POM是什么。
-共同点 ：1.聚合 POM与继承关系中的父POM的packaging都是pom2.聚合模块与继承关系中的父模块除了 POM之外都没有实际的内容。注：在现有的实际项目中一个 POM既是聚合POM，又是父 POM，这么做主要是为了方便。
-参考文档Maven POM
-maven核心，pom.xml详解
-maven 配置篇 之pom.xml(一）
-史上最全的maven pom.xml文件教程详解
-Maven聚合与继承
-Maven详解之聚合与继承
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>java</category>
-      </categories>
-      <tags>
-        <tag>java</tag>
-        <tag>maven</tag>
       </tags>
   </entry>
   <entry>
@@ -30876,8 +30959,8 @@ gv重选刚才选择的选区，o在选择区两端跳动。ctrl+v、3j垂直下
       <categories>
         <category>专业</category>
         <category>运维</category>
-        <category>linux</category>
         <category>工具</category>
+        <category>linux</category>
         <category>编辑器</category>
       </categories>
       <tags>
@@ -31968,223 +32051,6 @@ ActiveRecord
       <tags>
         <tag>php</tag>
         <tag>yii</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>《1368个单词就够了》单词表</title>
-    <url>/en-1368-words/</url>
-    <content><![CDATA[前言《1368个单词就够了》一书中，把单词分为五大类：名词、动词、形容词、介词、其他词。
-在单词的使用选择时，遵循四个原则：
-
-挑个大的
-挑实心的
-挑软乎的
-自产自用
-
-
-
-名词名词除了专用名词外，可以分为具体名词、抽象名词、构成类名词和属性类名词。
-具体名词具体名词：背下来就可以。总单词量：355个类别：38个具体名词主要是指那些看得见、摸得着，或者能感受得到的具体事物。
-有关物时间类time morning afternoon noon evening night tonight today tomorrow yesterday weekend year season spring autumn winter day date moment period history future birthday holiday festival schedule age  
-气候类weather rain snow wind cloud  
-自然类nature mountain air light water fire ice smoke heat ground sky river field forest sea stone star
-植物类plant grass tree crop
-动物类animal bird cat dog horse rabbit elephant bear tiger lion bull cow pig chicken fish sheep monkey snake reptile  
-昆虫类insect bee butterfly spider  
-其他生物bacteria
-地点类place hospital restaurant hotel university factory jail zoo park school store club bar court market town village city
-机构类organization company charity
-声音类sound voice noise music  
-食品类food egg meat steak bread cake dessert soup sandwich noodle pie chocolate sauce 
-餐饮类meal breakfast lunch dinner 
-蔬菜类vegetable potato tomato carrot lettuce bean  
-水果类fruit apple orange banana 
-食材类ingredient oil sugar salt butter cream 
-饮料类drink coffee milk tea juice beer wine alcohol  
-营养类nutrient mineral vitamin protein
-疾病类disease fever flu cancer  
-房屋类house office room floor wall window door roof kitchen
-家具类furniture bed chair desk table seat couch 
-服装类clothes shirt shoes cap hat coat dress pants uniform suits underwear pocket jeans button zip sock
-首饰类jewelry diamond ring 
-化妆品cosmetics perfume lipstick powder 
-交通类transport traffic bicycle ship boat plane train 
-车辆类vehicle motorcycle bus car truck brake engine gear tire wheel
-路桥类road street bridge station 
-装置类device lock key bell scale tap 
-设备类equipment shower radio telephone camera computer TV fridge video
-容器类container box cup dish plate bowl basket tub sink pot pan
-材料类material cloth paper glass plastic gold paint chemical 
-日常用品类toy brush mirror chain board handle cartoon bottle wood clock knifepen book album menu card envelope ticket pipe tube wire belt web filmscreen gift channel alarm electricity towel carpet tool junk fork spoonmedicine drug pill
-数量couple double load pack lot
-单位unit meter inch pound gram piece
-事情thing issue matter stuff object event
-有关人家庭角色类parent daughter son father mother brother sister husband wife uncleaunt grandfather grandmother role
-社会角色类kid child baby boy girl man woman friend lady gentleman bosscustomer student neighbor person volunteer fool sir madam
-职业类job doctor nurse professor lawyer engineer teacher coach guard judge
-群体类group people class team human staff society generation armygovernment family
-抽象名词抽象名词：光背下来还不行。总单词量：166个类别：9个因为抽象名词主要说的是“事”，而“事”都是“人”做的，所以，这个类别的词基本可以按照人“说的”“做的”“想的”来分类。
-话语类words topic subject joke question suggestion instruction permission
-文字类document story report note text letter email list menu novel blogrule：law grammar principle
-信息类information message fact detail evidence clue background data signknowledge news update notice
-状态类state condition environmentsituation：mess balance peace emergency chance opportunity
-行为类act practice test experiment lesson attention focus step educationadvertisement trick habit business exercise bath security treatmentservice homeworkjob：task project challengeduty：responsibility faultperformance：concert drama operastudy：math art science psychology philosophyarrangement：deal insurance account engagementoccasion：party wedding funeral picnic barbecue ceremony meetinginterviewmoney：profit income salary loan cash cost credit deposit price taxbill budget
-活动类activity game discipline crime trade economy politics war trip fashionindustrysports：soccer football golf basketball race
-思想类thought idea view theory religionplan：strategy policy program
-整体类network internet series careersystem：language transport
-其他类favor privilege mistake risk advantage benefit problem troublesurprise secret award prize diet property option case example samplescore limit experience effort energy figure
-构成类名词构成类名词：你的外在与内在总单词量：65个类别：8个我们在描述一个事物的时候既要知道它们是什么，也要知道它们都是由什么东西构成的。这就是构成类名词的作用。
-核心词part
-部位side edge base core
-身体head eye ear face nose foot mouth tooth tongue neck shoulder breastchest stomach arm hand finger nail leg knee throat brain heart lung musclebone nerve hair skin blood sweat
-精神mind spirit soul emotionfeeling：shame stress respect desire pain sense
-力量strength forcepower：authorityability：sight intelligence memory skill
-动物tail wing
-植物flower leaf root branch
-其他whole rest half
-属性类名词属性类名词：你的状态总单词量：70个类别：12个想要了解一个事物光知道它是什么类别、由啥组成的还不够，还得知道它都有些什么特点，也就是它的属性。
-属性也要从两方面来看，一是“人”和“物”的属性，因为这两者是静态的，所以我们叫它静态属性；二是“事”的属性，因为“事”是发展变化的，有原因有结果，所以我们叫它动态属性。
-静态属性形状shape appearance
-尺寸size space
-位置positionpoint line endbottom middle top front back center corner left right direction：eastwest north south
-品质quality feature character personality
-其他属性colorweighttonematerialstructure
-数量amount number measurement distance volume angle temperaturelevel：degree grade rank standard rate：speed percentage
-类别kind type
-动态属性方式formway：behavior mood logic tradition culture style pattern relationmanner
-原因cause reason source excuse factor
-目的purpose goal
-结果effect result
-过程course process
-动词一个意思往往会有两种表达方式，一种是比较直接的，用一个词就可以解决，就是指“世故型”的动词；另一种是用解释的方式，用的词虽然多一些，但更加具体，就是指这种“单纯型”的动词。
-单纯型动词单纯型动词：广交天下朋友总单词量：114个类别：15个
-本源词be go come make
-归属拥有某物 have得到某物 get给出某物 give拿到某物 take
-终点位置使到达某一位置 put使轻轻到达某一位置 lay place使从其他位置到达说话者位置 bring使从说话者位置到达其他位置 send使位置暂停改变 hold使位置保持不变 keep位置保持不变 stay hang settle
-相互位置一事物到另一事物上面 cover一事物到另一事物下面 support两事物混合 mix两事物互换 switch两事物相连 link join connect stick tie两事物相遇 meet两事物交叉 cross
-运动轨迹从一个点到另一个点 move shift经过某个点 pass低点往高点 raise lift rise高点往低点 drop fall一事物在另一事物后面 follow一事物在另一事物前面 lead一物载另一物 carry往复运动 bounce roll shake screw
-速度快速运动 run rush hurry
-力量轻轻接触 touch用力接触 hit knock crash使快速运动 throw用力接触并来回移动 rub用力使事物脱离原来的位置 pull对事物朝某一方向用力 push draw press
-空间空间开放或关闭 open close shut一事物进入某一空间 fit enter一事物进入某一空间（气体或液体） fill pump spill spray事物离开某一空间 clean clear wipe事物离开某一地点 leave quit一事物到达某一地点 arrive reach一事物固定在某一个空间 fix set
-时间某事发生 begin start happen某事结束 finish某事停止 stop
-方向一个方向到另一个方向 turn整体与部分从大到小（用力） break crack split tear从大到小 divide从多到少 cut
-形状bend fold twist stretch spread
-尺寸grow
-行为look see listen hear say speak talk tell ask think believe know likelove do
-系动词become seem feel sound smell taste
-世故型动词世故型动词：朋友少，但效率高总单词量：219个类别：14个
-看find watch observe ignore search show
-说意见：agree cancel let allow告诉：claim warn introduce explain express confirm要求：beg charge order带有情感地说：argue blame praise encourage complain promise insistshout threat其他：answer call count pronounce
-想consider guess deserve offerdoubt suspect trust forget remember imagine meanlearn understand wonderdecide try want hope wish expectwill shall should may might can must dare needimpress attract
-感觉enjoy suffer appreciate care hate worry thank welcome bless thrillfreak shock bother annoy disturb
-自然现象die live burn boil
-人体行为肢体：dance ride lie climb beat上肢：hug下肢：sit stand walk kick jump skip面部：smile laugh cry嘴巴：eat kiss suck lick blow cough sing鼻子：breathe皮肤：bleed精神：sleep wake relax健康：hurt injure cure inject
-生活行为cook bake fry drive measure wear wash tape record post travel screwdig hide pack mark
-社会行为buy sell shop pay spend waste invite rent fight kill steal cheat investrob wait marry divorce borrow lend owe vote bet celebrateplay pretendhelp direct entertain interrupt distractdesign build invent copyprepare organize manage handle treat controluse apply save choose accept pick collect win fail miss losecheck examine compare solve analyze
-运动skate swim fly shoot
-工作work interview hire fire compete retire
-学习read write spell translate
-事物之间的关系match qualify equal share include separate belong depend involve
-事物的发展变化change develop improve reduce add promote
-事物相互作用damage spoil ruin affect attack
-形容词总单词量：208个类别：47个根据牛津词典的统计，形容词的数量仅次于名词，约占词汇总数的四分之一，比动词多出将近一倍。但在我们的R词汇表里，形容词不但没有动词多，甚至比它还要少三分之一。因为我们根本不需要掌握那么多，只要把形容词里面最基础、最不可或缺的学到就可以了。
-物的属性与构成大小big huge little small medium
-高低high low
-长短long short tall
-深浅deep shallow
-粗细thick thin fat slim
-宽窄narrow wide
-重量heavy light
-正斜straight curved flat
-形状round square
-距离near far
-事物与空间full empty blank bare dirty
-时间new fresh
-数量extra only single poor rich slight total
-质地hard soft tough tender smooth rough sharp blunt fresh raw pure plaineven
-力量strong weak tight loose firm tense
-状态liquid gas solid
-温度hot warm cold cool
-湿度dry wet
-亮度bright dark dull
-味道sweet bitter delicious sour spicy
-声音loud quiet
-人的属性与构成时间young old
-身体hungry ill sick tired blind sore born pregnant alive
-行为busy violent wild
-外表beautiful ugly sexy
-心智smart clever stupid confused awake asleep familiar patient
-态度polite lazy honest rude brave aggressive
-情感interested curious proud sure confident
-心情happy glad sad upset sorry guilty calm afraid angry crazy mad excitedbored disappointed jealous lonely
-事的属性与构成难度easy hard difficult
-时间late due urgent efficient
-可能性possible available
-安全性dangerous safe
-其他wrong strict correct proper lucky fair successful
-综合属性品质（好）good nice fine great perfect wonderful amazing excellent
-品质（坏）bad terrible awful
-真实性real true false fake
-完整性complete
-精确性exact specific
-复杂性complicated simple
-其他fun horrible weird strange comfortable incredible gross
-事物关系特殊性special regular
-一致性same different
-普遍性typical normal common general popular average particular own
-重要性serious causal important main formal professional
-必要性necessary
-关联性free relative legal physical mental local native international cheapexpensive separate public worth
-介词总单词量：48个类别：14个介词主要是按照它们的功能进行分类的。我们需要重点学习的是前两大类：表示动态位置的介词和静态位置的介词。
-动态位置轨迹across along past over up down through on off in out against
-起点from
-终点to toward for about
-静态位置点at
-点与点by beside before after behind between around
-点与平面beyond under above below
-点与空间outside inside within
-从属of with without
-时间during since till
-替代instead of
-比较than as
-整体与部分besides among except including
-因果according to
-其他despite per
-其他词总单词量：123个类别：9个
-副词时间now early just then recently ago already yet ever never forever
-位置here there
-方向away forth apart together aside
-数量extra alone
-程度quite much very well extremely almost enough
-强调actually especially absolutely certainly
-速度fast slow soon suddenly immediately gradually
-频率again often usually always
-顺序finally eventually
-转折otherwise
-可能性probably perhaps maybe
-递进also too either neither else
-引导when where how why what
-连词因果because
-转折but though
-并列and
-条件if unless except
-时间while
-选择or whether
-限定词顺序last next
-数量all any some both each either neither every few many much
-指代this that these those another such
-代词I you he she we they it
-疑问代词which who
-冠词a an the
-感叹词bye hello no yes pardon please wow damn
-缩略词Mr. Ms.
-数词zero one two three four five six seven eight nine ten hundred thousandmillion billion
-]]></content>
-      <categories>
-        <category>英语</category>
-      </categories>
-      <tags>
-        <tag>英语</tag>
       </tags>
   </entry>
   <entry>
@@ -33357,6 +33223,223 @@ leetcodeleetcode，之前用java完成了几题，在此清零。在刷完《剑
       </categories>
       <tags>
         <tag>博客</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>《1368个单词就够了》单词表</title>
+    <url>/en-1368-words/</url>
+    <content><![CDATA[前言《1368个单词就够了》一书中，把单词分为五大类：名词、动词、形容词、介词、其他词。
+在单词的使用选择时，遵循四个原则：
+
+挑个大的
+挑实心的
+挑软乎的
+自产自用
+
+
+
+名词名词除了专用名词外，可以分为具体名词、抽象名词、构成类名词和属性类名词。
+具体名词具体名词：背下来就可以。总单词量：355个类别：38个具体名词主要是指那些看得见、摸得着，或者能感受得到的具体事物。
+有关物时间类time morning afternoon noon evening night tonight today tomorrow yesterday weekend year season spring autumn winter day date moment period history future birthday holiday festival schedule age  
+气候类weather rain snow wind cloud  
+自然类nature mountain air light water fire ice smoke heat ground sky river field forest sea stone star
+植物类plant grass tree crop
+动物类animal bird cat dog horse rabbit elephant bear tiger lion bull cow pig chicken fish sheep monkey snake reptile  
+昆虫类insect bee butterfly spider  
+其他生物bacteria
+地点类place hospital restaurant hotel university factory jail zoo park school store club bar court market town village city
+机构类organization company charity
+声音类sound voice noise music  
+食品类food egg meat steak bread cake dessert soup sandwich noodle pie chocolate sauce 
+餐饮类meal breakfast lunch dinner 
+蔬菜类vegetable potato tomato carrot lettuce bean  
+水果类fruit apple orange banana 
+食材类ingredient oil sugar salt butter cream 
+饮料类drink coffee milk tea juice beer wine alcohol  
+营养类nutrient mineral vitamin protein
+疾病类disease fever flu cancer  
+房屋类house office room floor wall window door roof kitchen
+家具类furniture bed chair desk table seat couch 
+服装类clothes shirt shoes cap hat coat dress pants uniform suits underwear pocket jeans button zip sock
+首饰类jewelry diamond ring 
+化妆品cosmetics perfume lipstick powder 
+交通类transport traffic bicycle ship boat plane train 
+车辆类vehicle motorcycle bus car truck brake engine gear tire wheel
+路桥类road street bridge station 
+装置类device lock key bell scale tap 
+设备类equipment shower radio telephone camera computer TV fridge video
+容器类container box cup dish plate bowl basket tub sink pot pan
+材料类material cloth paper glass plastic gold paint chemical 
+日常用品类toy brush mirror chain board handle cartoon bottle wood clock knifepen book album menu card envelope ticket pipe tube wire belt web filmscreen gift channel alarm electricity towel carpet tool junk fork spoonmedicine drug pill
+数量couple double load pack lot
+单位unit meter inch pound gram piece
+事情thing issue matter stuff object event
+有关人家庭角色类parent daughter son father mother brother sister husband wife uncleaunt grandfather grandmother role
+社会角色类kid child baby boy girl man woman friend lady gentleman bosscustomer student neighbor person volunteer fool sir madam
+职业类job doctor nurse professor lawyer engineer teacher coach guard judge
+群体类group people class team human staff society generation armygovernment family
+抽象名词抽象名词：光背下来还不行。总单词量：166个类别：9个因为抽象名词主要说的是“事”，而“事”都是“人”做的，所以，这个类别的词基本可以按照人“说的”“做的”“想的”来分类。
+话语类words topic subject joke question suggestion instruction permission
+文字类document story report note text letter email list menu novel blogrule：law grammar principle
+信息类information message fact detail evidence clue background data signknowledge news update notice
+状态类state condition environmentsituation：mess balance peace emergency chance opportunity
+行为类act practice test experiment lesson attention focus step educationadvertisement trick habit business exercise bath security treatmentservice homeworkjob：task project challengeduty：responsibility faultperformance：concert drama operastudy：math art science psychology philosophyarrangement：deal insurance account engagementoccasion：party wedding funeral picnic barbecue ceremony meetinginterviewmoney：profit income salary loan cash cost credit deposit price taxbill budget
+活动类activity game discipline crime trade economy politics war trip fashionindustrysports：soccer football golf basketball race
+思想类thought idea view theory religionplan：strategy policy program
+整体类network internet series careersystem：language transport
+其他类favor privilege mistake risk advantage benefit problem troublesurprise secret award prize diet property option case example samplescore limit experience effort energy figure
+构成类名词构成类名词：你的外在与内在总单词量：65个类别：8个我们在描述一个事物的时候既要知道它们是什么，也要知道它们都是由什么东西构成的。这就是构成类名词的作用。
+核心词part
+部位side edge base core
+身体head eye ear face nose foot mouth tooth tongue neck shoulder breastchest stomach arm hand finger nail leg knee throat brain heart lung musclebone nerve hair skin blood sweat
+精神mind spirit soul emotionfeeling：shame stress respect desire pain sense
+力量strength forcepower：authorityability：sight intelligence memory skill
+动物tail wing
+植物flower leaf root branch
+其他whole rest half
+属性类名词属性类名词：你的状态总单词量：70个类别：12个想要了解一个事物光知道它是什么类别、由啥组成的还不够，还得知道它都有些什么特点，也就是它的属性。
+属性也要从两方面来看，一是“人”和“物”的属性，因为这两者是静态的，所以我们叫它静态属性；二是“事”的属性，因为“事”是发展变化的，有原因有结果，所以我们叫它动态属性。
+静态属性形状shape appearance
+尺寸size space
+位置positionpoint line endbottom middle top front back center corner left right direction：eastwest north south
+品质quality feature character personality
+其他属性colorweighttonematerialstructure
+数量amount number measurement distance volume angle temperaturelevel：degree grade rank standard rate：speed percentage
+类别kind type
+动态属性方式formway：behavior mood logic tradition culture style pattern relationmanner
+原因cause reason source excuse factor
+目的purpose goal
+结果effect result
+过程course process
+动词一个意思往往会有两种表达方式，一种是比较直接的，用一个词就可以解决，就是指“世故型”的动词；另一种是用解释的方式，用的词虽然多一些，但更加具体，就是指这种“单纯型”的动词。
+单纯型动词单纯型动词：广交天下朋友总单词量：114个类别：15个
+本源词be go come make
+归属拥有某物 have得到某物 get给出某物 give拿到某物 take
+终点位置使到达某一位置 put使轻轻到达某一位置 lay place使从其他位置到达说话者位置 bring使从说话者位置到达其他位置 send使位置暂停改变 hold使位置保持不变 keep位置保持不变 stay hang settle
+相互位置一事物到另一事物上面 cover一事物到另一事物下面 support两事物混合 mix两事物互换 switch两事物相连 link join connect stick tie两事物相遇 meet两事物交叉 cross
+运动轨迹从一个点到另一个点 move shift经过某个点 pass低点往高点 raise lift rise高点往低点 drop fall一事物在另一事物后面 follow一事物在另一事物前面 lead一物载另一物 carry往复运动 bounce roll shake screw
+速度快速运动 run rush hurry
+力量轻轻接触 touch用力接触 hit knock crash使快速运动 throw用力接触并来回移动 rub用力使事物脱离原来的位置 pull对事物朝某一方向用力 push draw press
+空间空间开放或关闭 open close shut一事物进入某一空间 fit enter一事物进入某一空间（气体或液体） fill pump spill spray事物离开某一空间 clean clear wipe事物离开某一地点 leave quit一事物到达某一地点 arrive reach一事物固定在某一个空间 fix set
+时间某事发生 begin start happen某事结束 finish某事停止 stop
+方向一个方向到另一个方向 turn整体与部分从大到小（用力） break crack split tear从大到小 divide从多到少 cut
+形状bend fold twist stretch spread
+尺寸grow
+行为look see listen hear say speak talk tell ask think believe know likelove do
+系动词become seem feel sound smell taste
+世故型动词世故型动词：朋友少，但效率高总单词量：219个类别：14个
+看find watch observe ignore search show
+说意见：agree cancel let allow告诉：claim warn introduce explain express confirm要求：beg charge order带有情感地说：argue blame praise encourage complain promise insistshout threat其他：answer call count pronounce
+想consider guess deserve offerdoubt suspect trust forget remember imagine meanlearn understand wonderdecide try want hope wish expectwill shall should may might can must dare needimpress attract
+感觉enjoy suffer appreciate care hate worry thank welcome bless thrillfreak shock bother annoy disturb
+自然现象die live burn boil
+人体行为肢体：dance ride lie climb beat上肢：hug下肢：sit stand walk kick jump skip面部：smile laugh cry嘴巴：eat kiss suck lick blow cough sing鼻子：breathe皮肤：bleed精神：sleep wake relax健康：hurt injure cure inject
+生活行为cook bake fry drive measure wear wash tape record post travel screwdig hide pack mark
+社会行为buy sell shop pay spend waste invite rent fight kill steal cheat investrob wait marry divorce borrow lend owe vote bet celebrateplay pretendhelp direct entertain interrupt distractdesign build invent copyprepare organize manage handle treat controluse apply save choose accept pick collect win fail miss losecheck examine compare solve analyze
+运动skate swim fly shoot
+工作work interview hire fire compete retire
+学习read write spell translate
+事物之间的关系match qualify equal share include separate belong depend involve
+事物的发展变化change develop improve reduce add promote
+事物相互作用damage spoil ruin affect attack
+形容词总单词量：208个类别：47个根据牛津词典的统计，形容词的数量仅次于名词，约占词汇总数的四分之一，比动词多出将近一倍。但在我们的R词汇表里，形容词不但没有动词多，甚至比它还要少三分之一。因为我们根本不需要掌握那么多，只要把形容词里面最基础、最不可或缺的学到就可以了。
+物的属性与构成大小big huge little small medium
+高低high low
+长短long short tall
+深浅deep shallow
+粗细thick thin fat slim
+宽窄narrow wide
+重量heavy light
+正斜straight curved flat
+形状round square
+距离near far
+事物与空间full empty blank bare dirty
+时间new fresh
+数量extra only single poor rich slight total
+质地hard soft tough tender smooth rough sharp blunt fresh raw pure plaineven
+力量strong weak tight loose firm tense
+状态liquid gas solid
+温度hot warm cold cool
+湿度dry wet
+亮度bright dark dull
+味道sweet bitter delicious sour spicy
+声音loud quiet
+人的属性与构成时间young old
+身体hungry ill sick tired blind sore born pregnant alive
+行为busy violent wild
+外表beautiful ugly sexy
+心智smart clever stupid confused awake asleep familiar patient
+态度polite lazy honest rude brave aggressive
+情感interested curious proud sure confident
+心情happy glad sad upset sorry guilty calm afraid angry crazy mad excitedbored disappointed jealous lonely
+事的属性与构成难度easy hard difficult
+时间late due urgent efficient
+可能性possible available
+安全性dangerous safe
+其他wrong strict correct proper lucky fair successful
+综合属性品质（好）good nice fine great perfect wonderful amazing excellent
+品质（坏）bad terrible awful
+真实性real true false fake
+完整性complete
+精确性exact specific
+复杂性complicated simple
+其他fun horrible weird strange comfortable incredible gross
+事物关系特殊性special regular
+一致性same different
+普遍性typical normal common general popular average particular own
+重要性serious causal important main formal professional
+必要性necessary
+关联性free relative legal physical mental local native international cheapexpensive separate public worth
+介词总单词量：48个类别：14个介词主要是按照它们的功能进行分类的。我们需要重点学习的是前两大类：表示动态位置的介词和静态位置的介词。
+动态位置轨迹across along past over up down through on off in out against
+起点from
+终点to toward for about
+静态位置点at
+点与点by beside before after behind between around
+点与平面beyond under above below
+点与空间outside inside within
+从属of with without
+时间during since till
+替代instead of
+比较than as
+整体与部分besides among except including
+因果according to
+其他despite per
+其他词总单词量：123个类别：9个
+副词时间now early just then recently ago already yet ever never forever
+位置here there
+方向away forth apart together aside
+数量extra alone
+程度quite much very well extremely almost enough
+强调actually especially absolutely certainly
+速度fast slow soon suddenly immediately gradually
+频率again often usually always
+顺序finally eventually
+转折otherwise
+可能性probably perhaps maybe
+递进also too either neither else
+引导when where how why what
+连词因果because
+转折but though
+并列and
+条件if unless except
+时间while
+选择or whether
+限定词顺序last next
+数量all any some both each either neither every few many much
+指代this that these those another such
+代词I you he she we they it
+疑问代词which who
+冠词a an the
+感叹词bye hello no yes pardon please wow damn
+缩略词Mr. Ms.
+数词zero one two three four five six seven eight nine ten hundred thousandmillion billion
+]]></content>
+      <categories>
+        <category>英语</category>
+      </categories>
+      <tags>
+        <tag>英语</tag>
       </tags>
   </entry>
   <entry>
@@ -37773,6 +37856,113 @@ Racket官网
       </tags>
   </entry>
   <entry>
+    <title>英语学习方法</title>
+    <url>/en-learning-method-of-english/</url>
+    <content><![CDATA[理论磨刀不误砍柴工，了解一下英语学习的理论，能够少走一些弯路，找到自己应该坚持的方向。
+赖世雄说英语讲得非常棒、非常流利是英语学习者的一个梦想。有人说，学英语就一定要在英语系国家住个三五年，赖世雄告诉你这个是完全不对的。比如在国外生活了很多年的华侨，英语流利度仍然不够，还有很多人从来没出过国，但是他们的英语讲得非常流利。口语是一个人的门面，口语是沟通的桥梁，所以学英语的第一步是学说，先有语言后才有文字。
+
+
+1、会话法。用正确的声音源（地道老外讲的话）把资料书的内容完全消化，然后丢开书，自己一个人分裂练习多个角色，反复操练。用回忆，尽量不要看书，很流利之后可以自己造句，直至内容完全吸收。
+2、描述法，随身携带很小的汉英字典。见到什么就描述什么，不会的单词就查（不用英汉字典，因为汉字不会说的时候查汉英字典更方便）
+3、翻译法，口语翻译，比如看电视的时候，听见任何对白都给它翻译成英文，将任何进入大脑的中文都翻译成英文。不会的马上查。学校开会很无聊，把老师和校长的讲话都翻译成英文。
+视频链接：https://pan.baidu.com/s/1osQw7w2_u8ZQn6LVAYS7uA 密码：d0du
+英语思维篇简单的说，用英语思维，就是看你能否用英语来理解英语。要达到英文思维的水平，最起码的，就是像中国人读中文一样：一段话从前看到后，就读懂了。（当然，我指通俗读物中的文字，过于弯弯绕的，中文也未必能一眼读懂）不需要从英文翻译到中文，从中文翻译到汉语拼音，更不需要翻译到一幅幅图片，你就是读懂了。
+为什么大多数人始终没有培养出英语思维？原因一：很多人背单词的时候，只顾着背英文词汇与中文释义之间的一一对应关系，这是绝大多数人学不好英文的根本原因之一。
+解决办法：果断抛弃英汉词典，只用英英字典。你学习justify这个词，看到的释义是这样：
+
+To justify a decision, action, or idea means to show or prove that it is reasonable or necessary.
+
+再看到justify，你不会想到“使…合理化”，也未必能把这整句柯林斯释义复述出来，但是拿把枪顶你脑门上逼你解释的话，你一定会联想到decision, prove, reasonable, necessary 这些关键词。够了！当你能够用简单的英语单词来关联复杂的英语单词，在你的脑中，英语词汇就不再是一个单词绑上一个释义这样几千个孤立的知识点，而是能够构成网络和体系，就像中文对你而言一样。真的不用担心你没法一字一句把释义记下来，就像我问你中文“逻辑”是什么意思，“抽象”是什么意思，你能给出准确解释么，你当然不能，你又不是人肉字典。
+原因二：不敢脱离翻译去看原文，一旦没有翻译，就哭着喊着臣妾做不到啊。结果，就是你永远把英语当成一门学问在学，而无法当作一个技能在用。很多人会说，我也想用啊，我想先学好了再用。正是这样的想法，导致无数人学了十几年英语，依然只知道读新概念，还要单词从A背到C，再从A背到C，再从A背到C……
+你知道问题在哪里么？因为“学”和“用”之间，本就没有一条黑白分明的界限，不是说你花100天去专心学习，到了101天，啊，见证奇迹的时刻，你突然可以开始用了。
+大家都学过中文，有谁是把几万个汉字和成语都先掌握了，再去看书读报的？会开车的话，谁又是把车技练得跟舒马赫一样再上路的？学英文难道不是一个道理么，如果你已经熟悉了三四千个单词，那么你就应该大胆开始阅读原文，并且果断抛弃中文译文。你以为自己在双语阅读的时候，根本就是在汉语阅读而已嘛。
+除非是关系你饭碗或者生命的阅读材料，否则不用怕读不懂，不用怕理解错，你想象一下自己小时候是怎么一点点学会看中文书的，不也是从连蒙带猜开始的么；但是你读了几十几百篇，自然就读出了感觉，读出了自信，是不是这个道理？说到底，英语思维，或者用英语思考和理解，本身不是什么大不了的事情，一个愿意付出努力和坚持，并且方法得当的语言学习者，经过一段时间的训练就能达到这样的水平。
+解决办法：连蒙带猜地读，大量的读。
+克拉申说“会用任何语言流利交流的前提是必须能用这种语言思考，做不到的就永远不能正常交流。”这是结论，没有英文思维，永远也听不懂正常速度的英文，永远也听不了长句子。
+模仿儿童学习语言的方式：猜测–形成条件反射–建立语言区–实现语言思维。成人学习语言的过程：学习–记忆–记忆区–知识。
+克拉申创立的S.L.A.（Second Language Acquisition）：简单来说，语言的掌握，无论是第一语言还是第二语言，都是在“可理解的”真实语句发生（即我们前面探讨的有效的声音，也就是可以懂意思的外语）下实现的；都是在放松的不反感的条件下接受的；它不需要“有意识地”学习，训练和使用语法知识；它不能一夜速成，开始时会比较慢，说的能力比听的能力实现得晚。所以最好的方法就是针对以上语言实现的特点来设计的。他的理论由以下五大支柱组成，被他称为五个“假说”。五个假说不分先后，但分量不同。
+1）习得-学得差异假设（The Acquisition-Learning Hy-pothesis）2）监检假设（The Monitor Hypothesis）3）输入假设（The Input Hypothesis）4）情感过滤假设（The Affective Filter Hypothesis）5）自然顺序假设（The Natural Order Hypothesis） 
+沉默期有一个非常重要的“沉默期”(Silent period)的概念，克拉申认为，无论成人或儿童，在掌握说话能力前，都会有一个相当长的沉默期，直到听懂的量达到一定程度而有足够的自信时，才可能说话。这一沉默期是正常的同时也是必要的。所以大家不要急着上来就想说，说的能力要来得慢，同时它是自然到来的。
+“先听说，不读写”这是一个外国语言学家不太讨论（因为对他们来说是常识）而中国同学却常常误解问题，即听说读写之间的关系。对于中国同学来说，认为这四个方面的区别比较明显，而且我们常常把“听说”归在一类，把“读写”归在一类。这和中文的特殊性有关。中文的“听、说、读、写”是分家的，大家会“听说”交流后，并不会认字，要去“学习”认字。因为中国的汉字确实是需要通过“学习”的方法掌握，也就是主要用记忆的方法。不学习，汉字是无法掌握的。而英文，和许多其他的拼音文字一样，读音和文字是紧密相连的。会了“听说”，只要掌握了读音规律，拼写自然就会了。所以严格来讲，外国小孩上学不学习“认字”，而是学“拼音规律”。英文叫做Phonics。
+我们已经明确了“建立英文思维主要是建立英文声音的思维”这个概念，结合“二语悉得”的理论，再根据母语掌握的规律，可以先明确这一理念：“先听说，后读写。”大家笑了，就这呀！早就听过这个老生常谈了，而且知道母语学习都是这个顺序。其实很多人并不真正明白它的含义，也不照着做。它的实际含义是叫你在你学会“听说”之前，不要急着学“读写”。所以本人说得过分一点，把它称为：“先听说，不读写”。到高阶段再说。我把著名语言学家保罗•比斯勒博士(Pimsleur)的关于“阅读”应实现于“听说”的语言能力掌握之后的论述给大家参考：“Reading has been defined as “decoding the graphicmaterial to the phonemic patterns of spoken language which have already been mastered when reading is begun.” To put it another way, reading consists of coming back to speech through the graphics symbols. In short, meanings reside in the sounds of the spoken language. Speaking a language is the necessary first step to acquiring the ability to read a language with meaning. ——Paul Pimsleur”
+对大多数中国同学而言，主动回避“文字”更十分必要。因为大多数中国同学，只要上到大学程度的，多半是“视觉学习型”（Visual Learning Style）。而“听觉学习型”(Audio Learning Style)和“动作学习型” (Kinesthetic Learning Style)的同学，一般会被我国这种教育体制淘汰掉。“视觉学习型”的同学，建立英语思维时，很容易受到“文字”的干扰，忍不住看文字，甚至先想一下文字，再过度到含义。成了“声音”—“字型”—“含义”的路线。应该避免想到字型，直接将“声音”和“含义”建立联系。
+“听”的原则和方法：1）千万不要着急学文字，语言掌握的关键是解决“声音”。2）不依赖语法知识和中文翻译，重点是“猜测”着听。3）在后期能听懂简单段落和简单对话时，可以模仿和重复一些句子并尝试自己说。4）最后，可以开始阅读一些与听到的对话有关的文字。注意一定要在听之后才能读，千万不能一发现听不懂马上去翻看文字来帮忙。 
+背单词方法原则：建立连接，加强连接。
+1、多维，可以背单词，可以背句子，可以听ESLPod，可以阅读，不排斥任何一种记忆方法。2、重复，按照艾宾浩斯遗忘曲线也好，按照早晚也好，按照循环也好，一定要重复。3、欧陆词典法，使用分类词典，闭目听选，三秒过一个单词。4、联想法，同类词 实物 拆词 近义词 反义词 父词 解释 造句。5、英英记忆法，使用英文解释英文单词。
+心态对于说英语，像玩游戏一样放松，一样自信，脸皮要厚，不要怕犯错。英语是交流的工具，能听懂别人说什么，能表达出自己的思想，这才是目的。把关注点放在倾听，放在表达，而不是语法错误和词法错误。交流不是考试，有错误又怎样？别人能听明白就够了！
+私人剧本法Benny Lewis创立了一种神奇的口语速成法，叫做私人剧本法。私人剧本法的核心理念是，任何有效的口语速成训练法，一定要从“与我相关”的剧本开始。想学一门新外语，就要从第一天开口。学习任何一门新外语，第一周就要制作与我密切相关的私人剧本，目的是说自己内心想要表达的话。用一个方法就可以理解私人剧本的意思，就是如果你内心渴望用中文和别人说什么，你就尽量写出英文相应的剧本。
+听说听写听写，or听抄，顾名思义，就是一边放听力段子，一边写下听到的内容。听写并非考验诸位的记忆，所以放完一句，暂停掉，写下你能够听到的每一个词的全拼，如果不能听出来所有内容，就重新放一遍刚才这一句话，再听不出来就再放一遍，以此循环往复直到完整写下原文，然后再放下一句。当然，如果5遍以上还是听不出来，直接看原文，不要继续纠结了，我们的学习过程要遵循人性啊。那么5遍还没有听出来是什么原因呢？有生词？那么查之。有语音现象导致认识的词也听不出来？那说明还没有练到火候啊。语速过快？那么先从比较慢的材料开始吧。一步一步训练耳朵的熟悉度，然后再换比较快的材料。
+听读一篇新的听力材料，头2、3遍一定要从头到尾连贯着听，不要逐字逐句听，这个时候不求听懂绝大部分内容，而只求听懂一个大概。这样2、3遍连贯着听下来，哪怕你只懂了几个单词，也没关系，这在听力的新手来说完全正常，根本不必责难自己（哪怕你觉得自己阅读理解的水平已经达到了《新概念》第四册都已经学完的水平、但从没练过听力）。
+第二步，逐字逐句听。一开始，把一个比较长的句子一次全部听下来，可能会有困难：听到句尾，早就已经忘了开头说什么了。逐字逐句听的时候，可以把一句话拆成几个部分来听，听完一小部分，立刻口头重复，说一遍。
+第二步中，遇到难点要来回多听几遍，力求听懂。但如果某一句话或句子的某1、2个单词听了4、5遍还没听出来，那就先放一放，往下听。后面的内容常常会为前面的内容提供解释。
+一篇听力练习，你能听明白90%-95%的意思，就行了。这不是“不求甚解”，而是力求高效地利用时间，更重要的是保持自己学习英语的兴趣和热情。
+影子跟读法影子跟读法的核心在于跟读native的对话，不纠结于一词一句的发音对错，不要打断录音，也就是不要按暂停键，强迫自己跟上native的节奏和思维，最后达到能够下意识的做出回答，绕过中文思考-英文说出的弯弯。
+外语学习最重要的目的就是进行“有效的沟通”。
+影子跟读所谓影子跟读，指的是跟读者滞后一小段时间，像影子一样在源语后面进行复述。具体操作就是：当源语在读第二或者第三个单词时，跟读者开始跟读第一个单词，并尽量保证使用与源语完全相同的语速、语调、语气甚至音色。影子跟读最大的妙处在于其使得语言在跟读者脑中形成了一个“闭环”：先听源语，有时还可以看着原文，在跟读动作开始前，这是一个源语输入的过程；开始跟读时，跟读者其实是借助刚刚听到和现在看到的（如果看原文）源语进行输出；当跟读者听到自己的跟读时，会对准确度和流畅度甚至还原度进行判断，这是再次输入。因此，影子跟读并非简单意义上的模仿，而是一个非常复杂的语言习得过程。其相比于普通意义上逐句跟读的好处是，由于跟读时离源语输入的时间尚短，对于语调和发音的还原将更加准确，即使不准确，也更易发觉并纠正。一篇文章至少跟读50遍！50遍！ 大家在做影子跟读的时候，最大的困难就是跟不上，此时，可借助电脑中的各种播放器的变速功能进行练习，比如Windows系统自带的MediaPlayer就在高级选项中有播放速度设定，不同水平的跟读者可以根据自己的具体情况来选择0.5-1.0甚至更高倍速来播放要跟读的音频。而到后期用原速跟读毫无压力时，则可以开启加强模式，加快音频速度进行跟读。
+教程链接: http://pan.baidu.com/s/1sljF5al 密码: jxkx
+在条件不允许大声跟读的情况下，可以在心中跟读。
+句子读法“三剑客”那么如何去练习句子的发音呢？给大家介绍句子读法“三剑客”：连读、失去爆破、弱读。比如，on it不应读成【on】【It】，而应读成【o】【nI】【t】，同样，first time中的两个【t】应读成一个【t】；美国总统奥巴马在2008年芝加哥获胜演说中读“must be”中的【t】不读出声，读“could be”中的【d】彻底消失。因此，与其将大量精力浪费在一个孤立的音标上，倒不如学习如何读好句子，毕竟这才是根本。
+发声和气息气为声之本，气乃音之帅。气息是我们发声的根源，掌握良好的气息运用方式，不但说话不累，而且可以美化音色，强身健体。
+
+关键：肚子有两个方向，正面和侧面。吸气时，两个方向都应该被打开。而当你唱歌/读书的时候，腰的前后方向应该是收缩的，但是侧面别动，用肌肉撑住。
+
+1、最简单易上手的训练方式，其实就是“读报纸”，用你心中觉得是播音员的方式来大声朗读（关键是大声，但不是吼叫），尽量把每个字的发音发清楚发完整。每天十分钟到半小时，三个月后发声和之前完全不一样了。咬字方面要活动开脸部肌肉，最大限度打开牙关，多张大嘴巴，下巴放松，嘴唇和舌头咬保持有力。
+2、腹式呼吸训练。
+
+在刚开始练习的时候要慢吸慢吐就像在闻花香，喉咙只是一个运送气息的管道而不是着力点，说话、唱歌时的发力点是小腹，通过小腹的支撑下，喉咙应该是放松的。
+在播音发声时，气息会吸到丹田处，小腹微微紧张，把吸到丹田的气拖住。出声时，两肋和小腹形成一个“皮球”，慢慢的把气控制着放出来。
+后仰三十度，小腹紧张，感觉小腹处支撑住你的气息，发出yia的音。你要感觉到声音是从丹田处出来，而不是扯嗓子。这种强控制练习提升是最快的。
+打嘟嘟（唇颤音），通过打哈欠和发笑的感觉去发声。
+
+背诵新东方有个学员现在在Duke大学，他从高一开始背《新概念英语》第三册，背到高三就背完了。高考考进了北大，进北大后，他本来不想再背了。但当他背给同学听的时候，其他同学都露出了羡慕的眼光，于是，为了这种虚荣心，他就坚持背第四册，把第三、四册都背得滚瓜烂熟，他熟到什么地步呢，有人把其中任何一句说出来，把能把上一句和下一句连接下去，而且语音非常标准，因为他是模仿着磁带来背的。后来他去了美国Duke大学，他给新东方的教师写信，老师不敢回，因为老师对他的英文有畏惧感，他的英文学得太好，只能给他回中文信，并告诉他不是不会写英文，而是想让他温习温习中文，不要忘记祖国的语言。这位学员到美国第一个星期写文章，教授把他叫过去说他的文章是剽窃的，因为他的文章写得太好了，教授说：“我20年教书没有教出这么漂亮的文章来。“这个学员说，我没有办法证明我能写出这么优秀的文章，但我告诉你，我能背108篇文章，而且背得非常熟练，你想不想听。结果，他没有背完两篇，教授就哭了起来，为什么？因为这个教授想一想自己教了20年了，居然一篇文章也没有背过，被中国学生背掉了，所以很难过……　 
+
+学习英语唯一的正轨，不出仿效与熟诵；仿效即整句的仿效，熟诵则仿效之后必回环练习，必使能顺口而出而后已。凡能依这方法读英文的，无不成功，而且这极容易，真是学习英语的康庄大道。——林语堂
+
+熟读成诵，每次背诵三句话，直到脱口而出。
+
+所背的课文要典型而纯。
+理解而后能背。
+先听后背。
+从易到难，从短到长，循序渐进。
+一天之计在于晨。
+注意重点句型和单词。
+及时复习，多多重复。
+尽量尝试不同语调，在不同环境和条件下重复。
+
+对话1、模仿对话材料选择EnglishPod，模仿会话中的角色，进行英语对话。
+2、自我对话听完某条VOA新闻后，自己和自己把这个新闻复述一遍，或者看完某篇文章以后，自己和自己把这篇文章大概说了一个什么意思叙述一遍。或者，比如最近有某个电视连续剧很好看，自己和自己把整个连续剧的故事讲一遍。比如西游记大家都看过吧？你找不到口语练习材料的时候，就对自己把西游记的故事讲一遍，比如从前有一个和尚，他要去西天取经，佛祖派他怎么怎么样，他的徒弟怎么怎么样，四个徒弟分别是谁，什么性格，于是他们出发上路了，路上有很多妖怪，都分别有什么样的妖怪，想起来哪个就叙述哪个，保证这样可以让你不间断地说上半个小时的。总而言之，就是把自己分成两个人，一个给另一个讲故事、讲笑话、讲新闻等等。
+读写透析法透析法要提升中国人的英语文化水平，核心就是读懂英文原著。读懂原著，能让你睁眼看世界，品味原汁原味的英语。狭义上说，英文原著主要是指以英语为母语人士的文字著作，也包括了其他语种著作的英译版。广义上说，英文原著是一切以英语为载体的信息，包括广播、电视、歌曲、电影、有声电子书、网络视频、播客等视听信息。广义上，原著的资源十分丰富，例如全世界75%的电视节目是用英语播出的。在国内，我们也可以在网上接收到世界上很多国家的英文电台、电视台。
+把英语用起来，就是在真实的生活把英语用起来，就是在真实的生活中使用这门语言，要求听、说、读、中使用这门语言，要求听、说、读、写全部实现英文原著化。听，就听实时的英语新闻，从BBC、CNN到Al Jazeera；说，就用英语聊天，从身边的熟人到网络另一端的老外；读，就读老外的英文版，从短信、邮件到大部头的专著；写，就写英文邮件、短信给亲友同事乃至生意上的伙伴。 
+对一本英文原著而言，“读下去”比“学生词”的意义大得多。只有“读下去”，你才能获得英 文原著的种种好处，读不下去，一切都等于零。 
+核心操作：每2页查1个生词。
+首先可以跳过卷首，包括简介和评论，以免打击积极性。从原著的正文开始读，遇到生词的时候，使用电子词典查单词。每2页查1个生词，词组、短语等是与单词处于同等地位的词条，亦视为一个词。你也可根据手机、平板电脑等设备的屏幕大小自定词的数量，但总的原则是不可查太多，特别是不能每个生词都查。透析时，遇到生词认为需要查词典便可使用查词机会，而不是先挑出生词来查，也不是读完再回头找生词查。在电子词典上看懂生词解释后便可回到原著，不要试图停下来记忆单词。在每2页中无论碰到多少个生词，10个好，20个亦好，有且只需查1个（除非你找不到生词了）。这些措施都能尽可能减少查生词操作对阅读的干扰。
+你不禁要问：“多查几个不行吗？”“2页才查1个太少了吧？”……没商量！你想多查生词吗？可以，但你必须有阅读量的支持。例如，你若想迅速扩充词汇量，每天掌握50个生词，你就必须读够100页。千万别以为“每2页查1个生词”太少了，如果你只读一两页，就像在学校上英语课那样，查1个还是查10个，是没有什么区别的。但现在你每天要读几十页，或者电子版的几个百分点，日后你要读成千上万页、几百本书，就很有必要控制查词量，每2页查1个和每2页查2个的差别都是巨大的。多查生词，就会厌烦，进而有半途而废的风险，这正是无数人读不懂原著，长年停留在英语蒙昧状态的致命原因：你觉得几个生词重要，还是几百本原著重要？ 每2页才有1个查词机会，而生词多，如何选择？答案：随便。可以查重现率高的词，因为查明意义就能明白书中许多地方，可以查你认为“关键”的词，如小说关键情节中的生词，还可以从“功利”出发，优先查考试中可能出现的“大纲生词”，等等。
+第二天在读英文原著之前，你要在电子词典上复习查词的“历史”，但是不要超过5分钟。
+中译英打开《新2》，先别看英语原文，因为都是初中程度的句子，你一看就会。先看汉语翻译，一句一句从汉语向英语口译，口译完，再看英文原文。因为这本的内容很浅显，你有很大机率口译得跟原文差不多，但别大意，最好写下来，尤其那些be动词啊，单数第三人称啊，过去式啊，倒装啊，强调啊，和原文对比，跟原文不同的地方，就是你的进步之处！做过几篇，你就发现你变牛了，你觉得一个句子，自己的写法可以，书上的写法也可以。这时你就可以整篇小文地译了，译完，整体对比。如果你觉得新２比较散，可以口译带汉译的作文范文。那个句子土了点，不过见效快，一个搭配你没真掌握绝对译不出来，想破头再看原文，记忆效果加倍！
+衡中体利用真题作文，以原因或影响为切入点，使用衡中体，练习限时写作。
+学习资料通用：把你的英语用起来、真题、新概念英语。单词：欧路词典（优词词根词缀、English Etymology、Collins、Collins Thesaurus、Vocabulary.com Dictionary、LDOCE5、牛津词典、英汉-汉英词典、USE THE RIGHT WORD）、沙拉查词、1368个单词就够了、Word Power Made Easy、Merriam-Webster’s Vocabulary Builder听力：点滴复读机、ESLPod、EnglishPod、粉红猪小妹、老友记、生活大爆炸口语：赖世雄美语音标、ESLPod、EnglishPod、赖世雄语法阅读：BBC、VOA、newyorker写作：Writing Academic English、On Writing Well、The Chicago Manual of Style
+小结条条大路通罗马，方法只是让自己少走一些弯路，真正重要的是——坚持！有计划地坚持！所有泛泛而谈都是吹牛逼，去听，去说，去读，去写！每天完成什么，完成多少，量化，看到自己的进度，看到自己的进步！
+书签清北托福备考联盟慕课
+将英语变成母语
+怎么在一个月内让英语听力有明显的提高？
+如何在一个月内通过大学英语四级、大学英语六级考试？
+我的英语学习之路–影子跟读法
+句子读法“三剑客”：连读、失去爆破、弱读
+英语朗读技巧（连读、失去爆破和弱读/缩读 ）精华版
+怎样培养英语思维，尤其是在读英文文章的时候？-王捷
+怎样培养英语思维，尤其是在读英文文章的时候？-陈名豪
+The New Yorker
+Collins Dictionary
+老友记（Friends）（MP3+LRC）_VOA英语学习网
+]]></content>
+      <categories>
+        <category>英语</category>
+      </categories>
+      <tags>
+        <tag>英语</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>我所看过最好的《心经》解读</title>
     <url>/essay-xj-illustration/</url>
     <content><![CDATA[作者不详，voidking整理。
@@ -37968,113 +38158,6 @@ SHL是逻辑左移指令，它的功能为：[1]将一个寄存器或内存单�
       <tags>
         <tag>笔记</tag>
         <tag>读书</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>英语学习方法</title>
-    <url>/en-learning-method-of-english/</url>
-    <content><![CDATA[理论磨刀不误砍柴工，了解一下英语学习的理论，能够少走一些弯路，找到自己应该坚持的方向。
-赖世雄说英语讲得非常棒、非常流利是英语学习者的一个梦想。有人说，学英语就一定要在英语系国家住个三五年，赖世雄告诉你这个是完全不对的。比如在国外生活了很多年的华侨，英语流利度仍然不够，还有很多人从来没出过国，但是他们的英语讲得非常流利。口语是一个人的门面，口语是沟通的桥梁，所以学英语的第一步是学说，先有语言后才有文字。
-
-
-1、会话法。用正确的声音源（地道老外讲的话）把资料书的内容完全消化，然后丢开书，自己一个人分裂练习多个角色，反复操练。用回忆，尽量不要看书，很流利之后可以自己造句，直至内容完全吸收。
-2、描述法，随身携带很小的汉英字典。见到什么就描述什么，不会的单词就查（不用英汉字典，因为汉字不会说的时候查汉英字典更方便）
-3、翻译法，口语翻译，比如看电视的时候，听见任何对白都给它翻译成英文，将任何进入大脑的中文都翻译成英文。不会的马上查。学校开会很无聊，把老师和校长的讲话都翻译成英文。
-视频链接：https://pan.baidu.com/s/1osQw7w2_u8ZQn6LVAYS7uA 密码：d0du
-英语思维篇简单的说，用英语思维，就是看你能否用英语来理解英语。要达到英文思维的水平，最起码的，就是像中国人读中文一样：一段话从前看到后，就读懂了。（当然，我指通俗读物中的文字，过于弯弯绕的，中文也未必能一眼读懂）不需要从英文翻译到中文，从中文翻译到汉语拼音，更不需要翻译到一幅幅图片，你就是读懂了。
-为什么大多数人始终没有培养出英语思维？原因一：很多人背单词的时候，只顾着背英文词汇与中文释义之间的一一对应关系，这是绝大多数人学不好英文的根本原因之一。
-解决办法：果断抛弃英汉词典，只用英英字典。你学习justify这个词，看到的释义是这样：
-
-To justify a decision, action, or idea means to show or prove that it is reasonable or necessary.
-
-再看到justify，你不会想到“使…合理化”，也未必能把这整句柯林斯释义复述出来，但是拿把枪顶你脑门上逼你解释的话，你一定会联想到decision, prove, reasonable, necessary 这些关键词。够了！当你能够用简单的英语单词来关联复杂的英语单词，在你的脑中，英语词汇就不再是一个单词绑上一个释义这样几千个孤立的知识点，而是能够构成网络和体系，就像中文对你而言一样。真的不用担心你没法一字一句把释义记下来，就像我问你中文“逻辑”是什么意思，“抽象”是什么意思，你能给出准确解释么，你当然不能，你又不是人肉字典。
-原因二：不敢脱离翻译去看原文，一旦没有翻译，就哭着喊着臣妾做不到啊。结果，就是你永远把英语当成一门学问在学，而无法当作一个技能在用。很多人会说，我也想用啊，我想先学好了再用。正是这样的想法，导致无数人学了十几年英语，依然只知道读新概念，还要单词从A背到C，再从A背到C，再从A背到C……
-你知道问题在哪里么？因为“学”和“用”之间，本就没有一条黑白分明的界限，不是说你花100天去专心学习，到了101天，啊，见证奇迹的时刻，你突然可以开始用了。
-大家都学过中文，有谁是把几万个汉字和成语都先掌握了，再去看书读报的？会开车的话，谁又是把车技练得跟舒马赫一样再上路的？学英文难道不是一个道理么，如果你已经熟悉了三四千个单词，那么你就应该大胆开始阅读原文，并且果断抛弃中文译文。你以为自己在双语阅读的时候，根本就是在汉语阅读而已嘛。
-除非是关系你饭碗或者生命的阅读材料，否则不用怕读不懂，不用怕理解错，你想象一下自己小时候是怎么一点点学会看中文书的，不也是从连蒙带猜开始的么；但是你读了几十几百篇，自然就读出了感觉，读出了自信，是不是这个道理？说到底，英语思维，或者用英语思考和理解，本身不是什么大不了的事情，一个愿意付出努力和坚持，并且方法得当的语言学习者，经过一段时间的训练就能达到这样的水平。
-解决办法：连蒙带猜地读，大量的读。
-克拉申说“会用任何语言流利交流的前提是必须能用这种语言思考，做不到的就永远不能正常交流。”这是结论，没有英文思维，永远也听不懂正常速度的英文，永远也听不了长句子。
-模仿儿童学习语言的方式：猜测–形成条件反射–建立语言区–实现语言思维。成人学习语言的过程：学习–记忆–记忆区–知识。
-克拉申创立的S.L.A.（Second Language Acquisition）：简单来说，语言的掌握，无论是第一语言还是第二语言，都是在“可理解的”真实语句发生（即我们前面探讨的有效的声音，也就是可以懂意思的外语）下实现的；都是在放松的不反感的条件下接受的；它不需要“有意识地”学习，训练和使用语法知识；它不能一夜速成，开始时会比较慢，说的能力比听的能力实现得晚。所以最好的方法就是针对以上语言实现的特点来设计的。他的理论由以下五大支柱组成，被他称为五个“假说”。五个假说不分先后，但分量不同。
-1）习得-学得差异假设（The Acquisition-Learning Hy-pothesis）2）监检假设（The Monitor Hypothesis）3）输入假设（The Input Hypothesis）4）情感过滤假设（The Affective Filter Hypothesis）5）自然顺序假设（The Natural Order Hypothesis） 
-沉默期有一个非常重要的“沉默期”(Silent period)的概念，克拉申认为，无论成人或儿童，在掌握说话能力前，都会有一个相当长的沉默期，直到听懂的量达到一定程度而有足够的自信时，才可能说话。这一沉默期是正常的同时也是必要的。所以大家不要急着上来就想说，说的能力要来得慢，同时它是自然到来的。
-“先听说，不读写”这是一个外国语言学家不太讨论（因为对他们来说是常识）而中国同学却常常误解问题，即听说读写之间的关系。对于中国同学来说，认为这四个方面的区别比较明显，而且我们常常把“听说”归在一类，把“读写”归在一类。这和中文的特殊性有关。中文的“听、说、读、写”是分家的，大家会“听说”交流后，并不会认字，要去“学习”认字。因为中国的汉字确实是需要通过“学习”的方法掌握，也就是主要用记忆的方法。不学习，汉字是无法掌握的。而英文，和许多其他的拼音文字一样，读音和文字是紧密相连的。会了“听说”，只要掌握了读音规律，拼写自然就会了。所以严格来讲，外国小孩上学不学习“认字”，而是学“拼音规律”。英文叫做Phonics。
-我们已经明确了“建立英文思维主要是建立英文声音的思维”这个概念，结合“二语悉得”的理论，再根据母语掌握的规律，可以先明确这一理念：“先听说，后读写。”大家笑了，就这呀！早就听过这个老生常谈了，而且知道母语学习都是这个顺序。其实很多人并不真正明白它的含义，也不照着做。它的实际含义是叫你在你学会“听说”之前，不要急着学“读写”。所以本人说得过分一点，把它称为：“先听说，不读写”。到高阶段再说。我把著名语言学家保罗•比斯勒博士(Pimsleur)的关于“阅读”应实现于“听说”的语言能力掌握之后的论述给大家参考：“Reading has been defined as “decoding the graphicmaterial to the phonemic patterns of spoken language which have already been mastered when reading is begun.” To put it another way, reading consists of coming back to speech through the graphics symbols. In short, meanings reside in the sounds of the spoken language. Speaking a language is the necessary first step to acquiring the ability to read a language with meaning. ——Paul Pimsleur”
-对大多数中国同学而言，主动回避“文字”更十分必要。因为大多数中国同学，只要上到大学程度的，多半是“视觉学习型”（Visual Learning Style）。而“听觉学习型”(Audio Learning Style)和“动作学习型” (Kinesthetic Learning Style)的同学，一般会被我国这种教育体制淘汰掉。“视觉学习型”的同学，建立英语思维时，很容易受到“文字”的干扰，忍不住看文字，甚至先想一下文字，再过度到含义。成了“声音”—“字型”—“含义”的路线。应该避免想到字型，直接将“声音”和“含义”建立联系。
-“听”的原则和方法：1）千万不要着急学文字，语言掌握的关键是解决“声音”。2）不依赖语法知识和中文翻译，重点是“猜测”着听。3）在后期能听懂简单段落和简单对话时，可以模仿和重复一些句子并尝试自己说。4）最后，可以开始阅读一些与听到的对话有关的文字。注意一定要在听之后才能读，千万不能一发现听不懂马上去翻看文字来帮忙。 
-背单词方法原则：建立连接，加强连接。
-1、多维，可以背单词，可以背句子，可以听ESLPod，可以阅读，不排斥任何一种记忆方法。2、重复，按照艾宾浩斯遗忘曲线也好，按照早晚也好，按照循环也好，一定要重复。3、欧陆词典法，使用分类词典，闭目听选，三秒过一个单词。4、联想法，同类词 实物 拆词 近义词 反义词 父词 解释 造句。5、英英记忆法，使用英文解释英文单词。
-心态对于说英语，像玩游戏一样放松，一样自信，脸皮要厚，不要怕犯错。英语是交流的工具，能听懂别人说什么，能表达出自己的思想，这才是目的。把关注点放在倾听，放在表达，而不是语法错误和词法错误。交流不是考试，有错误又怎样？别人能听明白就够了！
-私人剧本法Benny Lewis创立了一种神奇的口语速成法，叫做私人剧本法。私人剧本法的核心理念是，任何有效的口语速成训练法，一定要从“与我相关”的剧本开始。想学一门新外语，就要从第一天开口。学习任何一门新外语，第一周就要制作与我密切相关的私人剧本，目的是说自己内心想要表达的话。用一个方法就可以理解私人剧本的意思，就是如果你内心渴望用中文和别人说什么，你就尽量写出英文相应的剧本。
-听说听写听写，or听抄，顾名思义，就是一边放听力段子，一边写下听到的内容。听写并非考验诸位的记忆，所以放完一句，暂停掉，写下你能够听到的每一个词的全拼，如果不能听出来所有内容，就重新放一遍刚才这一句话，再听不出来就再放一遍，以此循环往复直到完整写下原文，然后再放下一句。当然，如果5遍以上还是听不出来，直接看原文，不要继续纠结了，我们的学习过程要遵循人性啊。那么5遍还没有听出来是什么原因呢？有生词？那么查之。有语音现象导致认识的词也听不出来？那说明还没有练到火候啊。语速过快？那么先从比较慢的材料开始吧。一步一步训练耳朵的熟悉度，然后再换比较快的材料。
-听读一篇新的听力材料，头2、3遍一定要从头到尾连贯着听，不要逐字逐句听，这个时候不求听懂绝大部分内容，而只求听懂一个大概。这样2、3遍连贯着听下来，哪怕你只懂了几个单词，也没关系，这在听力的新手来说完全正常，根本不必责难自己（哪怕你觉得自己阅读理解的水平已经达到了《新概念》第四册都已经学完的水平、但从没练过听力）。
-第二步，逐字逐句听。一开始，把一个比较长的句子一次全部听下来，可能会有困难：听到句尾，早就已经忘了开头说什么了。逐字逐句听的时候，可以把一句话拆成几个部分来听，听完一小部分，立刻口头重复，说一遍。
-第二步中，遇到难点要来回多听几遍，力求听懂。但如果某一句话或句子的某1、2个单词听了4、5遍还没听出来，那就先放一放，往下听。后面的内容常常会为前面的内容提供解释。
-一篇听力练习，你能听明白90%-95%的意思，就行了。这不是“不求甚解”，而是力求高效地利用时间，更重要的是保持自己学习英语的兴趣和热情。
-影子跟读法影子跟读法的核心在于跟读native的对话，不纠结于一词一句的发音对错，不要打断录音，也就是不要按暂停键，强迫自己跟上native的节奏和思维，最后达到能够下意识的做出回答，绕过中文思考-英文说出的弯弯。
-外语学习最重要的目的就是进行“有效的沟通”。
-影子跟读所谓影子跟读，指的是跟读者滞后一小段时间，像影子一样在源语后面进行复述。具体操作就是：当源语在读第二或者第三个单词时，跟读者开始跟读第一个单词，并尽量保证使用与源语完全相同的语速、语调、语气甚至音色。影子跟读最大的妙处在于其使得语言在跟读者脑中形成了一个“闭环”：先听源语，有时还可以看着原文，在跟读动作开始前，这是一个源语输入的过程；开始跟读时，跟读者其实是借助刚刚听到和现在看到的（如果看原文）源语进行输出；当跟读者听到自己的跟读时，会对准确度和流畅度甚至还原度进行判断，这是再次输入。因此，影子跟读并非简单意义上的模仿，而是一个非常复杂的语言习得过程。其相比于普通意义上逐句跟读的好处是，由于跟读时离源语输入的时间尚短，对于语调和发音的还原将更加准确，即使不准确，也更易发觉并纠正。一篇文章至少跟读50遍！50遍！ 大家在做影子跟读的时候，最大的困难就是跟不上，此时，可借助电脑中的各种播放器的变速功能进行练习，比如Windows系统自带的MediaPlayer就在高级选项中有播放速度设定，不同水平的跟读者可以根据自己的具体情况来选择0.5-1.0甚至更高倍速来播放要跟读的音频。而到后期用原速跟读毫无压力时，则可以开启加强模式，加快音频速度进行跟读。
-教程链接: http://pan.baidu.com/s/1sljF5al 密码: jxkx
-在条件不允许大声跟读的情况下，可以在心中跟读。
-句子读法“三剑客”那么如何去练习句子的发音呢？给大家介绍句子读法“三剑客”：连读、失去爆破、弱读。比如，on it不应读成【on】【It】，而应读成【o】【nI】【t】，同样，first time中的两个【t】应读成一个【t】；美国总统奥巴马在2008年芝加哥获胜演说中读“must be”中的【t】不读出声，读“could be”中的【d】彻底消失。因此，与其将大量精力浪费在一个孤立的音标上，倒不如学习如何读好句子，毕竟这才是根本。
-发声和气息气为声之本，气乃音之帅。气息是我们发声的根源，掌握良好的气息运用方式，不但说话不累，而且可以美化音色，强身健体。
-
-关键：肚子有两个方向，正面和侧面。吸气时，两个方向都应该被打开。而当你唱歌/读书的时候，腰的前后方向应该是收缩的，但是侧面别动，用肌肉撑住。
-
-1、最简单易上手的训练方式，其实就是“读报纸”，用你心中觉得是播音员的方式来大声朗读（关键是大声，但不是吼叫），尽量把每个字的发音发清楚发完整。每天十分钟到半小时，三个月后发声和之前完全不一样了。咬字方面要活动开脸部肌肉，最大限度打开牙关，多张大嘴巴，下巴放松，嘴唇和舌头咬保持有力。
-2、腹式呼吸训练。
-
-在刚开始练习的时候要慢吸慢吐就像在闻花香，喉咙只是一个运送气息的管道而不是着力点，说话、唱歌时的发力点是小腹，通过小腹的支撑下，喉咙应该是放松的。
-在播音发声时，气息会吸到丹田处，小腹微微紧张，把吸到丹田的气拖住。出声时，两肋和小腹形成一个“皮球”，慢慢的把气控制着放出来。
-后仰三十度，小腹紧张，感觉小腹处支撑住你的气息，发出yia的音。你要感觉到声音是从丹田处出来，而不是扯嗓子。这种强控制练习提升是最快的。
-打嘟嘟（唇颤音），通过打哈欠和发笑的感觉去发声。
-
-背诵新东方有个学员现在在Duke大学，他从高一开始背《新概念英语》第三册，背到高三就背完了。高考考进了北大，进北大后，他本来不想再背了。但当他背给同学听的时候，其他同学都露出了羡慕的眼光，于是，为了这种虚荣心，他就坚持背第四册，把第三、四册都背得滚瓜烂熟，他熟到什么地步呢，有人把其中任何一句说出来，把能把上一句和下一句连接下去，而且语音非常标准，因为他是模仿着磁带来背的。后来他去了美国Duke大学，他给新东方的教师写信，老师不敢回，因为老师对他的英文有畏惧感，他的英文学得太好，只能给他回中文信，并告诉他不是不会写英文，而是想让他温习温习中文，不要忘记祖国的语言。这位学员到美国第一个星期写文章，教授把他叫过去说他的文章是剽窃的，因为他的文章写得太好了，教授说：“我20年教书没有教出这么漂亮的文章来。“这个学员说，我没有办法证明我能写出这么优秀的文章，但我告诉你，我能背108篇文章，而且背得非常熟练，你想不想听。结果，他没有背完两篇，教授就哭了起来，为什么？因为这个教授想一想自己教了20年了，居然一篇文章也没有背过，被中国学生背掉了，所以很难过……　 
-
-学习英语唯一的正轨，不出仿效与熟诵；仿效即整句的仿效，熟诵则仿效之后必回环练习，必使能顺口而出而后已。凡能依这方法读英文的，无不成功，而且这极容易，真是学习英语的康庄大道。——林语堂
-
-熟读成诵，每次背诵三句话，直到脱口而出。
-
-所背的课文要典型而纯。
-理解而后能背。
-先听后背。
-从易到难，从短到长，循序渐进。
-一天之计在于晨。
-注意重点句型和单词。
-及时复习，多多重复。
-尽量尝试不同语调，在不同环境和条件下重复。
-
-对话1、模仿对话材料选择EnglishPod，模仿会话中的角色，进行英语对话。
-2、自我对话听完某条VOA新闻后，自己和自己把这个新闻复述一遍，或者看完某篇文章以后，自己和自己把这篇文章大概说了一个什么意思叙述一遍。或者，比如最近有某个电视连续剧很好看，自己和自己把整个连续剧的故事讲一遍。比如西游记大家都看过吧？你找不到口语练习材料的时候，就对自己把西游记的故事讲一遍，比如从前有一个和尚，他要去西天取经，佛祖派他怎么怎么样，他的徒弟怎么怎么样，四个徒弟分别是谁，什么性格，于是他们出发上路了，路上有很多妖怪，都分别有什么样的妖怪，想起来哪个就叙述哪个，保证这样可以让你不间断地说上半个小时的。总而言之，就是把自己分成两个人，一个给另一个讲故事、讲笑话、讲新闻等等。
-读写透析法透析法要提升中国人的英语文化水平，核心就是读懂英文原著。读懂原著，能让你睁眼看世界，品味原汁原味的英语。狭义上说，英文原著主要是指以英语为母语人士的文字著作，也包括了其他语种著作的英译版。广义上说，英文原著是一切以英语为载体的信息，包括广播、电视、歌曲、电影、有声电子书、网络视频、播客等视听信息。广义上，原著的资源十分丰富，例如全世界75%的电视节目是用英语播出的。在国内，我们也可以在网上接收到世界上很多国家的英文电台、电视台。
-把英语用起来，就是在真实的生活把英语用起来，就是在真实的生活中使用这门语言，要求听、说、读、中使用这门语言，要求听、说、读、写全部实现英文原著化。听，就听实时的英语新闻，从BBC、CNN到Al Jazeera；说，就用英语聊天，从身边的熟人到网络另一端的老外；读，就读老外的英文版，从短信、邮件到大部头的专著；写，就写英文邮件、短信给亲友同事乃至生意上的伙伴。 
-对一本英文原著而言，“读下去”比“学生词”的意义大得多。只有“读下去”，你才能获得英 文原著的种种好处，读不下去，一切都等于零。 
-核心操作：每2页查1个生词。
-首先可以跳过卷首，包括简介和评论，以免打击积极性。从原著的正文开始读，遇到生词的时候，使用电子词典查单词。每2页查1个生词，词组、短语等是与单词处于同等地位的词条，亦视为一个词。你也可根据手机、平板电脑等设备的屏幕大小自定词的数量，但总的原则是不可查太多，特别是不能每个生词都查。透析时，遇到生词认为需要查词典便可使用查词机会，而不是先挑出生词来查，也不是读完再回头找生词查。在电子词典上看懂生词解释后便可回到原著，不要试图停下来记忆单词。在每2页中无论碰到多少个生词，10个好，20个亦好，有且只需查1个（除非你找不到生词了）。这些措施都能尽可能减少查生词操作对阅读的干扰。
-你不禁要问：“多查几个不行吗？”“2页才查1个太少了吧？”……没商量！你想多查生词吗？可以，但你必须有阅读量的支持。例如，你若想迅速扩充词汇量，每天掌握50个生词，你就必须读够100页。千万别以为“每2页查1个生词”太少了，如果你只读一两页，就像在学校上英语课那样，查1个还是查10个，是没有什么区别的。但现在你每天要读几十页，或者电子版的几个百分点，日后你要读成千上万页、几百本书，就很有必要控制查词量，每2页查1个和每2页查2个的差别都是巨大的。多查生词，就会厌烦，进而有半途而废的风险，这正是无数人读不懂原著，长年停留在英语蒙昧状态的致命原因：你觉得几个生词重要，还是几百本原著重要？ 每2页才有1个查词机会，而生词多，如何选择？答案：随便。可以查重现率高的词，因为查明意义就能明白书中许多地方，可以查你认为“关键”的词，如小说关键情节中的生词，还可以从“功利”出发，优先查考试中可能出现的“大纲生词”，等等。
-第二天在读英文原著之前，你要在电子词典上复习查词的“历史”，但是不要超过5分钟。
-中译英打开《新2》，先别看英语原文，因为都是初中程度的句子，你一看就会。先看汉语翻译，一句一句从汉语向英语口译，口译完，再看英文原文。因为这本的内容很浅显，你有很大机率口译得跟原文差不多，但别大意，最好写下来，尤其那些be动词啊，单数第三人称啊，过去式啊，倒装啊，强调啊，和原文对比，跟原文不同的地方，就是你的进步之处！做过几篇，你就发现你变牛了，你觉得一个句子，自己的写法可以，书上的写法也可以。这时你就可以整篇小文地译了，译完，整体对比。如果你觉得新２比较散，可以口译带汉译的作文范文。那个句子土了点，不过见效快，一个搭配你没真掌握绝对译不出来，想破头再看原文，记忆效果加倍！
-衡中体利用真题作文，以原因或影响为切入点，使用衡中体，练习限时写作。
-学习资料通用：把你的英语用起来、真题、新概念英语。单词：欧路词典（优词词根词缀、English Etymology、Collins、Collins Thesaurus、Vocabulary.com Dictionary、LDOCE5、牛津词典、英汉-汉英词典、USE THE RIGHT WORD）、沙拉查词、1368个单词就够了、Word Power Made Easy、Merriam-Webster’s Vocabulary Builder听力：点滴复读机、ESLPod、EnglishPod、粉红猪小妹、老友记、生活大爆炸口语：赖世雄美语音标、ESLPod、EnglishPod、赖世雄语法阅读：BBC、VOA、newyorker写作：Writing Academic English、On Writing Well、The Chicago Manual of Style
-小结条条大路通罗马，方法只是让自己少走一些弯路，真正重要的是——坚持！有计划地坚持！所有泛泛而谈都是吹牛逼，去听，去说，去读，去写！每天完成什么，完成多少，量化，看到自己的进度，看到自己的进步！
-书签清北托福备考联盟慕课
-将英语变成母语
-怎么在一个月内让英语听力有明显的提高？
-如何在一个月内通过大学英语四级、大学英语六级考试？
-我的英语学习之路–影子跟读法
-句子读法“三剑客”：连读、失去爆破、弱读
-英语朗读技巧（连读、失去爆破和弱读/缩读 ）精华版
-怎样培养英语思维，尤其是在读英文文章的时候？-王捷
-怎样培养英语思维，尤其是在读英文文章的时候？-陈名豪
-The New Yorker
-Collins Dictionary
-老友记（Friends）（MP3+LRC）_VOA英语学习网
-]]></content>
-      <categories>
-        <category>英语</category>
-      </categories>
-      <tags>
-        <tag>英语</tag>
       </tags>
   </entry>
   <entry>
