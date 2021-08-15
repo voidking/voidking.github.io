@@ -2479,6 +2479,112 @@ public class ReportImpl extends Report&#123;    public void printTitle()    &#12
       </tags>
   </entry>
   <entry>
+    <title>基于JQuery实现滚动到页面底端时自动加载更多信息</title>
+    <url>/dev-auto-loading-when-scroll-to-the-bottom/</url>
+    <content><![CDATA[这篇文章主要介绍了基于JQuery实现滚动到页面底端时自动加载更多信息，类似微博，新浪新闻的评论等，都采用了这方法,需要的朋友可以参考下关键代码：
+var stop=true; $(window).scroll(function()&#123;     totalheight = parseFloat($(window).height()) + parseFloat($(window).scrollTop());     if($(document).height() &lt;= totalheight)&#123;         if(stop==true)&#123;             stop=false;             $.post("ajax.php", &#123;start:1, n:50&#125;,function(txt)&#123;                 $("#Loading").before(txt);                 stop=true;             &#125;,"text");         &#125;     &#125; &#125;);
+
+
+
+HTML代码如下:
+&lt;div id="Loading"&gt;Loading...&lt;/div&gt;
+
+实现方法是比较页面总高度和下滚高度以判断是否到达底端，若到达底端则通过ajax读取更多的内容，用before插入到Loading之前。stop参数是考虑到ajax读取耗时，防止在一次ajax读取过程中多次触发事件，造成多次加载内容。
+转载自http://www.3lian.com/edu/2014/02-10/127916.html
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>jquery</category>
+      </categories>
+      <tags>
+        <tag>前端</tag>
+        <tag>jquery</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>APP第三方登录QQ和微博配置</title>
+    <url>/dev-app-login-qq-sina/</url>
+    <content><![CDATA[需求使用hbuilder修改东北高师就业联盟网的app，完成了qq和微博第三方登录，真机调试正常。但是打包发布后，问题来了。使用qq登录时，会提示错误“该应用非官方正版应用，请去应用宝下载正版后进行qq登陆。（错误码：100044）”。使用微博登录时，会提示错误“21338:sso package or sign error”。
+因为就业联盟网在开放平台上是一个web应用，但是我们的app打包后是一个android应用和一个ios应用。所以，要解决这个问题，我们要在开放平台上添加android应用和ios应用。
+
+
+android打包签名在配置开放平台之前，我们先把android app打包发布，具体流程如下：
+安装java环境参考《全平台安装JDK》。
+生成keystorekeytool -genkey -alias dsjyw.keystore -keyalg RSA -validity 1000 -keystore dsjyw.keystore
+说明：keytool -genkey -alias 别名.keystore -keyalg RSA -validity 有效期限(天数) -keystore 别名.keystore
+dsjyw.store参数输入密钥库口令: voidking再次输入新口令: voidking您的名字与姓氏是什么?  [Unknown]:  VoidKing您的组织单位名称是什么?  [Unknown]:  Nenu您的组织名称是什么?  [Unknown]:  Nenu您所在的城市或区域名称是什么?  [Unknown]:  ChangChun您所在的省/市/自治区名称是什么?  [Unknown]:  JiLin该单位的双字母国家/地区代码是什么?  [Unknown]:  CNCN=VoidKing, OU=Nenu, O=Nenu, L=ChangChun, ST=JiLin, C=CN是否正确?  [否]:  y输入 &lt;dsjyw.keystore&gt; 的密钥口令        (如果和密钥库口令相同, 按回车):
+
+打包1、打开Hbuilder，发行，发行为原生安装包。
+2、使用自有证书；Android包名是自动生成的，不需要修改，也可以修改为自己喜欢的包名；证书别名和私钥密码是生成keystore时配置的；证书文件选择生成的keystore文件。
+3、打包，之后会自动上传源码，打包好后下载到app存放目录中。
+签名1、复制打包下载好的apk文件到dsjyw.keystore相同的目录，重命名apk文件为android-release-unsigned.apk。
+2、打开cmd，执行签名命令jarsigner -verbose -keystore dsjyw.keystore -signedjar dsjyw.apk android-release-unsigned.apk dsjyw.keystore
+说明：jarsigner -verbose -keystore 别名.keystore(密钥库位置) -signedjar 签名后产生的文件.apk要签名的文件.apk 别名.keystore(密钥库)
+查看签名keytool -v -list -keystore dsjyw.keystore
+找到MD5: 70:1D:81:1E:D3:A6:8B:28:66:82:BA:D8:EB:79:DC:63
+新浪创建移动应用时要求的是32位数字小写字母，把前面的这串数字中的冒号去掉，字母小写即可。
+腾讯开放平台创建安卓应用1、登录腾讯开放平台
+2、安卓应用，创建应用。
+3、关联QQ互联，输入联盟网web应用的appid和appkey，确定。之所以关联QQ互联，是为了统一appid，否则，web登录和app登录获得的是不同的openid。
+如果关联QQ互联后，创建应用失败，提示“对不起，您不是应用的创建者或协作者(1500401)”。
+可能一：不是协作者。请先使用联盟网web应用所在账号登录，在管理中心页面，滑动鼠标到右上角用户名，单击权限权限管理，添加协作者。
+可能二：账号冲突。之前的web应用在QQ互联上，此时，不要在浏览器中同时打开腾讯开放平台和QQ互联，也不要登录其他的QQ邮箱，有可能账号冲突。
+可能三：开发者资料未提交审核。
+4、选择移动应用 安卓，创建应用，选择应用类型，确定。此时创建的安卓应用，它的appid和appkey就和联盟网web应用相同了。
+5、按照提示，填写需要的字段即可。需要注意的是，上传安装包时，需要上传签名后的apk文件。
+6、填写好信息，保存即可，不需要提交审核。如果需要提交审核的话，请先根据提示加固应用。
+创建ios应用1、在安卓应用中，可以看到我们创建的联盟网app，单击它。
+2、鼠标滑到右上角平台信息，单击IOS应用，即可创建IOS应用。该IOS应用的appid和appkey就和联盟网web应用相同，也和安卓应用相同。
+警告，创建ios应用后，此时安卓应用和ios应用实际上是同一个应用。删除任意一个，两个应用就都没有了。
+3、按照提示填写各字段即可。其中比较难的是URL scheme、AppStore ID和Bundle ID，这些信息可以到Apple Developer和itunes connect上查看到。
+新浪开放平台1、登录新浪开放平台
+2、微连接，移动应用，立即接入。勾选Iphone和Android两个平台，创建。
+3、填写应用基本信息。其中比较难的是Android签名，不必使用新浪提供的签名工具，参考本文中的“查看签名”小节，填入得到的32位字符串。
+4、保存信息，提交审核。审核不通过会有详细提示，参考提示修改后再次提交审核。
+5、单击左侧导航栏应用信息，高级信息。OAuth2.0 授权设置中点击编辑，授权回调页和取消授权回调页都填入https://api.weibo.com/oauth2/default.html。
+书签HBuilder 打包流程
+腾讯开放平台创建应用的坑，安卓和iOS端如何共用同一个Appid？
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>android</category>
+      </categories>
+      <tags>
+        <tag>android</tag>
+        <tag>hbuilder</tag>
+        <tag>ios</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>artTemplate模板引擎</title>
+    <url>/dev-arttemplate/</url>
+    <content><![CDATA[前言在开发过程中，常常要实现这样一种效果：获取数据，并且插入到当前页面。最基本的做法是把获取到的数据拼接到一个字符串中，然后使用html()或者append()函数插入到页面中。这种做法，拼接字符串时很麻烦。本文中，小编要介绍一下ArtTemplate，一个超快的前端模板引擎。
+
+
+快速上手编写模板&lt;script id="test" type="text/html"&gt;&lt;h1&gt;&#123;&#123;title&#125;&#125;&lt;/h1&gt;&lt;ul&gt;    &#123;&#123;each list as value i&#125;&#125;        &lt;li&gt;索引 &#123;&#123;i + 1&#125;&#125; ：&#123;&#123;value&#125;&#125;&lt;/li&gt;    &#123;&#123;/each&#125;&#125;&lt;/ul&gt;&lt;/script&gt;
+
+渲染模板var data = &#123;    title: '标签',    list: ['文艺', '博客', '摄影', '电影', '民谣', '旅行', '吉他']&#125;;var html = template('test', data);document.getElementById('content').innerHTML = html;
+
+模板语法注意：简洁语法和原生语法引入的js文件不同。
+简洁语法&#123;&#123;if admin&#125;&#125;    &#123;&#123;include 'admin_content'&#125;&#125;    &#123;&#123;each list&#125;&#125;        &lt;div&gt;&#123;&#123;$index&#125;&#125;. &#123;&#123;$value.user&#125;&#125;&lt;/div&gt;    &#123;&#123;/each&#125;&#125;&#123;&#123;/if&#125;&#125;
+
+原生语法&lt;%if (admin)&#123;%&gt;    &lt;%include('admin_content')%&gt;    &lt;%for (var i=0;i&lt;list.length;i++) &#123;%&gt;        &lt;div&gt;&lt;%=i%&gt;. &lt;%=list[i].user%&gt;&lt;/div&gt;    &lt;%&#125;%&gt;&lt;%&#125;%&gt;
+
+参考文档Arttemplate by auihttp://aui.github.io/artTemplate/
+前端模版artTemplate的介绍及使用http://blog.csdn.net/playboyanta123/article/details/45536501
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+      </categories>
+      <tags>
+        <tag>前端</tag>
+        <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Django开发简单Blog系统——下</title>
     <url>/dev-django-blog-2/</url>
     <content><![CDATA[前言博客的基本功能完成了，接下来，我们来看一下还有哪些知识点可以加入我们的系统。
@@ -2770,111 +2876,6 @@ server &#123;    server_name wecms.voidking.com;     listen 80;    location / &#
         <tag>django</tag>
         <tag>微信公众平台</tag>
         <tag>dokcer</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Docker-Compose入门篇</title>
-    <url>/dev-docker-compose/</url>
-    <content><![CDATA[Docker-Compose简介Compose是用于定义和运行多容器Docker应用程序的工具。通过Compose，可以使用YAML文件来配置应用程序的服务。然后使用一个命令，就可以从配置中创建并启动所有服务。Compose可在所有环境中工作：生产、模拟、开发、测试以及CI工作流。
-使用Compose基本上是三步流程：
-
-使用Dockerfile定义应用程序的环境，以便可以在任何地方复制它。
-在docker-compose.yml中定义组成您的应用程序的服务，以便它们可以在隔离的环境中一起运行。
-运行docker-compose up，然后Compose启动并运行整个应用程序。
-
-Docker-Compose项目由Python编写，调用Docker服务提供的API来对容器进行管理。因此，只要所操作的平台支持Docker API，就可以在其上利用Compose来进行编排管理。更多内容参考Overview of Docker Compose。
-
-
-安装Compose在CentOS7机器上，假设已经了Docker，参考Install Docker Compose安装Compose-Docker。如果没有安装Docker，那么参考Docker入门进行安装。
-1、安装docker-compose
-sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-
-2、添加执行权限
-sudo chmod +x /usr/local/bin/docker-composesudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-
-3、验证安装docker-compose --version
-Hello World1、创建测试目录
-mkdir composetestcd composetest
-
-2、在项目目录中创建一个名为app.py的文件，内容为：
-import timeimport redisfrom flask import Flaskapp = Flask(__name__)cache = redis.Redis(host='redis', port=6379)def get_hit_count():    retries = 5    while True:        try:            return cache.incr('hits')        except redis.exceptions.ConnectionError as exc:            if retries == 0:                raise exc            retries -= 1            time.sleep(0.5)@app.route('/')def hello():    count = get_hit_count()    return 'Hello World! I have been seen &#123;&#125; times.\n'.format(count)
-在此示例中，redis是应用程序网络上的redis容器的主机名，使用默认端口6379。
-3、创建requirements.txt文件，内容为：
-flaskredis
-
-4、创建Dockerfile，内容为：
-FROM python:3.7-alpineWORKDIR /codeENV FLASK_APP app.pyENV FLASK_RUN_HOST 0.0.0.0RUN apk add --no-cache gcc musl-dev linux-headersCOPY requirements.txt requirements.txtRUN pip install -r requirements.txtCOPY . .CMD ["flask", "run"]
-
-该文件说明：
-
-从Python 3.7映像开始构建映像。
-将工作目录设置为/code。
-设置flask命令使用的环境变量。
-安装gcc，以便诸如MarkupSafe和SQLAlchemy之类的Python包可以编译加速。
-复制requirements.txt并安装Python依赖项。
-复制当前目录中的所有文件到工作目录。
-将容器的默认命令设置为flask run。
-
-有关如何编写Dockerfile的更多信息，参考Docker用户指南和Dockerfile参考。
-5、创建docker-compose.yml，内容为：
-version: '3'services:  web:    build: .    ports:      - "15000:5000"  redis:    image: "redis:alpine"
-该Compose文件定义了两个服务：Web和Redis。Web服务从Dockerfile构建镜像，启动后容器在5000端口提供服务，然后将容器端口5000绑定到主机端口15000。
-6、使用Compose构建和运行应用docker-compose up
-7、测试应用curl http://127.0.0.1:15000
-Hello World 2.01、编辑docker-compose.yml，挂载当前目录到/code
-version: '3'services:  web:    build: .    ports:      - "5000:5000"    volumes:      - .:/code    environment:      FLASK_ENV: development  redis:    image: "redis:alpine"
-
-2、运行应用docker-compose up
-3、修改app.py
-import timeimport redisfrom flask import Flaskapp = Flask(__name__)cache = redis.Redis(host='redis', port=6379)def get_hit_count():    retries = 5    while True:        try:            return cache.incr('hits')        except redis.exceptions.ConnectionError as exc:            if retries == 0:                raise exc            retries -= 1            time.sleep(0.5)@app.route('/')def hello():    count = get_hit_count()    return 'Hello World 2.0! I have been seen &#123;&#125; times.\n'.format(count)
-
-4、测试应用curl http://127.0.0.1:15000
-常用命令# 构建和运行应用docker-compose up# 构建和后台运行应用docker-compose up -d# 关闭应用docker-compose down# 关闭应用，并删除Redis容器内数据docker-compose down --volumes# 查看容器docker-compose ps# 查看web服务的环境变量docker-compose run web env
-
-书签Overview of Docker Compose
-Docker 入门教程
-docker/compose
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>docker</category>
-      </categories>
-      <tags>
-        <tag>docker</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Docker中使用定时任务</title>
-    <url>/dev-docker-crontab/</url>
-    <content><![CDATA[前言《Linux设置定时任务》一文中学习了crontab的使用方法，但是同样的配置方法，在Docker中是不会生效的。因为Docker中默认只会启动一个进程，crond并不会启动。本文研究一下在Docker中配置定时任务的方法，踩踩坑。
-
-
-启动crond要想在容器中使用定时任务，有三个办法：
-
-把crond作为一号进程启动。
-supervisor作为一号进程启动，使用supervisor启动crond。
-进入容器手动启动crond。
-
-本文使用第一个方法启动crond，启动命令为：
-docker run --name vkcrond -d -it voidking/crond:v1.0 "/bin/bash" "-c" "/usr/sbin/crond &gt; start.log &amp;&amp; tail -f start.log"
-
-crond日志1、查看crond日志tail /var/log/cron报错没有这个文件，这是因为没有打开rsyslog。
-2、打开rsyslog
-# centos/etc/init.d/rsyslog start# centos7systemctl restart rsyslog.service# centos6service rsyslog restart
-
-再次查看，crond日志文件就存在了。
-使用crondcrond启动后，其他的配置参考《Linux设置定时任务》即可。
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>docker</category>
-        <category>linux</category>
-      </categories>
-      <tags>
-        <tag>docker</tag>
-        <tag>crontab</tag>
       </tags>
   </entry>
   <entry>
@@ -5290,112 +5291,6 @@ Socket.io:有点意思http://www.cnblogs.com/edwardstudy/p/4358202.html
       </tags>
   </entry>
   <entry>
-    <title>基于JQuery实现滚动到页面底端时自动加载更多信息</title>
-    <url>/dev-auto-loading-when-scroll-to-the-bottom/</url>
-    <content><![CDATA[这篇文章主要介绍了基于JQuery实现滚动到页面底端时自动加载更多信息，类似微博，新浪新闻的评论等，都采用了这方法,需要的朋友可以参考下关键代码：
-var stop=true; $(window).scroll(function()&#123;     totalheight = parseFloat($(window).height()) + parseFloat($(window).scrollTop());     if($(document).height() &lt;= totalheight)&#123;         if(stop==true)&#123;             stop=false;             $.post("ajax.php", &#123;start:1, n:50&#125;,function(txt)&#123;                 $("#Loading").before(txt);                 stop=true;             &#125;,"text");         &#125;     &#125; &#125;);
-
-
-
-HTML代码如下:
-&lt;div id="Loading"&gt;Loading...&lt;/div&gt;
-
-实现方法是比较页面总高度和下滚高度以判断是否到达底端，若到达底端则通过ajax读取更多的内容，用before插入到Loading之前。stop参数是考虑到ajax读取耗时，防止在一次ajax读取过程中多次触发事件，造成多次加载内容。
-转载自http://www.3lian.com/edu/2014/02-10/127916.html
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>jquery</category>
-      </categories>
-      <tags>
-        <tag>前端</tag>
-        <tag>jquery</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>APP第三方登录QQ和微博配置</title>
-    <url>/dev-app-login-qq-sina/</url>
-    <content><![CDATA[需求使用hbuilder修改东北高师就业联盟网的app，完成了qq和微博第三方登录，真机调试正常。但是打包发布后，问题来了。使用qq登录时，会提示错误“该应用非官方正版应用，请去应用宝下载正版后进行qq登陆。（错误码：100044）”。使用微博登录时，会提示错误“21338:sso package or sign error”。
-因为就业联盟网在开放平台上是一个web应用，但是我们的app打包后是一个android应用和一个ios应用。所以，要解决这个问题，我们要在开放平台上添加android应用和ios应用。
-
-
-android打包签名在配置开放平台之前，我们先把android app打包发布，具体流程如下：
-安装java环境参考《全平台安装JDK》。
-生成keystorekeytool -genkey -alias dsjyw.keystore -keyalg RSA -validity 1000 -keystore dsjyw.keystore
-说明：keytool -genkey -alias 别名.keystore -keyalg RSA -validity 有效期限(天数) -keystore 别名.keystore
-dsjyw.store参数输入密钥库口令: voidking再次输入新口令: voidking您的名字与姓氏是什么?  [Unknown]:  VoidKing您的组织单位名称是什么?  [Unknown]:  Nenu您的组织名称是什么?  [Unknown]:  Nenu您所在的城市或区域名称是什么?  [Unknown]:  ChangChun您所在的省/市/自治区名称是什么?  [Unknown]:  JiLin该单位的双字母国家/地区代码是什么?  [Unknown]:  CNCN=VoidKing, OU=Nenu, O=Nenu, L=ChangChun, ST=JiLin, C=CN是否正确?  [否]:  y输入 &lt;dsjyw.keystore&gt; 的密钥口令        (如果和密钥库口令相同, 按回车):
-
-打包1、打开Hbuilder，发行，发行为原生安装包。
-2、使用自有证书；Android包名是自动生成的，不需要修改，也可以修改为自己喜欢的包名；证书别名和私钥密码是生成keystore时配置的；证书文件选择生成的keystore文件。
-3、打包，之后会自动上传源码，打包好后下载到app存放目录中。
-签名1、复制打包下载好的apk文件到dsjyw.keystore相同的目录，重命名apk文件为android-release-unsigned.apk。
-2、打开cmd，执行签名命令jarsigner -verbose -keystore dsjyw.keystore -signedjar dsjyw.apk android-release-unsigned.apk dsjyw.keystore
-说明：jarsigner -verbose -keystore 别名.keystore(密钥库位置) -signedjar 签名后产生的文件.apk要签名的文件.apk 别名.keystore(密钥库)
-查看签名keytool -v -list -keystore dsjyw.keystore
-找到MD5: 70:1D:81:1E:D3:A6:8B:28:66:82:BA:D8:EB:79:DC:63
-新浪创建移动应用时要求的是32位数字小写字母，把前面的这串数字中的冒号去掉，字母小写即可。
-腾讯开放平台创建安卓应用1、登录腾讯开放平台
-2、安卓应用，创建应用。
-3、关联QQ互联，输入联盟网web应用的appid和appkey，确定。之所以关联QQ互联，是为了统一appid，否则，web登录和app登录获得的是不同的openid。
-如果关联QQ互联后，创建应用失败，提示“对不起，您不是应用的创建者或协作者(1500401)”。
-可能一：不是协作者。请先使用联盟网web应用所在账号登录，在管理中心页面，滑动鼠标到右上角用户名，单击权限权限管理，添加协作者。
-可能二：账号冲突。之前的web应用在QQ互联上，此时，不要在浏览器中同时打开腾讯开放平台和QQ互联，也不要登录其他的QQ邮箱，有可能账号冲突。
-可能三：开发者资料未提交审核。
-4、选择移动应用 安卓，创建应用，选择应用类型，确定。此时创建的安卓应用，它的appid和appkey就和联盟网web应用相同了。
-5、按照提示，填写需要的字段即可。需要注意的是，上传安装包时，需要上传签名后的apk文件。
-6、填写好信息，保存即可，不需要提交审核。如果需要提交审核的话，请先根据提示加固应用。
-创建ios应用1、在安卓应用中，可以看到我们创建的联盟网app，单击它。
-2、鼠标滑到右上角平台信息，单击IOS应用，即可创建IOS应用。该IOS应用的appid和appkey就和联盟网web应用相同，也和安卓应用相同。
-警告，创建ios应用后，此时安卓应用和ios应用实际上是同一个应用。删除任意一个，两个应用就都没有了。
-3、按照提示填写各字段即可。其中比较难的是URL scheme、AppStore ID和Bundle ID，这些信息可以到Apple Developer和itunes connect上查看到。
-新浪开放平台1、登录新浪开放平台
-2、微连接，移动应用，立即接入。勾选Iphone和Android两个平台，创建。
-3、填写应用基本信息。其中比较难的是Android签名，不必使用新浪提供的签名工具，参考本文中的“查看签名”小节，填入得到的32位字符串。
-4、保存信息，提交审核。审核不通过会有详细提示，参考提示修改后再次提交审核。
-5、单击左侧导航栏应用信息，高级信息。OAuth2.0 授权设置中点击编辑，授权回调页和取消授权回调页都填入https://api.weibo.com/oauth2/default.html。
-书签HBuilder 打包流程
-腾讯开放平台创建应用的坑，安卓和iOS端如何共用同一个Appid？
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>android</category>
-      </categories>
-      <tags>
-        <tag>android</tag>
-        <tag>hbuilder</tag>
-        <tag>ios</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>artTemplate模板引擎</title>
-    <url>/dev-arttemplate/</url>
-    <content><![CDATA[前言在开发过程中，常常要实现这样一种效果：获取数据，并且插入到当前页面。最基本的做法是把获取到的数据拼接到一个字符串中，然后使用html()或者append()函数插入到页面中。这种做法，拼接字符串时很麻烦。本文中，小编要介绍一下ArtTemplate，一个超快的前端模板引擎。
-
-
-快速上手编写模板&lt;script id="test" type="text/html"&gt;&lt;h1&gt;&#123;&#123;title&#125;&#125;&lt;/h1&gt;&lt;ul&gt;    &#123;&#123;each list as value i&#125;&#125;        &lt;li&gt;索引 &#123;&#123;i + 1&#125;&#125; ：&#123;&#123;value&#125;&#125;&lt;/li&gt;    &#123;&#123;/each&#125;&#125;&lt;/ul&gt;&lt;/script&gt;
-
-渲染模板var data = &#123;    title: '标签',    list: ['文艺', '博客', '摄影', '电影', '民谣', '旅行', '吉他']&#125;;var html = template('test', data);document.getElementById('content').innerHTML = html;
-
-模板语法注意：简洁语法和原生语法引入的js文件不同。
-简洁语法&#123;&#123;if admin&#125;&#125;    &#123;&#123;include 'admin_content'&#125;&#125;    &#123;&#123;each list&#125;&#125;        &lt;div&gt;&#123;&#123;$index&#125;&#125;. &#123;&#123;$value.user&#125;&#125;&lt;/div&gt;    &#123;&#123;/each&#125;&#125;&#123;&#123;/if&#125;&#125;
-
-原生语法&lt;%if (admin)&#123;%&gt;    &lt;%include('admin_content')%&gt;    &lt;%for (var i=0;i&lt;list.length;i++) &#123;%&gt;        &lt;div&gt;&lt;%=i%&gt;. &lt;%=list[i].user%&gt;&lt;/div&gt;    &lt;%&#125;%&gt;&lt;%&#125;%&gt;
-
-参考文档Arttemplate by auihttp://aui.github.io/artTemplate/
-前端模版artTemplate的介绍及使用http://blog.csdn.net/playboyanta123/article/details/45536501
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-      </categories>
-      <tags>
-        <tag>前端</tag>
-        <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>在CentOS7上安装Hadoop和Hive</title>
     <url>/dev-hadoop-hive-on-centos/</url>
     <content><![CDATA[前言《在Ubuntu16.04上安装Hadoop》一文中，我们已经学习了在Ubuntu中安装Hadoop，因为作业需要，小编要在CentOS上也安装Hadoop。同时，还要安装Hive。
@@ -6261,6 +6156,111 @@ livere简介livere（来必力）是一个社会化评论插件，优点有：
       </tags>
   </entry>
   <entry>
+    <title>Docker中使用定时任务</title>
+    <url>/dev-docker-crontab/</url>
+    <content><![CDATA[前言《Linux设置定时任务》一文中学习了crontab的使用方法，但是同样的配置方法，在Docker中是不会生效的。因为Docker中默认只会启动一个进程，crond并不会启动。本文研究一下在Docker中配置定时任务的方法，踩踩坑。
+
+
+启动crond要想在容器中使用定时任务，有三个办法：
+
+把crond作为一号进程启动。
+supervisor作为一号进程启动，使用supervisor启动crond。
+进入容器手动启动crond。
+
+本文使用第一个方法启动crond，启动命令为：
+docker run --name vkcrond -d -it voidking/crond:v1.0 "/bin/bash" "-c" "/usr/sbin/crond &gt; start.log &amp;&amp; tail -f start.log"
+
+crond日志1、查看crond日志tail /var/log/cron报错没有这个文件，这是因为没有打开rsyslog。
+2、打开rsyslog
+# centos/etc/init.d/rsyslog start# centos7systemctl restart rsyslog.service# centos6service rsyslog restart
+
+再次查看，crond日志文件就存在了。
+使用crondcrond启动后，其他的配置参考《Linux设置定时任务》即可。
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>docker</category>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>crontab</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Docker-Compose入门篇</title>
+    <url>/dev-docker-compose/</url>
+    <content><![CDATA[Docker-Compose简介Compose是用于定义和运行多容器Docker应用程序的工具。通过Compose，可以使用YAML文件来配置应用程序的服务。然后使用一个命令，就可以从配置中创建并启动所有服务。Compose可在所有环境中工作：生产、模拟、开发、测试以及CI工作流。
+使用Compose基本上是三步流程：
+
+使用Dockerfile定义应用程序的环境，以便可以在任何地方复制它。
+在docker-compose.yml中定义组成您的应用程序的服务，以便它们可以在隔离的环境中一起运行。
+运行docker-compose up，然后Compose启动并运行整个应用程序。
+
+Docker-Compose项目由Python编写，调用Docker服务提供的API来对容器进行管理。因此，只要所操作的平台支持Docker API，就可以在其上利用Compose来进行编排管理。更多内容参考Overview of Docker Compose。
+
+
+安装Compose在CentOS7机器上，假设已经了Docker，参考Install Docker Compose安装Compose-Docker。如果没有安装Docker，那么参考Docker入门进行安装。
+1、安装docker-compose
+sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+2、添加执行权限
+sudo chmod +x /usr/local/bin/docker-composesudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+
+3、验证安装docker-compose --version
+Hello World1、创建测试目录
+mkdir composetestcd composetest
+
+2、在项目目录中创建一个名为app.py的文件，内容为：
+import timeimport redisfrom flask import Flaskapp = Flask(__name__)cache = redis.Redis(host='redis', port=6379)def get_hit_count():    retries = 5    while True:        try:            return cache.incr('hits')        except redis.exceptions.ConnectionError as exc:            if retries == 0:                raise exc            retries -= 1            time.sleep(0.5)@app.route('/')def hello():    count = get_hit_count()    return 'Hello World! I have been seen &#123;&#125; times.\n'.format(count)
+在此示例中，redis是应用程序网络上的redis容器的主机名，使用默认端口6379。
+3、创建requirements.txt文件，内容为：
+flaskredis
+
+4、创建Dockerfile，内容为：
+FROM python:3.7-alpineWORKDIR /codeENV FLASK_APP app.pyENV FLASK_RUN_HOST 0.0.0.0RUN apk add --no-cache gcc musl-dev linux-headersCOPY requirements.txt requirements.txtRUN pip install -r requirements.txtCOPY . .CMD ["flask", "run"]
+
+该文件说明：
+
+从Python 3.7映像开始构建映像。
+将工作目录设置为/code。
+设置flask命令使用的环境变量。
+安装gcc，以便诸如MarkupSafe和SQLAlchemy之类的Python包可以编译加速。
+复制requirements.txt并安装Python依赖项。
+复制当前目录中的所有文件到工作目录。
+将容器的默认命令设置为flask run。
+
+有关如何编写Dockerfile的更多信息，参考Docker用户指南和Dockerfile参考。
+5、创建docker-compose.yml，内容为：
+version: '3'services:  web:    build: .    ports:      - "15000:5000"  redis:    image: "redis:alpine"
+该Compose文件定义了两个服务：Web和Redis。Web服务从Dockerfile构建镜像，启动后容器在5000端口提供服务，然后将容器端口5000绑定到主机端口15000。
+6、使用Compose构建和运行应用docker-compose up
+7、测试应用curl http://127.0.0.1:15000
+Hello World 2.01、编辑docker-compose.yml，挂载当前目录到/code
+version: '3'services:  web:    build: .    ports:      - "5000:5000"    volumes:      - .:/code    environment:      FLASK_ENV: development  redis:    image: "redis:alpine"
+
+2、运行应用docker-compose up
+3、修改app.py
+import timeimport redisfrom flask import Flaskapp = Flask(__name__)cache = redis.Redis(host='redis', port=6379)def get_hit_count():    retries = 5    while True:        try:            return cache.incr('hits')        except redis.exceptions.ConnectionError as exc:            if retries == 0:                raise exc            retries -= 1            time.sleep(0.5)@app.route('/')def hello():    count = get_hit_count()    return 'Hello World 2.0! I have been seen &#123;&#125; times.\n'.format(count)
+
+4、测试应用curl http://127.0.0.1:15000
+常用命令# 构建和运行应用docker-compose up# 构建和后台运行应用docker-compose up -d# 关闭应用docker-compose down# 关闭应用，并删除Redis容器内数据docker-compose down --volumes# 查看容器docker-compose ps# 查看web服务的环境变量docker-compose run web env
+
+书签Overview of Docker Compose
+Docker 入门教程
+docker/compose
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>docker</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hexo本地搜索加速</title>
     <url>/dev-hexo-local-search-accelerate/</url>
     <content><![CDATA[前言随着文章数量的增长，search.xml文件越来越大。因此在加载这个文件时，需要的时间很长，而且偶尔会出现加载不出来的情况。
@@ -6338,85 +6338,6 @@ Hexo下mathjax的转义问题https://segmentfault.com/a/1190000007261752
       </tags>
   </entry>
   <entry>
-    <title>Hexo配置多个git仓库</title>
-    <url>/dev-hexo-multi-git/</url>
-    <content><![CDATA[吐槽在经历过域名被封之后，今天又经历了搬瓦工服务器IP被封，我太难了。。。o(╥﹏╥)o服务器IP被封，带来了三个问题：第一个是不能愉快地科学上网了；第二个是内网穿透不能使用了；第三个是自己的 www.voidking.com 域名无法访问了。
-对于问题一，暂时使用免费的公共飞机场。对于问题二，暂时使用百度服务器，但是因为没有备案，所以不能进行域名解析。对于问题三，就是本文要解决的问题之一。
-
-
-回到github那么，因为服务器IP被封，域名无法访问怎么办？
-方法一：再购买一个新的搬瓦工IP，或者再购买一个新的国外服务器。但是因为不想再花钱（就是这么抠），所以这个方法被否定了。方法二：使用免费的git pages服务，比如github pages、gitlab pages、gitee pages等，并且把域名解析到git pages服务器。这里我选择最开始搭建hexo就使用的github pages，它支持免费的自定义域名和https。
-参考《Hexo环境搭建》和《Hexo环境搭建2018年5月版》，配置好github pages服务，并且配置域名的CNAME解析到 voidking.github.io ，开启强制https（github会自动申请ssl证书，点个赞）。
-百度收录问题除了访问速度慢一点之外，现在我的域名已经正常了，nice。但是，另外的问题出现了：百度搜索不到我的域名了！
-使用百度抓取诊断工具诊断，发现抓取异常信息是拒绝访问，403 Forbidden。这是因为github屏蔽了百度蜘蛛，所以百度无法收录解析到github的域名。
-浏览了一些文章，找到了解决办法：在DNSPod配置两个www的域名解析，线路类型“默认”解析到 voidking.github.io ，线路类型“百度”解析到一个百度可以抓取的地址，如下图。也就是说，需要维护两个站点，两个站点分别处理来自不同线路的流量。其中一个站点建立在github，另外一个站点建立在哪儿呢？这里我选择ZEIT Now。
-理想是美好的，现实是残酷的！因为无论是github还是zeit，都需要验证域名解析，而它们都是境外服务器，所以都需要线路类型“境外”的CNAME解析，否则无法通过验证！尴尬了。。。只能选择其一。
-为了百度的收录，看起来只能选择zeit了，不过zeit每个月只有20G的流量。为了在zeit流量用光后方便地切到github，因此还是需要维护两个站点。
-hexo配置多个git仓库为了维护两个站点，所以每次更新，需要发布github pages和zeit。github pages的发布很方便，上传代码后直接就发布了；而zeit的发布有多种方式，其中一种方式是通过Deploy Hooks触发。
-如果github和zeit都使用 voidking.github.io 这一个git仓库，那么问题很简单。hexo d后，再访问一个url触发 Deploy Hooks就可以了。而zeit，不支持 voidking.github.io 这种项目名称，因此稍微麻烦一点。
-1、新建git仓库在github上再创建一个git仓库叫做voidking，import voidking.github.io仓库。
-2、配置zeit关联把voidking这个仓库和zeit做关联，并且发布项目，配置生成一个Deploy Hooks。
-3、配置域名按照提示绑定 www.voidking.com 这个域名到zeit站点。
-4、修改config.yml文件修改hexo的config.yml文件中的deploy部分为：
-# githubdeploy:- type: git  repo: https://voidking.com/voidking/voidking.github.io.git  branch: master- type: git  repo: https://voidking.com/voidking/voidking.git  branch: master
-以上配置参考Hexo一键发布。
-5、发布项目正常执行hexo d，静态资源代码会上传到两个git仓库中。其中，voidking.github.io这个仓库就直接发布了。而voidking这个仓库想要发布到zeit上，还需要手动触发一下（访问Deploy Hooks的url）。
-至此，hexo多个git仓库，多个站点配置完成。
-后记如果zeit上的流量用完了，可以在DNSPod上修改域名解析到github。虽然有延迟，但是对于个人使用来说足够了。
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>hexo</category>
-        <category>工具</category>
-        <category>git</category>
-      </categories>
-      <tags>
-        <tag>hexo</tag>
-        <tag>git</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Hexo Next主题显示文章更新时间</title>
-    <url>/dev-hexo-next-update-time/</url>
-    <content><![CDATA[问题《Hexo更换主题为Next》一文中，关闭了文章的更新时间。因为next主题默认是使用markdown文件的修改时间作为更新时间，这个时间是不符合预期的。比如我换了电脑，clone下来markdown文件，写完后发布，那么所有文章的更新时间都会变成当前时间，这个就不符合预期，就不对。
-但是，文章更新时间确实是有意义的，读者能够通过更新时间推断出一篇文章的有效性。比如很多工具和技术昨天可以用，文章写的没毛病，但是也许今天就不能用了。
-本文就来研究一下，怎样让next主题显示符合预期的、准确的更新时间。
-
-
-思路首先，我们知道next主题是支持显示更新时间的，只不过显示的更新时间不对。那么，能不能显示对的更新时间呢？看代码。
-1、_config.yml，其中关于更新时间的部分：
-# Post meta display settingspost_meta:  item_text: true  created_at: true  updated_at:    enable: true    another_day: true  categories: true
-
-2、layout/_macro/post.swig，其中关于更新时间的部分：
-&#123;%- if theme.post_meta.updated_at.enable and datetime_diff %&#125;  &#123;%- set display_updated = not theme.post_meta.updated_at.another_day or theme.post_meta.updated_at.another_day and date_diff %&#125;  &#123;%- if display_updated or not theme.post_meta.created_at %&#125;    &lt;span class="post-meta-item"&gt;      &lt;span class="post-meta-item-icon"&gt;        &lt;i class="fa fa-calendar-check-o"&gt;&lt;/i&gt;      &lt;/span&gt;      &lt;span class="post-meta-item-text"&gt;&#123;&#123; __('post.edited') &#125;&#125;&lt;/span&gt;      &lt;time title="&#123;&#123; __('post.modified') + __('symbol.colon') + full_date(post.updated) &#125;&#125;" itemprop="dateModified" datetime="&#123;&#123; moment(post.updated).format() &#125;&#125;"&gt;&#123;&#123; date(post.updated) &#125;&#125;&lt;/time&gt;    &lt;/span&gt;  &#123;%- endif %&#125;&#123;%- endif %&#125;
-
-由上面的代码我们可以得知：
-
-只要在文章头部yaml定义中添加 updated 字段，就可以显示我们自己定义的更新时间，而不是文件的修改时间。
-如果开启了 post_meta.updated_at.another_day ，当 date 和 updated 日期相同时，只会显示发布时间。
-
-因此，我们现在有两个思路来实现next主题显示符合预期的更新时间。思路一：开启 post_meta.updated_at.enable，然后给所有的md文件添加 updated 字段。思路二：开启 post_meta.updated_at.enable，修改 post.swig ，令没有 updated 字段的md文件只显示发布时间，有 updated 字段的md文件显示发布时间和更新时间。
-这里选择思路一，因为实现的逻辑最简单，而且小编的shell脚本用的还不错。
-实现开启更新时间显示_config.yml，开启更新时间显示：
-# Post meta display settingspost_meta:  item_text: true  created_at: true  updated_at:    enable: true    another_day: true  categories: true
-
-添加updated字段1、准备脚本
-#!/bin/bashdir="_posts"for file in `ls $&#123;dir&#125; | grep '.md'`;do    content=$(cat $&#123;dir&#125;/$&#123;file&#125;| head -n 10 | grep 'date: ')    datestr=$(echo "$content" | awk '&#123;print $2" "$3&#125;')    newcontent="updated: "$datestr    sed -i "/$content/a\\$newcontent" $&#123;dir&#125;/$&#123;file&#125;done
-
-2、执行脚本把脚本放到 source 目录下，然后执行脚本 bash modify.sh备注：需要linux环境，mac环境的sed命令和linux环境的sed命令有差异。
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>hexo</category>
-      </categories>
-      <tags>
-        <tag>hexo</tag>
-        <tag>shell</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>hexo生成sitemap</title>
     <url>/dev-hexo-sitemap/</url>
     <content><![CDATA[前言很久，都不再关心百度谷歌对自己博客的收录，只是把博客当做生活的记录。今天，突然想稍微搞下SEO，然后就有了这篇博文。
@@ -6462,6 +6383,85 @@ hexo干货系列：（六）hexo提交搜索引擎（百度+谷歌）http://www.
       </categories>
       <tags>
         <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hexo Next主题显示文章更新时间</title>
+    <url>/dev-hexo-next-update-time/</url>
+    <content><![CDATA[问题《Hexo更换主题为Next》一文中，关闭了文章的更新时间。因为next主题默认是使用markdown文件的修改时间作为更新时间，这个时间是不符合预期的。比如我换了电脑，clone下来markdown文件，写完后发布，那么所有文章的更新时间都会变成当前时间，这个就不符合预期，就不对。
+但是，文章更新时间确实是有意义的，读者能够通过更新时间推断出一篇文章的有效性。比如很多工具和技术昨天可以用，文章写的没毛病，但是也许今天就不能用了。
+本文就来研究一下，怎样让next主题显示符合预期的、准确的更新时间。
+
+
+思路首先，我们知道next主题是支持显示更新时间的，只不过显示的更新时间不对。那么，能不能显示对的更新时间呢？看代码。
+1、_config.yml，其中关于更新时间的部分：
+# Post meta display settingspost_meta:  item_text: true  created_at: true  updated_at:    enable: true    another_day: true  categories: true
+
+2、layout/_macro/post.swig，其中关于更新时间的部分：
+&#123;%- if theme.post_meta.updated_at.enable and datetime_diff %&#125;  &#123;%- set display_updated = not theme.post_meta.updated_at.another_day or theme.post_meta.updated_at.another_day and date_diff %&#125;  &#123;%- if display_updated or not theme.post_meta.created_at %&#125;    &lt;span class="post-meta-item"&gt;      &lt;span class="post-meta-item-icon"&gt;        &lt;i class="fa fa-calendar-check-o"&gt;&lt;/i&gt;      &lt;/span&gt;      &lt;span class="post-meta-item-text"&gt;&#123;&#123; __('post.edited') &#125;&#125;&lt;/span&gt;      &lt;time title="&#123;&#123; __('post.modified') + __('symbol.colon') + full_date(post.updated) &#125;&#125;" itemprop="dateModified" datetime="&#123;&#123; moment(post.updated).format() &#125;&#125;"&gt;&#123;&#123; date(post.updated) &#125;&#125;&lt;/time&gt;    &lt;/span&gt;  &#123;%- endif %&#125;&#123;%- endif %&#125;
+
+由上面的代码我们可以得知：
+
+只要在文章头部yaml定义中添加 updated 字段，就可以显示我们自己定义的更新时间，而不是文件的修改时间。
+如果开启了 post_meta.updated_at.another_day ，当 date 和 updated 日期相同时，只会显示发布时间。
+
+因此，我们现在有两个思路来实现next主题显示符合预期的更新时间。思路一：开启 post_meta.updated_at.enable，然后给所有的md文件添加 updated 字段。思路二：开启 post_meta.updated_at.enable，修改 post.swig ，令没有 updated 字段的md文件只显示发布时间，有 updated 字段的md文件显示发布时间和更新时间。
+这里选择思路一，因为实现的逻辑最简单，而且小编的shell脚本用的还不错。
+实现开启更新时间显示_config.yml，开启更新时间显示：
+# Post meta display settingspost_meta:  item_text: true  created_at: true  updated_at:    enable: true    another_day: true  categories: true
+
+添加updated字段1、准备脚本
+#!/bin/bashdir="_posts"for file in `ls $&#123;dir&#125; | grep '.md'`;do    content=$(cat $&#123;dir&#125;/$&#123;file&#125;| head -n 10 | grep 'date: ')    datestr=$(echo "$content" | awk '&#123;print $2" "$3&#125;')    newcontent="updated: "$datestr    sed -i "/$content/a\\$newcontent" $&#123;dir&#125;/$&#123;file&#125;done
+
+2、执行脚本把脚本放到 source 目录下，然后执行脚本 bash modify.sh备注：需要linux环境，mac环境的sed命令和linux环境的sed命令有差异。
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>hexo</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+        <tag>shell</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hexo配置多个git仓库</title>
+    <url>/dev-hexo-multi-git/</url>
+    <content><![CDATA[吐槽在经历过域名被封之后，今天又经历了搬瓦工服务器IP被封，我太难了。。。o(╥﹏╥)o服务器IP被封，带来了三个问题：第一个是不能愉快地科学上网了；第二个是内网穿透不能使用了；第三个是自己的 www.voidking.com 域名无法访问了。
+对于问题一，暂时使用免费的公共飞机场。对于问题二，暂时使用百度服务器，但是因为没有备案，所以不能进行域名解析。对于问题三，就是本文要解决的问题之一。
+
+
+回到github那么，因为服务器IP被封，域名无法访问怎么办？
+方法一：再购买一个新的搬瓦工IP，或者再购买一个新的国外服务器。但是因为不想再花钱（就是这么抠），所以这个方法被否定了。方法二：使用免费的git pages服务，比如github pages、gitlab pages、gitee pages等，并且把域名解析到git pages服务器。这里我选择最开始搭建hexo就使用的github pages，它支持免费的自定义域名和https。
+参考《Hexo环境搭建》和《Hexo环境搭建2018年5月版》，配置好github pages服务，并且配置域名的CNAME解析到 voidking.github.io ，开启强制https（github会自动申请ssl证书，点个赞）。
+百度收录问题除了访问速度慢一点之外，现在我的域名已经正常了，nice。但是，另外的问题出现了：百度搜索不到我的域名了！
+使用百度抓取诊断工具诊断，发现抓取异常信息是拒绝访问，403 Forbidden。这是因为github屏蔽了百度蜘蛛，所以百度无法收录解析到github的域名。
+浏览了一些文章，找到了解决办法：在DNSPod配置两个www的域名解析，线路类型“默认”解析到 voidking.github.io ，线路类型“百度”解析到一个百度可以抓取的地址，如下图。也就是说，需要维护两个站点，两个站点分别处理来自不同线路的流量。其中一个站点建立在github，另外一个站点建立在哪儿呢？这里我选择ZEIT Now。
+理想是美好的，现实是残酷的！因为无论是github还是zeit，都需要验证域名解析，而它们都是境外服务器，所以都需要线路类型“境外”的CNAME解析，否则无法通过验证！尴尬了。。。只能选择其一。
+为了百度的收录，看起来只能选择zeit了，不过zeit每个月只有20G的流量。为了在zeit流量用光后方便地切到github，因此还是需要维护两个站点。
+hexo配置多个git仓库为了维护两个站点，所以每次更新，需要发布github pages和zeit。github pages的发布很方便，上传代码后直接就发布了；而zeit的发布有多种方式，其中一种方式是通过Deploy Hooks触发。
+如果github和zeit都使用 voidking.github.io 这一个git仓库，那么问题很简单。hexo d后，再访问一个url触发 Deploy Hooks就可以了。而zeit，不支持 voidking.github.io 这种项目名称，因此稍微麻烦一点。
+1、新建git仓库在github上再创建一个git仓库叫做voidking，import voidking.github.io仓库。
+2、配置zeit关联把voidking这个仓库和zeit做关联，并且发布项目，配置生成一个Deploy Hooks。
+3、配置域名按照提示绑定 www.voidking.com 这个域名到zeit站点。
+4、修改config.yml文件修改hexo的config.yml文件中的deploy部分为：
+# githubdeploy:- type: git  repo: https://voidking.com/voidking/voidking.github.io.git  branch: master- type: git  repo: https://voidking.com/voidking/voidking.git  branch: master
+以上配置参考Hexo一键发布。
+5、发布项目正常执行hexo d，静态资源代码会上传到两个git仓库中。其中，voidking.github.io这个仓库就直接发布了。而voidking这个仓库想要发布到zeit上，还需要手动触发一下（访问Deploy Hooks的url）。
+至此，hexo多个git仓库，多个站点配置完成。
+后记如果zeit上的流量用完了，可以在DNSPod上修改域名解析到github。虽然有延迟，但是对于个人使用来说足够了。
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>hexo</category>
+        <category>工具</category>
+        <category>git</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+        <tag>git</tag>
       </tags>
   </entry>
   <entry>
@@ -10124,96 +10124,6 @@ F1 分数与使用的主成分数将 n_components 更改为以下值：[10, 15, 
       </tags>
   </entry>
   <entry>
-    <title>jQuery学习笔记——概述篇</title>
-    <url>/dev-jquery-start/</url>
-    <content><![CDATA[jQuery是什么jQuery是一个兼容多浏览器的Javascript库，类似于C语言中的”.h”文件和Java中的”.jar” 文件。
-核心理念是write less,do more(写得更少,做得更多)。
-jQuery是免费、开源的，使用MIT许可协议。jQuery的语法设计可以使开发者更加便捷，例如操作文档对象、选择DOM元素、制作动画效果、事件处理、使用Ajax以及其他功能。除此以外，jQuery提供API让开发者编写插件。其模块化的使用方式使开发者可以很轻松的开发出功能强大的静态或动态网页。
-jQuery能够做什么1、简化编程。jQuery最大的优点，是简化了Javascript编程。本来需要很多行代码才能完成的功能，使用jQuery，时常一两行就够了。
-2、跨平台。使用Javascript开发，是一件痛苦的事情，因为你不得不考虑到各种浏览器的兼容问题。而使用jQuery，你编写的程序可以很容易地实现跨浏览器平台。
-
-jQuery简史jQuery在2006年1月由美国人John Resig在纽约的barcamp发布，吸引了来自世界各地的众多JavaScript高手加入，由Dave Methvin率领团队进行开发。
-如今，jQuery已经成为最流行的javascript库，在世界前10000个访问最多的网站中，有超过55%在使用jQuery。
-在写这篇文章的时候，在谷歌搜索jQuery，返回大约 85,900,000条结果。jQuery每天都有新的官方插件和第三方插件产生，它们不断扩展jQuery的核心功能。
-hello voidkingC语言写的第一个程序是helloworld，今天，void自恋一把，第一个程序就和自己打招呼了！
-1、官网下载jQuery文件（这里我使用的是jquery-1.10.2.js）。
-2、新建index.html文件，内容如下：
-&lt;html&gt;&lt;head&gt;		&lt;script type="text/javascript" src="jquery-1.10.2.js"&gt;&lt;/script&gt;	&lt;script type="text/javascript"&gt;		$(function()&#123;			alert("hello voidking");			$("p").css("color","red");		&#125;);	&lt;/script&gt;&lt;/head&gt;&lt;body&gt;	&lt;p&gt;		welcome to jQuery world !	&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
-
-3、打开浏览器，看到弹出的对话框了吧？大功告成！下面的内容，会对此程序作出解释。
-$jQuery的一切功能都源自”$”对象，即一个美元符号对象（或美元符号方法），它可以用”jQuery”来代替。
-美元符号既是一个对象，也是一个方法。这是因为它具有很多成员属性和方法可以调用，同时可以把它当成一个函数来调用。
-延迟加载我们在hellovoidking的代码中，使用$(function(){});进行首尾包裹，那么为什么要包裹这段代码呢？原因是，jQuery库文件是在body元素之前加载的，我们必须等待所有的DOM元素加载后，延迟支持DOM操作，否则就无法获取到。
-为了延迟等待加载，JavaScript提供了一个事件为load，方法如下：
-window.onload = function()&#123;&#125;;
-而jQuery提供的方法如下：
-$(document).ready(function()&#123;&#125;);
-什么东东？和hello voidking中的代码不一样啊？原来，jQuery的延迟加载方法可以简写为：
-$(function()&#123;&#125;);
-
-jQuery选择器jQuery最核心的组成部分就是：选择器引擎。用iPhone式的格言来说，“让选择器完成一切”就是jQuery的座右铭。
-在使用jQuery的任何方法时，首先要做的就是选择页面中要操作的那些元素。
-jQuery选择器继承了CSS的语法，可以对DOM元素的标签名、属性名、状态等进行快速准确的选择，并且不必担心浏览器的兼容性。jQuery选择器实现了CSS1~CSS3的大部分规则之外，还实现了一些自定义的选择器，用于各种特殊状态的选择。
-选择器部分内容很多，我会在下一篇文章中详细研究探讨。
-事件处理对于事件的概念，我在《Javascript学习笔记——基础篇》中已经解释过，这里不再赘述。jQuery的事件处理，内容也很多，我会在接下来的文章中探究。
-AjaxjQuery的Ajax也是重点，必须的展开。我靠，肿么这么多！别吐槽了帅哥，写教程的void都快哭了，赶着去搞XMPP呢！
-调试个人喜欢的工具是：火狐浏览器 + firebug。
-结束语jQuery博大精深，还有什么单元测试、插件、特效制作啥的，void就不多说了，感兴趣的小伙伴自己查找资料吧！
-参考文档李炎恢的jQuery视频教程《jQuery攻略（作者B.M.Harwani）》《jQuery实战（作者Bear Bibeault、Yehuda Katz）》《jQuery高级编程（作者 Cesar Otero、Rob Larsen）》《jQuery Javascript 与CSS开发入门经典（作者Richard York）》
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>jquery</category>
-      </categories>
-      <tags>
-        <tag>jquery</tag>
-        <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Javascript学习笔记——实践篇</title>
-    <url>/dev-jquery-practice/</url>
-    <content><![CDATA[注释本文中的文件名，写在了代码注释中。既然用到了三种文件，就把这三种文件的注释方法先说明一下。
-HTML注释语法&lt;!--注释的内容--&gt;,示例如下：
-&lt;!--欢迎来到VoidKing的主页--&gt;
-
-CSS注释语法/*注释的内容*/，示例如下：
-/*这是注释*//*这也是注释可以分段*/
-
-Javascript注释和C语言相同，语法//注释的内容或者/*注释的内容*/，示例如下：
-//这是注释/*这也是注释*/
-使用Javascript在html页面中使用Javascript，有三种方法：
-body中body中的Javascript代码，相当于C语言中位于main函数内代码，格式如下：
-&lt;!--index.html--&gt;&lt;html&gt;	&lt;head&gt;	&lt;/head&gt;	&lt;body&gt;		&lt;script type="text/javascript"&gt;		document.write("voidking.com");		alert("voidking.com");		&lt;/script&gt;	&lt;/body&gt;&lt;/html&gt;
-head中head中的Javascript代码，相当于C语言中位于main函数外的代码，一般是封装好的函数。格式如下：
-&lt;!--index.html--&gt;&lt;html&gt;	&lt;head&gt;		&lt;meta http-equiv="Content-Type" content="charset=utf-8" /&gt;		&lt;script type="text/javascript"&gt;		function hello()&#123;			var str=prompt("VoidKing的网址是什么？","请在这里输入");			if(str!=null &amp;&amp; str!="")			&#123;				alert("你输入的是："+str);			&#125;			else			&#123;				alert("你什么也没有输入！");			&#125;		&#125;		&lt;/script&gt;	&lt;/head&gt;	&lt;body&gt;		&lt;script type="text/javascript"&gt;			hello();		&lt;/script&gt;	&lt;/body&gt;&lt;/html&gt;
-外部head中的Javascript代码不易维护，所以多数情况下我们会使用外部引用来代替。格式如下：
-&lt;!--index.html--&gt;&lt;html&gt;	&lt;head&gt;		&lt;meta http-equiv="Content-Type" content="charset=utf-8" /&gt;		&lt;script type="text/javascript" src="javascript.js"&gt;&lt;/script&gt;	&lt;/head&gt;	&lt;body&gt;		&lt;script type="text/javascript"&gt;			hello();		&lt;/script&gt;	&lt;/body&gt;&lt;/html&gt;
-//javascript.jsfunction hello()&#123;			var str=prompt("VoidKing的网址是什么？","请在这里输入");			if(str!=null &amp;&amp; str!="")			&#123;				alert("你输入的是："+str);			&#125;			else			&#123;				alert("你什么也没有输入！");			&#125;		&#125;
-使用CSS上面我们已经说完了使用Javascript的三种方式，爱思考的小伙伴肯定想到了CSS的使用方法，在这里，我也总结一下。
-内联样式当特殊的样式需要应用到个别元素时，就可以使用内联样式。格式如下：
-&lt;!--index.html--&gt;&lt;html&gt;	&lt;head&gt;	&lt;/head&gt;	&lt;body&gt;		&lt;p style="color:red;margin-left:20px"&gt;		This is a paragraph.		&lt;/p&gt;	&lt;/body&gt;&lt;/html&gt;
-
-内部样式当单个文件需要特别样式的时候，就可以使用内部样式表。格式如下:
-&lt;!--index.html--&gt;&lt;html&gt;	&lt;head&gt;		&lt;style type="text/css"&gt;		body&#123;background-color:red&#125;		p&#123;margin-left:20px&#125;		&lt;/style&gt;	&lt;/head&gt;	&lt;body&gt;		&lt;p&gt;		This is a paragraph.		&lt;/p&gt;	&lt;/body&gt;&lt;/html&gt;
-外部样式当样式需要被应用到很多页面的时候，外部样式表最适合。格式如下：
-&lt;!--index.html--&gt;&lt;html&gt;	&lt;head&gt;		&lt;link rel="stylesheet" type="text/css" href="style.css"/&gt;	&lt;/head&gt;	&lt;body&gt;		&lt;p&gt;		This is a paragraph.		&lt;/p&gt;	&lt;/body&gt;&lt;/html&gt;
-/*style.css*/body&#123;background-color:red&#125;p&#123;margin-left:20px&#125;
-
-借花献佛本来想自己整理出一批好的例子，但是，无意中发现了一个网站，已经做得非常好了。所以，void在这里就偷懒一下。例子精品，还附有教程讲解，分享给大家——梦之都！
-结束语这篇文章比预期的用时要短上很多，主要因为，我把痛苦的工作全部交给梦之都了，好机智地说！还想写个提高篇来着，但是能力有限，不能误人子弟啊！所以，Javascript笔记至此结束，接下来，该是jQuery了！
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>jquery</category>
-      </categories>
-      <tags>
-        <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>机器学习相关原则与方法</title>
     <url>/dev-ml-principle-and-method/</url>
     <content><![CDATA[前言越学习，越发现自己的无知。——笛卡尔笛卡尔的这句话，用在小编学习机器学习的进展，刚好合适。从开始搞机器学习到现在，一年多了，学习了很多课程，查阅了很多文档，阅读了很多书籍，编写了很多代码，然而，并没有什么实质性的进展。没有任何可以拿得出手的成绩，可以让面试官眼前一亮。寒假了，继续“搞机”，参加kaggle和天池，边比赛边学习，学以致用，为自己书写一份优秀的简历。
@@ -10628,6 +10538,96 @@ socket = /tmp/mysql.socksocket = /tmp/mysql.sock
       </categories>
       <tags>
         <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>jQuery学习笔记——概述篇</title>
+    <url>/dev-jquery-start/</url>
+    <content><![CDATA[jQuery是什么jQuery是一个兼容多浏览器的Javascript库，类似于C语言中的”.h”文件和Java中的”.jar” 文件。
+核心理念是write less,do more(写得更少,做得更多)。
+jQuery是免费、开源的，使用MIT许可协议。jQuery的语法设计可以使开发者更加便捷，例如操作文档对象、选择DOM元素、制作动画效果、事件处理、使用Ajax以及其他功能。除此以外，jQuery提供API让开发者编写插件。其模块化的使用方式使开发者可以很轻松的开发出功能强大的静态或动态网页。
+jQuery能够做什么1、简化编程。jQuery最大的优点，是简化了Javascript编程。本来需要很多行代码才能完成的功能，使用jQuery，时常一两行就够了。
+2、跨平台。使用Javascript开发，是一件痛苦的事情，因为你不得不考虑到各种浏览器的兼容问题。而使用jQuery，你编写的程序可以很容易地实现跨浏览器平台。
+
+jQuery简史jQuery在2006年1月由美国人John Resig在纽约的barcamp发布，吸引了来自世界各地的众多JavaScript高手加入，由Dave Methvin率领团队进行开发。
+如今，jQuery已经成为最流行的javascript库，在世界前10000个访问最多的网站中，有超过55%在使用jQuery。
+在写这篇文章的时候，在谷歌搜索jQuery，返回大约 85,900,000条结果。jQuery每天都有新的官方插件和第三方插件产生，它们不断扩展jQuery的核心功能。
+hello voidkingC语言写的第一个程序是helloworld，今天，void自恋一把，第一个程序就和自己打招呼了！
+1、官网下载jQuery文件（这里我使用的是jquery-1.10.2.js）。
+2、新建index.html文件，内容如下：
+&lt;html&gt;&lt;head&gt;		&lt;script type="text/javascript" src="jquery-1.10.2.js"&gt;&lt;/script&gt;	&lt;script type="text/javascript"&gt;		$(function()&#123;			alert("hello voidking");			$("p").css("color","red");		&#125;);	&lt;/script&gt;&lt;/head&gt;&lt;body&gt;	&lt;p&gt;		welcome to jQuery world !	&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+
+3、打开浏览器，看到弹出的对话框了吧？大功告成！下面的内容，会对此程序作出解释。
+$jQuery的一切功能都源自”$”对象，即一个美元符号对象（或美元符号方法），它可以用”jQuery”来代替。
+美元符号既是一个对象，也是一个方法。这是因为它具有很多成员属性和方法可以调用，同时可以把它当成一个函数来调用。
+延迟加载我们在hellovoidking的代码中，使用$(function(){});进行首尾包裹，那么为什么要包裹这段代码呢？原因是，jQuery库文件是在body元素之前加载的，我们必须等待所有的DOM元素加载后，延迟支持DOM操作，否则就无法获取到。
+为了延迟等待加载，JavaScript提供了一个事件为load，方法如下：
+window.onload = function()&#123;&#125;;
+而jQuery提供的方法如下：
+$(document).ready(function()&#123;&#125;);
+什么东东？和hello voidking中的代码不一样啊？原来，jQuery的延迟加载方法可以简写为：
+$(function()&#123;&#125;);
+
+jQuery选择器jQuery最核心的组成部分就是：选择器引擎。用iPhone式的格言来说，“让选择器完成一切”就是jQuery的座右铭。
+在使用jQuery的任何方法时，首先要做的就是选择页面中要操作的那些元素。
+jQuery选择器继承了CSS的语法，可以对DOM元素的标签名、属性名、状态等进行快速准确的选择，并且不必担心浏览器的兼容性。jQuery选择器实现了CSS1~CSS3的大部分规则之外，还实现了一些自定义的选择器，用于各种特殊状态的选择。
+选择器部分内容很多，我会在下一篇文章中详细研究探讨。
+事件处理对于事件的概念，我在《Javascript学习笔记——基础篇》中已经解释过，这里不再赘述。jQuery的事件处理，内容也很多，我会在接下来的文章中探究。
+AjaxjQuery的Ajax也是重点，必须的展开。我靠，肿么这么多！别吐槽了帅哥，写教程的void都快哭了，赶着去搞XMPP呢！
+调试个人喜欢的工具是：火狐浏览器 + firebug。
+结束语jQuery博大精深，还有什么单元测试、插件、特效制作啥的，void就不多说了，感兴趣的小伙伴自己查找资料吧！
+参考文档李炎恢的jQuery视频教程《jQuery攻略（作者B.M.Harwani）》《jQuery实战（作者Bear Bibeault、Yehuda Katz）》《jQuery高级编程（作者 Cesar Otero、Rob Larsen）》《jQuery Javascript 与CSS开发入门经典（作者Richard York）》
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>jquery</category>
+      </categories>
+      <tags>
+        <tag>jquery</tag>
+        <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Javascript学习笔记——实践篇</title>
+    <url>/dev-jquery-practice/</url>
+    <content><![CDATA[注释本文中的文件名，写在了代码注释中。既然用到了三种文件，就把这三种文件的注释方法先说明一下。
+HTML注释语法&lt;!--注释的内容--&gt;,示例如下：
+&lt;!--欢迎来到VoidKing的主页--&gt;
+
+CSS注释语法/*注释的内容*/，示例如下：
+/*这是注释*//*这也是注释可以分段*/
+
+Javascript注释和C语言相同，语法//注释的内容或者/*注释的内容*/，示例如下：
+//这是注释/*这也是注释*/
+使用Javascript在html页面中使用Javascript，有三种方法：
+body中body中的Javascript代码，相当于C语言中位于main函数内代码，格式如下：
+&lt;!--index.html--&gt;&lt;html&gt;	&lt;head&gt;	&lt;/head&gt;	&lt;body&gt;		&lt;script type="text/javascript"&gt;		document.write("voidking.com");		alert("voidking.com");		&lt;/script&gt;	&lt;/body&gt;&lt;/html&gt;
+head中head中的Javascript代码，相当于C语言中位于main函数外的代码，一般是封装好的函数。格式如下：
+&lt;!--index.html--&gt;&lt;html&gt;	&lt;head&gt;		&lt;meta http-equiv="Content-Type" content="charset=utf-8" /&gt;		&lt;script type="text/javascript"&gt;		function hello()&#123;			var str=prompt("VoidKing的网址是什么？","请在这里输入");			if(str!=null &amp;&amp; str!="")			&#123;				alert("你输入的是："+str);			&#125;			else			&#123;				alert("你什么也没有输入！");			&#125;		&#125;		&lt;/script&gt;	&lt;/head&gt;	&lt;body&gt;		&lt;script type="text/javascript"&gt;			hello();		&lt;/script&gt;	&lt;/body&gt;&lt;/html&gt;
+外部head中的Javascript代码不易维护，所以多数情况下我们会使用外部引用来代替。格式如下：
+&lt;!--index.html--&gt;&lt;html&gt;	&lt;head&gt;		&lt;meta http-equiv="Content-Type" content="charset=utf-8" /&gt;		&lt;script type="text/javascript" src="javascript.js"&gt;&lt;/script&gt;	&lt;/head&gt;	&lt;body&gt;		&lt;script type="text/javascript"&gt;			hello();		&lt;/script&gt;	&lt;/body&gt;&lt;/html&gt;
+//javascript.jsfunction hello()&#123;			var str=prompt("VoidKing的网址是什么？","请在这里输入");			if(str!=null &amp;&amp; str!="")			&#123;				alert("你输入的是："+str);			&#125;			else			&#123;				alert("你什么也没有输入！");			&#125;		&#125;
+使用CSS上面我们已经说完了使用Javascript的三种方式，爱思考的小伙伴肯定想到了CSS的使用方法，在这里，我也总结一下。
+内联样式当特殊的样式需要应用到个别元素时，就可以使用内联样式。格式如下：
+&lt;!--index.html--&gt;&lt;html&gt;	&lt;head&gt;	&lt;/head&gt;	&lt;body&gt;		&lt;p style="color:red;margin-left:20px"&gt;		This is a paragraph.		&lt;/p&gt;	&lt;/body&gt;&lt;/html&gt;
+
+内部样式当单个文件需要特别样式的时候，就可以使用内部样式表。格式如下:
+&lt;!--index.html--&gt;&lt;html&gt;	&lt;head&gt;		&lt;style type="text/css"&gt;		body&#123;background-color:red&#125;		p&#123;margin-left:20px&#125;		&lt;/style&gt;	&lt;/head&gt;	&lt;body&gt;		&lt;p&gt;		This is a paragraph.		&lt;/p&gt;	&lt;/body&gt;&lt;/html&gt;
+外部样式当样式需要被应用到很多页面的时候，外部样式表最适合。格式如下：
+&lt;!--index.html--&gt;&lt;html&gt;	&lt;head&gt;		&lt;link rel="stylesheet" type="text/css" href="style.css"/&gt;	&lt;/head&gt;	&lt;body&gt;		&lt;p&gt;		This is a paragraph.		&lt;/p&gt;	&lt;/body&gt;&lt;/html&gt;
+/*style.css*/body&#123;background-color:red&#125;p&#123;margin-left:20px&#125;
+
+借花献佛本来想自己整理出一批好的例子，但是，无意中发现了一个网站，已经做得非常好了。所以，void在这里就偷懒一下。例子精品，还附有教程讲解，分享给大家——梦之都！
+结束语这篇文章比预期的用时要短上很多，主要因为，我把痛苦的工作全部交给梦之都了，好机智地说！还想写个提高篇来着，但是能力有限，不能误人子弟啊！所以，Javascript笔记至此结束，接下来，该是jQuery了！
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>jquery</category>
+      </categories>
+      <tags>
+        <tag>javascript</tag>
       </tags>
   </entry>
   <entry>
@@ -19397,6 +19397,37 @@ Ruskin总结了这四年他尝试去做的绘画教学和写作指南，他写�
       </tags>
   </entry>
   <entry>
+    <title>穷人和富人的人脉</title>
+    <url>/hobby-the-poor-and-the-rich-network/</url>
+    <content><![CDATA[作者：万维钢
+引导语：中国人喜欢谈人脉，有句戏言称：“社会关系就是生产力。”拉关系，很多人都做。不管你有多么不喜欢，但在社会中做事情往往就是要依赖各种关系。
+　　弱联系作用大
+　　也许在很多人眼中，建立有价值人脉的关键，是寻求一种比较亲密的关系，比如“一起同过窗、一起扛过枪”，而社会学家们恰恰不这么认为。
+　　斯坦福大学教授马克·格兰诺维特，曾经在20世纪70年代研究过在波士顿近郊居住的技术人员和经理人员是怎么找到工作的。格兰诺维特找到282人，随机选取100人做面对面的访问。他发现，通过正式渠道（比如看广告投简历）得到工作的不到一半。100人中，有54人是通过个人关系找到工作的。这是一个相当可观的数字。
+
+　　这里面，真正有意思的不是靠关系，而是靠什么关系。
+　　所谓多个朋友多条路，那么，这条路到底更有可能是什么样的朋友给的呢？格兰诺维特发现，真正有用的关系，不是亲朋好友这种经常见面的“强联系”，而是“弱联系”。在这些靠关系找到工作的人中，只有16.7%经常能见到他们的这个“关系”，也就是每周至少见两次面。而55.6%的人用到的关系人，仅仅偶然能见到，亦即每周见面不到两次，但每年至少能见一次。另有约28%的帮忙者，一年也见不到一次。也就是说，大多数你真正用到的关系，是那些并不经常见面的人。这些人未必是什么大人物，他们可能是不常联系的老同学或同事，甚至可能是你不太熟悉的人。他们的共同特点是：不在你当前的社交圈里。
+　　接触圈外的人
+　　格兰诺维特对这个现象有一个解释。整天跟你混在一起的这帮人，很可能干的事跟你差不多，想法必然很接近。如果你不知道有一个这样的工作机会，他们又怎么会知道？只有“弱联系”才有可能告诉你一些你不知道的事情。
+　　“弱联系”的真正意义，是把不同社交圈子连接起来，从圈外给你提供有用的信息。根据弱联系理论，一个人在社会上获得机会的多少，与他的社交网络结构有很大关系。如果你只跟亲朋好友交往，或者认识的人都是与自己背景类似的人，那么，你大概就不如那些三教九流什么人都认识的人机会多。人脉的关键，不在于你融入哪个圈子，而在于你能接触多少圈外的人。(感人爱情故事 www.wenzhangba.com)
+　　这样说来，岂不是从一个人的社交网络结构，就能判断这个人的经济地位如何？
+　　2010年，美国研究人员把2005年8月整个英国几乎所有的电话通讯记录拿过来，涵盖90%的手机和超过99%的固定电话。这些电话记录，构成了可见的社交网络。研究者很难知道每个人的经济状况，但是，英国政府有全国每个小区的经济状况数据，可以查到哪里是富人区，哪里是穷人区。就这样，他们把电话通讯记录跟其所在的3万多个小区的居民的经济排名进行对比。
+　　结果非常明显，越是富裕的小区，其交往的多样性越明显。但是，这个结果如果细看的话，还有更多有意思的东西。在统计上，我们使用“相关系数”来表示二者之间的相关性，它的值在-1和1之间，越接近1，就表示这二者越容易一起变大或变小，负值则表示二者变化的方向相反。小区的经济排名与其居民社交网络的“社会多样性”和“地区多样性”的相关系数，分别是0.73和0.58。
+　　这意味着，越是富人越容易跟不同阶层和不同地区的人联络，阶层多样性要比地区多样性更重要，正所谓“贫居闹市无人问，富在深山有远亲”。我们设想富人的联系人数也应该较多，因为他们认识的人比穷人多，这也是对的，但联系人数和经济排名的相关系数只有0.44，并不太重要。最有意思的一点是，打电话时间长短，跟经济排名的相关系数是-0.33，也就是说，富人虽然爱跟各种人联系，但真正通话时间比穷人短。
+　　信息传递的价值
+　　这种数据分析只能告诉我们，社交网络跟经济地位之间有这样的关系，但不能告诉我们到底是谁导致谁。你富，才有不同的人愿意跟你接触，还是因为你愿意跟不同类型的人接触，你才富有？格兰诺维特的理论，还说明另一个问题：事实上，我们每个人与认识的大多数人，都是“弱联系”，“强联系”只是少数。如果让所有认识的人每人给我们一条工作信息，最后有用的这条信息，当然有更大的可能性来自“弱联系”。
+　　格兰诺维特对此提出一个解释：生活中，“强联系”和“弱联系”跟我们交流的次数相差极大。我们跟“强联系”之间交流的信息，要远远多于“弱联系”。这种交流到底多多少，他没有办法量化计算，但是来自“弱联系”的信息总量，可能并不比“强联系”多。那么，这样看来，还是“弱联系”重要，因为它传递的有价值信息的比例更大。
+　　所以，弱联系理论的本质不是人脉，而是信息的传递。
+]]></content>
+      <categories>
+        <category>爱好</category>
+        <category>读书</category>
+      </categories>
+      <tags>
+        <tag>读者</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>一件旧衣服的价值</title>
     <url>/hobby-the-value-of-an-old-clothes/</url>
     <content><![CDATA[13岁的那年，父亲有一天突然递给他一件旧衣服。
@@ -19434,37 +19465,6 @@ Ruskin总结了这四年他尝试去做的绘画教学和写作指南，他写�
       </categories>
       <tags>
         <tag>励志</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>穷人和富人的人脉</title>
-    <url>/hobby-the-poor-and-the-rich-network/</url>
-    <content><![CDATA[作者：万维钢
-引导语：中国人喜欢谈人脉，有句戏言称：“社会关系就是生产力。”拉关系，很多人都做。不管你有多么不喜欢，但在社会中做事情往往就是要依赖各种关系。
-　　弱联系作用大
-　　也许在很多人眼中，建立有价值人脉的关键，是寻求一种比较亲密的关系，比如“一起同过窗、一起扛过枪”，而社会学家们恰恰不这么认为。
-　　斯坦福大学教授马克·格兰诺维特，曾经在20世纪70年代研究过在波士顿近郊居住的技术人员和经理人员是怎么找到工作的。格兰诺维特找到282人，随机选取100人做面对面的访问。他发现，通过正式渠道（比如看广告投简历）得到工作的不到一半。100人中，有54人是通过个人关系找到工作的。这是一个相当可观的数字。
-
-　　这里面，真正有意思的不是靠关系，而是靠什么关系。
-　　所谓多个朋友多条路，那么，这条路到底更有可能是什么样的朋友给的呢？格兰诺维特发现，真正有用的关系，不是亲朋好友这种经常见面的“强联系”，而是“弱联系”。在这些靠关系找到工作的人中，只有16.7%经常能见到他们的这个“关系”，也就是每周至少见两次面。而55.6%的人用到的关系人，仅仅偶然能见到，亦即每周见面不到两次，但每年至少能见一次。另有约28%的帮忙者，一年也见不到一次。也就是说，大多数你真正用到的关系，是那些并不经常见面的人。这些人未必是什么大人物，他们可能是不常联系的老同学或同事，甚至可能是你不太熟悉的人。他们的共同特点是：不在你当前的社交圈里。
-　　接触圈外的人
-　　格兰诺维特对这个现象有一个解释。整天跟你混在一起的这帮人，很可能干的事跟你差不多，想法必然很接近。如果你不知道有一个这样的工作机会，他们又怎么会知道？只有“弱联系”才有可能告诉你一些你不知道的事情。
-　　“弱联系”的真正意义，是把不同社交圈子连接起来，从圈外给你提供有用的信息。根据弱联系理论，一个人在社会上获得机会的多少，与他的社交网络结构有很大关系。如果你只跟亲朋好友交往，或者认识的人都是与自己背景类似的人，那么，你大概就不如那些三教九流什么人都认识的人机会多。人脉的关键，不在于你融入哪个圈子，而在于你能接触多少圈外的人。(感人爱情故事 www.wenzhangba.com)
-　　这样说来，岂不是从一个人的社交网络结构，就能判断这个人的经济地位如何？
-　　2010年，美国研究人员把2005年8月整个英国几乎所有的电话通讯记录拿过来，涵盖90%的手机和超过99%的固定电话。这些电话记录，构成了可见的社交网络。研究者很难知道每个人的经济状况，但是，英国政府有全国每个小区的经济状况数据，可以查到哪里是富人区，哪里是穷人区。就这样，他们把电话通讯记录跟其所在的3万多个小区的居民的经济排名进行对比。
-　　结果非常明显，越是富裕的小区，其交往的多样性越明显。但是，这个结果如果细看的话，还有更多有意思的东西。在统计上，我们使用“相关系数”来表示二者之间的相关性，它的值在-1和1之间，越接近1，就表示这二者越容易一起变大或变小，负值则表示二者变化的方向相反。小区的经济排名与其居民社交网络的“社会多样性”和“地区多样性”的相关系数，分别是0.73和0.58。
-　　这意味着，越是富人越容易跟不同阶层和不同地区的人联络，阶层多样性要比地区多样性更重要，正所谓“贫居闹市无人问，富在深山有远亲”。我们设想富人的联系人数也应该较多，因为他们认识的人比穷人多，这也是对的，但联系人数和经济排名的相关系数只有0.44，并不太重要。最有意思的一点是，打电话时间长短，跟经济排名的相关系数是-0.33，也就是说，富人虽然爱跟各种人联系，但真正通话时间比穷人短。
-　　信息传递的价值
-　　这种数据分析只能告诉我们，社交网络跟经济地位之间有这样的关系，但不能告诉我们到底是谁导致谁。你富，才有不同的人愿意跟你接触，还是因为你愿意跟不同类型的人接触，你才富有？格兰诺维特的理论，还说明另一个问题：事实上，我们每个人与认识的大多数人，都是“弱联系”，“强联系”只是少数。如果让所有认识的人每人给我们一条工作信息，最后有用的这条信息，当然有更大的可能性来自“弱联系”。
-　　格兰诺维特对此提出一个解释：生活中，“强联系”和“弱联系”跟我们交流的次数相差极大。我们跟“强联系”之间交流的信息，要远远多于“弱联系”。这种交流到底多多少，他没有办法量化计算，但是来自“弱联系”的信息总量，可能并不比“强联系”多。那么，这样看来，还是“弱联系”重要，因为它传递的有价值信息的比例更大。
-　　所以，弱联系理论的本质不是人脉，而是信息的传递。
-]]></content>
-      <categories>
-        <category>爱好</category>
-        <category>读书</category>
-      </categories>
-      <tags>
-        <tag>读者</tag>
       </tags>
   </entry>
   <entry>
@@ -21732,152 +21732,6 @@ systemctl start nginx
       </tags>
   </entry>
   <entry>
-    <title>CentOS7安装部署ELK</title>
-    <url>/dev-centos7-install-elk/</url>
-    <content><![CDATA[ELK简介ELK是一个日志分析平台，它主要由Elasticsearch、Logstash和Kibana三个部分组成。Elasticsearch是一个开源的全文搜索和分析引擎，它可以实现数据的实时全文搜索，可以处理大规模日志数据，比如Nginx、Tomcat、系统日志等功能。Logstash负责日志收集和转发，支持日志过滤，支持普通log、自定义json格式的日志解析。Kibana通过接口调用Elasticsearch的数据，并进行前端数据可视化。
-
-
-部署规划计划在三台CentOS7机器上部署ELK，其中一台机器作为ELK的服务节点，IP为192.168.56.101；另外两台作为客户节点，IP为192.168.56.102/103。其中服务节点部署Elasticsearch、Logstash和Kibana三个组件，客户节点部署Logstash。
-服务节点部署环境准备默认root用户下操作，其他用户请自觉添加sudo。  
-1、安装JDK，参考《全平台安装JDK》。
-2、关闭防火墙。
-systemctl stop firewalldsystemctl disable firewalld
-
-或者设置防火墙规则：
-firewall-cmd --add-port=9200/tcp --permanentfirewall-cmd --add-port=9300/tcp --permanentfirewall-cmd --add-port=5601/tcp --permanentfirewall-cmd --reload
-
-3、添加ELK仓库
-cat &lt;&lt;EOF | tee /etc/yum.repos.d/elasticsearch.repo[elasticsearch-7.x]name=Elasticsearch repository for 7.x packagesbaseurl=https://artifacts.elastic.co/packages/7.x/yumgpgcheck=1gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearchenabled=1autorefresh=1type=rpm-mdEOF
-
-4、引入GPG keyrpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch
-5、更新yum包
-yum clean allyum makecache
-
-Elasticsearch1、安装Elasticsearchyum install -y elasticsearch安装过程中会下载 https://artifacts.elastic.co/packages/7.x/yum/7.2.0/elasticsearch-7.2.0-x86_64.rpm ，但是，下载速度非常慢。这里建议通过浏览器下载，然后上传到服务节点上。上传完成后，执行安装：rpm -ivh elasticsearch-7.2.0-x86_64.rpm提示future versions of Elasticsearch will require Java 11; your Java version does not meet this requirement. 不过没关系，当前版本能用就行。
-2、确认Elasticsearch的安装信息rpm -qi elasticsearch
-3、启动Elasticsearch并设置开机启动
-systemctl daemon-reloadsystemctl start elasticsearchsystemctl enable elasticsearch
-
-4、查看Elasticsearch运行状态
-systemctl status elasticsearchps -ef | grep elasticsearchnetstat -nlpt
-
-5、尝试请求curl localhost:9200
-6、设置允许其他机器访问当前只能响应本机的请求，想要其他机器也能访问的话，那么需要修改elasticsearch的配置。vim /etc/elasticsearch/elasticsearch.yml，如下修改：
-# line 17, uncommentcluster.name: my-application# line 22, uncomment and changenode.name: master# line 55, uncomment and changenetwork.host: 0.0.0.0# line 59, uncommentttp.port: 9200# line 72, uncomment and changecluster.initial_master_nodes: ["master", "node-2"]
-
-7、重启Elasticsearch
-systemctl stop elasticsearchsystemctl start elasticsearch# 启动后稍等一会netstat -nlpt
-
-如果可以看到:::9200，就可以通过外部浏览器访问Elasticsearch服务了，至此Elasticsearch安装配置完成。
-Kibana1、安装Kibanayum install -y kibana同样的，如果下载速度缓慢，那么可以通过浏览器下载 https://artifacts.elastic.co/packages/7.x/yum/7.2.0/kibana-7.2.0-x86_64.rpm ，然后上传到服务节点，上传后执行安装：rpm -ivh kibana-7.2.0-x86_64.rpm
-2、确认Kibana的安装信息rpm -qi kibana
-3、启动Kibana并设置开机启动
-systemctl start kibanasystemctl enable kibana
-
-4、查看Kibana运行状态
-systemctl status kibanaps -ef | grep kibananetstat -nlpt
-
-5、测试访问curl localhost:5601 -L
-6、设置允许其他机器访问vim /etc/kibana/kibana.yml，如下修改：
-# line 2, uncomment and changeserver.port: 5601# line 7, uncomment and changeserver.host: "0.0.0.0"# line 28, uncommentelasticsearch.hosts: ["http://localhost:9200"]
-
-7、重启Kibana
-systemctl stop kibanasystemctl start kibana# 启动后稍等一会netstat -nlpt
-如果可以看到0.0.0.0:5601，就可以通过外部浏览器访问Kibana服务了，至此Kibana安装配置完成。
-Logstash1、安装Logstashyum install -y logstash也可以通过浏览器下载 https://artifacts.elastic.co/packages/7.x/yum/7.2.0/logstash-7.2.0.rpm ，然后上传到服务节点，上传后执行安装：rpm -ivh logstash-7.2.0.rpm
-2、确认Logstash的安装信息rpm -qi logstash
-3、启动Logstash
-systemctl start logstash
-
-4、查看Logstash运行状态
-systemctl status logstashps -ef | grep logstashnetstat -nlpt
-
-启动成功了，然后呢？怎么使用？
-5、Logstash hello world
-systemctl stop logstash/usr/share/logstash/bin/logstash -e 'input &#123; stdin &#123; &#125; &#125; output &#123; stdout &#123;&#125; &#125;'
-输入启动命令后，耐心等待服务启动，直到出现Successfully started Logstash API endpoint。输入“hello world”回车，即可打印出输出。logstash通过管道来处理数据，标准的管道包含input、filter和output。以上命令，指定了一个管道的参数，没有filter，input是控制台标准输入，output是控制台标准输出。
-6、管道配置写入文件新建配置文件std.conf，内容为：
-input &#123;     stdin &#123; &#125; &#125; output &#123;     stdout &#123;&#125; &#125;
-
-7、测试配置文件并启动
-/usr/share/logstash/bin/logstash -f ~/std.conf --config.test_and_exit/usr/share/logstash/bin/logstash -f ~/std.conf
-
-8、从文件中读取信息（1）新建/usr/local/test.log文件，内容为：
-hello logstash!
-
-（2）新建test.conf，内容为：
-input &#123;    file &#123;        path =&gt; ["/usr/local/test.log"]        sincedb_path =&gt; "/dev/null"        start_position =&gt; "beginning"    &#125;&#125;filter &#123;&#125;output &#123;    stdout &#123;        codec =&gt; rubydebug    &#125;&#125;
-
-（3）启动Logstash/usr/share/logstash/bin/logstash -f ~/test.conf
-9、写入信息到文件（1）修改test.conf为：
-input &#123;    file &#123;        path =&gt; ["/usr/local/test.log"]        sincedb_path =&gt; "/dev/null"        start_position =&gt; "beginning"    &#125;&#125;filter &#123;&#125;output &#123;    file &#123;        path =&gt; ["/usr/local/test.log.out"]    &#125;&#125;
-
-（2）启动Logstash/usr/share/logstash/bin/logstash -f ~/test.conf启动后，/usr/local/目录下多了test.log.out文件。
-数据传递Logstash收集到了数据，怎样传递给Elasticsearch显示？怎样传递给Kibana显示？1、修改test.conf为：
-input &#123;    file &#123;        path =&gt; ["/usr/local/test.log"]        sincedb_path =&gt; "/dev/null"        start_position =&gt; "beginning"    &#125;&#125;filter &#123;&#125;output &#123;    elasticsearch &#123;        hosts =&gt; ["http://localhost:9200"]    &#125;&#125;
-
-2、启动Logstash/usr/share/logstash/bin/logstash -f ~/test.conf
-3、查看索引浏览器访问 http://192.168.56.101:9200/_cat/indices?v其中有个索引是logstash的，这就是我们想要查看的数据索引。
-4、查看数据浏览器访问 http://192.168.56.101:9200/logstash-2019.07.24-000001/_search看到了hello logstash!，说明数据已经成功传递到了Elasticsearch。链接后添加?pretty参数，可以进行格式化显示。
-5、Kibana添加indices浏览器访问Kibana http://192.168.56.101:5601点击页面上的Logs，然后填写indices相关信息。最后点击Update Source，即可在页面上看到Logstash传递的信息。
-6、修改test.log修改test.log为：
-hello logstash!the log has been updated.
-再次查看Kibana的日志显示，可以看到更新。
-客户节点部署环境准备默认root用户下操作，其他用户请自觉添加sudo。
-1、安装JDK。
-2、关闭防火墙。
-systemctl stop firewalldsystemctl disable firewalld
-
-3、添加ELK仓库
-cat &lt;&lt;EOF | tee /etc/yum.repos.d/elasticsearch.repo[elasticsearch-7.x]name=Elasticsearch repository for 7.x packagesbaseurl=https://artifacts.elastic.co/packages/7.x/yumgpgcheck=1gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearchenabled=1autorefresh=1type=rpm-mdEOF
-
-4、引入GPG keyrpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch
-5、更新yum包
-yum clean allyum makecache
-
-Logstash1、安装Logstashyum install -y logstash也可以通过浏览器下载 https://artifacts.elastic.co/packages/7.x/yum/7.2.0/logstash-7.2.0.rpm ，然后上传到服务节点，上传后执行安装：rpm -ivh logstash-7.2.0.rpm
-2、确认Logstash的安装信息rpm -qi logstash
-3、创建测试文件新建配置文件test.conf，内容为：
-input &#123;    file &#123;        path =&gt; ["/usr/local/test.log"]        sincedb_path =&gt; "/dev/null"        start_position =&gt; "beginning"    &#125;&#125;filter &#123;&#125;output &#123;    elasticsearch &#123;        hosts =&gt; ["http://192.168.56.101:9200"]    &#125;&#125;
-
-新建/usr/local/test.log，内容为：
-this is a log recorded by 102
-
-4、启动logstash
-/usr/share/logstash/bin/logstash -f ~/test.conf
-
-5、在Kibana查看日志刷新Kibana，即可看到客户节点的日志。
-后记以上，完成了ELK的基本安装配置，实现了一个最简单的架构。Logstash收集数据，传递给Elasticsearch，然后Kibana显示Elasticsearch中的数据。更多关于ELK的内容，后续会继续学习。
-书签How to Install ELK Stack on CentOS 7
-Logstash 实用介绍
-Getting Started with Logstash
-开源日志实时分析平台ELK
-logstash的各个场景应用（配置文件均已实践过）
-Logstash介绍
-在 CentOS7 安装 ELK
-ELK-7.0安装部署收集展示
-ELK部署安装以及配置
-Learn About the Elastic Stack
-Elastic 中文社区
-Elastic中文社区运维监控实战之架构篇
-从零开始搭建ELK+GPE监控预警系统
-《ELK Stack 中文指南》
-ELK不权威指南
-零代码如何打造自己的实时监控预警系统
-Docker下ELK三部曲之一：极速体验
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>centos</category>
-      </categories>
-      <tags>
-        <tag>linux</tag>
-        <tag>centos</tag>
-        <tag>elk</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>CentOS7安装部署Jenkins</title>
     <url>/dev-centos7-install-jenkins/</url>
     <content><![CDATA[Jenkins简介Jenkins是一个开源软件项目，是基于Java开发的一种持续集成工具，用于监控持续重复的工作，旨在提供一个开放易用的软件平台，使软件的持续集成变成可能。
@@ -22004,68 +21858,6 @@ Least Load
         <tag>centos</tag>
         <tag>mysql</tag>
         <tag>git</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>CKA和CKAD备考</title>
-    <url>/dev-cka-ckad-prepare/</url>
-    <content><![CDATA[Flag《K8S入门篇》一文中，定下了目标：拿到CKA和CKAD证书。转眼过去了大半年，但是一直没有付诸行动。今天，趁生日，立下flag：2020年5月1前考下CKA，2020年6月1日前考下CKAD。
-CKA和CKAD是啥？
-The Certified Kubernetes Administrator (CKA) program was created by the Cloud Native Computing Foundation (CNCF), in collaboration with The Linux Foundation, to help develop the Kubernetes ecosystem. 
-
-
-The Certified Kubernetes Application Developer (CKAD) program has been developed by the Cloud Native Computing Foundation (CNCF), in collaboration with The Linux Foundation, to help expand the Kubernetes ecosystem through standardized training and certification. 
-
-简而言之，CKA/CKAD是CNCF和Linux基金会联合推出的两个K8S考试认证。委托给PSI来进行监督考试。其中，CKA侧重于K8S管理，CKAD侧重于K8S开发。通过了这两个考试中的任意一个，就能证明你在K8S领域是一个人才；两个考试都通过了，那么涨薪还会远吗？
-想要拿到CKA和CKAD证书，需要哪些准备工作？本文就来梳理一下。主要参考：
-
-CKA及CKAD认证考试经验分享
-CKA认证获取历程
-How to prepare and pass CKA exam
-How to prepare for CKA and CKAD exam ?
-Mumshad Mannambeth Courses
-
-
-
-注意事项报名网址：Certified Kubernetes Administrator (CKA) Program和Certified Kubernetes Application Developer (CKAD) Program。报名时使用折扣码DEVOPS15可以获得15%的折扣。
-报名时需要支持海外支付的信用卡（VISA或者MasterCard）。
-稳定的科学上网工具。
-在约定的考试时间登录考试系统。
-硬件检测：使用Chrome浏览器访问CompatibilityCheck，选择 ”Linux Foundation” as the Exam Sponsor and “CKA” as the Exam。
-按照考官要求打开摄像头和麦克风，并且共享桌面。
-身份检测：考官查看考生证件，比如护照（身份证不行，需要有照片和Latin字母写的全名）。
-环境检测：考官通过摄像头检查房间，要求房间只有考生一个人，桌子只能放电脑，没有其他东西。
-软件检测：考官要求打开任务管理器，确认除浏览器之外的没有其他任务，确认无误后考试开始。
-要求Chrome浏览器当前只能有一个tab页（就是考试系统），考试过程中可以再打开一个tap页用于访问Kubernetes文档，就是说考试全程最多两个tab页。
-CKA一共180分钟，25道题；CKAD一共120分钟，20道题。
-考试的网页一半是试题，一半是GateOne的终端界面。
-考试中不能喝水、吃东西，可以申请休息。
-考试结束后，36个小时之内，CNCF就会通过邮件告诉考生成绩。CKA分数大于74%则通过考试，CKAD分数大于66%则为通过考试，并且附件包含证书。如果考试不通过，考生账号上就会有一次一年内Free Retake的机会。
-更多关于考试及考试环境的注意事项，可参见官方的Exam Tips、Candidate Handbook、CNCF FAQ。
-报名和约考1、支付完成后，跳转到Certification Status页面。
-2、按照提示，Check System Requirements，验证成功后以后也可以再次验证。
-3、点击 Schedule Exam，跳转到考试时间安排页面，选择一个考试时间。
-4、点击 Get Candidate Handbook，获取考试手册。
-5、点击 Verify Name，确认姓名，以后会出现在证书上。
-6、点击 Important Tips，获取帮助提示。
-7、点击右侧 Schedule Exam，即可看到考试信息，包括考试的时间、倒计时、确认码、考生ID等。
-以上，报名和约考完成。
-技能GetDocker浙江大学SEL实验室编写的《Docker容器与容器云》Docker Documentation菜鸟教程之Docker教程Learn Docker &amp; Containers using Interactive Browser
-K8S《Kubernetes权威指南：从Docker到Kubernetes实践全接触 第4版》Kubernetes Documentationkubernetes中文社区华为云-Cloud Native Lives阿里云-K8s 资源全汇总 | K8s 大咖带你 31 堂课从零入门 K8s阿里云-云原生技术公开课阿里云-云原生技术公开课（备用地址）Certified Kubernetes Administrator (CKA) with Practice TestsLabs - Certified Kubernetes Administrator with Practice TestsKubernetes Certified Application Developer (CKAD) with TestsLabs - Certified Kubernetes Application Developercka&amp;cakd考纲-curriculumStudying for the Certified Kubernetes Administrator ExamK8S TasksLearn Kubernetes using Interactive Browser-Based ScenariosPlay with KubernetesCKA CKAD Simulator
-k8s-tool备考的过程中，完善自己的k8s-tool，考试的时候可以使用。
-后记5月19日更新三个月忙碌的早晚，无休的周末，终于在今天早上，收到了CKAD的证书。加上4月份拿到的CKA证书，目标达成！CKA考了90%（74%通过），CKAD考了89%（66%通过）。
-考试心得CKA和CKAD有什么差别？1、考试内容有重叠，但是也有各自独立的内容。比如CKA会考etcd和k8s部署相关的内容，CKAD不会涉及。CKAD会有cronjob和ha的内容，CKA不会涉及。2、CKAD比CKA难度更大一些。考过了CKA，本以为可以轻松拿下CKAD，结果考试时发现CKAD的题目更复杂一些，花费时间更长。后来想想也合理，毕竟CKA需要74分通过，而CKAD只需要66分就可以通过。
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>k8s</category>
-      </categories>
-      <tags>
-        <tag>k8s</tag>
-        <tag>docker</tag>
-        <tag>cka</tag>
-        <tag>ckad</tag>
       </tags>
   </entry>
   <entry>
@@ -22534,110 +22326,6 @@ Django 部署(Nginx)
       </tags>
   </entry>
   <entry>
-    <title>使用Docker安装配置Apache和PHP环境（微擎环境）</title>
-    <url>/dev-docker-apache-php/</url>
-    <content><![CDATA[前言《在CentOS7上配置PHP运行环境》一文中学习了安装配置LNMP环境，《CentOS安装Apache和PHP环境》一文中学习了安装配置Apache和PHP环境。
-本文学习使用Docker安装配置Apache和PHP，与Mysql结合，搭建一个容器化的LAMP环境，部署微擎服务。
-前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。已知docker宿主机IP为192.168.56.130。
-
-
-安装Mysql参考《使用Docker安装配置Mysql》，安装好mysql server和mysql client。
-1、登录mysql servermysql -h 127.0.0.1 -u root -p
-2、创建数据库
-create database `w7` default character set utf8 collate utf8_general_ci;
-
-安装PHP1、登录dockerhub查看需要的PHP - Docker Official Images。
-2、下载php镜像（以7.2-apache为例）docker pull php:7.2-apache
-选择带有apache的版本，省去了安装apache的步骤。
-3、启动php和apache服务
-docker run --name vk-php -d \-p 8080:80 \-v /opt/php/w7:/var/www/html \php:7.2-apache
-
-以上命令：
-
-命名容器为vk-php，后台运行
-映射宿主机8080端口到容器的80端口
-挂载宿主机目录/opt/php/w7到容器目录/var/www/html
-
-更多启动命令参数可以参考How to use this image。
-4、创建测试文件vim /opt/php/w7/index.php，内容为：
-&lt;?php    echo 'hello php7.2';?&gt;
-
-5、验证安装curl localhost:8080，可以看到hello php7.2。浏览器访问 http://192.168.56.130:8080 ，可以看到hello php7.2。
-以上，apache和php环境安装配置完成。
-安装微擎初始尝试主要参考《微擎系统搭建》和微擎linux服务器安装。1、下载微擎安装引导文件
-cd /opt/php/w7wget https://cdn.w7.cc/download/WeEngine-Laster-Online.zipunzip WeEngine-Laster-Online.zip
-
-2、浏览器访问安装页面http://192.168.56.130:8080/install.php填入用户名密码后，点击验证后安装微擎。没有通过验证，如下图：由报错看，主要是目录权限问题和缺少扩展问题。
-重做镜像1、修改sources.list在容器中查看/etc/apt/sources.list，发现镜像版本是debian buster，因此新建一个sources.list为：
-deb http://mirrors.aliyun.com/debian/ buster main non-free contribdeb-src http://mirrors.aliyun.com/debian/ buster main non-free contribdeb http://mirrors.aliyun.com/debian-security buster/updates maindeb-src http://mirrors.aliyun.com/debian-security buster/updates maindeb http://mirrors.aliyun.com/debian/ buster-updates main non-free contribdeb-src http://mirrors.aliyun.com/debian/ buster-updates main non-free contribdeb http://mirrors.aliyun.com/debian/ buster-backports main non-free contribdeb-src http://mirrors.aliyun.com/debian/ buster-backports main non-free contrib
-
-2、编写Dockerfile
-FROM php:7.2-apacheCOPY sources.list /etc/apt/sources.listRUN apt-get update &amp;&amp; apt-get install -y libpng-dev libzip-dev \    &amp;&amp; docker-php-ext-install zip gd pdo pdo_mysqlRUN chmod 777 /var/www/html
-
-3、生成新镜像docker build -t voidking/w7:v1.0 .
-再次尝试1、删除原有容器
-docker stop vk-phpdocker rm vk-php
-
-2、启动新的容器
-docker run --name vk-php -d \-p 8080:80 \-v /opt/php/w7:/var/www/html \voidking/w7:v1.0
-
-3、再次安装，再次验证可以看到，这次还剩一个问题：外网不可访问。这就奇怪了，在容器内明明是可以正常访问外网的，为啥报这个错？既然没错，那就忽略它好了。但是这个错存在，就无法进行下一步，因此这里我们换一种安装方式：源码安装。
-源码安装1、下载源码
-cd /opt/php/w7rm -rf ./*cd ..git clone https://gitee.com/we7coreteam/pros.git w7
-
-2、再次安装，再次验证nice，完美跳过了外网不可访问这个坑。然后，data目录权限报错。修改data目录权限，chmod 777 /opt/php/w7/data/，问题解决。
-3、填入数据库连接信息，以及管理员用户名密码
-4、然后，安装完成。
-5、测试访问浏览器访问首页 http://192.168.56.130:8080/index.php ，即会跳转到微擎登录页。
-以上，微擎系统安装配置完成，可以愉快地使用了。
-百度云解析备案失败百度智能云年终盛典，全场云服务器一折起，于是151块钱入手了一台1C2G2M的百度云BCC主机。但是，没有想到的是，网站需要新增接入备案，否则无法使用域名！！！这个不怪百度，如果使用百度云备案成功，以后想要接入阿里云或者腾讯云，也需要新增接入备案。
-不过百度云比较坑的有两点：第一点是备案期间域名不能解析，而阿里云备案期间可以正常解析。第二点是无法通过百度云的备案审核，提交备案后百度云给出了六条不符合审核条件的理由，而同样的审核材料，一个月前在阿里云通过了备案审核。
-真的是没有对比就没有伤害，第一个念头是退货，然而退货失败。不能退货，那该怎样使用这台服务器呢？那该怎样在这台服务器上部署服务，然后通过域名访问呢？
-在github找到了一些项目，awesome-selfhosted，想要部署一些不需要域名的服务，好歹给利用起来了。但是，依然不甘心，想要给这些服务加上域名！然后，真的找到了办法！前提是你还有一台可以进行域名接入的主机，无论是备案过的阿里云主机，还是不需要备案的海外主机，都可以。
-解析方案已知两台主机：可以域名接入的主机（主机A），百度云主机（主机B）。我们在主机B上部署好了微擎服务，想要给这个服务添加一个域名：w7.voidking.com 
-1、安装frp参考《使用frp进行内网穿透》，在主机A上安装配置好frp server，在主机B上安装配置好frp client。主机B上的8080端口，映射为主机A上的3480端口。
-2、nginx配置在主机A上，添加nginx解析 w7.voidking.com.conf ，内容为：
-server &#123;    server_name w7.voidking.com;    listen 80;    location / &#123;        proxy_pass http://127.0.0.1:3480/;        proxy_set_header X-Real-IP $remote_addr;    &#125;&#125;
-
-注意，不用多加其他参数，不然会出现502等错误。
-3、域名解析在dnspod上添加A记录解析到主机A。
-以上，可以通过域名访问百度云上的微擎服务了。
-微擎后续问题站点URL问题确实可以通过域名访问微擎服务了，但是站点的很多请求地址为 127.0.0.1:3480 ，因为微擎服务使用proxy_pass里的URL作为了站点URL。我们想让微擎服务把域名作为站点URL，解决办法很简单，添加：
-proxy_set_header Host $http_host;
-但是，添加完这个参数，就会出现502错误，尴尬了吧。。。nginx层没法进行修复，看来这个问题只能通过修改微擎源码来修复了。编辑/opt/php/w7/framework/bootstrap.inc.php，如下修改：
-# line 90, change// $_W['siteroot'] = htmlspecialchars($_W['sitescheme'] . (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '') . $sitepath);$_W['siteroot'] = 'w7.voidking.com';
-
-然后，请求地址就全部变成 w7.voidking.com ，nice。
-跨域问题但是，一些请求报错：
-Access to XMLHttpRequest at 'javascript:;' from origin 'http://w7.voidking.com' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, chrome-extension, https.
-
-明明都是同一个url，居然还是跨域错误，没有找到解决办法。
-重装微擎既然自己安装微擎问题这么多，那就使用官网给的docker镜像好了，参考docker安装微擎。
-1、删除原有环境
-docker stop vk-phpdocker rm vk-php
-
-2、启动新的容器
-docker run -it --name vk-php -d \-p 8080:80 \-v /opt/w7/mysql:/var/lib/mysql \-v /opt/w7/html:/var/www/html \-e MYSQL\_ROOT\_PASSWORD=123456 -d \--restart=always \ccr.ccs.tencentyun.com/weiqing/nginxphpmysql:1.0
-
-3、重新安装微擎http://ip:8080/install.php
-4、设置用户名密码
-5、同样修改微擎源码，修改站点URL。
-然后，同样有跨域问题，但是站点已经可以正常使用了，就先这么滴吧。
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>开发</category>
-        <category>docker</category>
-        <category>php</category>
-      </categories>
-      <tags>
-        <tag>docker</tag>
-        <tag>apache</tag>
-        <tag>php</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Docker部署JavaWeb项目</title>
     <url>/dev-docker-deploy-javaweb/</url>
     <content><![CDATA[部署要求宿主机为CentOS7，上面安装了docker、nginx和mysql。
@@ -22994,6 +22682,214 @@ Docker实战案例文档
       <tags>
         <tag>docker</tag>
         <tag>centos</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CKA和CKAD备考</title>
+    <url>/dev-cka-ckad-prepare/</url>
+    <content><![CDATA[Flag《K8S入门篇》一文中，定下了目标：拿到CKA和CKAD证书。转眼过去了大半年，但是一直没有付诸行动。今天，趁生日，立下flag：2020年5月1前考下CKA，2020年6月1日前考下CKAD。
+CKA和CKAD是啥？
+The Certified Kubernetes Administrator (CKA) program was created by the Cloud Native Computing Foundation (CNCF), in collaboration with The Linux Foundation, to help develop the Kubernetes ecosystem. 
+
+
+The Certified Kubernetes Application Developer (CKAD) program has been developed by the Cloud Native Computing Foundation (CNCF), in collaboration with The Linux Foundation, to help expand the Kubernetes ecosystem through standardized training and certification. 
+
+简而言之，CKA/CKAD是CNCF和Linux基金会联合推出的两个K8S考试认证。委托给PSI来进行监督考试。其中，CKA侧重于K8S管理，CKAD侧重于K8S开发。通过了这两个考试中的任意一个，就能证明你在K8S领域是一个人才；两个考试都通过了，那么涨薪还会远吗？
+想要拿到CKA和CKAD证书，需要哪些准备工作？本文就来梳理一下。主要参考：
+
+CKA及CKAD认证考试经验分享
+CKA认证获取历程
+How to prepare and pass CKA exam
+How to prepare for CKA and CKAD exam ?
+Mumshad Mannambeth Courses
+
+
+
+注意事项报名网址：Certified Kubernetes Administrator (CKA) Program和Certified Kubernetes Application Developer (CKAD) Program。报名时使用折扣码DEVOPS15可以获得15%的折扣。
+报名时需要支持海外支付的信用卡（VISA或者MasterCard）。
+稳定的科学上网工具。
+在约定的考试时间登录考试系统。
+硬件检测：使用Chrome浏览器访问CompatibilityCheck，选择 ”Linux Foundation” as the Exam Sponsor and “CKA” as the Exam。
+按照考官要求打开摄像头和麦克风，并且共享桌面。
+身份检测：考官查看考生证件，比如护照（身份证不行，需要有照片和Latin字母写的全名）。
+环境检测：考官通过摄像头检查房间，要求房间只有考生一个人，桌子只能放电脑，没有其他东西。
+软件检测：考官要求打开任务管理器，确认除浏览器之外的没有其他任务，确认无误后考试开始。
+要求Chrome浏览器当前只能有一个tab页（就是考试系统），考试过程中可以再打开一个tap页用于访问Kubernetes文档，就是说考试全程最多两个tab页。
+CKA一共180分钟，25道题；CKAD一共120分钟，20道题。
+考试的网页一半是试题，一半是GateOne的终端界面。
+考试中不能喝水、吃东西，可以申请休息。
+考试结束后，36个小时之内，CNCF就会通过邮件告诉考生成绩。CKA分数大于74%则通过考试，CKAD分数大于66%则为通过考试，并且附件包含证书。如果考试不通过，考生账号上就会有一次一年内Free Retake的机会。
+更多关于考试及考试环境的注意事项，可参见官方的Exam Tips、Candidate Handbook、CNCF FAQ。
+报名和约考1、支付完成后，跳转到Certification Status页面。
+2、按照提示，Check System Requirements，验证成功后以后也可以再次验证。
+3、点击 Schedule Exam，跳转到考试时间安排页面，选择一个考试时间。
+4、点击 Get Candidate Handbook，获取考试手册。
+5、点击 Verify Name，确认姓名，以后会出现在证书上。
+6、点击 Important Tips，获取帮助提示。
+7、点击右侧 Schedule Exam，即可看到考试信息，包括考试的时间、倒计时、确认码、考生ID等。
+以上，报名和约考完成。
+技能GetDocker浙江大学SEL实验室编写的《Docker容器与容器云》Docker Documentation菜鸟教程之Docker教程Learn Docker &amp; Containers using Interactive Browser
+K8S《Kubernetes权威指南：从Docker到Kubernetes实践全接触 第4版》Kubernetes Documentationkubernetes中文社区华为云-Cloud Native Lives阿里云-K8s 资源全汇总 | K8s 大咖带你 31 堂课从零入门 K8s阿里云-云原生技术公开课阿里云-云原生技术公开课（备用地址）Certified Kubernetes Administrator (CKA) with Practice TestsLabs - Certified Kubernetes Administrator with Practice TestsKubernetes Certified Application Developer (CKAD) with TestsLabs - Certified Kubernetes Application Developercka&amp;cakd考纲-curriculumStudying for the Certified Kubernetes Administrator ExamK8S TasksLearn Kubernetes using Interactive Browser-Based ScenariosPlay with KubernetesCKA CKAD Simulator
+k8s-tool备考的过程中，完善自己的k8s-tool，考试的时候可以使用。
+后记5月19日更新三个月忙碌的早晚，无休的周末，终于在今天早上，收到了CKAD的证书。加上4月份拿到的CKA证书，目标达成！CKA考了90%（74%通过），CKAD考了89%（66%通过）。
+考试心得CKA和CKAD有什么差别？1、考试内容有重叠，但是也有各自独立的内容。比如CKA会考etcd和k8s部署相关的内容，CKAD不会涉及。CKAD会有cronjob和ha的内容，CKA不会涉及。2、CKAD比CKA难度更大一些。考过了CKA，本以为可以轻松拿下CKAD，结果考试时发现CKAD的题目更复杂一些，花费时间更长。后来想想也合理，毕竟CKA需要74分通过，而CKAD只需要66分就可以通过。
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>k8s</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
+        <tag>docker</tag>
+        <tag>cka</tag>
+        <tag>ckad</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CentOS7安装部署ELK</title>
+    <url>/dev-centos7-install-elk/</url>
+    <content><![CDATA[ELK简介ELK是一个日志分析平台，它主要由Elasticsearch、Logstash和Kibana三个部分组成。Elasticsearch是一个开源的全文搜索和分析引擎，它可以实现数据的实时全文搜索，可以处理大规模日志数据，比如Nginx、Tomcat、系统日志等功能。Logstash负责日志收集和转发，支持日志过滤，支持普通log、自定义json格式的日志解析。Kibana通过接口调用Elasticsearch的数据，并进行前端数据可视化。
+
+
+部署规划计划在三台CentOS7机器上部署ELK，其中一台机器作为ELK的服务节点，IP为192.168.56.101；另外两台作为客户节点，IP为192.168.56.102/103。其中服务节点部署Elasticsearch、Logstash和Kibana三个组件，客户节点部署Logstash。
+服务节点部署环境准备默认root用户下操作，其他用户请自觉添加sudo。  
+1、安装JDK，参考《全平台安装JDK》。
+2、关闭防火墙。
+systemctl stop firewalldsystemctl disable firewalld
+
+或者设置防火墙规则：
+firewall-cmd --add-port=9200/tcp --permanentfirewall-cmd --add-port=9300/tcp --permanentfirewall-cmd --add-port=5601/tcp --permanentfirewall-cmd --reload
+
+3、添加ELK仓库
+cat &lt;&lt;EOF | tee /etc/yum.repos.d/elasticsearch.repo[elasticsearch-7.x]name=Elasticsearch repository for 7.x packagesbaseurl=https://artifacts.elastic.co/packages/7.x/yumgpgcheck=1gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearchenabled=1autorefresh=1type=rpm-mdEOF
+
+4、引入GPG keyrpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch
+5、更新yum包
+yum clean allyum makecache
+
+Elasticsearch1、安装Elasticsearchyum install -y elasticsearch安装过程中会下载 https://artifacts.elastic.co/packages/7.x/yum/7.2.0/elasticsearch-7.2.0-x86_64.rpm ，但是，下载速度非常慢。这里建议通过浏览器下载，然后上传到服务节点上。上传完成后，执行安装：rpm -ivh elasticsearch-7.2.0-x86_64.rpm提示future versions of Elasticsearch will require Java 11; your Java version does not meet this requirement. 不过没关系，当前版本能用就行。
+2、确认Elasticsearch的安装信息rpm -qi elasticsearch
+3、启动Elasticsearch并设置开机启动
+systemctl daemon-reloadsystemctl start elasticsearchsystemctl enable elasticsearch
+
+4、查看Elasticsearch运行状态
+systemctl status elasticsearchps -ef | grep elasticsearchnetstat -nlpt
+
+5、尝试请求curl localhost:9200
+6、设置允许其他机器访问当前只能响应本机的请求，想要其他机器也能访问的话，那么需要修改elasticsearch的配置。vim /etc/elasticsearch/elasticsearch.yml，如下修改：
+# line 17, uncommentcluster.name: my-application# line 22, uncomment and changenode.name: master# line 55, uncomment and changenetwork.host: 0.0.0.0# line 59, uncommentttp.port: 9200# line 72, uncomment and changecluster.initial_master_nodes: ["master", "node-2"]
+
+7、重启Elasticsearch
+systemctl stop elasticsearchsystemctl start elasticsearch# 启动后稍等一会netstat -nlpt
+
+如果可以看到:::9200，就可以通过外部浏览器访问Elasticsearch服务了，至此Elasticsearch安装配置完成。
+Kibana1、安装Kibanayum install -y kibana同样的，如果下载速度缓慢，那么可以通过浏览器下载 https://artifacts.elastic.co/packages/7.x/yum/7.2.0/kibana-7.2.0-x86_64.rpm ，然后上传到服务节点，上传后执行安装：rpm -ivh kibana-7.2.0-x86_64.rpm
+2、确认Kibana的安装信息rpm -qi kibana
+3、启动Kibana并设置开机启动
+systemctl start kibanasystemctl enable kibana
+
+4、查看Kibana运行状态
+systemctl status kibanaps -ef | grep kibananetstat -nlpt
+
+5、测试访问curl localhost:5601 -L
+6、设置允许其他机器访问vim /etc/kibana/kibana.yml，如下修改：
+# line 2, uncomment and changeserver.port: 5601# line 7, uncomment and changeserver.host: "0.0.0.0"# line 28, uncommentelasticsearch.hosts: ["http://localhost:9200"]
+
+7、重启Kibana
+systemctl stop kibanasystemctl start kibana# 启动后稍等一会netstat -nlpt
+如果可以看到0.0.0.0:5601，就可以通过外部浏览器访问Kibana服务了，至此Kibana安装配置完成。
+Logstash1、安装Logstashyum install -y logstash也可以通过浏览器下载 https://artifacts.elastic.co/packages/7.x/yum/7.2.0/logstash-7.2.0.rpm ，然后上传到服务节点，上传后执行安装：rpm -ivh logstash-7.2.0.rpm
+2、确认Logstash的安装信息rpm -qi logstash
+3、启动Logstash
+systemctl start logstash
+
+4、查看Logstash运行状态
+systemctl status logstashps -ef | grep logstashnetstat -nlpt
+
+启动成功了，然后呢？怎么使用？
+5、Logstash hello world
+systemctl stop logstash/usr/share/logstash/bin/logstash -e 'input &#123; stdin &#123; &#125; &#125; output &#123; stdout &#123;&#125; &#125;'
+输入启动命令后，耐心等待服务启动，直到出现Successfully started Logstash API endpoint。输入“hello world”回车，即可打印出输出。logstash通过管道来处理数据，标准的管道包含input、filter和output。以上命令，指定了一个管道的参数，没有filter，input是控制台标准输入，output是控制台标准输出。
+6、管道配置写入文件新建配置文件std.conf，内容为：
+input &#123;     stdin &#123; &#125; &#125; output &#123;     stdout &#123;&#125; &#125;
+
+7、测试配置文件并启动
+/usr/share/logstash/bin/logstash -f ~/std.conf --config.test_and_exit/usr/share/logstash/bin/logstash -f ~/std.conf
+
+8、从文件中读取信息（1）新建/usr/local/test.log文件，内容为：
+hello logstash!
+
+（2）新建test.conf，内容为：
+input &#123;    file &#123;        path =&gt; ["/usr/local/test.log"]        sincedb_path =&gt; "/dev/null"        start_position =&gt; "beginning"    &#125;&#125;filter &#123;&#125;output &#123;    stdout &#123;        codec =&gt; rubydebug    &#125;&#125;
+
+（3）启动Logstash/usr/share/logstash/bin/logstash -f ~/test.conf
+9、写入信息到文件（1）修改test.conf为：
+input &#123;    file &#123;        path =&gt; ["/usr/local/test.log"]        sincedb_path =&gt; "/dev/null"        start_position =&gt; "beginning"    &#125;&#125;filter &#123;&#125;output &#123;    file &#123;        path =&gt; ["/usr/local/test.log.out"]    &#125;&#125;
+
+（2）启动Logstash/usr/share/logstash/bin/logstash -f ~/test.conf启动后，/usr/local/目录下多了test.log.out文件。
+数据传递Logstash收集到了数据，怎样传递给Elasticsearch显示？怎样传递给Kibana显示？1、修改test.conf为：
+input &#123;    file &#123;        path =&gt; ["/usr/local/test.log"]        sincedb_path =&gt; "/dev/null"        start_position =&gt; "beginning"    &#125;&#125;filter &#123;&#125;output &#123;    elasticsearch &#123;        hosts =&gt; ["http://localhost:9200"]    &#125;&#125;
+
+2、启动Logstash/usr/share/logstash/bin/logstash -f ~/test.conf
+3、查看索引浏览器访问 http://192.168.56.101:9200/_cat/indices?v其中有个索引是logstash的，这就是我们想要查看的数据索引。
+4、查看数据浏览器访问 http://192.168.56.101:9200/logstash-2019.07.24-000001/_search看到了hello logstash!，说明数据已经成功传递到了Elasticsearch。链接后添加?pretty参数，可以进行格式化显示。
+5、Kibana添加indices浏览器访问Kibana http://192.168.56.101:5601点击页面上的Logs，然后填写indices相关信息。最后点击Update Source，即可在页面上看到Logstash传递的信息。
+6、修改test.log修改test.log为：
+hello logstash!the log has been updated.
+再次查看Kibana的日志显示，可以看到更新。
+客户节点部署环境准备默认root用户下操作，其他用户请自觉添加sudo。
+1、安装JDK。
+2、关闭防火墙。
+systemctl stop firewalldsystemctl disable firewalld
+
+3、添加ELK仓库
+cat &lt;&lt;EOF | tee /etc/yum.repos.d/elasticsearch.repo[elasticsearch-7.x]name=Elasticsearch repository for 7.x packagesbaseurl=https://artifacts.elastic.co/packages/7.x/yumgpgcheck=1gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearchenabled=1autorefresh=1type=rpm-mdEOF
+
+4、引入GPG keyrpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch
+5、更新yum包
+yum clean allyum makecache
+
+Logstash1、安装Logstashyum install -y logstash也可以通过浏览器下载 https://artifacts.elastic.co/packages/7.x/yum/7.2.0/logstash-7.2.0.rpm ，然后上传到服务节点，上传后执行安装：rpm -ivh logstash-7.2.0.rpm
+2、确认Logstash的安装信息rpm -qi logstash
+3、创建测试文件新建配置文件test.conf，内容为：
+input &#123;    file &#123;        path =&gt; ["/usr/local/test.log"]        sincedb_path =&gt; "/dev/null"        start_position =&gt; "beginning"    &#125;&#125;filter &#123;&#125;output &#123;    elasticsearch &#123;        hosts =&gt; ["http://192.168.56.101:9200"]    &#125;&#125;
+
+新建/usr/local/test.log，内容为：
+this is a log recorded by 102
+
+4、启动logstash
+/usr/share/logstash/bin/logstash -f ~/test.conf
+
+5、在Kibana查看日志刷新Kibana，即可看到客户节点的日志。
+后记以上，完成了ELK的基本安装配置，实现了一个最简单的架构。Logstash收集数据，传递给Elasticsearch，然后Kibana显示Elasticsearch中的数据。更多关于ELK的内容，后续会继续学习。
+书签How to Install ELK Stack on CentOS 7
+Logstash 实用介绍
+Getting Started with Logstash
+开源日志实时分析平台ELK
+logstash的各个场景应用（配置文件均已实践过）
+Logstash介绍
+在 CentOS7 安装 ELK
+ELK-7.0安装部署收集展示
+ELK部署安装以及配置
+Learn About the Elastic Stack
+Elastic 中文社区
+Elastic中文社区运维监控实战之架构篇
+从零开始搭建ELK+GPE监控预警系统
+《ELK Stack 中文指南》
+ELK不权威指南
+零代码如何打造自己的实时监控预警系统
+Docker下ELK三部曲之一：极速体验
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>centos</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>centos</tag>
+        <tag>elk</tag>
       </tags>
   </entry>
   <entry>
@@ -23708,6 +23604,110 @@ SSL的配置不要加 ssl on ，否则启动时会存在一个警告：
       </tags>
   </entry>
   <entry>
+    <title>使用Docker安装配置Apache和PHP环境（微擎环境）</title>
+    <url>/dev-docker-apache-php/</url>
+    <content><![CDATA[前言《在CentOS7上配置PHP运行环境》一文中学习了安装配置LNMP环境，《CentOS安装Apache和PHP环境》一文中学习了安装配置Apache和PHP环境。
+本文学习使用Docker安装配置Apache和PHP，与Mysql结合，搭建一个容器化的LAMP环境，部署微擎服务。
+前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。已知docker宿主机IP为192.168.56.130。
+
+
+安装Mysql参考《使用Docker安装配置Mysql》，安装好mysql server和mysql client。
+1、登录mysql servermysql -h 127.0.0.1 -u root -p
+2、创建数据库
+create database `w7` default character set utf8 collate utf8_general_ci;
+
+安装PHP1、登录dockerhub查看需要的PHP - Docker Official Images。
+2、下载php镜像（以7.2-apache为例）docker pull php:7.2-apache
+选择带有apache的版本，省去了安装apache的步骤。
+3、启动php和apache服务
+docker run --name vk-php -d \-p 8080:80 \-v /opt/php/w7:/var/www/html \php:7.2-apache
+
+以上命令：
+
+命名容器为vk-php，后台运行
+映射宿主机8080端口到容器的80端口
+挂载宿主机目录/opt/php/w7到容器目录/var/www/html
+
+更多启动命令参数可以参考How to use this image。
+4、创建测试文件vim /opt/php/w7/index.php，内容为：
+&lt;?php    echo 'hello php7.2';?&gt;
+
+5、验证安装curl localhost:8080，可以看到hello php7.2。浏览器访问 http://192.168.56.130:8080 ，可以看到hello php7.2。
+以上，apache和php环境安装配置完成。
+安装微擎初始尝试主要参考《微擎系统搭建》和微擎linux服务器安装。1、下载微擎安装引导文件
+cd /opt/php/w7wget https://cdn.w7.cc/download/WeEngine-Laster-Online.zipunzip WeEngine-Laster-Online.zip
+
+2、浏览器访问安装页面http://192.168.56.130:8080/install.php填入用户名密码后，点击验证后安装微擎。没有通过验证，如下图：由报错看，主要是目录权限问题和缺少扩展问题。
+重做镜像1、修改sources.list在容器中查看/etc/apt/sources.list，发现镜像版本是debian buster，因此新建一个sources.list为：
+deb http://mirrors.aliyun.com/debian/ buster main non-free contribdeb-src http://mirrors.aliyun.com/debian/ buster main non-free contribdeb http://mirrors.aliyun.com/debian-security buster/updates maindeb-src http://mirrors.aliyun.com/debian-security buster/updates maindeb http://mirrors.aliyun.com/debian/ buster-updates main non-free contribdeb-src http://mirrors.aliyun.com/debian/ buster-updates main non-free contribdeb http://mirrors.aliyun.com/debian/ buster-backports main non-free contribdeb-src http://mirrors.aliyun.com/debian/ buster-backports main non-free contrib
+
+2、编写Dockerfile
+FROM php:7.2-apacheCOPY sources.list /etc/apt/sources.listRUN apt-get update &amp;&amp; apt-get install -y libpng-dev libzip-dev \    &amp;&amp; docker-php-ext-install zip gd pdo pdo_mysqlRUN chmod 777 /var/www/html
+
+3、生成新镜像docker build -t voidking/w7:v1.0 .
+再次尝试1、删除原有容器
+docker stop vk-phpdocker rm vk-php
+
+2、启动新的容器
+docker run --name vk-php -d \-p 8080:80 \-v /opt/php/w7:/var/www/html \voidking/w7:v1.0
+
+3、再次安装，再次验证可以看到，这次还剩一个问题：外网不可访问。这就奇怪了，在容器内明明是可以正常访问外网的，为啥报这个错？既然没错，那就忽略它好了。但是这个错存在，就无法进行下一步，因此这里我们换一种安装方式：源码安装。
+源码安装1、下载源码
+cd /opt/php/w7rm -rf ./*cd ..git clone https://gitee.com/we7coreteam/pros.git w7
+
+2、再次安装，再次验证nice，完美跳过了外网不可访问这个坑。然后，data目录权限报错。修改data目录权限，chmod 777 /opt/php/w7/data/，问题解决。
+3、填入数据库连接信息，以及管理员用户名密码
+4、然后，安装完成。
+5、测试访问浏览器访问首页 http://192.168.56.130:8080/index.php ，即会跳转到微擎登录页。
+以上，微擎系统安装配置完成，可以愉快地使用了。
+百度云解析备案失败百度智能云年终盛典，全场云服务器一折起，于是151块钱入手了一台1C2G2M的百度云BCC主机。但是，没有想到的是，网站需要新增接入备案，否则无法使用域名！！！这个不怪百度，如果使用百度云备案成功，以后想要接入阿里云或者腾讯云，也需要新增接入备案。
+不过百度云比较坑的有两点：第一点是备案期间域名不能解析，而阿里云备案期间可以正常解析。第二点是无法通过百度云的备案审核，提交备案后百度云给出了六条不符合审核条件的理由，而同样的审核材料，一个月前在阿里云通过了备案审核。
+真的是没有对比就没有伤害，第一个念头是退货，然而退货失败。不能退货，那该怎样使用这台服务器呢？那该怎样在这台服务器上部署服务，然后通过域名访问呢？
+在github找到了一些项目，awesome-selfhosted，想要部署一些不需要域名的服务，好歹给利用起来了。但是，依然不甘心，想要给这些服务加上域名！然后，真的找到了办法！前提是你还有一台可以进行域名接入的主机，无论是备案过的阿里云主机，还是不需要备案的海外主机，都可以。
+解析方案已知两台主机：可以域名接入的主机（主机A），百度云主机（主机B）。我们在主机B上部署好了微擎服务，想要给这个服务添加一个域名：w7.voidking.com 
+1、安装frp参考《使用frp进行内网穿透》，在主机A上安装配置好frp server，在主机B上安装配置好frp client。主机B上的8080端口，映射为主机A上的3480端口。
+2、nginx配置在主机A上，添加nginx解析 w7.voidking.com.conf ，内容为：
+server &#123;    server_name w7.voidking.com;    listen 80;    location / &#123;        proxy_pass http://127.0.0.1:3480/;        proxy_set_header X-Real-IP $remote_addr;    &#125;&#125;
+
+注意，不用多加其他参数，不然会出现502等错误。
+3、域名解析在dnspod上添加A记录解析到主机A。
+以上，可以通过域名访问百度云上的微擎服务了。
+微擎后续问题站点URL问题确实可以通过域名访问微擎服务了，但是站点的很多请求地址为 127.0.0.1:3480 ，因为微擎服务使用proxy_pass里的URL作为了站点URL。我们想让微擎服务把域名作为站点URL，解决办法很简单，添加：
+proxy_set_header Host $http_host;
+但是，添加完这个参数，就会出现502错误，尴尬了吧。。。nginx层没法进行修复，看来这个问题只能通过修改微擎源码来修复了。编辑/opt/php/w7/framework/bootstrap.inc.php，如下修改：
+# line 90, change// $_W['siteroot'] = htmlspecialchars($_W['sitescheme'] . (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '') . $sitepath);$_W['siteroot'] = 'w7.voidking.com';
+
+然后，请求地址就全部变成 w7.voidking.com ，nice。
+跨域问题但是，一些请求报错：
+Access to XMLHttpRequest at 'javascript:;' from origin 'http://w7.voidking.com' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, chrome-extension, https.
+
+明明都是同一个url，居然还是跨域错误，没有找到解决办法。
+重装微擎既然自己安装微擎问题这么多，那就使用官网给的docker镜像好了，参考docker安装微擎。
+1、删除原有环境
+docker stop vk-phpdocker rm vk-php
+
+2、启动新的容器
+docker run -it --name vk-php -d \-p 8080:80 \-v /opt/w7/mysql:/var/lib/mysql \-v /opt/w7/html:/var/www/html \-e MYSQL\_ROOT\_PASSWORD=123456 -d \--restart=always \ccr.ccs.tencentyun.com/weiqing/nginxphpmysql:1.0
+
+3、重新安装微擎http://ip:8080/install.php
+4、设置用户名密码
+5、同样修改微擎源码，修改站点URL。
+然后，同样有跨域问题，但是站点已经可以正常使用了，就先这么滴吧。
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>开发</category>
+        <category>docker</category>
+        <category>php</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>apache</tag>
+        <tag>php</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hexo更换主题为Next</title>
     <url>/dev-hexo-theme-next/</url>
     <content><![CDATA[前言使用Yilia主题很久了，自己也进行了很多个性化的定制。今日始，决定把博客主题换成更加炫酷强大的Next，本文记录一下替换过程。
@@ -23815,6 +23815,77 @@ Elegant Theme for Hexo
       </tags>
   </entry>
   <entry>
+    <title>Hibernate高级应用</title>
+    <url>/dev-hibernate-senior/</url>
+    <content><![CDATA[Hibernate批量处理批量插入Hibernate直接处理首先在hibernate.cfg.xml中设置批量尺寸属性hibernate.jdbc.batch_size，最好关闭Hibernate的二级缓存以提高效率。
+&lt;hibernate-configuration&gt;	&lt;session-factory&gt;		&lt;property name="hibernate.jdbc.batch_size"&gt;50&lt;/property&gt;		&lt;property name="hibernate.jdbc.use_second_level_cache"&gt;false&lt;/property&gt;	&lt;/session-factory&gt;&lt;/hibernate-configuration&gt;
+下面批量插入500个课程到数据库表中：
+//KcbBatch.javapackage com.voidking.hibernate.test;import org.hibernate.Session;import org.hibernate.SessionFactory;import org.hibernate.Transaction;import org.hibernate.cfg.Configuration;import com.voidking.hibernate.model.Kcb;public class KcbBatch &#123;	public static void main(String[] args)&#123;		//创建Session对象		Configuration cfg = new Configuration();        SessionFactory sf = cfg.configure().buildSessionFactory();		Session session = sf.openSession();				//创建事务对象		Transaction ts=session.beginTransaction();				for (int i = 0; i &lt; 500; i++) &#123;			Kcb kcb = new Kcb();			kcb.setKch(i+"");			session.save(kcb);			if(i%50==0)			&#123;				session.flush();				session.clear();			&#125;		&#125;				ts.commit();				session.close();		sf.close();			&#125;&#125;
+
+
+
+调用JDBC由于Hibernate只是对JDBC进行了轻量级的封装，因此完全可以绕过Hibernate直接用JDBC进行批量插入。因此上面的代码可以改成：
+//KcbBatch.javapackage com.voidking.hibernate.test;import java.sql.Connection;import java.sql.PreparedStatement;import org.hibernate.Session;import org.hibernate.SessionFactory;import org.hibernate.Transaction;import org.hibernate.cfg.Configuration;import com.voidking.hibernate.model.Kcb;public class KcbBatch2 &#123;	public static void main(String[] args)&#123;		//创建Session对象		Configuration cfg = new Configuration();        SessionFactory sf = cfg.configure().buildSessionFactory();		Session session = sf.openSession();				//创建事务对象		Transaction ts=session.beginTransaction();				Connection conn = session.connection();				try &#123;			PreparedStatement stmt = conn.prepareStatement("insert into kcb(kch) values(?)");			for(int i=0;i&lt;500;i++)			&#123;				stmt.setString(1, i+"");				stmt.addBatch();			&#125;		&#125; catch (Exception e) &#123;			e.printStackTrace();		&#125;				ts.commit();				session.close();		sf.close();			&#125;&#125;
+
+对比在用Hibernate进行操作的时候操作的是表对应的类，而在用JDBC进行操作时操作的是数据库中的表。
+批量更新Hibernate直接处理为了使Hibernate的HQL直接支持update/delete的批量更新语法，首先要hibernate.cfg.xml中设置HQL/SQL查询翻译器属性hibernate.query.factory_class。
+&lt;property name="hibernate.query.factory_class"&gt;	org.hibernate.hql.ast.ASTQueryTranslatorFactory&lt;/property&gt;
+为了防止类名输入错误，可以按住Ctrl键，同时单击这个类名。如果可以跳转到.class文件，说明输入正确，否则输入错误。下面使用HQL批量更新把课程表中XS修改为30。
+Query query = session.createQuery("update kcb set xs=30");query.executeUpdate();
+
+
+调用JDBCtry&#123;	Statement stmt = conn.createStatement();	stmt.executeUpdate("update kcb set xs=30");&#125;catch(Exception)&#123;	e.printStackTrace();&#125;
+
+批量删除Hibernate直接处理删除课程表中课程号大于200的课程。
+Query query = session.createQuery("delete kcb where kch &gt; 200");query.executeUpdate();
+调用JDBCtry&#123;	Statement stmt = conn.createStatement();	stmt.executeUpdate("delete from kcb where kch&gt;200");&#125;catch(Exception)&#123;	e.printStackTrace();&#125;
+
+实体对象生命周期实体对象，特指Hibernate O/R映射关系中的域对象（即O/R中的O）。
+transient（瞬时态）瞬时态，即实体对象在内存中的存在，与数据库中的记录无关。
+Student stu = new Student();stu.setSnumber("081101");stu.setSname("李方方");stu.setSage(21);
+这里的stu对象，与数据库中的记录没有任何关联。
+persisent（持久态）Student stu = new Student();stu.setSnumber("081101");stu.setSname("李方方");stu.setSage(21);Student stu1 = new Student();stu1.setSnumber("081102");stu1.setSname("程明");stu1.setSage(22);Transaction ts = session.beginTransaction();session.save(stu);//stu对象转换为持久态，由Hibernate纳入实体管理器；stu1仍然处于瞬时态ts.commit();Transaction ts2 = session.beginTransaction();stu.setSname("李方");//虽然这个事务没有显式调用session.sava()保存stu对象，但是由于stu为持久态，将自动被固化到数据库stu1.setSname("程明明");//stu1仍是一个普通Java对象，对数据库未产生任何影响ts2.commit();
+处于瞬时态的对象，可以通过Session的save()方法转换成持久状态。同样，如果一个实体对象由Hibernate加载，那么，它也处于持久状态。
+Student stu = (Student)session.load(Student.class,net Integer(1));
+持久对象对应着数据库中的一条记录，可以看做是数据库记录的对象化操作接口，其状态的变更将对数据库中的记录产生影响。
+Detached（脱管状态）处于持久化的对象，其对应的Session实例关闭之后，此对象就处于脱管状态。Session实例可以看做是持久对象的宿主，一旦此宿主失效，其从属的持久对象进入脱管状态。
+Student stu = new Student();//stu对象为瞬时态stu.setSnumber("081101");stu.setSname("李方方");stu.setSage(21);Transaction ts = session.beginTransaction();session.save(stu);//stu对象由Hibernate纳入管理容器，处于持久状态ts.commit();session.close();//stu对象为脱管状态，因为与其关联的session已经关闭
+托管态和瞬时态有什么区别？瞬时状态的stu对象与库表中的数据缺乏对应关系，而脱管状态的stu对象，却在库表中存在相对应的记录，只不过由于脱管对象脱离Session这个数据操作平台，其状态的改变无法更新到库表中对应的记录。
+有时候为了方便，将处于瞬时和脱管状态的对象统称为值对象（Value Object，VO），将处于持久态的对象称为持久对象（Persistent Object，PO）。也就是说，对Hibernate实体管理容器而言，非管理的实体对象统称为VO，被管理的对象称为PO。
+Hibernate事务管理事务是数据库并发控制不可分割的基本工作单位，具有原子性、一致性、隔离性和持久性的特点。
+事务（Transaction）是工作中的基本逻辑单元，可以用于确保数据库能够被正确修改，避免数据只修改一部分而导致数据不完整，或者在修改时受到用户干扰。
+基于JDBC的事务管理Hibernate是JDBC的轻量级封装，本身并不具备事务管理能力。在事务管理层，Hibernate将其委托给底层的JDBC或JTA，以实现事务管理和调度功能。
+在JDBC中，事务默认是自动提交。也就是说，一条对数据库的更新表达式代表一项事务操作。操作成功后，系统将自动调用commit提交。否则，将调用rollback回滚。
+在JDBC中，可以通过调用setAutoCommit(false)禁止自动提交。之后就可以把多个数据库操作的表达式作为一个事务，在操作完成后调用commit进行整体提交。
+将事务管理委托给JDBC进行处理是最简单的实现方式，Hibernate对于JDBC事务的封装也比较简单。如下面的代码：
+//创建Session对象Configuration cfg = new Configuration();SessionFactory sf = cfg.configure().buildSessionFactory();Session session = sf.openSession();//创建事务对象Transaction ts=session.beginTransaction();seesion.save(stu);ts.commit();session.close();sf.close();
+从JDBC层面而言，上面的代码实际对应着：
+Connection cn = getConnection;cn.setAutoCommit(false);//JDBC调用相关的SQL语句cn.commit();
+
+在sf.openSession()语句中，Hibernate会初始化数据库连接。与此同时，将其AutoCommit设为关闭状态（false）。即一开始获得的session，其自动提交属性已经被关闭。下面的代码不会对数据库产生任何效果：
+//创建Session对象Configuration cfg = new Configuration();SessionFactory sf = cfg.configure().buildSessionFactory();Session session = sf.openSession();seesion.save(stu);session.close();sf.close();
+这实际上相当于JDBC Connection的AutoCommit属性被设为false，执行了若干JDBC操作之后，没有调用commit操作。
+基于JTA的事务管理JTA（Java Transaction API）是由Java EE Transaction Manager去管理的事务。其最大的特点是调用UserTransaction接口的begin、commit和rollback方法来完成事务范围的界定、事务的提交和回滚。JTA可以实现统一事务对应不同的数据库。
+JTA主要用于分布式的多个数据源的两阶段提交的事务，而JDBC的Connection提供单个数据源的事务。后者因为只涉及一个数据源，所以其事务可以由数据库自己单独实现。而JTA事务因为其分布式和多数据库的特性，不可能由任何一个数据源实现事务。因此，JTA中的事务是由“事务管理器”实现的。它会在多个数据源之间统筹事务，具体使用的技术就是所谓的“两阶段提交”。
+JTA提供了跨Session的事务管理能力。这一点是与JDBC Transaction最大的差异。JDBC事务由Connection管理，即事务管理实际上是在JDBC Connection中实现。事务周期限于Connection的生命周期之内。同样，对于基于JDBC Transaction的Hibernate事务管理机制而言，事务管理在Session所依托的JDBC Connection中实现，事务周期限于Session的生命周期。
+JTA事务管理则由JTA容器实现。JTA对当前加入事务的众多Connection进行调度，实现事务性要求。JTA的事务周期可以横跨多个JDBC Connection生命周期。同样，对于基于JTA事务的Hibernate而言，JTA事务横跨多个Session。
+锁Hibernate支持两种锁机制，悲观锁（Pessimistic Locking）和乐观锁（Optimistic Locking）。悲观锁是指对数据被外界修改保持保守态度。假定任何时刻存取数据时，都可能有一个客户也正在存取同一数据。为了保持数据被操作的移植性，于是对数据采取了数据库层次的锁定状态，依靠数据库提供的锁机制来实现。
+乐观锁则乐观地认为数据很少发生同时存取的问题，因此不做数据库层次上的锁定。为了维护正确的数据，乐观锁采用应用程序上的逻辑实现版本控制的方法。
+源代码分享Hibernate概述、Hibernate关系映射、Hibernate高级应用，三篇博客中使用的代码，都在下面这个工程。https://github.com/voidking/hibernate.git
+参考文档《Java EE基础实用教程》，郑阿奇主编
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>java</category>
+      </categories>
+      <tags>
+        <tag>java</tag>
+        <tag>eclipse</tag>
+        <tag>hibernate</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>hexo主题优化</title>
     <url>/dev-hexo-theme-optimize/</url>
     <content><![CDATA[前言大概一年前开始使用hexo，主题一直使用jacman。后来Hexo更新到3.0，主题也跟着更新，但是，懒惰的小编并没有参与这一更新活动。如今，安装了hexo3.0，问题来了——主题不匹配。当年千辛万苦优化过的主题，又要重新搞起！
@@ -23891,77 +23962,6 @@ twiceYuan：为Hexo添加文章目录
       </categories>
       <tags>
         <tag>hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Hibernate高级应用</title>
-    <url>/dev-hibernate-senior/</url>
-    <content><![CDATA[Hibernate批量处理批量插入Hibernate直接处理首先在hibernate.cfg.xml中设置批量尺寸属性hibernate.jdbc.batch_size，最好关闭Hibernate的二级缓存以提高效率。
-&lt;hibernate-configuration&gt;	&lt;session-factory&gt;		&lt;property name="hibernate.jdbc.batch_size"&gt;50&lt;/property&gt;		&lt;property name="hibernate.jdbc.use_second_level_cache"&gt;false&lt;/property&gt;	&lt;/session-factory&gt;&lt;/hibernate-configuration&gt;
-下面批量插入500个课程到数据库表中：
-//KcbBatch.javapackage com.voidking.hibernate.test;import org.hibernate.Session;import org.hibernate.SessionFactory;import org.hibernate.Transaction;import org.hibernate.cfg.Configuration;import com.voidking.hibernate.model.Kcb;public class KcbBatch &#123;	public static void main(String[] args)&#123;		//创建Session对象		Configuration cfg = new Configuration();        SessionFactory sf = cfg.configure().buildSessionFactory();		Session session = sf.openSession();				//创建事务对象		Transaction ts=session.beginTransaction();				for (int i = 0; i &lt; 500; i++) &#123;			Kcb kcb = new Kcb();			kcb.setKch(i+"");			session.save(kcb);			if(i%50==0)			&#123;				session.flush();				session.clear();			&#125;		&#125;				ts.commit();				session.close();		sf.close();			&#125;&#125;
-
-
-
-调用JDBC由于Hibernate只是对JDBC进行了轻量级的封装，因此完全可以绕过Hibernate直接用JDBC进行批量插入。因此上面的代码可以改成：
-//KcbBatch.javapackage com.voidking.hibernate.test;import java.sql.Connection;import java.sql.PreparedStatement;import org.hibernate.Session;import org.hibernate.SessionFactory;import org.hibernate.Transaction;import org.hibernate.cfg.Configuration;import com.voidking.hibernate.model.Kcb;public class KcbBatch2 &#123;	public static void main(String[] args)&#123;		//创建Session对象		Configuration cfg = new Configuration();        SessionFactory sf = cfg.configure().buildSessionFactory();		Session session = sf.openSession();				//创建事务对象		Transaction ts=session.beginTransaction();				Connection conn = session.connection();				try &#123;			PreparedStatement stmt = conn.prepareStatement("insert into kcb(kch) values(?)");			for(int i=0;i&lt;500;i++)			&#123;				stmt.setString(1, i+"");				stmt.addBatch();			&#125;		&#125; catch (Exception e) &#123;			e.printStackTrace();		&#125;				ts.commit();				session.close();		sf.close();			&#125;&#125;
-
-对比在用Hibernate进行操作的时候操作的是表对应的类，而在用JDBC进行操作时操作的是数据库中的表。
-批量更新Hibernate直接处理为了使Hibernate的HQL直接支持update/delete的批量更新语法，首先要hibernate.cfg.xml中设置HQL/SQL查询翻译器属性hibernate.query.factory_class。
-&lt;property name="hibernate.query.factory_class"&gt;	org.hibernate.hql.ast.ASTQueryTranslatorFactory&lt;/property&gt;
-为了防止类名输入错误，可以按住Ctrl键，同时单击这个类名。如果可以跳转到.class文件，说明输入正确，否则输入错误。下面使用HQL批量更新把课程表中XS修改为30。
-Query query = session.createQuery("update kcb set xs=30");query.executeUpdate();
-
-
-调用JDBCtry&#123;	Statement stmt = conn.createStatement();	stmt.executeUpdate("update kcb set xs=30");&#125;catch(Exception)&#123;	e.printStackTrace();&#125;
-
-批量删除Hibernate直接处理删除课程表中课程号大于200的课程。
-Query query = session.createQuery("delete kcb where kch &gt; 200");query.executeUpdate();
-调用JDBCtry&#123;	Statement stmt = conn.createStatement();	stmt.executeUpdate("delete from kcb where kch&gt;200");&#125;catch(Exception)&#123;	e.printStackTrace();&#125;
-
-实体对象生命周期实体对象，特指Hibernate O/R映射关系中的域对象（即O/R中的O）。
-transient（瞬时态）瞬时态，即实体对象在内存中的存在，与数据库中的记录无关。
-Student stu = new Student();stu.setSnumber("081101");stu.setSname("李方方");stu.setSage(21);
-这里的stu对象，与数据库中的记录没有任何关联。
-persisent（持久态）Student stu = new Student();stu.setSnumber("081101");stu.setSname("李方方");stu.setSage(21);Student stu1 = new Student();stu1.setSnumber("081102");stu1.setSname("程明");stu1.setSage(22);Transaction ts = session.beginTransaction();session.save(stu);//stu对象转换为持久态，由Hibernate纳入实体管理器；stu1仍然处于瞬时态ts.commit();Transaction ts2 = session.beginTransaction();stu.setSname("李方");//虽然这个事务没有显式调用session.sava()保存stu对象，但是由于stu为持久态，将自动被固化到数据库stu1.setSname("程明明");//stu1仍是一个普通Java对象，对数据库未产生任何影响ts2.commit();
-处于瞬时态的对象，可以通过Session的save()方法转换成持久状态。同样，如果一个实体对象由Hibernate加载，那么，它也处于持久状态。
-Student stu = (Student)session.load(Student.class,net Integer(1));
-持久对象对应着数据库中的一条记录，可以看做是数据库记录的对象化操作接口，其状态的变更将对数据库中的记录产生影响。
-Detached（脱管状态）处于持久化的对象，其对应的Session实例关闭之后，此对象就处于脱管状态。Session实例可以看做是持久对象的宿主，一旦此宿主失效，其从属的持久对象进入脱管状态。
-Student stu = new Student();//stu对象为瞬时态stu.setSnumber("081101");stu.setSname("李方方");stu.setSage(21);Transaction ts = session.beginTransaction();session.save(stu);//stu对象由Hibernate纳入管理容器，处于持久状态ts.commit();session.close();//stu对象为脱管状态，因为与其关联的session已经关闭
-托管态和瞬时态有什么区别？瞬时状态的stu对象与库表中的数据缺乏对应关系，而脱管状态的stu对象，却在库表中存在相对应的记录，只不过由于脱管对象脱离Session这个数据操作平台，其状态的改变无法更新到库表中对应的记录。
-有时候为了方便，将处于瞬时和脱管状态的对象统称为值对象（Value Object，VO），将处于持久态的对象称为持久对象（Persistent Object，PO）。也就是说，对Hibernate实体管理容器而言，非管理的实体对象统称为VO，被管理的对象称为PO。
-Hibernate事务管理事务是数据库并发控制不可分割的基本工作单位，具有原子性、一致性、隔离性和持久性的特点。
-事务（Transaction）是工作中的基本逻辑单元，可以用于确保数据库能够被正确修改，避免数据只修改一部分而导致数据不完整，或者在修改时受到用户干扰。
-基于JDBC的事务管理Hibernate是JDBC的轻量级封装，本身并不具备事务管理能力。在事务管理层，Hibernate将其委托给底层的JDBC或JTA，以实现事务管理和调度功能。
-在JDBC中，事务默认是自动提交。也就是说，一条对数据库的更新表达式代表一项事务操作。操作成功后，系统将自动调用commit提交。否则，将调用rollback回滚。
-在JDBC中，可以通过调用setAutoCommit(false)禁止自动提交。之后就可以把多个数据库操作的表达式作为一个事务，在操作完成后调用commit进行整体提交。
-将事务管理委托给JDBC进行处理是最简单的实现方式，Hibernate对于JDBC事务的封装也比较简单。如下面的代码：
-//创建Session对象Configuration cfg = new Configuration();SessionFactory sf = cfg.configure().buildSessionFactory();Session session = sf.openSession();//创建事务对象Transaction ts=session.beginTransaction();seesion.save(stu);ts.commit();session.close();sf.close();
-从JDBC层面而言，上面的代码实际对应着：
-Connection cn = getConnection;cn.setAutoCommit(false);//JDBC调用相关的SQL语句cn.commit();
-
-在sf.openSession()语句中，Hibernate会初始化数据库连接。与此同时，将其AutoCommit设为关闭状态（false）。即一开始获得的session，其自动提交属性已经被关闭。下面的代码不会对数据库产生任何效果：
-//创建Session对象Configuration cfg = new Configuration();SessionFactory sf = cfg.configure().buildSessionFactory();Session session = sf.openSession();seesion.save(stu);session.close();sf.close();
-这实际上相当于JDBC Connection的AutoCommit属性被设为false，执行了若干JDBC操作之后，没有调用commit操作。
-基于JTA的事务管理JTA（Java Transaction API）是由Java EE Transaction Manager去管理的事务。其最大的特点是调用UserTransaction接口的begin、commit和rollback方法来完成事务范围的界定、事务的提交和回滚。JTA可以实现统一事务对应不同的数据库。
-JTA主要用于分布式的多个数据源的两阶段提交的事务，而JDBC的Connection提供单个数据源的事务。后者因为只涉及一个数据源，所以其事务可以由数据库自己单独实现。而JTA事务因为其分布式和多数据库的特性，不可能由任何一个数据源实现事务。因此，JTA中的事务是由“事务管理器”实现的。它会在多个数据源之间统筹事务，具体使用的技术就是所谓的“两阶段提交”。
-JTA提供了跨Session的事务管理能力。这一点是与JDBC Transaction最大的差异。JDBC事务由Connection管理，即事务管理实际上是在JDBC Connection中实现。事务周期限于Connection的生命周期之内。同样，对于基于JDBC Transaction的Hibernate事务管理机制而言，事务管理在Session所依托的JDBC Connection中实现，事务周期限于Session的生命周期。
-JTA事务管理则由JTA容器实现。JTA对当前加入事务的众多Connection进行调度，实现事务性要求。JTA的事务周期可以横跨多个JDBC Connection生命周期。同样，对于基于JTA事务的Hibernate而言，JTA事务横跨多个Session。
-锁Hibernate支持两种锁机制，悲观锁（Pessimistic Locking）和乐观锁（Optimistic Locking）。悲观锁是指对数据被外界修改保持保守态度。假定任何时刻存取数据时，都可能有一个客户也正在存取同一数据。为了保持数据被操作的移植性，于是对数据采取了数据库层次的锁定状态，依靠数据库提供的锁机制来实现。
-乐观锁则乐观地认为数据很少发生同时存取的问题，因此不做数据库层次上的锁定。为了维护正确的数据，乐观锁采用应用程序上的逻辑实现版本控制的方法。
-源代码分享Hibernate概述、Hibernate关系映射、Hibernate高级应用，三篇博客中使用的代码，都在下面这个工程。https://github.com/voidking/hibernate.git
-参考文档《Java EE基础实用教程》，郑阿奇主编
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>java</category>
-      </categories>
-      <tags>
-        <tag>java</tag>
-        <tag>eclipse</tag>
-        <tag>hibernate</tag>
       </tags>
   </entry>
   <entry>
@@ -28664,231 +28664,6 @@ Sea.js 手册与文档http://www.zhangxinxu.com/sp/seajs/docs/zh-cn/module-defin
       </tags>
   </entry>
   <entry>
-    <title>Shell实用脚本</title>
-    <url>/dev-shell-script-collection/</url>
-    <content><![CDATA[前言好多shell脚本，写过就扔了，感觉很可惜。本文会不断更新，用于记录自我感觉良好的脚本。以后再遇到相似的需求，方便进行参考查找。
-如果想要系统学习Shell脚本编程，推荐学习阮一峰前辈的《Bash 脚本教程》。
-
-
-短脚本查看系统版本lsb_release -a
-
-查看命令属于哪个包1、centos
-yum makecache fastyum whatprovides lsb_release
-
-2、ubuntu
-apt-get install -y apt-fileapt-file updateapt-file search ifconfig
-
-创建用户创建voidking用户，并添加sudo权限：
-useradd -m voidking -s /bin/bashpasswd voidkingadduser voidking sudo
-
-生成密钥ssh-keygenssh-keygen -C "voidking@qq.com" -f ./voidking_rsa
-第一条命令执行完之后，.ssh目录下生成了 id_rsa 和 id_rsa.pub。第二条命令执行完之后，当前目录下生成了 voidking_rsa 和 voidking_rsa.pub，注释内容为 voidking@qq.com 。
-使密钥生效ssh-copy-id -i ~/.ssh/id_rsa.pub voidking@hostnamessh-copy-id -i ~/.ssh/id_rsa.pub voidking@hostname -p 22ssh voidking@hostname
-ssh-copy-id 这个命令做的事情，是把 id_rsa.pub 中的内容，追加到 hostname:/home/voidking/.ssh/authorized_keys 文件中。authorized_keys文件权限为600。
-压缩与解压压缩和解压tar.gz文件：
-tar -czvf filename.tar.gz filenametar -xzvf filename.tar.gz
-
-压缩和解压zip文件：
-zip filename.zip filenameunzip filename.zip
-
-加密压缩和解压zip文件：
-zip -e filename.zip filenameunzip -P xxxxxx filename.zipfor i in *.zip;do unzip -P xxxxxx $i;done
-
-解压中文名zip文件：
-brew install unarunar -e GBK 中文名.zip
-
-删除空行过滤hostlist.txt中的空行：
-cat hostlist.txt |tr -s '\n'cat hostlist.txt |sed '/^$/d'cat hostlist.txt |awk '&#123;if($0!="")print&#125;'cat hostlist.txt |awk '&#123;if(length!=0) print $0&#125;'grep -v "^$" hostlist.txt# 终极方法（linux和windows空行都适用）grep -v -e '^[[:space:]]*$' hostlist.txt
-
-过滤windows换行符在windows里编辑好的文件，上传到linux后发现多了^M。以过滤hostlist.txt中的^M为例：
-sed -i 's/^M//g' hostlist.txt
-注意，直接复制粘贴上面的命令是无效的。^M的输入方式是 Ctrl + V ，然后 Ctrl + M 。
-去除空格去除test.txt文本中的空格：
-cat test.txt | tr -d ' '
-
-空格转换行把test.txt文本中的空格变成换行符。
-cat test.txt | tr ' ' '\n'cat test.txt | sed 's/ /\n/g'
-
-utf8 bom 转 utf8使用macos中编译运行windows下创建的java项目，报错 Error:(1, 1) java: 非法字符: ‘\ufeff’。BOM（byte order mark）是为 UTF-16 和 UTF-32 准备的，用于标记字节序（byte order）。微软在 UTF-8 中使用 BOM 是因为这样可以把 UTF-8 和 ASCII 等编码明确区分开，但这样的文件在 Windows 之外的操作系统里会带来问题。那么，怎么把utf8 bom编码文件批量转换为utf8编码文件呢？使用下面的脚本。
-# 当前目录下递归所有文件grep -r -i -l $'^\xEF\xBB\xBF' . | xargs sed -i 's/^\xEF\xBB\xBF//g'# 当前目录下所有文件grep -i -l $'^\xEF\xBB\xBF' * | xargs sed -i 's/^\xEF\xBB\xBF//g'# macosbrew install gnu-sedgrep -r -i -l $'^\xEF\xBB\xBF' . | xargs gsed -i 's/^\xEF\xBB\xBF//g'grep -i -l $'^\xEF\xBB\xBF' * | xargs gsed -i 's/^\xEF\xBB\xBF//g'
-
-GBK编码转UTF8打开一个文件，发现中文显示乱码，大概率编码问题。使用下面的命令进行转码：
-iconv -f GBK -t UTF-8 inputfile &gt; outputfile
-
-读取某一列读取第一列，读取最后一列。
-echo "www.voidking.com" | awk -F'.' '&#123;print $1&#125;'echo "www.voidking.com" | awk -F'.' '&#123;print $3&#125;'echo "www.voidking.com" | awk -F'.' '&#123;print $NF&#125;'
-
-第一列换到最后一列已知namelist.txt：
-haojin 70 80voidking 90 100
-
-需求：第一列name，在显示时放到最后一列。
-cat namelist.txt | awk '&#123;for(i=2;i&lt;=NF;i++)printf("%s ", $i);print $1&#125;'
-
-循环读取单列文本已知hostlist.txt为：
-www.baidu.comwww.voidking.com
-
-需求：批量查询主机名或者主机IP
-脚本：
-for i in `cat hostlist.txt`;do host $i;done
-
-文本比较需求：两个姓名列表，需要对比出两个文件中相同的姓名和不同的姓名。
-脚本：
-cat file1 &gt; file.txtcat file2 &gt;&gt; file.txtcat file.txt | sort |uniq -c | sort -n &gt; result.txt
-
-ssh执行远程命令执行远程命令很简单，直接ssh后面跟着命令就可以了。
-ssh root@192.168.56.100 "echo helloworld"
-
-那如果远程命令里面包含双引号怎么办？变成单引号，或者添加转义。
-ssh root@192.168.56.100 "echo 'helloworld'"ssh root@192.168.56.100 "echo \"helloworld\""
-
-那如果需要远程命令里使用变量怎么办？添加转义。
-ssh root@192.168.56.100 "host=\$(hostname);echo \"\$&#123;host&#125;\""
-
-批量添加开机启动命令已知主机列表hosts.txt内容为：
-192.168.56.101192.168.56.102
-
-需求：给主机列表中的机器添加开机启动命令
-脚本：
-for i in `cat hosts.txt`; do ssh $i "echo '/home/voidking/start.sh' | sudo tee -a /etc/rc.local";done
-
-curl不输出错误和进度# 不输出错误和进度curl -s "https://www.voidking.com"curl -sX GET "https://www.voidking.com"# 不产生任何输出curl -s -o /dev/null "https://www.voidking.com"
-更多内容参考 curl的用法指南。
-curl post请求带参数1、application/x-www-form-urlencoded请求：
-id=1ip=10.0.0.1curl -X POST "http://rap2api.taobao.org/app/mock/241888/updateip" -d "id=$&#123;id&#125;&amp;ip=$&#123;ip&#125;"
-
-2、application/json请求：
-curl -X POST "http://rap2api.taobao.org/app/mock/241888/updateip" -H "Content-type: application/json" -d '&#123;"id":"'$&#123;id&#125;'","ip":"'$&#123;ip&#125;'"&#125;' # orcurl -X POST "http://rap2api.taobao.org/app/mock/241888/updateip" -H "Content-type: application/json" -d@data.json# data.json是大文件curl -X POST "http://rap2api.taobao.org/app/mock/241888/updateip" -H "Content-type: application/json" -H "Expect:" -d@data.json
-
-其中data.json中的内容为：
-&#123;  "id":1,  "ip":"10.0.0.1"&#125;
-
-3、multipart/form-data请求：
-curl -X POST http://rap2api.taobao.org/app/mock/241888/updateip -F "id=$&#123;id&#125;" -F "filename=@file.tar.gz"
-
-curl 设置超时curl -m 15 -s "https://www.voidking.com"
-
-EPEL源EPEL（ExtraPackagesforEnterpriseLinux）是基于Fedora的一个项目，为RedHat系的操作系统提供额外的高质量软件包。yum install epel-release
-安装epel源之后，可以安装很多原本 No package xxx available 的软件，比如jq：yum install jq
-联合查询使用shell，能否实现类似于SQL的联合查询？必须可以。
-已知file1的内容为：
-1 realname2 nickname
-file2的内容为：
-voidking nicknamehaojin realnamehankin nicknamejinhao realnamevk nickname
-
-需求：根据file1和file2的第二列，把file1和file2合并成一个文件。
-2 voidking nickname1 haojin realname2 hankin nickname1 jinhao realname2 vk nickname
-
-这个需求使用awk命令来实现。NR，表示awk开始执行程序后所读取的数据行数。FNR，与NR功用类似，不同的是awk每打开一个新文件，FNR便从0重新累计。NR==FNR：用于在读取两个或两个以上的文件时，判断是不是在读取第一个文件。awk处理多个文件的语法：
-awk -F 分隔符 'BEGIN &#123; 初始化 &#125; &#123; 循环执行部分 &#125; END &#123; 结束处理 &#125;' file_list1 file_list2
-其中BEGIN和END可以省略，-F也可以使用默认，循环执行部分，是按行对文件进行处理的。
-脚本：
-awk -F " " 'NR==FNR&#123;a[$2]=$0;next&#125;&#123;print a[$2]" "$1&#125;' file1 file2 \| awk '&#123;print $1" "$3" "$2&#125;'
-由NR=FNR为真时，判断当前读入的是第一个文件file1，执行第一个花括号内的内容。把file1中每行记录都存入数组a，并使用file1的第2个字段作为下标。
-由NR=FNR为假时，判断当前读入了第二个文件file2，执行第二个花括号内的内容。file2中的每行，根据file2的第2个字段打印数组a中的内容，同时打印file2中的第一列。
-求交集已知file1内容为：
-haojinvoidkingvk
-
-file2内容为：
-haoshuai 95 93 80vk 99 99 100haojin 100 100 99baidu 100 100 100voidking 99 99 99
-
-需求：file1第一列和file2第一列求交集，显示file2中交集的内容。
-awk '&#123;if(NR==FNR)&#123;a[$1]=$1&#125;else if($1 in a)&#123;print $0&#125;&#125;' file1 file2# orawk '&#123;if(NR==FNR)a[$1]=$1;else if($1 in a)print $0&#125;' file1 file2
-
-每两行合成一行已知ip-port.txt内容为：
-127.0.0.180127.0.0.18080192.168.56.1013306
-
-需求：把ip和对应端口放在同一行。
-127.0.0.1 80127.0.0.1 8080192.168.56.101 3306
-
-脚本：
-sed -n "N;s/\n/ /p" ip-port.txtawk 'NR%2&#123;printf "%s ",$0;next;&#125;1' ip-port.txtawk 'ORS=NR%2?FS:RS' ip-port.txtawk '&#123; ORS = (NR%2 ? FS : RS) &#125; 1' ip-port.txtawk '&#123; ORS = (NR%2 ? "," : RS) &#125; 1' ip-port.txt
-
-删除10天前的日志需求：找出10天前的日志并删除。脚本：
-find /usr/local/tomcat/logs/ -type f -mtime +10 -exec rm -rfv &#123;&#125; \;find /usr/local/tomcat/logs/ -type f -mtime +10 | xargs rm -rfv
-
-计算一列的和已知fruit.txt内容为：
-apple 10orange 7banana 0watermelon 1
-第一列是水果名称，第二列是水果数量。
-需求1：计算水果的总数。
-awk '&#123;sum += $2&#125;;END &#123;print sum&#125;' fruit.txtcat fruit.txt | awk '&#123;sum += $2&#125;;END &#123;print sum&#125;'
-
-需求2：计算存在多少种水果。
-cat fruit.txt | awk '&#123;if ($2&gt;0) (sum += 1); else (sum += 0)&#125;;END&#123;print sum&#125;'
-
-重定向0 标准输入1 标准输出，默认指向屏幕2 错误输出，默认指向屏幕/dev/null 黑洞
-# 标准输出重定向到文件ls &gt;out.txtcat out.txt# 等同于ls 1&gt;out.txtcat out.txt# 错误输出重定向到文件ls 2&gt;out.txtcat out.txtls xxx 2&gt;out.txtcat out.txt# 标准输出和错误输出都重定向到文件(ls xxx || ls) &gt;out.txt 2&gt;&amp;1cat out.txt# 等同于(ls xxx || ls) &amp;&gt;out.txtcat out.txt# 标准输出和错误输出都丢弃(ls xxx || ls) &amp;&gt;/dev/null# 等同于(ls xxx; ls) &amp;&gt;/dev/null
-
-输出到屏幕和文件输出内容同时到屏幕和文件：
-echo "hello" | tee test.log
-
-清空文件内容需求：清空text.txt文件中的内容脚本：
-echo "" &gt; test.txtecho -n "" &gt; test.txtcat /dev/null &gt; test.txt:&gt; test.txt
-
-测试mtu值MTU是Maximum Transmission Unit的缩写，表示最大传输单元，MTU的单位是字节。大部分网络设备的MTU都是1500。把本机的MTU设成比网关的MTU小或相同，就可以减少丢包。如果本机的MTU比网关的MTU大，大的数据包就会被拆开来传送，这样会产生很多数据包碎片，增加丢包率。把数据包长度加上数据包头28字节，就得到MTU的值。
-ping -c 3 -s 1472 -M do www.baidu.comping -c 3 -s 1473 -M do www.baidu.com
-
-获取脚本绝对路径scriptpath=$(cd "$(dirname "$0")"; pwd)
-
-时间和时间戳# 输出时间date# 输出时间并格式化date "+%Y-%m-%d %H:%M:%S"# 时间转时间戳（秒）date "+%s"# 时间转时间戳（微秒）microsecond=$(($(date "+%s%N")/1000000))# 时间戳（秒）转时间date -d @1612351314 "+%Y-%m-%d %H:%M:%S"
-
-根据端口找进程已知某进程监听22端口，怎样找到该进程的pid？怎样找到该进程启动命令？
-lsof -i:22netstat -npt | grep ":22"netstat -nlpt | grep ":22"ps -ef |grep $pid
-
-查看外网出口IPcurl myip.ipip.net
-cp须知unalias cp #避免cp命令被aliascp -f #强制覆盖cp -R #递归拷贝所有文件。对特殊文件（管道文件、块设备文件、字符设备文件）会进行创建而不是拷贝。cp -r #递归拷贝所有文件。所有source文件当做普通文件。cp -rf public/* voidking #递归拷贝所有文件，不包括隐藏文件cp -rf public/. voidking #递归拷贝所有文件，包括隐藏文件
-
-cp排除目录需求：源目录为dirA，目标目录dirB，复制dirA下所有目录&amp;文件到dirB，排除目录log
-cd dirAls | grep -v log | xargscp -r `ls | grep -v log | xargs` pathto/dirBls -a | grep -vw '.' | grep -v log | xargscp -r `ls -a | grep -vw '.' | grep -v log | xargs` pathto/dirB
-
-rm排除目录需求：想要删除dirA目录下的所有目录和文件，除了.git目录
-cd dirAls -a | grep -vw '.' | grep -v '.git' | xargsrm -rf `ls -a | grep -vw '.' | grep -v '.git' | xargs`
-
-tar排除目录需求：打包目录dirA下所有目录&amp;文件，排除目录dirA/log和dirA/data
-tar -czvf dirA.tar.gz dirA --exclude dirA/log --exclude dirA/data
-
-tar文件拆分与合并使用sz传输大文件，有时候会被中断。这时我们可以把文件进行拆分，下载后再进行合并。
-tar -czf - bigfile.tar.gz | split -b 50m -d - bigfile.tar.gz.cat bigfile.tar.gz.* | tar -xzf -md5sum bigfile.tar.gz
-
-启动python web服务器使用sz传输大文件，有时候会被中断。这时我们可以启动一个web服务，把大文件作为静态资源下载。
-python -m SimpleHTTPServer 9999
-然后浏览器输入ip:port，即可下载文件。
-断点续传参考 rsync
-rsync -P source destination
-
--P是两个参数的集合：–partial 和 –progress
-–partial：保留部分传输的文件，也就是实现断点续传功能
-–progress：显示进度
-
-长脚本文件拆分需求1：大文件拆分成小文件，每50行拆分成一个文件。脚本1：
-#!/bin/bashlinenum="50"bigfile="bigfile.txt"datadir="files"prefix="smallfile."mkdir -p $&#123;datadir&#125;split -l $&#123;linenum&#125; $&#123;bigfile&#125; -d -a 2 $&#123;datadir&#125;/$&#123;prefix&#125;
-
-需求2：大文件拆分成小文件，方便按比例进行变更。脚本2：
-#!/bin/bashpercent="50"#percent="34"bigfile="bigfile.txt"datadir="file"prefix="smallfile."rm -rf $&#123;datadir&#125;/$&#123;prefix&#125;*mkdir -p $&#123;datadir&#125;content=$(cat $&#123;bigfile&#125;)sum=$(echo "$&#123;content&#125;" | wc -l)linenum=$(($&#123;sum&#125;*$&#123;percent&#125;/100))split -l $&#123;linenum&#125; $&#123;bigfile&#125; -d -a 2 $&#123;datadir&#125;/$&#123;prefix&#125;
-
-还原history万万没想到，centos4.3的history -c命令，不止会清除当前登录的操作历史记录，还会清除 .bash_history 中的内容。
-如果不小心清除了 .bash_history 中的内容，该怎么办？如果屏幕上还残留着history的历史记录，那么还有得救。拷贝屏幕上的内容，到 history.txt，假设内容为：
-244486  2021-01-08 17:35:18 cd haojin244487  2021-01-08 17:36:01 vim main.py244488  2021-01-08 17:38:33 python main.py
-
-怎么恢复成标准的 .bash_history 格式呢？使用如下脚本：
-#!/bin/bashcat /dev/null &gt; bash_historywhile read linedo  time=$(echo $line | awk '&#123;print $2" "$3&#125;')  #cmd=$(echo $line | awk '&#123;$1="";$2="";$3="";print $0&#125;')  cmd=$(echo $line | awk -F " "  '&#123;for (i=4;i&lt;=NF;i++)printf("%s ", $i);print ""&#125;')  timestamp=$(date -d "$time" +%s)  echo "#"$timestamp &gt;&gt; bash_history  echo $cmd &gt;&gt; bash_historydone &lt; history.txt
-
-执行完成，使用 bash_history 替换 .bash_history 即可。
-执行SQL语句需求：mysql数据库，获取数据库vk中的app表中所有记录的name，写入到 name.txt 文件。
-脚本：
-#!/bin/bashget_all_name="select name from app where app.deleted=0;"all_name=$(mysql -h192.168.56.100 -uroot -pmypassword -s -e "use vk;$&#123;get_all_name&#125;")echo "$&#123;all_name&#125;" &gt; name.txt
-
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>shell</category>
-      </categories>
-      <tags>
-        <tag>linux</tag>
-        <tag>shell</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>thinkphp实现短信验证注册</title>
     <url>/dev-sms-verification-code/</url>
     <content><![CDATA[前言小太阳项目最先做的模块，用户管理模块。业主端该模块分为三个功能：注册登录、个人信息修改、认证。注册时需要用到短信验证码，本文记录一下思路和具体实现。短信验证平台使用云片，短信验证码的生成使用thinkphp。
@@ -29099,66 +28874,6 @@ DER：Distinguished Encoding Rules，二进制格式，不可读。查看DER格�
       </tags>
   </entry>
   <entry>
-    <title>Struts2文件上传</title>
-    <url>/dev-struts2-upload/</url>
-    <content><![CDATA[Struts2文件上传上传单个文件Struts2中，提供了一个很容易操作的文件上传组件。用Struts2上传单个文件的功能非常容易实现，只要使用普通的Action即可。但为了获得一些文件上传的信息，如上传文件名等，需要按照一定规则来为Action类增加一些getter和setter方法。Struts2的文件上传默认使用的是Jakarta的Common-FileUpload文件上传框架。因此需要在Web应用中增加两个Jar包，即common-io-*.jar和common-fileupload-*.jar。
-我们接着在struts2概述中的struts2项目中开发文件上传实例。
-指定文件夹在D盘下新建upload文件夹，上传的文件放到这个目录下。
-
-upload.jsp在WebContent中新建upload.jsp，代码如下：
-&lt;%@ page language="java" contentType="text/html; charset=UTF-8"    pageEncoding="UTF-8"%&gt;&lt;%@ taglib uri="/struts-tags" prefix="s"%&gt;&lt;!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"&gt;&lt;html&gt;&lt;head&gt;&lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8"&gt;&lt;title&gt;文件上传&lt;/title&gt;&lt;/head&gt;&lt;body&gt;	&lt;s:form action="upload.action" method="post" enctype="multipart/form-data"&gt;		&lt;s:file name="upload" label="上传的文件"&gt;&lt;/s:file&gt;		&lt;s:submit value="上传"&gt;&lt;/s:submit&gt;	&lt;/s:form&gt;&lt;/body&gt;&lt;/html&gt;
-UploadActionpackage com.voidking.struts2.action;import java.io.File;import java.io.FileInputStream;import java.io.FileOutputStream;import java.io.InputStream;import java.io.OutputStream;import com.opensymphony.xwork2.ActionSupport;public class UploadAction extends ActionSupport&#123;	private File upload;	private String uploadFileName;		public String getUploadFileName() &#123;		return uploadFileName;	&#125;	public void setUploadFileName(String uploadFileName) &#123;		this.uploadFileName = uploadFileName;	&#125;	public File getUpload()	&#123;		return upload;	&#125;		public void setUpload(File upload)	&#123;		this.upload=upload;	&#125;		public String execute() throws Exception&#123;		InputStream is=new FileInputStream(getUpload());		OutputStream os = new FileOutputStream("d:\\upload\\"+uploadFileName);		byte buffer[] = new byte[1024];		int count= 0;		while((count=is.read(buffer))&gt;0)		&#123;			os.write(buffer,0,count);		&#125;		os.close();		is.close();		return SUCCESS;	&#125;	&#125;
-上传的文件经过Action处理后，会被写到指定的路径下。其实也可以把上传的文件写入数据库中，之后的例子会介绍如何把照片写入到数据库。需要注意的是，Struts2上传文件的默认大小限制为2MB，如果需要修改默认大小，只需要在Struts2的struts.properties文件中修改struts.multipart.maxSize。如struts.mulitipart.maxSize=1024表示上传文件的总大小不能超过1KB。
-struts.xml&lt;?xml version="1.0" encoding="UTF-8" ?&gt;&lt;!DOCTYPE struts PUBLIC    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"    "http://struts.apache.org/dtds/struts-2.0.dtd"&gt;&lt;struts&gt;    &lt;package name="default" namespace="/" extends="struts-default"&gt;        	&lt;interceptors&gt;    		&lt;interceptor name="myInterceptor" class="com.voidking.struts2.tool.MyInterceptor"&gt;&lt;/interceptor&gt;    	&lt;/interceptors&gt;    	&lt;default-interceptor-ref name=""&gt;&lt;/default-interceptor-ref&gt;    	        &lt;default-action-ref name="index" /&gt;        &lt;action name="struts" class="com.voidking.struts2.action.StrutsAction"&gt;            &lt;result name="success"&gt;/welcome.jsp&lt;/result&gt;            &lt;result name="error"&gt;/hello.jsp&lt;/result&gt;            &lt;result name="input"&gt;/hello.jsp&lt;/result&gt;                        &lt;!-- 拦截配置在result后面 --&gt;            &lt;!-- 使用系统默认拦截器栈 --&gt;            &lt;interceptor-ref name="defaultStack"&gt;&lt;/interceptor-ref&gt;            &lt;!-- 配置拦截器 --&gt;            &lt;interceptor-ref name="myInterceptor"&gt;&lt;/interceptor-ref&gt;                    &lt;/action&gt;                &lt;action name="upload" class="com.voidking.struts2.action.UploadAction"&gt;        	&lt;result name="success"&gt;/uploadsuccess.jsp&lt;/result&gt;        &lt;/action&gt;    &lt;/package&gt;&lt;/struts&gt;
-
-uploadsuccess.jsp&lt;%@ page language="java" contentType="text/html; charset=UTF-8"    pageEncoding="UTF-8"%&gt;&lt;!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"&gt;&lt;html&gt;&lt;head&gt;&lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8"&gt;&lt;title&gt;上传成功&lt;/title&gt;&lt;/head&gt;&lt;body&gt;	恭喜你，上传成功！&lt;/body&gt;&lt;/html&gt;
-
-404错误部署项目，启动Tomcat，访问：http://localhost:8080/struts2/upload.jsp ，提示 HTTP Status 404 - /struts2/upload.jsp。访问主页：http://localhost:8080/struts2/ ，同样提示404错误！
-啊勒，这是肿么回事？想来想去，引起错误的原因，可能是昨天关闭eclipse的时候，没有先关闭Tomcat服务器，引起了一些配置错误。
-查看tomcat/conf文件夹下的配置文件，server.xml和tomcat-users.xml，感觉没啥问题。
-访问：http://localhost:8080 ，使用manager-gui账户登录tomcat，Manager App，可以看到，struts2项目的Running属性的值为false。奥~这就是问题所在了！点击start按钮，啊勒，无效！
-删除webapps下的struts2工程，重新发布，运行tomcat，还是404错误！
-再次点击start按钮，同时观察Console下面的信息：
-SEVERE: Exception starting filter struts2Unable to load configuration. - package - file:/D:/Server/tomcat/webapps/struts2/WEB-INF/classes/struts.xml:7:67......SEVERE: Error filterStart
-
-经过查找资料，确定了是struts.xml的配置问题。首先修改struts.xm如下：
-&lt;?xml version="1.0" encoding="UTF-8" ?&gt;&lt;!DOCTYPE struts PUBLIC    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"    "http://struts.apache.org/dtds/struts-2.0.dtd"&gt;&lt;struts&gt;    &lt;package name="default" namespace="/" extends="struts-default"&gt;        	&lt;interceptors&gt;    		&lt;interceptor name="myInterceptor" class="com.voidking.struts2.tool.MyInterceptor"&gt;&lt;/interceptor&gt;    	&lt;/interceptors&gt;    	&lt;default-interceptor-ref name=""&gt;&lt;/default-interceptor-ref&gt;    	        &lt;default-action-ref name="index" /&gt;        &lt;action name="struts" class="com.voidking.struts2.action.StrutsAction"&gt;            &lt;result name="success"&gt;/welcome.jsp&lt;/result&gt;            &lt;result name="error"&gt;/hello.jsp&lt;/result&gt;            &lt;result name="input"&gt;/hello.jsp&lt;/result&gt;                        &lt;!-- 拦截配置在result后面 --&gt;            &lt;!-- 使用系统默认拦截器栈 --&gt;            &lt;interceptor-ref name="defaultStack"&gt;&lt;/interceptor-ref&gt;            &lt;!-- 配置拦截器 --&gt;            &lt;interceptor-ref name="myInterceptor"&gt;&lt;/interceptor-ref&gt;                    &lt;/action&gt;    &lt;/package&gt;&lt;/struts&gt;
-启动Tomcat，项目果然可以访问了！那么，为什么在package中多加了一个action就会出错呢？很多教程中，明明可以多个action写在一个package里啊！再看这个package，有何特殊之处？配置了拦截器！那么，接下来的action是否必须配置拦截器？修改试试。
-&lt;?xml version="1.0" encoding="UTF-8" ?&gt;&lt;!DOCTYPE struts PUBLIC    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"    "http://struts.apache.org/dtds/struts-2.0.dtd"&gt;&lt;struts&gt;    &lt;package name="default" namespace="/" extends="struts-default"&gt;        	&lt;interceptors&gt;    		&lt;interceptor name="myInterceptor" class="com.voidking.struts2.tool.MyInterceptor"&gt;&lt;/interceptor&gt;    	&lt;/interceptors&gt;    	&lt;default-interceptor-ref name=""&gt;&lt;/default-interceptor-ref&gt;    	        &lt;default-action-ref name="index" /&gt;        &lt;action name="struts" class="com.voidking.struts2.action.StrutsAction"&gt;            &lt;result name="success"&gt;/welcome.jsp&lt;/result&gt;            &lt;result name="error"&gt;/hello.jsp&lt;/result&gt;            &lt;result name="input"&gt;/hello.jsp&lt;/result&gt;                        &lt;!-- 拦截配置在result后面 --&gt;            &lt;!-- 使用系统默认拦截器栈 --&gt;            &lt;interceptor-ref name="defaultStack"&gt;&lt;/interceptor-ref&gt;            &lt;!-- 配置拦截器 --&gt;            &lt;interceptor-ref name="myInterceptor"&gt;&lt;/interceptor-ref&gt;                    &lt;/action&gt;                &lt;action name="upload" class="com.voidking.struts2.action.UploadAction"&gt;        	&lt;result name="success"&gt;/uploadsuccess.jsp&lt;/result&gt;        	&lt;interceptor-ref name="defaultStack"&gt;&lt;/interceptor-ref&gt;        &lt;/action&gt;    &lt;/package&gt;&lt;/struts&gt;
-启动Tomcat，项目可以正常访问。综上，可以得出一个结论：package包中如果定义了拦截器，那么，接下来的action中必须配置拦截器，否则会引起项目无法启动！
-警告我们的项目已经可以正常运行，上传功能也正常。但是，当我们访问：http://localhost:8080/struts2/upload.jsp ，会报出如下警告：
-'upload.action' in namespace: ''. Form action defaulting to 'action' attribute's literal value.
-经过查找资料，原来这是因为没有正确使用tag，upload.jsp修改如下：
-&lt;%@ page language="java" contentType="text/html; charset=UTF-8"    pageEncoding="UTF-8"%&gt;&lt;%@ taglib uri="/struts-tags" prefix="s"%&gt;&lt;!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"&gt;&lt;html&gt;&lt;head&gt;&lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8"&gt;&lt;title&gt;文件上传&lt;/title&gt;&lt;/head&gt;&lt;body&gt;	&lt;s:form action="upload" namespace="/" method="post" enctype="multipart/form-data"&gt;		&lt;s:file name="upload" label="上传的文件"&gt;&lt;/s:file&gt;		&lt;s:submit value="上传"&gt;&lt;/s:submit&gt;	&lt;/s:form&gt;&lt;/body&gt;&lt;/html&gt;
-再次访问，已经没有警告了。但是还是有提示信息：
-At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
-对于有洁癖的同学可以参考下面的参考文档去除这个信息，小编这里不再赘述。
-多文件上传多文件上传和单文件上传类似，只需要改动几个地方即可。
-upload.jsp&lt;%@ page language="java" contentType="text/html; charset=UTF-8"    pageEncoding="UTF-8"%&gt;&lt;%@ taglib uri="/struts-tags" prefix="s"%&gt;&lt;!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"&gt;&lt;html&gt;&lt;head&gt;&lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8"&gt;&lt;title&gt;文件上传&lt;/title&gt;&lt;/head&gt;&lt;body&gt;	&lt;s:form action="upload" namespace="/" method="post" enctype="multipart/form-data"&gt;		&lt;s:file name="upload" label="上传的文件"&gt;&lt;/s:file&gt;		&lt;s:submit value="上传"&gt;&lt;/s:submit&gt;	&lt;/s:form&gt;	&lt;hr/&gt;	&lt;s:form action="upload2" namespace="/" method="post" enctype="multipart/form-data"&gt;		&lt;s:file name="upload2" label="上传的文件"&gt;&lt;/s:file&gt;		&lt;s:file name="upload2" label="上传的文件"&gt;&lt;/s:file&gt;		&lt;s:file name="upload2" label="上传的文件"&gt;&lt;/s:file&gt;		&lt;s:submit value="批量上传"&gt;&lt;/s:submit&gt;	&lt;/s:form&gt;&lt;/body&gt;&lt;/html&gt;
-
-Upload2Actionpackage com.voidking.struts2.action;import java.io.File;import java.io.FileInputStream;import java.io.FileOutputStream;import java.io.InputStream;import java.io.OutputStream;import java.util.List;import com.opensymphony.xwork2.ActionSupport;public class Upload2Action extends ActionSupport&#123;	private List&lt;File&gt; upload2;	private List&lt;String&gt; upload2FileName;				public List&lt;File&gt; getUpload2() &#123;		return upload2;	&#125;	public void setUpload2(List&lt;File&gt; upload2) &#123;		this.upload2 = upload2;	&#125;	public List&lt;String&gt; getUpload2FileName() &#123;		return upload2FileName;	&#125;	public void setUpload2FileName(List&lt;String&gt; upload2FileName) &#123;		this.upload2FileName = upload2FileName;	&#125;	public String execute() throws Exception&#123;				if(upload2!=null || upload2FileName!=null)		&#123;			for(int i=0;i&lt;upload2.size();i++)			&#123;				InputStream is = new FileInputStream(upload2.get(i));				OutputStream os=new FileOutputStream("d:\\upload\\"+getUpload2FileName().get(i));				byte buffer[] = new byte[1024];				int count=0;				while((count=is.read(buffer))&gt;0)				&#123;					os.write(buffer,0,count);				&#125;				os.close();				is.close();								return SUCCESS;			&#125;		&#125;				return ERROR;	&#125;	&#125;
-这里需要注意的是属性命名问题，如果private List&lt;File&gt; upload2;，那么必须private List&lt;String&gt; upload2FileName;，否则无法获取到文件名。
-struts.xml&lt;?xml version="1.0" encoding="UTF-8" ?&gt;&lt;!DOCTYPE struts PUBLIC    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"    "http://struts.apache.org/dtds/struts-2.0.dtd"&gt;&lt;struts&gt;	&lt;constant name="struts.multipart.saveDir" value="/tmp"/&gt;    &lt;package name="default"  extends="struts-default"&gt;        	&lt;interceptors&gt;    		&lt;interceptor name="myInterceptor" class="com.voidking.struts2.tool.MyInterceptor"&gt;&lt;/interceptor&gt;    	&lt;/interceptors&gt;    	&lt;default-interceptor-ref name=""&gt;&lt;/default-interceptor-ref&gt;    	        &lt;default-action-ref name="index" /&gt;        &lt;action name="struts" class="com.voidking.struts2.action.StrutsAction"&gt;            &lt;result name="success"&gt;/welcome.jsp&lt;/result&gt;            &lt;result name="error"&gt;/hello.jsp&lt;/result&gt;            &lt;result name="input"&gt;/hello.jsp&lt;/result&gt;                        &lt;!-- 拦截配置在result后面 --&gt;            &lt;!-- 使用系统默认拦截器栈 --&gt;            &lt;interceptor-ref name="defaultStack"&gt;&lt;/interceptor-ref&gt;            &lt;!-- 配置拦截器 --&gt;            &lt;interceptor-ref name="myInterceptor"&gt;&lt;/interceptor-ref&gt;                    &lt;/action&gt;                &lt;action name="upload" class="com.voidking.struts2.action.UploadAction"&gt;        	&lt;result name="success"&gt;/uploadsuccess.jsp&lt;/result&gt;        	&lt;interceptor-ref name="defaultStack"&gt;&lt;/interceptor-ref&gt;        &lt;/action&gt;                &lt;action name="upload2" class="com.voidking.struts2.action.Upload2Action"&gt;        	&lt;result name="success"&gt;/uploadsuccess.jsp&lt;/result&gt;        	&lt;interceptor-ref name="defaultStack"&gt;&lt;/interceptor-ref&gt;        &lt;/action&gt;    &lt;/package&gt;&lt;/struts&gt;
-其中，&lt;constant name=&quot;struts.multipart.saveDir&quot; value=&quot;/tmp&quot;/&gt;最好保留，不然会有提示信息:INFO: Unable to find &#39;struts.multipart.saveDir&#39; property setting.。另一个解决办法是在struts.properties加入：struts.multipart.saveDir = /tmp。
-参考文档《Java EE基础实用教程》，郑阿奇主编
-
-Form action defaulting to ‘action’ attribute’s literal value：http://www.blogjava.net/parable-myth/archive/336387.html
-
-解决Tomcat7“At least one JAR was scanned for TLDs yet contained no TLDs”问题：http://mov-webhobo.iteye.com/blog/1939655http://love-love-l.blog.163.com/blog/static/2107830420131159580327/
-
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>java</category>
-      </categories>
-      <tags>
-        <tag>java</tag>
-        <tag>eclipse</tag>
-        <tag>struts2</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Sublime Text3</title>
     <url>/dev-sublime/</url>
     <content><![CDATA[Sublime简介
@@ -29314,6 +29029,66 @@ gnuplot绘图# graph titleset title ""set key below box 1# x-axis labelset xlabe
         <tag>linux</tag>
         <tag>mysql</tag>
         <tag>ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Struts2文件上传</title>
+    <url>/dev-struts2-upload/</url>
+    <content><![CDATA[Struts2文件上传上传单个文件Struts2中，提供了一个很容易操作的文件上传组件。用Struts2上传单个文件的功能非常容易实现，只要使用普通的Action即可。但为了获得一些文件上传的信息，如上传文件名等，需要按照一定规则来为Action类增加一些getter和setter方法。Struts2的文件上传默认使用的是Jakarta的Common-FileUpload文件上传框架。因此需要在Web应用中增加两个Jar包，即common-io-*.jar和common-fileupload-*.jar。
+我们接着在struts2概述中的struts2项目中开发文件上传实例。
+指定文件夹在D盘下新建upload文件夹，上传的文件放到这个目录下。
+
+upload.jsp在WebContent中新建upload.jsp，代码如下：
+&lt;%@ page language="java" contentType="text/html; charset=UTF-8"    pageEncoding="UTF-8"%&gt;&lt;%@ taglib uri="/struts-tags" prefix="s"%&gt;&lt;!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"&gt;&lt;html&gt;&lt;head&gt;&lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8"&gt;&lt;title&gt;文件上传&lt;/title&gt;&lt;/head&gt;&lt;body&gt;	&lt;s:form action="upload.action" method="post" enctype="multipart/form-data"&gt;		&lt;s:file name="upload" label="上传的文件"&gt;&lt;/s:file&gt;		&lt;s:submit value="上传"&gt;&lt;/s:submit&gt;	&lt;/s:form&gt;&lt;/body&gt;&lt;/html&gt;
+UploadActionpackage com.voidking.struts2.action;import java.io.File;import java.io.FileInputStream;import java.io.FileOutputStream;import java.io.InputStream;import java.io.OutputStream;import com.opensymphony.xwork2.ActionSupport;public class UploadAction extends ActionSupport&#123;	private File upload;	private String uploadFileName;		public String getUploadFileName() &#123;		return uploadFileName;	&#125;	public void setUploadFileName(String uploadFileName) &#123;		this.uploadFileName = uploadFileName;	&#125;	public File getUpload()	&#123;		return upload;	&#125;		public void setUpload(File upload)	&#123;		this.upload=upload;	&#125;		public String execute() throws Exception&#123;		InputStream is=new FileInputStream(getUpload());		OutputStream os = new FileOutputStream("d:\\upload\\"+uploadFileName);		byte buffer[] = new byte[1024];		int count= 0;		while((count=is.read(buffer))&gt;0)		&#123;			os.write(buffer,0,count);		&#125;		os.close();		is.close();		return SUCCESS;	&#125;	&#125;
+上传的文件经过Action处理后，会被写到指定的路径下。其实也可以把上传的文件写入数据库中，之后的例子会介绍如何把照片写入到数据库。需要注意的是，Struts2上传文件的默认大小限制为2MB，如果需要修改默认大小，只需要在Struts2的struts.properties文件中修改struts.multipart.maxSize。如struts.mulitipart.maxSize=1024表示上传文件的总大小不能超过1KB。
+struts.xml&lt;?xml version="1.0" encoding="UTF-8" ?&gt;&lt;!DOCTYPE struts PUBLIC    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"    "http://struts.apache.org/dtds/struts-2.0.dtd"&gt;&lt;struts&gt;    &lt;package name="default" namespace="/" extends="struts-default"&gt;        	&lt;interceptors&gt;    		&lt;interceptor name="myInterceptor" class="com.voidking.struts2.tool.MyInterceptor"&gt;&lt;/interceptor&gt;    	&lt;/interceptors&gt;    	&lt;default-interceptor-ref name=""&gt;&lt;/default-interceptor-ref&gt;    	        &lt;default-action-ref name="index" /&gt;        &lt;action name="struts" class="com.voidking.struts2.action.StrutsAction"&gt;            &lt;result name="success"&gt;/welcome.jsp&lt;/result&gt;            &lt;result name="error"&gt;/hello.jsp&lt;/result&gt;            &lt;result name="input"&gt;/hello.jsp&lt;/result&gt;                        &lt;!-- 拦截配置在result后面 --&gt;            &lt;!-- 使用系统默认拦截器栈 --&gt;            &lt;interceptor-ref name="defaultStack"&gt;&lt;/interceptor-ref&gt;            &lt;!-- 配置拦截器 --&gt;            &lt;interceptor-ref name="myInterceptor"&gt;&lt;/interceptor-ref&gt;                    &lt;/action&gt;                &lt;action name="upload" class="com.voidking.struts2.action.UploadAction"&gt;        	&lt;result name="success"&gt;/uploadsuccess.jsp&lt;/result&gt;        &lt;/action&gt;    &lt;/package&gt;&lt;/struts&gt;
+
+uploadsuccess.jsp&lt;%@ page language="java" contentType="text/html; charset=UTF-8"    pageEncoding="UTF-8"%&gt;&lt;!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"&gt;&lt;html&gt;&lt;head&gt;&lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8"&gt;&lt;title&gt;上传成功&lt;/title&gt;&lt;/head&gt;&lt;body&gt;	恭喜你，上传成功！&lt;/body&gt;&lt;/html&gt;
+
+404错误部署项目，启动Tomcat，访问：http://localhost:8080/struts2/upload.jsp ，提示 HTTP Status 404 - /struts2/upload.jsp。访问主页：http://localhost:8080/struts2/ ，同样提示404错误！
+啊勒，这是肿么回事？想来想去，引起错误的原因，可能是昨天关闭eclipse的时候，没有先关闭Tomcat服务器，引起了一些配置错误。
+查看tomcat/conf文件夹下的配置文件，server.xml和tomcat-users.xml，感觉没啥问题。
+访问：http://localhost:8080 ，使用manager-gui账户登录tomcat，Manager App，可以看到，struts2项目的Running属性的值为false。奥~这就是问题所在了！点击start按钮，啊勒，无效！
+删除webapps下的struts2工程，重新发布，运行tomcat，还是404错误！
+再次点击start按钮，同时观察Console下面的信息：
+SEVERE: Exception starting filter struts2Unable to load configuration. - package - file:/D:/Server/tomcat/webapps/struts2/WEB-INF/classes/struts.xml:7:67......SEVERE: Error filterStart
+
+经过查找资料，确定了是struts.xml的配置问题。首先修改struts.xm如下：
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;&lt;!DOCTYPE struts PUBLIC    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"    "http://struts.apache.org/dtds/struts-2.0.dtd"&gt;&lt;struts&gt;    &lt;package name="default" namespace="/" extends="struts-default"&gt;        	&lt;interceptors&gt;    		&lt;interceptor name="myInterceptor" class="com.voidking.struts2.tool.MyInterceptor"&gt;&lt;/interceptor&gt;    	&lt;/interceptors&gt;    	&lt;default-interceptor-ref name=""&gt;&lt;/default-interceptor-ref&gt;    	        &lt;default-action-ref name="index" /&gt;        &lt;action name="struts" class="com.voidking.struts2.action.StrutsAction"&gt;            &lt;result name="success"&gt;/welcome.jsp&lt;/result&gt;            &lt;result name="error"&gt;/hello.jsp&lt;/result&gt;            &lt;result name="input"&gt;/hello.jsp&lt;/result&gt;                        &lt;!-- 拦截配置在result后面 --&gt;            &lt;!-- 使用系统默认拦截器栈 --&gt;            &lt;interceptor-ref name="defaultStack"&gt;&lt;/interceptor-ref&gt;            &lt;!-- 配置拦截器 --&gt;            &lt;interceptor-ref name="myInterceptor"&gt;&lt;/interceptor-ref&gt;                    &lt;/action&gt;    &lt;/package&gt;&lt;/struts&gt;
+启动Tomcat，项目果然可以访问了！那么，为什么在package中多加了一个action就会出错呢？很多教程中，明明可以多个action写在一个package里啊！再看这个package，有何特殊之处？配置了拦截器！那么，接下来的action是否必须配置拦截器？修改试试。
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;&lt;!DOCTYPE struts PUBLIC    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"    "http://struts.apache.org/dtds/struts-2.0.dtd"&gt;&lt;struts&gt;    &lt;package name="default" namespace="/" extends="struts-default"&gt;        	&lt;interceptors&gt;    		&lt;interceptor name="myInterceptor" class="com.voidking.struts2.tool.MyInterceptor"&gt;&lt;/interceptor&gt;    	&lt;/interceptors&gt;    	&lt;default-interceptor-ref name=""&gt;&lt;/default-interceptor-ref&gt;    	        &lt;default-action-ref name="index" /&gt;        &lt;action name="struts" class="com.voidking.struts2.action.StrutsAction"&gt;            &lt;result name="success"&gt;/welcome.jsp&lt;/result&gt;            &lt;result name="error"&gt;/hello.jsp&lt;/result&gt;            &lt;result name="input"&gt;/hello.jsp&lt;/result&gt;                        &lt;!-- 拦截配置在result后面 --&gt;            &lt;!-- 使用系统默认拦截器栈 --&gt;            &lt;interceptor-ref name="defaultStack"&gt;&lt;/interceptor-ref&gt;            &lt;!-- 配置拦截器 --&gt;            &lt;interceptor-ref name="myInterceptor"&gt;&lt;/interceptor-ref&gt;                    &lt;/action&gt;                &lt;action name="upload" class="com.voidking.struts2.action.UploadAction"&gt;        	&lt;result name="success"&gt;/uploadsuccess.jsp&lt;/result&gt;        	&lt;interceptor-ref name="defaultStack"&gt;&lt;/interceptor-ref&gt;        &lt;/action&gt;    &lt;/package&gt;&lt;/struts&gt;
+启动Tomcat，项目可以正常访问。综上，可以得出一个结论：package包中如果定义了拦截器，那么，接下来的action中必须配置拦截器，否则会引起项目无法启动！
+警告我们的项目已经可以正常运行，上传功能也正常。但是，当我们访问：http://localhost:8080/struts2/upload.jsp ，会报出如下警告：
+'upload.action' in namespace: ''. Form action defaulting to 'action' attribute's literal value.
+经过查找资料，原来这是因为没有正确使用tag，upload.jsp修改如下：
+&lt;%@ page language="java" contentType="text/html; charset=UTF-8"    pageEncoding="UTF-8"%&gt;&lt;%@ taglib uri="/struts-tags" prefix="s"%&gt;&lt;!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"&gt;&lt;html&gt;&lt;head&gt;&lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8"&gt;&lt;title&gt;文件上传&lt;/title&gt;&lt;/head&gt;&lt;body&gt;	&lt;s:form action="upload" namespace="/" method="post" enctype="multipart/form-data"&gt;		&lt;s:file name="upload" label="上传的文件"&gt;&lt;/s:file&gt;		&lt;s:submit value="上传"&gt;&lt;/s:submit&gt;	&lt;/s:form&gt;&lt;/body&gt;&lt;/html&gt;
+再次访问，已经没有警告了。但是还是有提示信息：
+At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+对于有洁癖的同学可以参考下面的参考文档去除这个信息，小编这里不再赘述。
+多文件上传多文件上传和单文件上传类似，只需要改动几个地方即可。
+upload.jsp&lt;%@ page language="java" contentType="text/html; charset=UTF-8"    pageEncoding="UTF-8"%&gt;&lt;%@ taglib uri="/struts-tags" prefix="s"%&gt;&lt;!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"&gt;&lt;html&gt;&lt;head&gt;&lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8"&gt;&lt;title&gt;文件上传&lt;/title&gt;&lt;/head&gt;&lt;body&gt;	&lt;s:form action="upload" namespace="/" method="post" enctype="multipart/form-data"&gt;		&lt;s:file name="upload" label="上传的文件"&gt;&lt;/s:file&gt;		&lt;s:submit value="上传"&gt;&lt;/s:submit&gt;	&lt;/s:form&gt;	&lt;hr/&gt;	&lt;s:form action="upload2" namespace="/" method="post" enctype="multipart/form-data"&gt;		&lt;s:file name="upload2" label="上传的文件"&gt;&lt;/s:file&gt;		&lt;s:file name="upload2" label="上传的文件"&gt;&lt;/s:file&gt;		&lt;s:file name="upload2" label="上传的文件"&gt;&lt;/s:file&gt;		&lt;s:submit value="批量上传"&gt;&lt;/s:submit&gt;	&lt;/s:form&gt;&lt;/body&gt;&lt;/html&gt;
+
+Upload2Actionpackage com.voidking.struts2.action;import java.io.File;import java.io.FileInputStream;import java.io.FileOutputStream;import java.io.InputStream;import java.io.OutputStream;import java.util.List;import com.opensymphony.xwork2.ActionSupport;public class Upload2Action extends ActionSupport&#123;	private List&lt;File&gt; upload2;	private List&lt;String&gt; upload2FileName;				public List&lt;File&gt; getUpload2() &#123;		return upload2;	&#125;	public void setUpload2(List&lt;File&gt; upload2) &#123;		this.upload2 = upload2;	&#125;	public List&lt;String&gt; getUpload2FileName() &#123;		return upload2FileName;	&#125;	public void setUpload2FileName(List&lt;String&gt; upload2FileName) &#123;		this.upload2FileName = upload2FileName;	&#125;	public String execute() throws Exception&#123;				if(upload2!=null || upload2FileName!=null)		&#123;			for(int i=0;i&lt;upload2.size();i++)			&#123;				InputStream is = new FileInputStream(upload2.get(i));				OutputStream os=new FileOutputStream("d:\\upload\\"+getUpload2FileName().get(i));				byte buffer[] = new byte[1024];				int count=0;				while((count=is.read(buffer))&gt;0)				&#123;					os.write(buffer,0,count);				&#125;				os.close();				is.close();								return SUCCESS;			&#125;		&#125;				return ERROR;	&#125;	&#125;
+这里需要注意的是属性命名问题，如果private List&lt;File&gt; upload2;，那么必须private List&lt;String&gt; upload2FileName;，否则无法获取到文件名。
+struts.xml&lt;?xml version="1.0" encoding="UTF-8" ?&gt;&lt;!DOCTYPE struts PUBLIC    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"    "http://struts.apache.org/dtds/struts-2.0.dtd"&gt;&lt;struts&gt;	&lt;constant name="struts.multipart.saveDir" value="/tmp"/&gt;    &lt;package name="default"  extends="struts-default"&gt;        	&lt;interceptors&gt;    		&lt;interceptor name="myInterceptor" class="com.voidking.struts2.tool.MyInterceptor"&gt;&lt;/interceptor&gt;    	&lt;/interceptors&gt;    	&lt;default-interceptor-ref name=""&gt;&lt;/default-interceptor-ref&gt;    	        &lt;default-action-ref name="index" /&gt;        &lt;action name="struts" class="com.voidking.struts2.action.StrutsAction"&gt;            &lt;result name="success"&gt;/welcome.jsp&lt;/result&gt;            &lt;result name="error"&gt;/hello.jsp&lt;/result&gt;            &lt;result name="input"&gt;/hello.jsp&lt;/result&gt;                        &lt;!-- 拦截配置在result后面 --&gt;            &lt;!-- 使用系统默认拦截器栈 --&gt;            &lt;interceptor-ref name="defaultStack"&gt;&lt;/interceptor-ref&gt;            &lt;!-- 配置拦截器 --&gt;            &lt;interceptor-ref name="myInterceptor"&gt;&lt;/interceptor-ref&gt;                    &lt;/action&gt;                &lt;action name="upload" class="com.voidking.struts2.action.UploadAction"&gt;        	&lt;result name="success"&gt;/uploadsuccess.jsp&lt;/result&gt;        	&lt;interceptor-ref name="defaultStack"&gt;&lt;/interceptor-ref&gt;        &lt;/action&gt;                &lt;action name="upload2" class="com.voidking.struts2.action.Upload2Action"&gt;        	&lt;result name="success"&gt;/uploadsuccess.jsp&lt;/result&gt;        	&lt;interceptor-ref name="defaultStack"&gt;&lt;/interceptor-ref&gt;        &lt;/action&gt;    &lt;/package&gt;&lt;/struts&gt;
+其中，&lt;constant name=&quot;struts.multipart.saveDir&quot; value=&quot;/tmp&quot;/&gt;最好保留，不然会有提示信息:INFO: Unable to find &#39;struts.multipart.saveDir&#39; property setting.。另一个解决办法是在struts.properties加入：struts.multipart.saveDir = /tmp。
+参考文档《Java EE基础实用教程》，郑阿奇主编
+
+Form action defaulting to ‘action’ attribute’s literal value：http://www.blogjava.net/parable-myth/archive/336387.html
+
+解决Tomcat7“At least one JAR was scanned for TLDs yet contained no TLDs”问题：http://mov-webhobo.iteye.com/blog/1939655http://love-love-l.blog.163.com/blog/static/2107830420131159580327/
+
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>java</category>
+      </categories>
+      <tags>
+        <tag>java</tag>
+        <tag>eclipse</tag>
+        <tag>struts2</tag>
       </tags>
   </entry>
   <entry>
@@ -31008,8 +30783,8 @@ gv重选刚才选择的选区，o在选择区两端跳动。ctrl+v、3j垂直下
       <categories>
         <category>专业</category>
         <category>运维</category>
-        <category>linux</category>
         <category>工具</category>
+        <category>linux</category>
         <category>编辑器</category>
       </categories>
       <tags>
@@ -35584,6 +35359,237 @@ https://github.com/voidking/udacity-python/tree/master/matplotlib
       </tags>
   </entry>
   <entry>
+    <title>Shell实用脚本</title>
+    <url>/dev-shell-script-collection/</url>
+    <content><![CDATA[前言好多shell脚本，写过就扔了，感觉很可惜。本文会不断更新，用于记录自我感觉良好的脚本。以后再遇到相似的需求，方便进行参考查找。
+如果想要系统学习Shell脚本编程，推荐学习阮一峰前辈的《Bash 脚本教程》。
+
+
+短脚本查看系统版本lsb_release -a
+
+查看命令属于哪个包1、centos
+yum makecache fastyum whatprovides lsb_release
+
+2、ubuntu
+apt-get install -y apt-fileapt-file updateapt-file search ifconfig
+
+创建用户创建voidking用户，并添加sudo权限：
+useradd -m voidking -s /bin/bashpasswd voidkingadduser voidking sudo
+
+生成密钥ssh-keygenssh-keygen -C "voidking@qq.com" -f ./voidking_rsa
+第一条命令执行完之后，.ssh目录下生成了 id_rsa 和 id_rsa.pub。第二条命令执行完之后，当前目录下生成了 voidking_rsa 和 voidking_rsa.pub，注释内容为 voidking@qq.com 。
+使密钥生效ssh-copy-id -i ~/.ssh/id_rsa.pub voidking@hostnamessh-copy-id -i ~/.ssh/id_rsa.pub voidking@hostname -p 22ssh voidking@hostname
+ssh-copy-id 这个命令做的事情，是把 id_rsa.pub 中的内容，追加到 hostname:/home/voidking/.ssh/authorized_keys 文件中。authorized_keys文件权限为600。
+压缩与解压压缩和解压tar.gz文件：
+tar -czvf filename.tar.gz filenametar -xzvf filename.tar.gz
+
+压缩和解压zip文件：
+zip filename.zip filenameunzip filename.zip
+
+加密压缩和解压zip文件：
+zip -e filename.zip filenameunzip -P xxxxxx filename.zipfor i in *.zip;do unzip -P xxxxxx $i;done
+
+解压中文名zip文件：
+brew install unarunar -e GBK 中文名.zip
+
+删除空行过滤hostlist.txt中的空行：
+cat hostlist.txt |tr -s '\n'cat hostlist.txt |sed '/^$/d'cat hostlist.txt |awk '&#123;if($0!="")print&#125;'cat hostlist.txt |awk '&#123;if(length!=0) print $0&#125;'grep -v "^$" hostlist.txt# 终极方法（linux和windows空行都适用）grep -v -e '^[[:space:]]*$' hostlist.txt
+
+过滤windows换行符在windows里编辑好的文件，上传到linux后发现多了^M。以过滤hostlist.txt中的^M为例：
+sed -i 's/^M//g' hostlist.txt
+注意，直接复制粘贴上面的命令是无效的。^M的输入方式是 Ctrl + V ，然后 Ctrl + M 。
+去除空格去除test.txt文本中的空格：
+cat test.txt | tr -d ' '
+
+空格转换行把test.txt文本中的空格变成换行符。
+cat test.txt | tr ' ' '\n'cat test.txt | sed 's/ /\n/g'
+
+utf8 bom 转 utf8使用macos中编译运行windows下创建的java项目，报错 Error:(1, 1) java: 非法字符: ‘\ufeff’。BOM（byte order mark）是为 UTF-16 和 UTF-32 准备的，用于标记字节序（byte order）。微软在 UTF-8 中使用 BOM 是因为这样可以把 UTF-8 和 ASCII 等编码明确区分开，但这样的文件在 Windows 之外的操作系统里会带来问题。那么，怎么把utf8 bom编码文件批量转换为utf8编码文件呢？使用下面的脚本。
+# 当前目录下递归所有文件grep -r -i -l $'^\xEF\xBB\xBF' . | xargs sed -i 's/^\xEF\xBB\xBF//g'# 当前目录下所有文件grep -i -l $'^\xEF\xBB\xBF' * | xargs sed -i 's/^\xEF\xBB\xBF//g'# macosbrew install gnu-sedgrep -r -i -l $'^\xEF\xBB\xBF' . | xargs gsed -i 's/^\xEF\xBB\xBF//g'grep -i -l $'^\xEF\xBB\xBF' * | xargs gsed -i 's/^\xEF\xBB\xBF//g'
+
+GBK编码转UTF8打开一个文件，发现中文显示乱码，大概率编码问题。使用下面的命令进行转码：
+iconv -f GBK -t UTF-8 inputfile &gt; outputfile
+
+读取某一列读取第一列，读取最后一列。
+echo "www.voidking.com" | awk -F'.' '&#123;print $1&#125;'echo "www.voidking.com" | awk -F'.' '&#123;print $3&#125;'echo "www.voidking.com" | awk -F'.' '&#123;print $NF&#125;'
+
+第一列换到最后一列已知namelist.txt：
+haojin 70 80voidking 90 100
+
+需求：第一列name，在显示时放到最后一列。
+cat namelist.txt | awk '&#123;for(i=2;i&lt;=NF;i++)printf("%s ", $i);print $1&#125;'
+
+循环读取单列文本已知hostlist.txt为：
+www.baidu.comwww.voidking.com
+
+需求：批量查询主机名或者主机IP
+脚本：
+for i in `cat hostlist.txt`;do host $i;done
+
+文本比较需求：两个姓名列表，需要对比出两个文件中相同的姓名和不同的姓名。
+脚本：
+cat file1 &gt; file.txtcat file2 &gt;&gt; file.txtcat file.txt | sort |uniq -c | sort -n &gt; result.txt
+
+ssh执行远程命令执行远程命令很简单，直接ssh后面跟着命令就可以了。
+ssh root@192.168.56.100 "echo helloworld"
+
+那如果远程命令里面包含双引号怎么办？变成单引号，或者添加转义。
+ssh root@192.168.56.100 "echo 'helloworld'"ssh root@192.168.56.100 "echo \"helloworld\""
+
+那如果需要远程命令里使用变量怎么办？添加转义。
+ssh root@192.168.56.100 "host=\$(hostname);echo \"\$&#123;host&#125;\""
+
+批量添加开机启动命令已知主机列表hosts.txt内容为：
+192.168.56.101192.168.56.102
+
+需求：给主机列表中的机器添加开机启动命令
+脚本：
+for i in `cat hosts.txt`; do ssh $i "echo '/home/voidking/start.sh' | sudo tee -a /etc/rc.local";done
+
+curl不输出错误和进度# 不输出错误和进度curl -s "https://www.voidking.com"curl -sX GET "https://www.voidking.com"# 不产生任何输出curl -s -o /dev/null "https://www.voidking.com"
+更多内容参考 curl的用法指南。
+curl post请求带参数1、application/x-www-form-urlencoded请求：
+id=1ip=10.0.0.1curl -X POST "http://rap2api.taobao.org/app/mock/241888/updateip" -d "id=$&#123;id&#125;&amp;ip=$&#123;ip&#125;"
+
+2、application/json请求：
+curl -X POST "http://rap2api.taobao.org/app/mock/241888/updateip" -H "Content-type: application/json" -d '&#123;"id":"'$&#123;id&#125;'","ip":"'$&#123;ip&#125;'"&#125;' # orcurl -X POST "http://rap2api.taobao.org/app/mock/241888/updateip" -H "Content-type: application/json" -d@data.json# data.json是大文件curl -X POST "http://rap2api.taobao.org/app/mock/241888/updateip" -H "Content-type: application/json" -H "Expect:" -d@data.json
+
+其中data.json中的内容为：
+&#123;  "id":1,  "ip":"10.0.0.1"&#125;
+
+3、multipart/form-data请求：
+curl -X POST http://rap2api.taobao.org/app/mock/241888/updateip -F "id=$&#123;id&#125;" -F "filename=@file.tar.gz"
+
+curl 设置超时curl -m 15 -s "https://www.voidking.com"
+
+EPEL源EPEL（ExtraPackagesforEnterpriseLinux）是基于Fedora的一个项目，为RedHat系的操作系统提供额外的高质量软件包。yum install epel-release
+安装epel源之后，可以安装很多原本 No package xxx available 的软件，比如jq：yum install jq
+联合查询使用shell，能否实现类似于SQL的联合查询？必须可以。
+已知file1的内容为：
+1 realname2 nickname
+file2的内容为：
+voidking nicknamehaojin realnamehankin nicknamejinhao realnamevk nickname
+
+需求：根据file1和file2的第二列，把file1和file2合并成一个文件。
+2 voidking nickname1 haojin realname2 hankin nickname1 jinhao realname2 vk nickname
+
+这个需求使用awk命令来实现。NR，表示awk开始执行程序后所读取的数据行数。FNR，与NR功用类似，不同的是awk每打开一个新文件，FNR便从0重新累计。NR==FNR：用于在读取两个或两个以上的文件时，判断是不是在读取第一个文件。awk处理多个文件的语法：
+awk -F 分隔符 'BEGIN &#123; 初始化 &#125; &#123; 循环执行部分 &#125; END &#123; 结束处理 &#125;' file_list1 file_list2
+其中BEGIN和END可以省略，-F也可以使用默认，循环执行部分，是按行对文件进行处理的。
+脚本：
+awk -F " " 'NR==FNR&#123;a[$2]=$0;next&#125;&#123;print a[$2]" "$1&#125;' file1 file2 \| awk '&#123;print $1" "$3" "$2&#125;'
+由NR=FNR为真时，判断当前读入的是第一个文件file1，执行第一个花括号内的内容。把file1中每行记录都存入数组a，并使用file1的第2个字段作为下标。
+由NR=FNR为假时，判断当前读入了第二个文件file2，执行第二个花括号内的内容。file2中的每行，根据file2的第2个字段打印数组a中的内容，同时打印file2中的第一列。
+求交集已知file1内容为：
+haojinvoidkingvk
+
+file2内容为：
+haoshuai 95 93 80vk 99 99 100haojin 100 100 99baidu 100 100 100voidking 99 99 99
+
+需求：file1第一列和file2第一列求交集，显示file2中交集的内容。
+awk '&#123;if(NR==FNR)&#123;a[$1]=$1&#125;else if($1 in a)&#123;print $0&#125;&#125;' file1 file2# orawk '&#123;if(NR==FNR)a[$1]=$1;else if($1 in a)print $0&#125;' file1 file2
+
+每两行合成一行已知ip-port.txt内容为：
+127.0.0.180127.0.0.18080192.168.56.1013306
+
+需求：把ip和对应端口放在同一行。
+127.0.0.1 80127.0.0.1 8080192.168.56.101 3306
+
+脚本：
+sed -n "N;s/\n/ /p" ip-port.txtawk 'NR%2&#123;printf "%s ",$0;next;&#125;1' ip-port.txtawk 'ORS=NR%2?FS:RS' ip-port.txtawk '&#123; ORS = (NR%2 ? FS : RS) &#125; 1' ip-port.txtawk '&#123; ORS = (NR%2 ? "," : RS) &#125; 1' ip-port.txt
+
+删除10天前的日志需求：找出10天前的日志并删除。脚本：
+find /usr/local/tomcat/logs/ -type f -mtime +10 -exec rm -rfv &#123;&#125; \;find /usr/local/tomcat/logs/ -type f -mtime +10 | xargs rm -rfv
+
+计算一列的和已知fruit.txt内容为：
+apple 10orange 7banana 0watermelon 1
+第一列是水果名称，第二列是水果数量。
+需求1：计算水果的总数。
+awk '&#123;sum += $2&#125;;END &#123;print sum&#125;' fruit.txtcat fruit.txt | awk '&#123;sum += $2&#125;;END &#123;print sum&#125;'
+
+需求2：计算存在多少种水果。
+cat fruit.txt | awk '&#123;if ($2&gt;0) (sum += 1); else (sum += 0)&#125;;END&#123;print sum&#125;'
+
+重定向0 标准输入1 标准输出，默认指向屏幕2 错误输出，默认指向屏幕/dev/null 黑洞
+# 标准输出重定向到文件ls &gt;out.txtcat out.txt# 等同于ls 1&gt;out.txtcat out.txt# 错误输出重定向到文件ls 2&gt;out.txtcat out.txtls xxx 2&gt;out.txtcat out.txt# 标准输出和错误输出都重定向到文件(ls xxx || ls) &gt;out.txt 2&gt;&amp;1cat out.txt# 等同于(ls xxx || ls) &amp;&gt;out.txtcat out.txt# 标准输出和错误输出都丢弃(ls xxx || ls) &amp;&gt;/dev/null# 等同于(ls xxx; ls) &amp;&gt;/dev/null
+
+输出到屏幕和文件输出内容同时到屏幕和文件：
+echo "hello" | tee test.log
+
+清空文件内容需求：清空text.txt文件中的内容脚本：
+echo "" &gt; test.txtecho -n "" &gt; test.txtcat /dev/null &gt; test.txt:&gt; test.txt
+
+测试mtu值MTU是Maximum Transmission Unit的缩写，表示最大传输单元，MTU的单位是字节。大部分网络设备的MTU都是1500。把本机的MTU设成比网关的MTU小或相同，就可以减少丢包。如果本机的MTU比网关的MTU大，大的数据包就会被拆开来传送，这样会产生很多数据包碎片，增加丢包率。把数据包长度加上数据包头28字节，就得到MTU的值。
+ping -c 3 -s 1472 -M do www.baidu.comping -c 3 -s 1473 -M do www.baidu.com
+
+获取脚本绝对路径scriptpath=$(cd "$(dirname "$0")"; pwd)
+
+时间和时间戳# 输出时间date# 输出时间并格式化date "+%Y-%m-%d %H:%M:%S"# 时间转时间戳（秒）date "+%s"# 时间转时间戳（微秒）microsecond=$(($(date "+%s%N")/1000000))# 时间戳（秒）转时间date -d @1612351314 "+%Y-%m-%d %H:%M:%S"
+
+根据端口找进程已知某进程监听22端口，怎样找到该进程的pid？怎样找到该进程启动命令？
+lsof -i:22netstat -npt | grep ":22"netstat -nlpt | grep ":22"ps -ef |grep $pid
+
+查看外网出口IPcurl myip.ipip.net
+cp须知unalias cp #避免cp命令被aliascp -f #强制覆盖cp -R #递归拷贝所有文件。对特殊文件（管道文件、块设备文件、字符设备文件）会进行创建而不是拷贝。cp -r #递归拷贝所有文件。所有source文件当做普通文件。cp -rf public/* voidking #递归拷贝所有文件，不包括隐藏文件cp -rf public/. voidking #递归拷贝所有文件，包括隐藏文件
+
+匹配排除.和..当前目录下，一定存在两个目录：.和..。有一些操作我们需要排除这两个目录，怎样匹配排除它们呢？
+ls -als -a | xargsls -a | wc -lls -a | grep -vw '\.'ls -a | grep -vw '[.]'ls -a | grep -v '^.$' | grep -v '^..$'
+
+cp排除目录需求：源目录为dirA，目标目录dirB，复制dirA下所有目录&amp;文件到dirB，排除目录log方法一：不包含隐藏文件
+cd dirAls | grep -v log | xargscp -r `ls | grep -v log | xargs` pathto/dirB
+
+方法二：包含隐藏文件
+cd dirAls -a | grep -vw '\.' | grep -v log | xargscp -r `ls -a | grep -vw '\.' | grep -v log | xargs` pathto/dirB
+
+rm排除目录需求：想要删除dirA目录下的所有目录和文件，除了.git目录
+cd dirAls -a | grep -vw '\.' | grep -vw '\.git' | xargsrm -rf `ls -a | grep -vw '\.' | grep -vw '\.git' | xargs`
+
+tar排除目录需求：打包目录dirA下所有目录&amp;文件，排除目录dirA/log和dirA/data
+tar -czvf dirA.tar.gz dirA --exclude dirA/log --exclude dirA/data
+
+tar文件拆分与合并使用sz传输大文件，有时候会被中断。这时我们可以把文件进行拆分，下载后再进行合并。
+tar -czf - bigfile.tar.gz | split -b 50m -d - bigfile.tar.gz.cat bigfile.tar.gz.* | tar -xzf -md5sum bigfile.tar.gz
+
+启动python web服务器使用sz传输大文件，有时候会被中断。这时我们可以启动一个web服务，把大文件作为静态资源下载。
+python -m SimpleHTTPServer 9999
+然后浏览器输入ip:port，即可下载文件。
+断点续传参考 rsync
+rsync -P source destination
+
+-P是两个参数的集合：–partial 和 –progress
+–partial：保留部分传输的文件，也就是实现断点续传功能
+–progress：显示进度
+
+长脚本文件拆分需求1：大文件拆分成小文件，每50行拆分成一个文件。脚本1：
+#!/bin/bashlinenum="50"bigfile="bigfile.txt"datadir="files"prefix="smallfile."mkdir -p $&#123;datadir&#125;split -l $&#123;linenum&#125; $&#123;bigfile&#125; -d -a 2 $&#123;datadir&#125;/$&#123;prefix&#125;
+
+需求2：大文件拆分成小文件，方便按比例进行变更。脚本2：
+#!/bin/bashpercent="50"#percent="34"bigfile="bigfile.txt"datadir="file"prefix="smallfile."rm -rf $&#123;datadir&#125;/$&#123;prefix&#125;*mkdir -p $&#123;datadir&#125;content=$(cat $&#123;bigfile&#125;)sum=$(echo "$&#123;content&#125;" | wc -l)linenum=$(($&#123;sum&#125;*$&#123;percent&#125;/100))split -l $&#123;linenum&#125; $&#123;bigfile&#125; -d -a 2 $&#123;datadir&#125;/$&#123;prefix&#125;
+
+还原history万万没想到，centos4.3的history -c命令，不止会清除当前登录的操作历史记录，还会清除 .bash_history 中的内容。
+如果不小心清除了 .bash_history 中的内容，该怎么办？如果屏幕上还残留着history的历史记录，那么还有得救。拷贝屏幕上的内容，到 history.txt，假设内容为：
+244486  2021-01-08 17:35:18 cd haojin244487  2021-01-08 17:36:01 vim main.py244488  2021-01-08 17:38:33 python main.py
+
+怎么恢复成标准的 .bash_history 格式呢？使用如下脚本：
+#!/bin/bashcat /dev/null &gt; bash_historywhile read linedo  time=$(echo $line | awk '&#123;print $2" "$3&#125;')  #cmd=$(echo $line | awk '&#123;$1="";$2="";$3="";print $0&#125;')  cmd=$(echo $line | awk -F " "  '&#123;for (i=4;i&lt;=NF;i++)printf("%s ", $i);print ""&#125;')  timestamp=$(date -d "$time" +%s)  echo "#"$timestamp &gt;&gt; bash_history  echo $cmd &gt;&gt; bash_historydone &lt; history.txt
+
+执行完成，使用 bash_history 替换 .bash_history 即可。
+执行SQL语句需求：mysql数据库，获取数据库vk中的app表中所有记录的name，写入到 name.txt 文件。
+脚本：
+#!/bin/bashget_all_name="select name from app where app.deleted=0;"all_name=$(mysql -h192.168.56.100 -uroot -pmypassword -s -e "use vk;$&#123;get_all_name&#125;")echo "$&#123;all_name&#125;" &gt; name.txt
+
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>shell</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>shell</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Spring概述</title>
     <url>/dev-spring-start/</url>
     <content><![CDATA[名词解释简单来说，Spring是一个轻量级的控制反转（IoC）和面向切面（AOP）的容器框架。
@@ -37907,6 +37913,37 @@ Racket官网
       </tags>
   </entry>
   <entry>
+    <title>我所看过最好的《心经》解读</title>
+    <url>/essay-xj-illustration/</url>
+    <content><![CDATA[作者不详，voidking整理。
+这人世间，有一部最短的经典。这部经典只有二百六十个字，就是佛门留给我们的《般若波罗蜜多心经》，通常则称为《心经》。 
+二百六十个字是太少了。和这人间积存起来的浩如烟海的文字相比，二百六十个字能写下一些什么呢？我们又怎么能设想仅仅用二百六十个字，就能完成一部经典呢？ 
+然而事情又确乎是这样。佛门就用这不足一页的文字，为我们讲说了天上人间的秘密。用我们惯常的话语来说，就把世界观、生命观、人生观和价值观等等，都依次地写在了这部经典里。这样就不能不说，这便是人世间的一个圣迹。 
+我们曾经感到过一种欠缺，就是我们听说过各种各样的一家之言，却不曾聆听过佛陀的经验。这就有些不够谨慎了，要是这之中刚好含藏着什么秘密的话，我们寻寻觅觅，人生又如白驹过隙，不就错过了这样慈悲的知见？ 
+那末现在，在我们陆陆续续地听说了一些佛法之后，如果我们至少也该读完一部佛经的话，或许就可以看一看这部最短的经典。
+
+
+我们不会吝啬这二百六十个字吧？我们平日里徒劳地读过的文字，又何止千言万语？要是我们一生里只省下这样一点时间，说不定就能领会到佛陀的心意，由此就能到智慧的彼岸去，那又该是怎样的有幸呢？这题名里的“般若”和“波罗蜜多”的意思，就是智慧和去彼岸，便正是要领我们到智慧的彼岸去。 
+我们对彼岸当然有许多怀疑。我们固然深味这人生的辛苦和悲凉，到若要寻找彼岸，又让人疑心只是一种幻想。我们已经看到了，像鸟儿被关在笼子里一样，我们其实也是被囚禁在世界和身心的樊笼里的；我们的生存环境和生命本身，就决定着我们有生老病死和喜怒哀乐等等，又哪里能找到一种办法，来度尽我们的一切苦厄呢？ 
+我们找不到这种办法，是因为我们一直都不知道世界和生命的秘密。然而佛陀在经过千辛万苦的寻觅之后，却解开了这些秘密，于是才慈悲地对我们说，这种根本的办法其实是有的。 
+而这种办法的精髓，也即是佛法的心要，便收在了这部经典里。　　　　所以经文的一开头便这样说：　　“观自在菩萨行深般若波罗蜜多时，照见五蕴皆空，度一切苦厄。”　　这句话就可以看作经文的第一段，是一句总论，即以观自在菩萨为例，来作一个缘起。　　菩萨就是觉悟了的人，是不是呢？我们没有觉悟，所以我们不知道彼岸的景象；这位菩萨行深般若波罗蜜多时，也就到达了智慧的彼岸，所以就能在这种智慧的状态之中观自在，照见种种我们所不知道的情景。　　原来我们也不明白，如果有彼岸的话，这彼岸会在哪里。后来听说过一些佛法之后，我们也就有些明白了，这彼岸并不在天涯海角，而正是在我们的心里。我们的 心里充满了形形色色的念头，也就像一面染上了各种颜色的镜子，是什么都映照不清楚的，这就是在此岸；而菩萨放下了心里的念头之后，就好比镜子被擦试干净了，心里所固有的智慧便立即显现出来，也就是在彼岸了。智慧是什么？智慧当然就是能量和信息。这时候菩萨所显现出来的般若智慧，就是能照见世界和生命的真相的。　 　这真相又是什么呢？真相就是五蕴皆空。也就是说，在这种照见之下，菩萨便从最精微的角度看破了这个世界，发现构成世界和生命的五种物质形态，即色、受、想、行、识五种物质表现，本来都是“空”的。这一切的本质既然都是“空”的，当然也就有办法摆脱一切苦厄。因为我们的一切苦厄，不都是对“有”而言的？好比要先有一朵花，然后才会有花开花落和风吹雨打；又要先有一副身躯和一颗识心，然后才会有生老病死和处心积虑；如果我们能把身心都还原为这种空灵的状态的话，又还会有什么苦厄呢？　　“空”自然不是空无所有。空无所有是我们的一种错觉，一种误会。天空里漂浮着一朵白云，大海上卷起来一团浪花，跟着这云朵和浪花又都消失了，但哪里又是空无所有呢？在这个物质的宇宙世界里，就连满天的繁星也是靠引力而悬浮着的，又哪里能找到一种空无所有的状态呢？　　所以经文在用一句话说完这个绪论之后，接着便要从世界的根柢说起，首先要把世界的真相为我们作一个说明。　　和所有佛经的记载一样，佛陀讲经的时候，都有特定的对象。《心经》的听讲者，就是一个叫舍利弗的弟子。这些真相虽然是对舍利弗讲述的，便也是为全体众生讲述的。　　经文的绪论用了二十五个字。那末到了第二段，讲述佛陀的世界观，则有二十六个字。　　包括呼叫弟子的名字在内，这二十六个字便是这样的：　　“舍利子，色不异空，空不异色；色即是空，空即是色。受、想、行、识，亦复如是。”　　这就是色空说了，这样的话语就是我们曾经听说过的。或许是因为有一个空字吧，在原来，我们便把它当作了佛法的虚无和消极的凭据。　　然而色又怎么不是空的呢？色就是我们通常所说的有形有象的物质，我们把这些物质不断地分割下去，先是分子和原子，后来是电子和基本粒子，愈往后走就愈是无形无象了，不就仿佛是“空”的？　　我们原来是误会了，佛法说到“空”的时候，说的也就是那种构成世界的最原初的物质。我们不是至今也没有找到这种物质？而佛陀却在两千多年以前就发现了这 种物质。这种物质太精微了，看不见也摸不着，就像空的一样；然而它又真实地存在着，并非是空无所有的；所以在另外的一些时候，佛门就把它称为真如或如来，也称为实性、实际或实体。色的世界既然是由这种“空”的实体聚合而成的，那么我们在说到世界的时候，又该说它是色呢，还是空的呢？说色说空便都不确切，当 然就只能说色空并不相异。 
+这就并非虚无，也不是消极了，若不如此，便难免是偏执的。　　那末这是说“色”，说一切有形有象的物质，包括山河大地，楼房车辆，还有我们的这副身躯，在根柢上都是“空”的。　　然而“空’在聚合为这个世界的时候，又是不是只表现为“色”这样一种物质形式呢？当然又不是。其实这“色”的层次，佛法说它是一种“质碍”，不过是一种 表面而粗糙的层次。经文接着就给我们指出来，在“色”的后面，就还有“受、想、行、识”。它们同样都是“空”生出来的，不仅同样是物质和物质现象，而且是 更为深入和精微的物质形式。　 　这儿的“受”和“想”就无须多说了，和“色’的现象相比，我们的感觉和意识诚然就更为隐密。至于“行”和“识”呢，则不能望文生义，不能误会为行为和意识。“行”是什么？“行”是对“想”的进一步剖析，佛法说“行”是迁流，就说它比“想”更加精细。“识”是什么？“识”又是对“行”的进一步的探索，佛法说“识”是藏识，就说它比“行”更为隐蔽。不妨用比喻来说的话，我们不是已经知道了，在物质的后面，就还有分子、原子、电子和基本粒子？那末参照地排列起来，这种由表及里、由浅入深的排列，也便是“色、受、想、行、识”。　　这意味着什么呢？这就意味着，经文在这里给我们描绘出来的，就既是世界的模式，同时也是生命的体系。这样便让我们清楚地看到，我们的生命就是整个物质世界的一个缩影，天人也本来合一。　　你以为怎样呢？这不就是一个平常而巨大的秘密？长久以来，当我们说到世界的时候，就总是把我们自己当做主体，而把世界视为客体，好像我们是生活在世界之 外，物质的世界并不包括我们自己，我们的感觉和意识等等也不是物质的。所以我们在寻找世界的根柢的时候，就有些像一个背着孩子找孩子的女人一样，只顾着在身旁的世界里张望，却忽略了那种最原初最精微的物质，其实就在我们自己的身上。现在经佛法一提醒，事情就变得完整而清晰，这儿的“色、受、想、行、识”，便覆盖了世界和我们自己。这就使我们恍悟到了，不仅“色”的世界是物质的，还有我们自己的“受、想、行、识”，也同样是物质的。若问“识”之后又是些什么呢？“识”之后诚然就是“空”了。所以我们只消回过头来打量一下自己的生命，沿着色受想行识这样的层次逐渐深入下去，也就能得知世界的秘密。　 　这是不是就有一些玄虚？其实也不，不过是我们没有这样地试验过而已。佛法是讲信、解、行、证的，如果我们能依照佛法的指引，认真地试验一下，那末或多或少的，也就能体验到这种秘密。　　确实，我们活着，如果只停留在“色”和“受”的层次上，其粗疏就可想而知，其遗憾也不言而喻。即便是来到“想”的层次上，这“想”便再大也有限，反过来 也会限定我们自己，使我们成为一个狭小而固执的小我。但如果我们不以为自己之所“想”就天经地义，也不总是在“色”和“受”里去寻求满足和刺激，而是换一 条路径走一走，比方说安安稳稳地坐下来，设法把眼耳鼻舌都关闭起来，然后往自己的生命深处查看一下，又会怎样呢？这样一来，在我们确实地安静下来以后，即进入了佛法所说的禅定状态以后，不仅“色”和“受”的侵扰会消隐下去，就连我们的剪不断理还乱的思绪，便也是可以消解和轻减的。等到这样的功夫纯熟之后， 我们也就能进入“行”和“识”的境地。　 　“行”和“识”的境界自然就更加深远和宽阔，这里我们不妨作一个比喻。让我们先把“想”比作一篇文章好了，一个人的思想确实也就像一篇文章，是一个被限定了的整体，所以是疆界分明的，不能彼此进入的。这时候“行”是什么呢？“行”是迁流，是一种能流动的东西，便好比是文章之中的句子，同样的一个句子也就可以进入到好些不同的文章里去。至于“识”呢，在这种情况下，便自然是更加自由的单字了，所有的句子和文章便都是由它组成的。这一切也就犹如说，你如果是一团板结的物质的话，就是非常之不自由的；但如果你不是物体而是分子呢，就会自由得多了；更不用说你还是电子和基本粒子，如果到了这样的地步，又还有什么东西能阻挡你，你又还有什么地方不能去呢？　　这一切诚然有些不可思议；然而这似乎不可思议的一切，却正是佛法所发现的秘密。当年释迦牟尼王子在菩提树下证道之后，他的心灵就最终摆脱了色受想行识的重负，便和宇宙万物全息相应，便看见了三世十方的所有景象，得知了宇宙万物的一切根柢。而观自在菩萨在行深般若波罗蜜多的时候，便同样验证了这一秘密，照见了“色”和“受、想、行、识”都是“空”的。而这种“空”，自然也就是万物的本质，世界的依据。　　这样地说下来，诚然就要说到生命的规律，所以经文也就进入了第三段，用八十二个字写成了下面的文句：　　“舍利子，是诸法空相，不生不灭，不垢不净，不增不减。是故空中无色，无受想行识：无眼耳鼻舌身意，无色身香味触法；无眼界，乃至无意识界；无无明，亦无无明尽，乃至无老死，亦无老死尽；无苦集灭道，无智亦无得。” 
+不用说，这儿的“诸法空相”，说的也就是世界和生命的本相，本来的面目或本来的模样。　　事物诚然有自己的本相，比方说五光十色的万花筒吧，一旦拆开来之后，不是就只有几粒细碎的玻璃？还有雪花，或者云霞，虽说是变化万千，但追寻到终极的地 方，还原为本来的面目，也不过是氢原子和氧原子而已。那末“诸法”呢？即是包括生命在内的一切物质现象，其真相又是怎样的呢？在经过了上一个段落的开示之后，我们应该意识到，色受想行识诸法的本相也就同样是“空”的。并且其空灵的程度，就绝非原子电子之类的存在可以比拟；本来都无法描述了，如果勉强地描述一下的话，这种空灵的本相，就是不生不灭、不垢不净和不增不减的。　 　什么东西会这样玄秘，能不生不灭、不垢不净和不增不减呢？我们又能在哪儿 找到这种东西呢？其实一经说破，我们就不难猛省，你只要能回过头来，审视一下你的意识就行。你不是有喜怒哀乐，还有受想行识？这样的现象不就很玄秘？而先 贤这时候就启发我们说，那末在你的喜怒哀乐和受想行识还没有发动之前，是不是还应该有一个东西？一者是所指，一者则是能指，你就想想看吧，那个可以用来化作喜怒哀乐和受想行识的东西，那又该是一种怎样的东西？这就是我们始终载负着的灵智，就是佛法所说的真如实体。这便是世界和生命的本来面目，无比精微，无比空灵，虽然是“空相”，却又是真实不虚地存在着的。　　仍然用比喻来说的话，我们就姑且把这种空相比喻为氢原子和氧原子，无形无象，也无踪 无影。然而什么时候，这原子一聚合起来，不就成了汽，成了云朵和水，最后还会凝结为冰？世界和生命的情形也一样，终极的地方是一片妙明，后来便结成了暗色，有了色受想行识。这就是无中生有了，我们的生命就是其中的一种能量体系，是色受想行识的一种集成。有了世界和生命这个“有”之后，又才有眼耳鼻舌身意和色身香味触法，乃至于生老病死和苦集灭道等等，所有这一切，便不过是能量的聚集、控制和耗散，是彼此的交流、转化和合成。缘起而性空，性空而缘起，只有空灵的本相才永恒不变，而一切的“有”，便都像泡影一样，是随缘生灭的，不能常住的。　　所以经文在这里就用了一连串的“无”，来说明诸法和万有的本性。如果我们不明白这一点，只看见“有”，不知道“无”，便会执着于“有”，即是执着于自己的得失和见解，执着于各种各样的本来就留不住的东西，若依佛法看来，也就是痴迷，就是“无明”。而这种痴迷或“无明”的状态，自然也就是一种“有”的物质状态，便会始终控制和牵引着我们，使我们永远在“有”的境况里轮回，包括只是在佛学和道法里纠缠，而不能达到“无智亦无得”的境界，回归于终极和永恒的存在。　　那末反过来，如果我们清楚了世界和生命的这种真相以后，事情又会怎样呢？应该说很显然，这样一来，我们也就找到了事物的终极的依据。我们原来不知道这种根本的秘密，没有这样的终极的依据，所以我们在讨论着这生命和人生的时候，便只能是瞎子摸象似的，一切都只能是自圆其说和自由认取，于是才众声喧哗，纵有所得和所见，也只是一些浅显的体验和相对的道理，经不住再问一下为什么，到底是不了义。现在当然就不同了，依照这种根本的秘密，对于我们今生今世的生命来说，也就能引导出一种终极的含义。　　所以紧接着，经文也就有了第四段和第五段，即分别以菩萨和诸佛的人生选择为例，来为我们说明生命和人生所能有的终极的意义。　　明白了生命的真相的菩萨们，是怎样来度过自己的一生的呢？　　上面一段的最后一句得到了一个结束语，“无智亦无得”，就是说要解放我们的心识和不计较我们的所得；这就显得不同于常理，不免让人生疑；又不要有见解， 又不能追求利益，这人生还有什么呢？这时候经文便对我们解释说，并非是什么都没有，菩萨们就是因为解除了这些束缚，才解放和超越了自己，然后才得到一个完 整的天地。　 　“以无所得故”，经文接着便这样说，“菩提萨埵依般若波罗蜜多故，心无挂碍；无挂碍故，无有恐怖，远离颠倒梦想，究竟涅盘。”　　这儿便有三个衔接着的缘故，一是无所得故，二是般若波罗蜜多故，三是无挂碍故。我们如果要了解其中的道理，就不妨从反面的情形，来体悟一下这种缘故。　　一个人设若不是“无所得”，而是要不断地有所得，那又怎么样呢？应该说很清楚，这便是我们通常所见到的情形。这所得便始终有限，同时又永无止境。这样一 来，生活就总是在别处，幸福也总是在你不在的地方，你便永远要在这样那样的所得之中游泳，到死也不会有岸，不会有片刻的安宁。而你的种种所得，又注定是留不住的，是非成败都转头空，到头来都难免风流云散，如梦幻泡影。即便再轮回一次，也还是依然故我，也只能照样的忙个不停。如果一切只能是这样地重复的话，你作为万物之灵长，这灵长之处又何在呢？不就值得人深省？　 　我们不必畏惧这个“无所得”。比方说你的一双手吧，如果你得到了一点什么东西，便 始终紧紧地把它捏在手里，再也不肯放下，害怕这样一来就会无所得，你的这双手又还会有什么用呢？又怎么能像你所希望的那样，去拥抱整个的世界呢？手如此，心灵当然也是这样。如果我们的心灵被这样那样的所得填塞得满满的，就像天空里始终布满着云絮，智慧的蓝天又怎么能够显现出来呢？所以菩萨们就不执着于自己之所得，才能够行深般若波罗蜜多，照见心灵的蓝天。照见了蓝天之后，便明白原来在心灵漂浮着的种种见解和念头，不过是一些靠不住的云絮，从此便不再被这些 云絮所迷惑，能够心无挂碍。　　我们的迷误就在于心有挂碍，一颗心始终被层出不穷的云絮遮盖着，这云絮就成了我们的自我，想不到放开，不愿意放开，乃至没法放开。在这种情况下，世界虽说只有一个，但在不同的人们来说，就注定要用自己的这一团云絮一般的心识去看待世界，然后便固执己见，给人生加上种种的目的，给世界蒙上种种的色彩。我看青山多妩媚，料青山看我也如是，这自然是境由心造；至于杯弓蛇影呢？风声鹤唳呢？也就是颠倒梦想和心怀恐惧了。所以我们也清楚，正常的人们与精神病患者之间，就不过是程度上的差别而已。随着日子的越来越繁复，诱惑和刺激也越来越深重，我们的心也就越来越浮躁。其浮躁的程度，便好比闷热而黑暗的锅子似的。这时候除了依法修行的菩萨们而外，谁又能解脱自在，远离颠倒梦想，而最终达到涅盘的境地呢？　　涅盘的意思就是圆寂。完全可以说，这圆寂二字，也就概括了佛法的秘密。想想看吧，不就只有圆满的又才是寂静的、寂静的又才是圆满的？菩萨们从无所得开始，不断解放和超越自己，到后来便心无挂碍，心灵所固有的智慧便显现出来，即是恢复了生命的本相，回归了生命的本体，这便是圆寂。到了这样的时候，菩萨们便能够不离万物，不住万物，与世界全息相应，完成了天人合一。所以最高果位的菩萨，也就是等觉菩萨和妙觉菩萨，就与三世诸佛无异，其觉受的境界便和三世诸佛是一样的。　　这种终极的境界，就是无上正等正觉，即阿耨多罗三藐三菩提。所以经文的第五段便说：　　“三世诸佛，依般若波罗蜜多故，得阿耨多罗三藐三菩提。”　　一切过去、现在和未来的佛菩萨们，便安住在这样的正觉里。在摆脱了生死的轮回和一切苦厄之后，才是不生不灭的，解脱自在的。　　话到这里似乎就说完了。余下来的最后一段，六十五个字，便要为这一切作一个结论。而这时候，在我们跟着经文一路地走过来，明白了事情的真相之后，这结论也就是十分清楚的：　　“故知般若波罗蜜多，是大神咒，是大明咒，是无上咒，是无等等咒，能除一切苦，真实不虚。故说般若波罗蜜多咒，即说咒曰：揭谛揭谛，波罗揭谛，波罗僧揭谛，菩提萨婆诃。”咒诚然就是一种真言，一种最真实、最有力的言语。那末相比之下，又还有什么言语，能比般若波罗蜜多更真实、更有力呢？现在把前面说过的一切总括起来，这一部经典的心要也就可以归结为这样一句真言：去吧去吧，到彼岸去吧，让我们都到彼岸去吧，快快的得到觉悟。　　也许你很难相信这一切？　　又也许你相信了，又还是愿意留在颠倒梦想里，认为这样才更美丽，即便坠入地狱也在所不惜？　　这当然都由你。佛法说命自我立，世界并不是神明创造的，也没有神明在支配着你，你的命运全在你自己的手里。　　但是又也许，你确实看到人生如痴人说梦，充满喧哗与骚动，却找不到你能认可的意义，那又如之何呢？那末这时候，在你上下求索又仍然归途茫茫的时候，便还有这样的一条路经留在这里。　　这便是诸佛菩萨和古往今来的高僧大德们验证过的一个秘密。能除一切苦，真实不虚。　　而我们如果要接近佛法的话，诚然就要以经典的开示为依据。依佛说则是佛法，不依佛说则不是佛法。道理也好，法门也好，便全在这里。
+翻译：观自在菩萨（般若智慧已经达到自在境界的菩萨）行深般若波罗蜜多时（当他修行般若智慧达到波罗蜜多觉悟境界的时候）照见五蕴皆空（洞见色、受、想、行、识五蕴乃是人类虚空的妄想）度一切苦厄（所以菩萨要为众生解脱一切执着于生死烦恼的苦厄）
+舍利子（智慧第一的舍利子啊）色不异空（你所看见的物质世界其实是你的精神世界）空不异色（你的精神世界也就是你以为的物质世界）色即是空（物质世界就是精神世界）空即是色（精神世界就是物质世界）受想行识亦复如是（人类所谓的感受、思想、行为和认识也是如此）
+舍利子（智慧第一的舍利子啊）是诸法空相（其实一切法都不是法，只是人类虚空的精神幻觉）不生不灭（真实的世界不会产生，也不会灭亡）不垢不净（不会被尘埃沾污，也不需要去洁净）不增不减（任何东西都不会增加，也不会减少）是故空中无色（在真实世界里并没有物质这一概念）无受想行识（自然也就不存在人类对物质世界的感受、思想、行为和认识）无眼耳鼻舌身意（眼、耳、鼻、舌、身、意这六种感官对于真实世界没有任何意义）无色声香味触法（自然也就不存在所谓的颜色、声音、香气、味道、感觉和概念）无眼界乃至无意识界（你眼睛所看到的一切都是假象，你的意识也全部都是错觉）无无明亦无无明尽（没有前世愚昧的事情，也没有后世报应的所谓十二因缘）乃至无老死（就连生老病死也是胡说）亦无老死尽（更没有生死轮回的道理）无苦集灭道（没有生死烦恼，没有贪婪和恐惧，也没有所谓的真理）无智亦无得（既没有智慧，也得不到任何知识）以无所得故（这才是超越了人类精神的惟一真实的世界）
+菩提萨埵（大慈大悲普度众生的观自在菩萨）依般若波罗蜜多故（依靠般若智慧抵达了波罗蜜多觉悟的彼岸）心无罣碍，无罣碍故（心中没有任何牵挂和妨碍，正是因为没有受到人类精神影响的缘故）无有恐怖，远离颠倒梦想（没有任何恐怖，远离那些违背自然的思想）究竟涅盘（所以菩萨观得自在，消除了一切烦恼）
+三世诸佛（过去、现在和将来三世佛以及一切佛）依般若波罗蜜多故（都是依靠般若智慧达到波罗蜜多觉悟的境界）得阿耨多罗三藐三菩提（得到阿耨多罗无上三藐正等三菩提正觉成佛的境界）
+故知般若波罗蜜多是大神咒（所以般若智慧波罗蜜多觉悟是不可思议的咒语）是大明咒（是普照一切的咒语）是无上咒（是最最伟大的咒语）是无等等咒（是超度一切的咒语）能除一切苦（能够解除人生的一切生死烦恼和苦厄）真实不虚（佛无妄语，自然真实）故说般若波罗蜜多咒（所以这是众生修行般若智慧抵达波罗蜜多觉悟的密咒）即说咒曰（咒语曰）揭谛揭谛（去吧去吧）波罗揭谛（走过所有的道路）波罗僧揭谛（一起去向人生的彼岸）菩提萨婆诃（欢呼觉悟吧）
+]]></content>
+      <categories>
+        <category>随笔</category>
+      </categories>
+      <tags>
+        <tag>笔记</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>英语学习方法</title>
     <url>/en-learning-method-of-english/</url>
     <content><![CDATA[理论磨刀不误砍柴工，了解一下英语学习的理论，能够少走一些弯路，找到自己应该坚持的方向。
@@ -38011,37 +38048,6 @@ Collins Dictionary
       </categories>
       <tags>
         <tag>英语</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>我所看过最好的《心经》解读</title>
-    <url>/essay-xj-illustration/</url>
-    <content><![CDATA[作者不详，voidking整理。
-这人世间，有一部最短的经典。这部经典只有二百六十个字，就是佛门留给我们的《般若波罗蜜多心经》，通常则称为《心经》。 
-二百六十个字是太少了。和这人间积存起来的浩如烟海的文字相比，二百六十个字能写下一些什么呢？我们又怎么能设想仅仅用二百六十个字，就能完成一部经典呢？ 
-然而事情又确乎是这样。佛门就用这不足一页的文字，为我们讲说了天上人间的秘密。用我们惯常的话语来说，就把世界观、生命观、人生观和价值观等等，都依次地写在了这部经典里。这样就不能不说，这便是人世间的一个圣迹。 
-我们曾经感到过一种欠缺，就是我们听说过各种各样的一家之言，却不曾聆听过佛陀的经验。这就有些不够谨慎了，要是这之中刚好含藏着什么秘密的话，我们寻寻觅觅，人生又如白驹过隙，不就错过了这样慈悲的知见？ 
-那末现在，在我们陆陆续续地听说了一些佛法之后，如果我们至少也该读完一部佛经的话，或许就可以看一看这部最短的经典。
-
-
-我们不会吝啬这二百六十个字吧？我们平日里徒劳地读过的文字，又何止千言万语？要是我们一生里只省下这样一点时间，说不定就能领会到佛陀的心意，由此就能到智慧的彼岸去，那又该是怎样的有幸呢？这题名里的“般若”和“波罗蜜多”的意思，就是智慧和去彼岸，便正是要领我们到智慧的彼岸去。 
-我们对彼岸当然有许多怀疑。我们固然深味这人生的辛苦和悲凉，到若要寻找彼岸，又让人疑心只是一种幻想。我们已经看到了，像鸟儿被关在笼子里一样，我们其实也是被囚禁在世界和身心的樊笼里的；我们的生存环境和生命本身，就决定着我们有生老病死和喜怒哀乐等等，又哪里能找到一种办法，来度尽我们的一切苦厄呢？ 
-我们找不到这种办法，是因为我们一直都不知道世界和生命的秘密。然而佛陀在经过千辛万苦的寻觅之后，却解开了这些秘密，于是才慈悲地对我们说，这种根本的办法其实是有的。 
-而这种办法的精髓，也即是佛法的心要，便收在了这部经典里。　　　　所以经文的一开头便这样说：　　“观自在菩萨行深般若波罗蜜多时，照见五蕴皆空，度一切苦厄。”　　这句话就可以看作经文的第一段，是一句总论，即以观自在菩萨为例，来作一个缘起。　　菩萨就是觉悟了的人，是不是呢？我们没有觉悟，所以我们不知道彼岸的景象；这位菩萨行深般若波罗蜜多时，也就到达了智慧的彼岸，所以就能在这种智慧的状态之中观自在，照见种种我们所不知道的情景。　　原来我们也不明白，如果有彼岸的话，这彼岸会在哪里。后来听说过一些佛法之后，我们也就有些明白了，这彼岸并不在天涯海角，而正是在我们的心里。我们的 心里充满了形形色色的念头，也就像一面染上了各种颜色的镜子，是什么都映照不清楚的，这就是在此岸；而菩萨放下了心里的念头之后，就好比镜子被擦试干净了，心里所固有的智慧便立即显现出来，也就是在彼岸了。智慧是什么？智慧当然就是能量和信息。这时候菩萨所显现出来的般若智慧，就是能照见世界和生命的真相的。　 　这真相又是什么呢？真相就是五蕴皆空。也就是说，在这种照见之下，菩萨便从最精微的角度看破了这个世界，发现构成世界和生命的五种物质形态，即色、受、想、行、识五种物质表现，本来都是“空”的。这一切的本质既然都是“空”的，当然也就有办法摆脱一切苦厄。因为我们的一切苦厄，不都是对“有”而言的？好比要先有一朵花，然后才会有花开花落和风吹雨打；又要先有一副身躯和一颗识心，然后才会有生老病死和处心积虑；如果我们能把身心都还原为这种空灵的状态的话，又还会有什么苦厄呢？　　“空”自然不是空无所有。空无所有是我们的一种错觉，一种误会。天空里漂浮着一朵白云，大海上卷起来一团浪花，跟着这云朵和浪花又都消失了，但哪里又是空无所有呢？在这个物质的宇宙世界里，就连满天的繁星也是靠引力而悬浮着的，又哪里能找到一种空无所有的状态呢？　　所以经文在用一句话说完这个绪论之后，接着便要从世界的根柢说起，首先要把世界的真相为我们作一个说明。　　和所有佛经的记载一样，佛陀讲经的时候，都有特定的对象。《心经》的听讲者，就是一个叫舍利弗的弟子。这些真相虽然是对舍利弗讲述的，便也是为全体众生讲述的。　　经文的绪论用了二十五个字。那末到了第二段，讲述佛陀的世界观，则有二十六个字。　　包括呼叫弟子的名字在内，这二十六个字便是这样的：　　“舍利子，色不异空，空不异色；色即是空，空即是色。受、想、行、识，亦复如是。”　　这就是色空说了，这样的话语就是我们曾经听说过的。或许是因为有一个空字吧，在原来，我们便把它当作了佛法的虚无和消极的凭据。　　然而色又怎么不是空的呢？色就是我们通常所说的有形有象的物质，我们把这些物质不断地分割下去，先是分子和原子，后来是电子和基本粒子，愈往后走就愈是无形无象了，不就仿佛是“空”的？　　我们原来是误会了，佛法说到“空”的时候，说的也就是那种构成世界的最原初的物质。我们不是至今也没有找到这种物质？而佛陀却在两千多年以前就发现了这 种物质。这种物质太精微了，看不见也摸不着，就像空的一样；然而它又真实地存在着，并非是空无所有的；所以在另外的一些时候，佛门就把它称为真如或如来，也称为实性、实际或实体。色的世界既然是由这种“空”的实体聚合而成的，那么我们在说到世界的时候，又该说它是色呢，还是空的呢？说色说空便都不确切，当 然就只能说色空并不相异。 
-这就并非虚无，也不是消极了，若不如此，便难免是偏执的。　　那末这是说“色”，说一切有形有象的物质，包括山河大地，楼房车辆，还有我们的这副身躯，在根柢上都是“空”的。　　然而“空’在聚合为这个世界的时候，又是不是只表现为“色”这样一种物质形式呢？当然又不是。其实这“色”的层次，佛法说它是一种“质碍”，不过是一种 表面而粗糙的层次。经文接着就给我们指出来，在“色”的后面，就还有“受、想、行、识”。它们同样都是“空”生出来的，不仅同样是物质和物质现象，而且是 更为深入和精微的物质形式。　 　这儿的“受”和“想”就无须多说了，和“色’的现象相比，我们的感觉和意识诚然就更为隐密。至于“行”和“识”呢，则不能望文生义，不能误会为行为和意识。“行”是什么？“行”是对“想”的进一步剖析，佛法说“行”是迁流，就说它比“想”更加精细。“识”是什么？“识”又是对“行”的进一步的探索，佛法说“识”是藏识，就说它比“行”更为隐蔽。不妨用比喻来说的话，我们不是已经知道了，在物质的后面，就还有分子、原子、电子和基本粒子？那末参照地排列起来，这种由表及里、由浅入深的排列，也便是“色、受、想、行、识”。　　这意味着什么呢？这就意味着，经文在这里给我们描绘出来的，就既是世界的模式，同时也是生命的体系。这样便让我们清楚地看到，我们的生命就是整个物质世界的一个缩影，天人也本来合一。　　你以为怎样呢？这不就是一个平常而巨大的秘密？长久以来，当我们说到世界的时候，就总是把我们自己当做主体，而把世界视为客体，好像我们是生活在世界之 外，物质的世界并不包括我们自己，我们的感觉和意识等等也不是物质的。所以我们在寻找世界的根柢的时候，就有些像一个背着孩子找孩子的女人一样，只顾着在身旁的世界里张望，却忽略了那种最原初最精微的物质，其实就在我们自己的身上。现在经佛法一提醒，事情就变得完整而清晰，这儿的“色、受、想、行、识”，便覆盖了世界和我们自己。这就使我们恍悟到了，不仅“色”的世界是物质的，还有我们自己的“受、想、行、识”，也同样是物质的。若问“识”之后又是些什么呢？“识”之后诚然就是“空”了。所以我们只消回过头来打量一下自己的生命，沿着色受想行识这样的层次逐渐深入下去，也就能得知世界的秘密。　 　这是不是就有一些玄虚？其实也不，不过是我们没有这样地试验过而已。佛法是讲信、解、行、证的，如果我们能依照佛法的指引，认真地试验一下，那末或多或少的，也就能体验到这种秘密。　　确实，我们活着，如果只停留在“色”和“受”的层次上，其粗疏就可想而知，其遗憾也不言而喻。即便是来到“想”的层次上，这“想”便再大也有限，反过来 也会限定我们自己，使我们成为一个狭小而固执的小我。但如果我们不以为自己之所“想”就天经地义，也不总是在“色”和“受”里去寻求满足和刺激，而是换一 条路径走一走，比方说安安稳稳地坐下来，设法把眼耳鼻舌都关闭起来，然后往自己的生命深处查看一下，又会怎样呢？这样一来，在我们确实地安静下来以后，即进入了佛法所说的禅定状态以后，不仅“色”和“受”的侵扰会消隐下去，就连我们的剪不断理还乱的思绪，便也是可以消解和轻减的。等到这样的功夫纯熟之后， 我们也就能进入“行”和“识”的境地。　 　“行”和“识”的境界自然就更加深远和宽阔，这里我们不妨作一个比喻。让我们先把“想”比作一篇文章好了，一个人的思想确实也就像一篇文章，是一个被限定了的整体，所以是疆界分明的，不能彼此进入的。这时候“行”是什么呢？“行”是迁流，是一种能流动的东西，便好比是文章之中的句子，同样的一个句子也就可以进入到好些不同的文章里去。至于“识”呢，在这种情况下，便自然是更加自由的单字了，所有的句子和文章便都是由它组成的。这一切也就犹如说，你如果是一团板结的物质的话，就是非常之不自由的；但如果你不是物体而是分子呢，就会自由得多了；更不用说你还是电子和基本粒子，如果到了这样的地步，又还有什么东西能阻挡你，你又还有什么地方不能去呢？　　这一切诚然有些不可思议；然而这似乎不可思议的一切，却正是佛法所发现的秘密。当年释迦牟尼王子在菩提树下证道之后，他的心灵就最终摆脱了色受想行识的重负，便和宇宙万物全息相应，便看见了三世十方的所有景象，得知了宇宙万物的一切根柢。而观自在菩萨在行深般若波罗蜜多的时候，便同样验证了这一秘密，照见了“色”和“受、想、行、识”都是“空”的。而这种“空”，自然也就是万物的本质，世界的依据。　　这样地说下来，诚然就要说到生命的规律，所以经文也就进入了第三段，用八十二个字写成了下面的文句：　　“舍利子，是诸法空相，不生不灭，不垢不净，不增不减。是故空中无色，无受想行识：无眼耳鼻舌身意，无色身香味触法；无眼界，乃至无意识界；无无明，亦无无明尽，乃至无老死，亦无老死尽；无苦集灭道，无智亦无得。” 
-不用说，这儿的“诸法空相”，说的也就是世界和生命的本相，本来的面目或本来的模样。　　事物诚然有自己的本相，比方说五光十色的万花筒吧，一旦拆开来之后，不是就只有几粒细碎的玻璃？还有雪花，或者云霞，虽说是变化万千，但追寻到终极的地 方，还原为本来的面目，也不过是氢原子和氧原子而已。那末“诸法”呢？即是包括生命在内的一切物质现象，其真相又是怎样的呢？在经过了上一个段落的开示之后，我们应该意识到，色受想行识诸法的本相也就同样是“空”的。并且其空灵的程度，就绝非原子电子之类的存在可以比拟；本来都无法描述了，如果勉强地描述一下的话，这种空灵的本相，就是不生不灭、不垢不净和不增不减的。　 　什么东西会这样玄秘，能不生不灭、不垢不净和不增不减呢？我们又能在哪儿 找到这种东西呢？其实一经说破，我们就不难猛省，你只要能回过头来，审视一下你的意识就行。你不是有喜怒哀乐，还有受想行识？这样的现象不就很玄秘？而先 贤这时候就启发我们说，那末在你的喜怒哀乐和受想行识还没有发动之前，是不是还应该有一个东西？一者是所指，一者则是能指，你就想想看吧，那个可以用来化作喜怒哀乐和受想行识的东西，那又该是一种怎样的东西？这就是我们始终载负着的灵智，就是佛法所说的真如实体。这便是世界和生命的本来面目，无比精微，无比空灵，虽然是“空相”，却又是真实不虚地存在着的。　　仍然用比喻来说的话，我们就姑且把这种空相比喻为氢原子和氧原子，无形无象，也无踪 无影。然而什么时候，这原子一聚合起来，不就成了汽，成了云朵和水，最后还会凝结为冰？世界和生命的情形也一样，终极的地方是一片妙明，后来便结成了暗色，有了色受想行识。这就是无中生有了，我们的生命就是其中的一种能量体系，是色受想行识的一种集成。有了世界和生命这个“有”之后，又才有眼耳鼻舌身意和色身香味触法，乃至于生老病死和苦集灭道等等，所有这一切，便不过是能量的聚集、控制和耗散，是彼此的交流、转化和合成。缘起而性空，性空而缘起，只有空灵的本相才永恒不变，而一切的“有”，便都像泡影一样，是随缘生灭的，不能常住的。　　所以经文在这里就用了一连串的“无”，来说明诸法和万有的本性。如果我们不明白这一点，只看见“有”，不知道“无”，便会执着于“有”，即是执着于自己的得失和见解，执着于各种各样的本来就留不住的东西，若依佛法看来，也就是痴迷，就是“无明”。而这种痴迷或“无明”的状态，自然也就是一种“有”的物质状态，便会始终控制和牵引着我们，使我们永远在“有”的境况里轮回，包括只是在佛学和道法里纠缠，而不能达到“无智亦无得”的境界，回归于终极和永恒的存在。　　那末反过来，如果我们清楚了世界和生命的这种真相以后，事情又会怎样呢？应该说很显然，这样一来，我们也就找到了事物的终极的依据。我们原来不知道这种根本的秘密，没有这样的终极的依据，所以我们在讨论着这生命和人生的时候，便只能是瞎子摸象似的，一切都只能是自圆其说和自由认取，于是才众声喧哗，纵有所得和所见，也只是一些浅显的体验和相对的道理，经不住再问一下为什么，到底是不了义。现在当然就不同了，依照这种根本的秘密，对于我们今生今世的生命来说，也就能引导出一种终极的含义。　　所以紧接着，经文也就有了第四段和第五段，即分别以菩萨和诸佛的人生选择为例，来为我们说明生命和人生所能有的终极的意义。　　明白了生命的真相的菩萨们，是怎样来度过自己的一生的呢？　　上面一段的最后一句得到了一个结束语，“无智亦无得”，就是说要解放我们的心识和不计较我们的所得；这就显得不同于常理，不免让人生疑；又不要有见解， 又不能追求利益，这人生还有什么呢？这时候经文便对我们解释说，并非是什么都没有，菩萨们就是因为解除了这些束缚，才解放和超越了自己，然后才得到一个完 整的天地。　 　“以无所得故”，经文接着便这样说，“菩提萨埵依般若波罗蜜多故，心无挂碍；无挂碍故，无有恐怖，远离颠倒梦想，究竟涅盘。”　　这儿便有三个衔接着的缘故，一是无所得故，二是般若波罗蜜多故，三是无挂碍故。我们如果要了解其中的道理，就不妨从反面的情形，来体悟一下这种缘故。　　一个人设若不是“无所得”，而是要不断地有所得，那又怎么样呢？应该说很清楚，这便是我们通常所见到的情形。这所得便始终有限，同时又永无止境。这样一 来，生活就总是在别处，幸福也总是在你不在的地方，你便永远要在这样那样的所得之中游泳，到死也不会有岸，不会有片刻的安宁。而你的种种所得，又注定是留不住的，是非成败都转头空，到头来都难免风流云散，如梦幻泡影。即便再轮回一次，也还是依然故我，也只能照样的忙个不停。如果一切只能是这样地重复的话，你作为万物之灵长，这灵长之处又何在呢？不就值得人深省？　 　我们不必畏惧这个“无所得”。比方说你的一双手吧，如果你得到了一点什么东西，便 始终紧紧地把它捏在手里，再也不肯放下，害怕这样一来就会无所得，你的这双手又还会有什么用呢？又怎么能像你所希望的那样，去拥抱整个的世界呢？手如此，心灵当然也是这样。如果我们的心灵被这样那样的所得填塞得满满的，就像天空里始终布满着云絮，智慧的蓝天又怎么能够显现出来呢？所以菩萨们就不执着于自己之所得，才能够行深般若波罗蜜多，照见心灵的蓝天。照见了蓝天之后，便明白原来在心灵漂浮着的种种见解和念头，不过是一些靠不住的云絮，从此便不再被这些 云絮所迷惑，能够心无挂碍。　　我们的迷误就在于心有挂碍，一颗心始终被层出不穷的云絮遮盖着，这云絮就成了我们的自我，想不到放开，不愿意放开，乃至没法放开。在这种情况下，世界虽说只有一个，但在不同的人们来说，就注定要用自己的这一团云絮一般的心识去看待世界，然后便固执己见，给人生加上种种的目的，给世界蒙上种种的色彩。我看青山多妩媚，料青山看我也如是，这自然是境由心造；至于杯弓蛇影呢？风声鹤唳呢？也就是颠倒梦想和心怀恐惧了。所以我们也清楚，正常的人们与精神病患者之间，就不过是程度上的差别而已。随着日子的越来越繁复，诱惑和刺激也越来越深重，我们的心也就越来越浮躁。其浮躁的程度，便好比闷热而黑暗的锅子似的。这时候除了依法修行的菩萨们而外，谁又能解脱自在，远离颠倒梦想，而最终达到涅盘的境地呢？　　涅盘的意思就是圆寂。完全可以说，这圆寂二字，也就概括了佛法的秘密。想想看吧，不就只有圆满的又才是寂静的、寂静的又才是圆满的？菩萨们从无所得开始，不断解放和超越自己，到后来便心无挂碍，心灵所固有的智慧便显现出来，即是恢复了生命的本相，回归了生命的本体，这便是圆寂。到了这样的时候，菩萨们便能够不离万物，不住万物，与世界全息相应，完成了天人合一。所以最高果位的菩萨，也就是等觉菩萨和妙觉菩萨，就与三世诸佛无异，其觉受的境界便和三世诸佛是一样的。　　这种终极的境界，就是无上正等正觉，即阿耨多罗三藐三菩提。所以经文的第五段便说：　　“三世诸佛，依般若波罗蜜多故，得阿耨多罗三藐三菩提。”　　一切过去、现在和未来的佛菩萨们，便安住在这样的正觉里。在摆脱了生死的轮回和一切苦厄之后，才是不生不灭的，解脱自在的。　　话到这里似乎就说完了。余下来的最后一段，六十五个字，便要为这一切作一个结论。而这时候，在我们跟着经文一路地走过来，明白了事情的真相之后，这结论也就是十分清楚的：　　“故知般若波罗蜜多，是大神咒，是大明咒，是无上咒，是无等等咒，能除一切苦，真实不虚。故说般若波罗蜜多咒，即说咒曰：揭谛揭谛，波罗揭谛，波罗僧揭谛，菩提萨婆诃。”咒诚然就是一种真言，一种最真实、最有力的言语。那末相比之下，又还有什么言语，能比般若波罗蜜多更真实、更有力呢？现在把前面说过的一切总括起来，这一部经典的心要也就可以归结为这样一句真言：去吧去吧，到彼岸去吧，让我们都到彼岸去吧，快快的得到觉悟。　　也许你很难相信这一切？　　又也许你相信了，又还是愿意留在颠倒梦想里，认为这样才更美丽，即便坠入地狱也在所不惜？　　这当然都由你。佛法说命自我立，世界并不是神明创造的，也没有神明在支配着你，你的命运全在你自己的手里。　　但是又也许，你确实看到人生如痴人说梦，充满喧哗与骚动，却找不到你能认可的意义，那又如之何呢？那末这时候，在你上下求索又仍然归途茫茫的时候，便还有这样的一条路经留在这里。　　这便是诸佛菩萨和古往今来的高僧大德们验证过的一个秘密。能除一切苦，真实不虚。　　而我们如果要接近佛法的话，诚然就要以经典的开示为依据。依佛说则是佛法，不依佛说则不是佛法。道理也好，法门也好，便全在这里。
-翻译：观自在菩萨（般若智慧已经达到自在境界的菩萨）行深般若波罗蜜多时（当他修行般若智慧达到波罗蜜多觉悟境界的时候）照见五蕴皆空（洞见色、受、想、行、识五蕴乃是人类虚空的妄想）度一切苦厄（所以菩萨要为众生解脱一切执着于生死烦恼的苦厄）
-舍利子（智慧第一的舍利子啊）色不异空（你所看见的物质世界其实是你的精神世界）空不异色（你的精神世界也就是你以为的物质世界）色即是空（物质世界就是精神世界）空即是色（精神世界就是物质世界）受想行识亦复如是（人类所谓的感受、思想、行为和认识也是如此）
-舍利子（智慧第一的舍利子啊）是诸法空相（其实一切法都不是法，只是人类虚空的精神幻觉）不生不灭（真实的世界不会产生，也不会灭亡）不垢不净（不会被尘埃沾污，也不需要去洁净）不增不减（任何东西都不会增加，也不会减少）是故空中无色（在真实世界里并没有物质这一概念）无受想行识（自然也就不存在人类对物质世界的感受、思想、行为和认识）无眼耳鼻舌身意（眼、耳、鼻、舌、身、意这六种感官对于真实世界没有任何意义）无色声香味触法（自然也就不存在所谓的颜色、声音、香气、味道、感觉和概念）无眼界乃至无意识界（你眼睛所看到的一切都是假象，你的意识也全部都是错觉）无无明亦无无明尽（没有前世愚昧的事情，也没有后世报应的所谓十二因缘）乃至无老死（就连生老病死也是胡说）亦无老死尽（更没有生死轮回的道理）无苦集灭道（没有生死烦恼，没有贪婪和恐惧，也没有所谓的真理）无智亦无得（既没有智慧，也得不到任何知识）以无所得故（这才是超越了人类精神的惟一真实的世界）
-菩提萨埵（大慈大悲普度众生的观自在菩萨）依般若波罗蜜多故（依靠般若智慧抵达了波罗蜜多觉悟的彼岸）心无罣碍，无罣碍故（心中没有任何牵挂和妨碍，正是因为没有受到人类精神影响的缘故）无有恐怖，远离颠倒梦想（没有任何恐怖，远离那些违背自然的思想）究竟涅盘（所以菩萨观得自在，消除了一切烦恼）
-三世诸佛（过去、现在和将来三世佛以及一切佛）依般若波罗蜜多故（都是依靠般若智慧达到波罗蜜多觉悟的境界）得阿耨多罗三藐三菩提（得到阿耨多罗无上三藐正等三菩提正觉成佛的境界）
-故知般若波罗蜜多是大神咒（所以般若智慧波罗蜜多觉悟是不可思议的咒语）是大明咒（是普照一切的咒语）是无上咒（是最最伟大的咒语）是无等等咒（是超度一切的咒语）能除一切苦（能够解除人生的一切生死烦恼和苦厄）真实不虚（佛无妄语，自然真实）故说般若波罗蜜多咒（所以这是众生修行般若智慧抵达波罗蜜多觉悟的密咒）即说咒曰（咒语曰）揭谛揭谛（去吧去吧）波罗揭谛（走过所有的道路）波罗僧揭谛（一起去向人生的彼岸）菩提萨婆诃（欢呼觉悟吧）
-]]></content>
-      <categories>
-        <category>随笔</category>
-      </categories>
-      <tags>
-        <tag>笔记</tag>
       </tags>
   </entry>
   <entry>
