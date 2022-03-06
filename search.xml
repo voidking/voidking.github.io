@@ -10,7 +10,7 @@ The Certified Kubernetes Administrator (CKA) program was created by the Cloud Na
 
 The Certified Kubernetes Application Developer (CKAD) program has been developed by the Cloud Native Computing Foundation (CNCF), in collaboration with The Linux Foundation, to help expand the Kubernetes ecosystem through standardized training and certification. 
 
-简而言之，CKA/CKAD是CNCF和Linux基金会联合推出的两个K8S考试认证。委托给PSI来进行监督考试。其中，CKA侧重于K8S管理，CKAD侧重于K8S开发。通过了这两个考试中的任意一个，就能证明你在K8S领域是一个人才；两个考试都通过了，那么涨薪还会远吗？
+简而言之，CKA/CKAD是CNCF和Linux基金会联合推出的两个K8S考试认证。委托给PSI来进行监督考试。其中，CKA侧重于K8S管理，CKAD侧重于K8S开发。
 想要拿到CKA和CKAD证书，需要哪些准备工作？本文就来梳理一下。主要参考：
 
 CKA及CKAD认证考试经验分享
@@ -7117,8 +7117,8 @@ TPC-W安装与配置（威斯康星大学Java版）
         <category>ubuntu</category>
       </categories>
       <tags>
-        <tag>linux</tag>
         <tag>apache</tag>
+        <tag>linux</tag>
         <tag>mysql</tag>
         <tag>ubuntu</tag>
       </tags>
@@ -7226,8 +7226,8 @@ ab -g t0.dat -t 100 -n 1000000 http://172.16.0.19/mediawiki/index.php/Main_Page
       </categories>
       <tags>
         <tag>docker</tag>
-        <tag>linux</tag>
         <tag>apache</tag>
+        <tag>linux</tag>
         <tag>ubuntu</tag>
         <tag>openstack</tag>
       </tags>
@@ -7351,8 +7351,8 @@ chmod a+x pt10.sh./pt10.sh
         <category>ubuntu</category>
       </categories>
       <tags>
-        <tag>linux</tag>
         <tag>apache</tag>
+        <tag>linux</tag>
         <tag>ubuntu</tag>
       </tags>
   </entry>
@@ -15882,8 +15882,8 @@ file:///storage/emulated/0/Android/data/io.dcloud.HBuilder/.HBuilder/apps/HBuild
       </categories>
       <tags>
         <tag>android</tag>
-        <tag>hbuilder</tag>
         <tag>chrome</tag>
+        <tag>hbuilder</tag>
       </tags>
   </entry>
   <entry>
@@ -25427,8 +25427,8 @@ jQzoom简介http://www.oschina.net/p/jqzoom?fromerr=tUayHgqO
       </categories>
       <tags>
         <tag>前端</tag>
-        <tag>jquery</tag>
         <tag>插件</tag>
+        <tag>jquery</tag>
       </tags>
   </entry>
   <entry>
@@ -25458,8 +25458,8 @@ imagesloaded项目地址：https://github.com/desandro/imagesloaded
       </categories>
       <tags>
         <tag>前端</tag>
-        <tag>jquery</tag>
         <tag>插件</tag>
+        <tag>jquery</tag>
       </tags>
   </entry>
   <entry>
@@ -29245,6 +29245,25 @@ alter table userbase add constraint fk_username foreign key(username) references
       </tags>
   </entry>
   <entry>
+    <title>坐功入静</title>
+    <url>/hobby-dhyana-meditation/</url>
+    <content><![CDATA[作者：那秋生
+
+坐功是静功里最要紧的一个环节，坐功是入静的第一步。坐功有静坐功和动静兼修两种。
+
+李渔《闲情偶寄·颐养》曰：“益寿之方，全凭导引；安生之计，惟赖坐功。”儒家提倡“静坐”。王阳明说：“静坐要省察克治，静坐能使心清静收敛，从而克服自我私欲产生，通过静坐能顿悟明心见性，得道成真。”
+道家主张“坐忘”。《庄子·大宗师》：“堕肢体，黜聪明，离形去知，同于大通，此谓坐忘。”即摆脱现实形体的束缚，与自然融为一体，两两相忘。佛家的功夫是“坐禅”。音译“禅那”，简称“禅”，意谓思维修或静虑，就是趺坐而修禅，是佛教修持的主要方法之一。
+现代人就是坐不住，成天跑东跑西、忙这忙那，就像丢了魂似的，悲乎！
+]]></content>
+      <categories>
+        <category>爱好</category>
+        <category>读书</category>
+      </categories>
+      <tags>
+        <tag>笔记</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>自由与理想</title>
     <url>/hobby-freedom-and-ideal/</url>
     <content><![CDATA[作者：吴晓波
@@ -29283,25 +29302,6 @@ alter table userbase add constraint fk_username foreign key(username) references
       </categories>
       <tags>
         <tag>读者</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>坐功入静</title>
-    <url>/hobby-dhyana-meditation/</url>
-    <content><![CDATA[作者：那秋生
-
-坐功是静功里最要紧的一个环节，坐功是入静的第一步。坐功有静坐功和动静兼修两种。
-
-李渔《闲情偶寄·颐养》曰：“益寿之方，全凭导引；安生之计，惟赖坐功。”儒家提倡“静坐”。王阳明说：“静坐要省察克治，静坐能使心清静收敛，从而克服自我私欲产生，通过静坐能顿悟明心见性，得道成真。”
-道家主张“坐忘”。《庄子·大宗师》：“堕肢体，黜聪明，离形去知，同于大通，此谓坐忘。”即摆脱现实形体的束缚，与自然融为一体，两两相忘。佛家的功夫是“坐禅”。音译“禅那”，简称“禅”，意谓思维修或静虑，就是趺坐而修禅，是佛教修持的主要方法之一。
-现代人就是坐不住，成天跑东跑西、忙这忙那，就像丢了魂似的，悲乎！
-]]></content>
-      <categories>
-        <category>爱好</category>
-        <category>读书</category>
-      </categories>
-      <tags>
-        <tag>笔记</tag>
       </tags>
   </entry>
   <entry>
@@ -32312,8 +32312,8 @@ student.xml文件内容如下：
         <category>jquery</category>
       </categories>
       <tags>
-        <tag>jquery</tag>
         <tag>javascript</tag>
+        <tag>jquery</tag>
         <tag>ajax</tag>
       </tags>
   </entry>
@@ -32358,8 +32358,8 @@ live()创建的选择器可以使用die()方法来解除绑定，语法和unbind
         <category>jquery</category>
       </categories>
       <tags>
-        <tag>jquery</tag>
         <tag>javascript</tag>
+        <tag>jquery</tag>
       </tags>
   </entry>
   <entry>
@@ -32749,8 +32749,8 @@ $(“li:lt(3)”)
         <category>jquery</category>
       </categories>
       <tags>
-        <tag>jquery</tag>
         <tag>javascript</tag>
+        <tag>jquery</tag>
       </tags>
   </entry>
   <entry>
@@ -32856,8 +32856,8 @@ AjaxjQuery的Ajax也是重点，必须的展开。我靠，肿么这么多！别
         <category>jquery</category>
       </categories>
       <tags>
-        <tag>jquery</tag>
         <tag>javascript</tag>
+        <tag>jquery</tag>
       </tags>
   </entry>
   <entry>
