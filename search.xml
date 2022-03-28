@@ -185,22 +185,36 @@ VSCode 是一个轻量但功能强大的代码编辑器，适用于 Windows、ma
 
 本文记录一下 VSCode 常用的一些快捷键和配置，备忘。
 快捷键查看快捷键左下角齿轮（Manage），Keyboard Shortcuts
+VSCode的很多快捷键和sublime相同，这个必须点赞。sublime快捷键参考《Sublime Text3》。
+全局搜索command+shift+F
+选择相同内容选中一部分内容后，command+D可以选中相同内容。配合command+-&gt;或者command+&lt;-，可以完成很多批量修改操作，比如print变log，比如print下面一行添加log。
+同列多行编辑command+option+↑↓
+sulime中ctrl+shift+↑↓
 自动补全函数返回值函数跳转command + 点击：跳转函数定义，或跳转函数引用ctrl + -：跳回之前位置
 代码格式化option + shift + F对于Python代码，第一次执行会提示安装autopep8，安装即可。
 
 
 配置安装插件左侧边栏，Extensions，搜索插件安装即可。
 保存文件时自动格式化Code，Preferences，Settings，Text Editor，Formatting，勾选Format On Save。当 command+S 保存文件时，会自动执行一次代码格式化。
+粘贴时正确缩进复制一整块代码进行粘贴时，缩进往往不对，需要手动调整，这点还是jetbrains好用。不过好在vscode插件很多，“Paste and Indent”这个插件就能解决这个问题。
+1、安装“Paste and Indent”
+2、command + shift + P，打开命令面板。
+3、输入keyboard，选择 References: Open Keyboard Shortcuts(JSON)
+4、编辑 keybindings.json，填入内容为
+// Place your key bindings in this file to override the defaults[    &#123;        "key": "ctrl+v",        "command": "pasteAndIndent.action",        "when": "editorTextFocus &amp;&amp; !editorReadonly"    &#125;,    &#123;        "key": "ctrl+v",        "command": "editor.action.clipboardPasteAction",        "when": "!editorTextFocus"    &#125;,    &#123;        "key": "ctrl+shift+v",        "command": "editor.action.clipboardPasteAction",        "when": "editorTextFocus &amp;&amp; !editorReadonly"    &#125;]
+
+重启vscode，复制粘贴时，使用ctrl+v就能够自动缩进了。但是，ctrl+v有时候的表现反而不如常规粘贴（cmd+v），这时可以使用cmd+z进行撤销，就变成了常规粘贴的效果。这个插件的原理应该是先进行了常规的粘贴，然后进行了缩进格式化，因此cmd+z可以还原常规粘贴的效果。
 批量替换换行符python代码检查python代码自动规范化设置Python注释模板1、打开代码片段配置Code，Preferences，User Snippets，选择Python此时会打开一个python.json文件，这就是代码片段模板配置文件。不止可以配置文件头部注释，还可以配置通用内容。
 2、填入内容
 &#123;    // Place your snippets for python here. Each snippet is defined under a snippet name and has a prefix, body and     // description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:    // $1, $2 for tab stops, $0 for the final cursor position, and $&#123;1:label&#125;, $&#123;2:another&#125; for placeholders. Placeholders with the     // same ids are connected.    // Example:    // "Print to console": &#123;    //  "prefix": "log",    //  "body": [    //      "console.log('$1');",    //      "$2"    //  ],    //  "description": "Log output to console"    // &#125;    "header": &#123;        "prefix": "pythonheader",        "body": [            "#!/usr/bin/env python3",            "# -*- coding:utf-8 -*-",            "#",            "# Copyright (c) 2022 voidking.com, Inc. All Rights Reserved",            "#",            "\"\"\"",            "Authors: voidking",            "Date:    $CURRENT_YEAR/$CURRENT_MONTH/$CURRENT_DATE",            "\"\"\""        ]    &#125;&#125;
 
 3、使用代码片段新建Python文件，文件头部不会出现注释。输入”pythonheader”，根据提示回车，就会自动添加注释了。这种用法和sublime的Emmet插件很像，!+tab自动生成html5框架。
-git分支代码比较1、安装gitlens插件
+git分支代码比较git分支代码比较合并，JetBrains中的Show Diff with Working Tree非常好用。vscode上没有能够完美替代这个功能的插件，gitlens只能算差强人意。
+1、安装gitlens插件
 2、左边栏显示gitlens插件command + shift + P，打开命令面板。输入gitlenss，找到 Gitlens: Set Views Layout，点击它。选择Gitlens Layout，这时gitlens插件就会显示在左边栏。
 3、选择分支进行比较点击gitlens插件，BRANCHS，当前分支会有一个对号。选中想要对比的分支，option+单击，Compare with Working Tree就会出现在 SEARCH&amp;COMPARE。
 4、代码比较SEARCH&amp;COMPARE，选中Comparing Working…，点击Swap Comparison，让当前代码放在左边（个人习惯）。x files changed中点击那些存在diff的文件，就可以愉快地进行代码比较了。
-5、代码合并根据左右两边代码的不同，自行修改左边的代码。和IDEA中的Show Diff with Working Tree相比，本插件最大的缺点是不能通过快捷按钮修改左边的代码。
+5、代码合并根据左右两边代码的不同，自行修改左边的代码。和JetBrains相比，本插件最大的缺点是不能通过快捷按钮修改左边的代码。
 ]]></content>
       <categories>
         <category>专业</category>
@@ -334,6 +348,8 @@ import osimport sysfrom module_b import getpathdef print_path():    print(f'os.g
 
 获取文件/目录的父路径os.path.dirname(__file__)
 
+查找文件在指定目录中，根据文件前缀查找文件。
+import globdef find_files_by_prefix(prefix, dir_path):    file_list = list()    file_pattern = os.path.join(dir_path, '&#123;&#125;*'.format(prefix))    for f in glob.glob(file_pattern):        file_list.append(f)    return file_list
 
 打印日志输出日志到控制台import sysimport logginglog = logging.getLogger(__name__)log.setLevel(logging.DEBUG)log.addHandler(logging.StreamHandler(sys.stdout)) #默认sys.errorlog.info('print info level log to console')
 
@@ -380,6 +396,14 @@ wait_random_max：最大重试间隔
 指定返回值重试from retrying import retryimport randomdef if_return_small(value):    return value &lt;= 5@retry(retry_on_result=if_return_small, stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    value = random.randint(0, 10)    msg = f'value is &#123;value&#125;'    print(msg)    return valueif __name__ == '__main__':    run()
 
 当函数run返回值小于5时，进行重试。
+操作mysql数据库python操作mysql数据库，是经常遇到的需求，下面整理一下具体操作方法。
+数据库准备create database vkphp default character set utf8 collate utf8_general_ci;use vkphp;CREATE TABLE IF NOT EXISTS `user` (  `id` int(8) NOT NULL AUTO_INCREMENT,  `name` varchar(32) NOT NULL,  `password` varchar(32) NOT NULL DEFAULT '',  PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+更多内容参考《使用Docker安装配置Mysql》和《MySQL常用命令》
+安装依赖pip3 install mysqlclient==1.3.13
+插入数据#!/usr/bin/python3# -*- coding: UTF-8 -*-import MySQLdb# 打开数据库连接db = MySQLdb.connect(host="localhost",                     port="3306",                    user="root",                     password="voidking",                     database="vkphp",                     charset='utf8')# 使用cursor()方法获取操作游标 cursor = db.cursor()# SQL 插入语句sql = "insert into `user` (`name`,`password`) values('haojin','voidking');"try:   # 执行sql语句   cursor.execute(sql)   # 提交到数据库执行   db.commit()except:   # 发生错误时回滚   db.rollback()# 关闭数据库连接db.close()
+
+其他操作参考Python 操作 MySQL 数据库。
 参考文档
 Python黑魔法手册
 Python Cookbook 3rd Edition Documentation
@@ -446,10 +470,15 @@ multipass findmultipass launch -n ubuntu18 -c 1 -m 2G -d 10G 18.04
 使用虚拟机multipass exec ubuntu18 -- lsb_release -amultipass shell ubuntu18
 
 安装和使用Docker在虚拟机中，安装Docker。
-snap install docker
+sudo susnap install dockerdocker info
+需要注意的是，使用snap安装的docker，只在用户目录下拥有读写权限。
+比如这个命令是会报错的：
+docker run --name vk-mysql -d \-p 3306:3306 \-v /opt/data/mysql:/var/lib/mysql \-e MYSQL_ROOT_PASSWORD=voidking \mysql:5.6
+报错为：docker: Error response from daemon: error while creating mount source path ‘/opt/data/mysql’: mkdir /opt/data: read-only file system.
+可以改成：
+docker run --name vk-mysql -d \-p 3306:3306 \-v /home/work/data/mysql:/var/lib/mysql \-e MYSQL_ROOT_PASSWORD=voidking \mysql:5.6
 
-
-
+或者卸载snap安装的docker，使用其他方式重新安装。
 ]]></content>
       <categories>
         <category>专业</category>
@@ -3103,6 +3132,7 @@ you-get
 FDM
 Movist
 sequelpro
+sequelpro测试版，解决了退出报错问题。
 Mounty
 postman
 typora
@@ -3112,6 +3142,8 @@ splashtop
 JSON Viewer
 Meld
 Multipass
+Proxyman
+Wireshark
 
 小技巧使用命令打开目录和文件1、在finder中打开当前目录open .
 2、使用默认程序打开指定文件open README.md
@@ -4510,8 +4542,8 @@ docker run -it --name vk-php -d \-p 8080:80 \-v /opt/w7/mysql:/var/lib/mysql \-v
       </categories>
       <tags>
         <tag>docker</tag>
-        <tag>apache</tag>
         <tag>php</tag>
+        <tag>apache</tag>
       </tags>
   </entry>
   <entry>
@@ -4630,10 +4662,10 @@ https域名访问参考《CentOS7安装配置GitLab》添加SSL一节，生成�
 前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。已知docker宿主机IP为192.168.56.130。
 
 
-安装Mysql安装mysql-server1、登录dockerhub查看需要的mysql版本。
-2、下载mysql镜像（以mysql5.6为例）docker pull mysql:5.6
+安装配置Mysql安装mysql-server1、登录dockerhub查看需要的mysql版本。
+2、下载mysql镜像（以mysql5.6.50为例）docker pull mysql:5.6.50
 3、启动mysql服务
-docker run --name vk-mysql -d \-p 3306:3306 \-v /opt/data/mysql:/var/lib/mysql \-e MYSQL_ROOT_PASSWORD=voidking \mysql:5.6
+docker run --name vk-mysql -d \-p 3306:3306 \-v /opt/data/mysql:/var/lib/mysql \-e MYSQL_ROOT_PASSWORD=voidking \mysql:5.6.50
 
 以上命令：
 
@@ -4644,10 +4676,17 @@ docker run --name vk-mysql -d \-p 3306:3306 \-v /opt/data/mysql:/var/lib/mysql \
 
 更高级的启动命令参考How to use this image。
 4、验证安装docker psmysql启动正常的话就可以看到vk-mysql容器。如果启动失败，可以使用docker logs vk-mysql查看失败原因并进行解决。
-开放端口firewall-cmd --add-port=3306/tcp --permanentsystemctl reload firewalld# 或者systemctl stop firewalld
+测试访问1、容器内访问
+docker exec -it vk-mysql /bin/bashmysql -uroot -p
 
-安装mysql-client1、在宿主机或者其他机器上，安装mysql-clientyum install -y mariadb.x86_64 mariadb-libs.x86_64
-2、连接mysql-servermysql -h 192.168.56.130 -P 3306 -u root -p输入密码，即可连接到vk-mysql容器服务。
+2、宿主机上访问（需要提前安装mysql-client）
+# centosyum install -y mariadb.x86_64 mariadb-libs.x86_64mysql -h 127.0.0.1 -uroot -p# ubuntu18apt install mysql-client-core-5.7mysql -h 127.0.0.1 -uroot -p
+
+其他主机访问1、开放端口
+# centosfirewall-cmd --add-port=3306/tcp --permanentsystemctl reload firewalld# 或者systemctl stop firewalld# ubuntu18ufw allow 3306
+
+2、安装mysql-client，方法同上
+3、访问mysql-servermysql -h 192.168.56.130 -P 3306 -u root -p输入密码，即可连接到vk-mysql容器服务。
 ]]></content>
       <categories>
         <category>专业</category>
@@ -5474,7 +5513,7 @@ k8s工具箱voidking/k8s-tool
   <entry>
     <title>K8S入门篇</title>
     <url>/dev-k8s-start/</url>
-    <content><![CDATA[K8S简介之前浅薄地研究过Docker容器相关技术，我们知道Docker最开始是一个管理容器的工具，后来发展成为容器云。容器云以容器为资源分割和调度的基本单位，封装整个软件运行时环境，为开发者和系统管理员提供用于构建、发布和运行分布式应用的平台。当容器云专注于资源共享与隔离、容器编排与部署时，它更接近传统的IaaS；当容器云渗透到应用支撑与运行时环境时，它是一种PaaS。
+    <content><![CDATA[K8S简介Docker最开始是一个管理容器的工具，后来发展成为容器云。容器云以容器为资源分割和调度的基本单位，封装整个软件运行时环境，为开发者和系统管理员提供用于构建、发布和运行分布式应用的平台。当容器云专注于资源共享与隔离、容器编排与部署时，它更接近传统的IaaS；当容器云渗透到应用支撑与运行时环境时，它是一种PaaS。
 但是，如果想要将Docker应用于具体的业务实现，是存在困难的——编排、管理和调度等各个方面，都不容易。于是，人们迫切需要一套管理系统，对Docker及容器进行更高级更灵活的管理。于是，Kubernetes出现了。Kubernetes这个单词来自于希腊语，含义是舵手或领航员。缩写为K8S，8代表“ubernete”这8个字符。
 更多内容，参考10分钟看懂Docker和K8S和浙大SEL实验室的《Docker 容器与容器云》。
 
@@ -6054,11 +6093,11 @@ Least Load
         <category>centos</category>
       </categories>
       <tags>
-        <tag>tomcat</tag>
         <tag>java</tag>
         <tag>maven</tag>
         <tag>centos</tag>
         <tag>mysql</tag>
+        <tag>tomcat</tag>
         <tag>git</tag>
       </tags>
   </entry>
@@ -7117,8 +7156,8 @@ TPC-W安装与配置（威斯康星大学Java版）
         <category>ubuntu</category>
       </categories>
       <tags>
-        <tag>apache</tag>
         <tag>linux</tag>
+        <tag>apache</tag>
         <tag>mysql</tag>
         <tag>ubuntu</tag>
       </tags>
@@ -7226,8 +7265,8 @@ ab -g t0.dat -t 100 -n 1000000 http://172.16.0.19/mediawiki/index.php/Main_Page
       </categories>
       <tags>
         <tag>docker</tag>
-        <tag>apache</tag>
         <tag>linux</tag>
+        <tag>apache</tag>
         <tag>ubuntu</tag>
         <tag>openstack</tag>
       </tags>
@@ -7351,8 +7390,8 @@ chmod a+x pt10.sh./pt10.sh
         <category>ubuntu</category>
       </categories>
       <tags>
-        <tag>apache</tag>
         <tag>linux</tag>
+        <tag>apache</tag>
         <tag>ubuntu</tag>
       </tags>
   </entry>
@@ -9226,10 +9265,7 @@ Ansible精讲
   <entry>
     <title>Ansible入门篇</title>
     <url>/dev-ansible-start/</url>
-    <content><![CDATA[前言《Ubuntu16使用Kolla安装OpenStack》一文中，用到了ansible。本文，我们就来研究一下ansible的基本用法。
-
-
-Ansible简介ansible是一个用于自动化运维的配置管理和应用部署工具。基于Python开发，集合了众多运维工具（puppet、cfengine、chef、func、fabric.SaltStack ）的优点，实现了批量系统配置、批量程序部署、批量运行命令等功能。ansible是基于模块工作的，本身没有批量部署的能力，真正具有批量部署能力的是ansible所运行的模块。
+    <content><![CDATA[Ansible简介ansible是一个用于自动化运维的配置管理和应用部署工具。基于Python开发，集合了众多运维工具（puppet、cfengine、chef、func、fabric.SaltStack ）的优点，实现了批量系统配置、批量程序部署、批量运行命令等功能。ansible是基于模块工作的，本身没有批量部署的能力，真正具有批量部署能力的是ansible所运行的模块。
 ansible的基本架构：
 
 连接插件（connectior plugins）用于连接管理端和被管理端。
@@ -9240,6 +9276,8 @@ ansible的基本架构：
 主机清单（host inventory）定义ansible需要操作主机的范围。
 
 上述简介摘自ansible基础。
+
+
 实验环境两台主机，都是ubuntu14.04.4 server版，用户都是voidking。一台作为管理机，IP为192.168.56.101，一台作为被管理机（以下称为客户机），IP为192.168.56.102。
 在管理机上安装ansible，一条命令搞定：sudo apt install ansible。不过，安装的ansible版本很低，默认1.5.4。这里我们通过添加源来安装最新版ansible：
 sudo apt remove ansiblesudo apt-get install software-properties-commonsudo apt-add-repository ppa:ansible/ansiblesudo apt-get updatesudo apt-get install ansible
@@ -9250,10 +9288,73 @@ sudo apt remove ansiblesudo apt-get install software-properties-commonsudo apt-a
 3、在管理机添加客户机到hostssudo vim /etc/ansible/hosts，在文档最后添加：
 [commonservers]192.168.56.102
 
-4、在管理机第一条命令ansible all -m ping
+4、在管理机执行第一条命令ansible all -m ping
 5、在客户机把voidking用户添加进sudo免密，方便以后的操作sudo vim /etc/sudoers，添加
 voidking ALL = NOPASSWD: ALL
 
+Ansible程序说明程序/命令列表
+ansible：主程序，临时命令执行工具
+ansible-doc：查看配置文档，模块功能查看工具
+ansible-galaxy：下载/上传优秀代码或Roles模块的官网平台
+ansible-lint：对playbook的语法进行检查的一个工具
+ansible-playbook：定制自动化任务，编排剧本工具
+ansible-pull：远程执行命令的工具
+ansible-vault：文件加密工具
+ansible-console：基于console界面与用户交互的执行工具
+
+其中，最重要和最常用的是ansible。
+ansible命令详解ansible命令是ansible套装的核心部分，其主要用于执行ad-hoc命令，即单条命令。默认后面需要跟主机和选项部分，默认不指定模块时，使用的是command模块。command模块不是调用的shell的指令，所以没有bash的环境变量，也不能使用shell的一些操作方式，其他和shell模块没有区别。
+格式：ansible &lt;host-pattern&gt; [-m module_name] [options]
+参数列表：
+ansible [-h] [--version] [-v] [-b] [--become-method BECOME_METHOD]        [--become-user BECOME_USER]        [-K | --become-password-file BECOME_PASSWORD_FILE]        [-i INVENTORY] [--list-hosts] [-l SUBSET] [-P POLL_INTERVAL]        [-B SECONDS] [-o] [-t TREE] [--private-key PRIVATE_KEY_FILE]        [-u REMOTE_USER] [-c CONNECTION] [-T TIMEOUT]        [--ssh-common-args SSH_COMMON_ARGS]        [--sftp-extra-args SFTP_EXTRA_ARGS]        [--scp-extra-args SCP_EXTRA_ARGS]        [--ssh-extra-args SSH_EXTRA_ARGS]        [-k | --connection-password-file CONNECTION_PASSWORD_FILE] [-C]        [--syntax-check] [-D] [-e EXTRA_VARS] [--vault-id VAULT_IDS]        [--ask-vault-password | --vault-password-file VAULT_PASSWORD_FILES]        [-f FORKS] [-M MODULE_PATH] [--playbook-dir BASEDIR]        [--task-timeout TASK_TIMEOUT] [-a MODULE_ARGS] [-m MODULE_NAME]        pattern
+
+常用参数：
+
+-m：指定模块
+-a：指定参数
+-i：指定主机列表
+
+例子：
+# 查看所有主机ansible all --list-hosts# 指定主机清单ansible all -i ./hosts --list-hosts# 查看commonservers组的主机ansible commonservers --list-hosts# 测试连通ansible all -m ping# 查看客户机的内存ansible all -m command -a "free -h"# 在客户机执行管理机脚本cp /bin/echo ~/echo.shansible all -m script -a "~/echo.sh hello" -vvv# 在客户机执行客户机脚本ansible all -m command -a "cp /bin/echo /home/voidking/echo.sh"ansible all -m shell -a "/home/voidking/echo.sh hello"# 向客户机拷贝文件ansible all -m copy -a "src=/home/voidking/echo.sh dest=/tmp/ owner=voidking group=voidking mode=0755"# 后台执行命令ansible all -m ping -B 3600 -P 0ansible all -m async_status -a "jid='182829279182.2094'"# 批量添加sudo权限ansible all -i hosts -s -m shell -a "echo 'haojin ALL=(ALL) NOPASSWD: ALL' &gt;&gt; /etc/sudoers"# 批量移除sudo权限ansible all -i hosts -s -m shell -a "sed -i '/haojin ALL=(ALL) NOPASSWD: ALL/d' /etc/sudoers"# 使用root用户备份和拷贝文件ansible all -i hosts -s -m shell -a "mv /tmp/run.sh /tmp/run.sh.bak"ansible all -i hosts -b --become-user=root -m shell -a "mv /tmp/run.sh /tmp/run.sh.bak"ansible all -i hosts -s -m copy -a "src=/root/run.sh dest=/tmp/run.sh owner=voidking group=root mode=0755"# 重启服务ansible all -i hosts -s -m shell -a "/tmp/stop.sh"ansible all -i hosts -s -m shell -a "/tmp/run.sh" -u voidking
+
+配置文件
+/etc/ansible/ansible.cfg，主配置文件，配置ansible工作特性
+/etc/ansible/hosts，主机清单
+/etc/ansible/roles/，存放角色的目录
+
+1、ansible.cfg的配置参考Configuring Ansible，主要关注inventory、forks、poll_interval、remote_port、log_path等参数。
+2、hosts文件有一个特性很棒，可以指定变量，例如：
+[commonservers]192.168.56.102[commonservers:vars]ansible_ssh_pass='123456'ansible_ssh_port=22[commonservers1]192.168.56.103[commonservers:children]commonservers1
+
+内置变量小结：
+# 主机名ansible_ssh_host # 端口号ansible_ssh_port# 用户名 ansible_ssh_user # 密码ansible_ssh_pass # 使用sudo连接用户时的密码ansible_sudo_pass # 秘钥文件如果不想使用ssh-agent管理时可以使用此选项ansible_ssh_private_key_file # shell的类型默认shansible_shell_type # SSH 连接的类型ansible_connection # 指定python解释器的路径ansible_python_interpreter
+
+如果在hosts文件中指定了用户名和密码，使用时报错 to use the ‘ssh’ connection type with passwords, you must install the sshpass program那么需要先安装sshpass，安装命令为：
+# ubuntuapt-get install sshpass# centosyum install epel-release -yyum install sshpass -y
+
+ansible-doc格式：ansible-doc [options] [module...]
+例子：
+ansible-doc pingansible-doc -s pingansible-doc -lansible-doc -a
+
+主机通配符# 匹配所有主机，相当于allansible '*' -m ping# 匹配含有common的主机组ansible '*common*' -m ping# 匹配IP为100-109的主机ansible '192.168.56.10?' -m ping# 匹配IP段ansible '192.168.56.101:192.168.56.200' -m ping# 逻辑与ansible 'commonservers:&amp;dbservers' --list# 逻辑非ansible 'commonservers:!dbservers' --list# 正则表达式ansible '~192\.168\.56\.[1-254]' --list
+
+常用模块
+command：在客户机运行命令
+shell：在客户机shell进程下运行命令，支持shell特性，如管道等
+copy：从管理机拷贝文件到客户机
+fetch：从客户机获取文件
+file：设置文件属性
+yum：centos软件包管理
+service：服务管理
+script：执行脚本
+user：用户管理
+cron：crontab管理
+
+shell比command更强大，command比shell更安全。因为command不支持重定向、管道等，避免了shell注入的风险。
+指定ansible.cfg如果ansible没有指定ansible.cfg，或者想要临时使用自己定义的ansible.cfg，该怎么处理？
+1、参考ansible.cfg，创建ansible.cfg文件，假设路径为 /home/voidking/ansible.cfg
+2、设置环境变量export ANSIBLE_CONFIG=/home/voidking/ansible.cfg
+3、查看配置ansible --version
 ssh-agentansible可能使用到ssh-agent，那就顺便学习一下，参考了解ssh代理：ssh-agent。
 ssh-agent是ssh代理程序，ssh-agent可以帮助我们管理私钥。
 那么什么时候需要ssh代理帮助我们管理私钥呢？当遇到如下情况时，我们会需要ssh代理。
@@ -9281,46 +9382,6 @@ ssh-add -D，删除所有私钥
 ssh-add -x，设置密码，锁定ssh代理
 ssh-add -X，输入密码，解锁ssh代理
 
-ansible命令基本命令
-ansible，主程序，临时命令执行工具
-ansible-doc，查看配置文档，模块功能查看工具
-ansible-galaxy，下载/上传优秀代码或Roles模块的官网平台
-ansible-lint，对playbook的语法进行检查的一个工具。
-ansible-playbook，定制自动化任务，编排剧本工具
-ansible-pull，远程执行命令的工具
-ansible-vault，文件加密工具。
-ansible-console，基于console界面与用户交互的执行工具。
-
-配置文件
-/etc/ansible/ansible.cfg，主配置文件，配置ansible工作特性
-/etc/ansible/hosts，主机清单
-/etc/ansible/roles/，存放角色的目录
-
-1、ansible.cfg的配置参考Configuring Ansible，主要留意inventory、forks、poll_interval、remote_port、log_path等参数。
-2、hosts文件有一个特性很棒，可以指定变量，例如：
-[commonservers]192.168.56.102[commonservers:vars]ansible_ssh_pass='123456'ansible_ssh_port=22[commonservers1]192.168.56.103[commonservers:children]commonservers1
-
-内置变量小结：
-# 主机名ansible_ssh_host # 端口号ansible_ssh_port# 用户名 ansible_ssh_user # 密码ansible_ssh_pass # 使用sudo连接用户时的密码ansible_sudo_pass # 秘钥文件如果不想使用ssh-agent管理时可以使用此选项ansible_ssh_private_key_file # shell的类型默认shansible_shell_type # SSH 连接的类型ansible_connection # 指定python解释器的路径ansible_python_interpreter
-
-如果在hosts文件中指定了用户名和密码，使用时报错 to use the ‘ssh’ connection type with passwords, you must install the sshpass program那么需要先安装sshpass，安装命令为：
-# ubuntuapt-get install sshpass# centosyum install epel-release -yyum install sshpass -y
-
-ansible格式：ansible &lt;host-pattern&gt; [-m module_name] [options]
-ansible是指令核心部分，其主要用于执行ad-hoc命令，即单条命令。默认后面需要跟主机和选项部分，默认不指定模块时，使用的是command模块。command模块不是调用的shell的指令，所以没有bash的环境变量，也不能使用shell的一些操作方式，其他和shell模块没有区别。
-例子：
-# 查看所有主机ansible all --list-hosts# 指定主机清单ansible all -i ./hosts --list-hosts# 查看commonservers组的主机ansible commonservers --list-hosts# 测试连通ansible all -m ping# 查看客户机的内存ansible all -m command -a "free -h"# 在客户机执行管理机脚本cp /bin/echo ~/echo.shansible all -m script -a "~/echo.sh hello" -vvv# 在客户机执行客户机脚本ansible all -m command -a "cp /bin/echo /home/voidking/echo.sh"ansible all -m shell -a "/home/voidking/echo.sh hello"# 向客户机拷贝文件ansible all -m copy -a "src=/home/voidking/echo.sh dest=/tmp/ owner=voidking group=voidking mode=0755"# 后台执行命令ansible all -m ping -B 3600 -P 0ansible all -m async_status -a "jid='182829279182.2094'"# 批量添加sudo权限ansible all -i hosts -s -m shell -a "echo 'haojin ALL=(ALL) NOPASSWD: ALL' &gt;&gt; /etc/sudoers"# 批量移除sudo权限ansible all -i hosts -s -m shell -a "sed -i '/haojin ALL=(ALL) NOPASSWD: ALL/d' /etc/sudoers"# 使用root用户备份和拷贝文件ansible all -i hosts -s -m shell -a "mv /tmp/run.sh /tmp/run.sh.bak"ansible all -i hosts -b --become-user=root -m shell -a "mv /tmp/run.sh /tmp/run.sh.bak"ansible all -i hosts -s -m copy -a "src=/root/run.sh dest=/tmp/run.sh owner=voidking group=root mode=0755"# 重启服务ansible all -i hosts -s -m shell -a "/tmp/stop.sh"ansible all -i hosts -s -m shell -a "/tmp/run.sh" -u voidking
-
-ansible-doc格式：ansible-doc [options] [module...]
-例子：
-ansible-doc pingansible-doc -s pingansible-doc -lansible-doc -a
-
-通配符# 匹配所有主机，相当于allansible '*' -m ping# 匹配含有common的主机组ansible '*common*' -m ping# 匹配IP为100-109的主机ansible '192.168.56.10?' -m ping# 匹配IP段ansible '192.168.56.101:192.168.56.200' -m ping# 逻辑与ansible 'commonservers:&amp;dbservers' --list# 逻辑非ansible 'commonservers:!dbservers' --list# 正则表达式ansible '~192\.168\.56\.[1-254]' --list
-
-指定ansible.cfg如果ansible没有指定ansible.cfg，或者想要临时使用自己定义的ansible.cfg，该怎么处理？
-1、参考ansible.cfg，创建ansible.cfg文件，假设路径为 /home/voidking/ansible.cfg
-2、设置环境变量export ANSIBLE_CONFIG=/home/voidking/ansible.cfg
-3、查看配置ansible --version
 书签Ansible Documentation
 Ansible中文权威指南
 Ansible精讲
@@ -9389,7 +9450,7 @@ kolla queens on centos7.4
     <title>Ubuntu16使用Kolla安装OpenStack</title>
     <url>/dev-ubuntu16-kolla-openstack-all-in-one/</url>
     <content><![CDATA[前言完成了《Ubuntu16手动安装OpenStack——XXX》系列，看上去，我们已经总结出了一套不错的文档。遵照文档，理论上就能成功安装更多的机器。但是，设想是美好的，而在实际安装过程中，又出现很多莫名其妙的报错。有些错误可以解决，很好；有些错误解决不了，那么整个环境就废了，需要重装系统。而且，整个安装流程非常复杂，难以保证每一步都不出错。
-于是，郝同学决定寻找更加通用、更加方便的方法。小伙子树添给出建议：能不能使用docker来进行部署？经过讨论和搜索资料，发现这条道路确实可行，而且有OpenStack官方文档。
+于是，郝同学决定寻找更加通用、更加方便的方法。树添同学给出建议：能不能使用docker来进行部署？经过讨论和搜索资料，发现这条道路确实可行，而且有OpenStack官方文档。
 本文，就来研究一下使用Kolla安装OpenStack Queens版本的方法，架构采用最简单的all-in-one。
 
 
@@ -9495,6 +9556,7 @@ Kolla OpenStack系统视频课程
       <categories>
         <category>专业</category>
         <category>运维</category>
+        <category>ansible</category>
         <category>openstack</category>
       </categories>
       <tags>
@@ -13370,9 +13432,9 @@ catalina.sh在执行的时候会调用同级路径下的setenv.sh来设置额外
         <category>tomcat</category>
       </categories>
       <tags>
-        <tag>tomcat</tag>
         <tag>centos</tag>
         <tag>supervisor</tag>
+        <tag>tomcat</tag>
       </tags>
   </entry>
   <entry>
@@ -16256,13 +16318,13 @@ Install Apache, PHP And MySQL On CentOS 7 (LAMP)
         <category>专业</category>
         <category>运维</category>
         <category>开发</category>
-        <category>apache</category>
         <category>centos</category>
+        <category>apache</category>
         <category>php</category>
       </categories>
       <tags>
-        <tag>apache</tag>
         <tag>php</tag>
+        <tag>apache</tag>
         <tag>centos</tag>
         <tag>yum源</tag>
       </tags>
@@ -17299,45 +17361,6 @@ curl下载文件curl -o icon.png "https://www.python.org/static/opengraph-icon-2
       </tags>
   </entry>
   <entry>
-    <title>Shell脚本之安全删除</title>
-    <url>/dev-shell-saferm/</url>
-    <content><![CDATA[前言很多时候，我们会误删文件，那么一个回收站就很有必要了。看了一些回收站的实现，都比较复杂，干脆自己写一个。
-思路：使用mv替换rm，把想要删除的文件暂时移动到回收站。
-
-
-安全删除脚本1、编写安全删除脚本，saferm.sh
-#!/bin/bashTRASHDIR="$&#123;HOME&#125;/.saferm/trash"[[ ! -d $&#123;TRASHDIR&#125; ]] &amp;&amp; mkdir -p $&#123;TRASHDIR&#125;function usage()&#123;    echo -e "    Brief: move directory and files to ~/.local/trash    Usage: alias rm=/path/to/saferm.sh            rm &lt;dir&gt;            rm &lt;file&gt;            rm &lt;file1&gt; &lt;file2&gt;    "&#125;function main()&#123;    local now=$(date "+%Y%m%d%H%M%S")    local destdir="$&#123;TRASHDIR&#125;/$&#123;now&#125;"    mkdir $&#123;destdir&#125;    local opt    while getopts "h" opt    do      case $opt in        h)          usage &amp;&amp; exit 0 ;;        \?)          usage &amp;&amp; exit 0 ;;      esac    done    local files="$*"    local successfiles=""    for file in $&#123;files&#125;;do        mv $&#123;file&#125; $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file&#125;    done    if [[ -z "$&#123;successfiles&#125;" ]];then        echo -e "\033[31mNothing to do! Check the source filenames please!\033[0m"    else        echo -e "$&#123;successfiles&#125; have been moved to \033[31m$&#123;destdir&#125;\033[0m"    fi&#125;main "$@"
-
-2、使用方法编辑 .bash_profile ，添加内容
-# safermalias rm="/path/to/saferm.sh"
-添加内容完成， source .bash_profile ，rm命令就被替换为saferm脚本了。
-以上，安全删除的功能就完成了，自己偶尔手动清理下 TRASHDIR 中的文件。以下内容可选，是对该saferm脚本的补充。
-清理回收站脚本1、清理回收站脚本，cleartrash.sh
-#!/bin/bash# Clear files in trash that been removed 3 days ago.TRASHDIR="$&#123;HOME&#125;/.saferm/trash"CLEARLOG="$&#123;TRASHDIR&#125;/clear.log"[[ -d $&#123;TRASHDIR&#125; ]] \&amp;&amp; find $&#123;TRASHDIR&#125; -mindepth 1 -type d -mtime +2 \| xargs rm -rfv | tee -a $&#123;CLEARLOG&#125;
-
-2、使用方法编辑 .bash_profile ，添加内容
-# safermalias rm="/path/to/saferm.sh"alias cleartrash="/path/to/cleartrash.sh"
-添加内容完成， source .bash_profile ，然后就可以使用 cleartrash 命令清理回收站了。
-3、定时任务参考《Linux设置定时任务》，添加定时任务。
-crontab -e，添加定时任务，每天晚上执行一次：
-5 0 * * * /bin/bash /path/to/cleartrash.sh
-
-进阶saferm.sh 脚本存在一个严重bug：无法删除文件名带空格的文件，甚至会误删文件。因为Shell默认以空格、Tab、回车作为值与值之间的分隔符，而不是做为文件名的一部分。如果文件名中带空格，就会被认为是多个文件。
-修改 saferm.sh 如下：
-#!/bin/bashTRASHDIR="$&#123;HOME&#125;/.saferm/trash"[[ ! -d $&#123;TRASHDIR&#125; ]] &amp;&amp; mkdir -p $&#123;TRASHDIR&#125;function usage()&#123;    echo -e "    Brief: Move directories or files to ~/.local/trash           You can move 1-3 files with wildcard. More is unsupported.            If file name contains space, use quotation mark please.    Usage: alias rm=/path/to/saferm.sh            rm &lt;dir&gt;            rm &lt;file&gt;            rm *.&lt;filetype&gt;            rm &lt;file1&gt; &lt;file2&gt; &lt;file3&gt;    "&#125;function main()&#123;    local now=$(date "+%Y%m%d%H%M%S")    local destdir="$&#123;TRASHDIR&#125;/$&#123;now&#125;"    mkdir $&#123;destdir&#125;    local opt    while getopts "h" opt    do      case $opt in        h)          usage &amp;&amp; exit 0 ;;        \?)          usage &amp;&amp; exit 0 ;;      esac    done    local file1="$1"    local file2="$2"    local file3="$3"    local file4="$4"    local successfiles=""    [[ -n "$&#123;file1&#125;" ]] &amp;&amp; mv "$&#123;file1&#125;" $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file1&#125;    [[ -n "$&#123;file2&#125;" ]] &amp;&amp; mv "$&#123;file2&#125;" $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file2&#125;    [[ -n "$&#123;file3&#125;" ]] &amp;&amp; mv "$&#123;file3&#125;" $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file3&#125;    [[ -n "$&#123;file4&#125;" ]] &amp;&amp; echo -e "\033[31mYou can move 1-3 files with wildcard. More is unsupported.\033[0m"    if [[ -z "$&#123;successfiles&#125;" ]];then        echo -e "\033[31mNothing to do! Check the source filenames please!\033[0m"    else        echo -e "$&#123;successfiles&#125; have been moved to \033[31m$&#123;destdir&#125;\033[0m"    fi&#125;main "$@"
-
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>shell</category>
-      </categories>
-      <tags>
-        <tag>linux</tag>
-        <tag>shell</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Shell脚本之循环读取文本</title>
     <url>/dev-shell-loop-read-file/</url>
     <content><![CDATA[需求已知mobile.txt为：
@@ -17409,6 +17432,45 @@ modify.sh内容为：
 
 脚本#!/bin/bashcat /dev/null &gt; interview.txtecho "面试开始！"echo "面试开始！" &gt;&gt; interview.txtquiz=$(cat quiz.txt | grep -v -e '^[[:space:]]*$')sum=$(echo "$&#123;quiz&#125;" | wc -l)#echo $&#123;sum&#125;for i in `seq 1 5`;do  #echo "第$&#123;i&#125;题"  line=$(($&#123;RANDOM&#125;%$&#123;sum&#125;+1))  content=$(echo "$&#123;quiz&#125;" | sed -n $&#123;line&#125;p)  echo "$&#123;i&#125;、$&#123;content&#125;"  echo "$&#123;i&#125;、$&#123;content&#125;" &gt;&gt; interview.txt  quiz=$(echo "$&#123;quiz&#125;" | sed $&#123;line&#125;d)  sum=$((sum-1))  #echo $&#123;sum&#125;  read -p "是否继续下一题？[Y/N]" input  if [[ $input = "n" || $input = "N" ]];then    break  fidonecat interview.txt | mail -s "面试-`date +\%Y\%m\%d-\%H\%M\%S`" admin@voidking.com
 
+
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>shell</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>shell</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Shell脚本之安全删除</title>
+    <url>/dev-shell-saferm/</url>
+    <content><![CDATA[前言很多时候，我们会误删文件，那么一个回收站就很有必要了。看了一些回收站的实现，都比较复杂，干脆自己写一个。
+思路：使用mv替换rm，把想要删除的文件暂时移动到回收站。
+
+
+安全删除脚本1、编写安全删除脚本，saferm.sh
+#!/bin/bashTRASHDIR="$&#123;HOME&#125;/.saferm/trash"[[ ! -d $&#123;TRASHDIR&#125; ]] &amp;&amp; mkdir -p $&#123;TRASHDIR&#125;function usage()&#123;    echo -e "    Brief: move directory and files to ~/.local/trash    Usage: alias rm=/path/to/saferm.sh            rm &lt;dir&gt;            rm &lt;file&gt;            rm &lt;file1&gt; &lt;file2&gt;    "&#125;function main()&#123;    local now=$(date "+%Y%m%d%H%M%S")    local destdir="$&#123;TRASHDIR&#125;/$&#123;now&#125;"    mkdir $&#123;destdir&#125;    local opt    while getopts "h" opt    do      case $opt in        h)          usage &amp;&amp; exit 0 ;;        \?)          usage &amp;&amp; exit 0 ;;      esac    done    local files="$*"    local successfiles=""    for file in $&#123;files&#125;;do        mv $&#123;file&#125; $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file&#125;    done    if [[ -z "$&#123;successfiles&#125;" ]];then        echo -e "\033[31mNothing to do! Check the source filenames please!\033[0m"    else        echo -e "$&#123;successfiles&#125; have been moved to \033[31m$&#123;destdir&#125;\033[0m"    fi&#125;main "$@"
+
+2、使用方法编辑 .bash_profile ，添加内容
+# safermalias rm="/path/to/saferm.sh"
+添加内容完成， source .bash_profile ，rm命令就被替换为saferm脚本了。
+以上，安全删除的功能就完成了，自己偶尔手动清理下 TRASHDIR 中的文件。以下内容可选，是对该saferm脚本的补充。
+清理回收站脚本1、清理回收站脚本，cleartrash.sh
+#!/bin/bash# Clear files in trash that been removed 3 days ago.TRASHDIR="$&#123;HOME&#125;/.saferm/trash"CLEARLOG="$&#123;TRASHDIR&#125;/clear.log"[[ -d $&#123;TRASHDIR&#125; ]] \&amp;&amp; find $&#123;TRASHDIR&#125; -mindepth 1 -type d -mtime +2 \| xargs rm -rfv | tee -a $&#123;CLEARLOG&#125;
+
+2、使用方法编辑 .bash_profile ，添加内容
+# safermalias rm="/path/to/saferm.sh"alias cleartrash="/path/to/cleartrash.sh"
+添加内容完成， source .bash_profile ，然后就可以使用 cleartrash 命令清理回收站了。
+3、定时任务参考《Linux设置定时任务》，添加定时任务。
+crontab -e，添加定时任务，每天晚上执行一次：
+5 0 * * * /bin/bash /path/to/cleartrash.sh
+
+进阶saferm.sh 脚本存在一个严重bug：无法删除文件名带空格的文件，甚至会误删文件。因为Shell默认以空格、Tab、回车作为值与值之间的分隔符，而不是做为文件名的一部分。如果文件名中带空格，就会被认为是多个文件。
+修改 saferm.sh 如下：
+#!/bin/bashTRASHDIR="$&#123;HOME&#125;/.saferm/trash"[[ ! -d $&#123;TRASHDIR&#125; ]] &amp;&amp; mkdir -p $&#123;TRASHDIR&#125;function usage()&#123;    echo -e "    Brief: Move directories or files to ~/.local/trash           You can move 1-3 files with wildcard. More is unsupported.            If file name contains space, use quotation mark please.    Usage: alias rm=/path/to/saferm.sh            rm &lt;dir&gt;            rm &lt;file&gt;            rm *.&lt;filetype&gt;            rm &lt;file1&gt; &lt;file2&gt; &lt;file3&gt;    "&#125;function main()&#123;    local now=$(date "+%Y%m%d%H%M%S")    local destdir="$&#123;TRASHDIR&#125;/$&#123;now&#125;"    mkdir $&#123;destdir&#125;    local opt    while getopts "h" opt    do      case $opt in        h)          usage &amp;&amp; exit 0 ;;        \?)          usage &amp;&amp; exit 0 ;;      esac    done    local file1="$1"    local file2="$2"    local file3="$3"    local file4="$4"    local successfiles=""    [[ -n "$&#123;file1&#125;" ]] &amp;&amp; mv "$&#123;file1&#125;" $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file1&#125;    [[ -n "$&#123;file2&#125;" ]] &amp;&amp; mv "$&#123;file2&#125;" $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file2&#125;    [[ -n "$&#123;file3&#125;" ]] &amp;&amp; mv "$&#123;file3&#125;" $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file3&#125;    [[ -n "$&#123;file4&#125;" ]] &amp;&amp; echo -e "\033[31mYou can move 1-3 files with wildcard. More is unsupported.\033[0m"    if [[ -z "$&#123;successfiles&#125;" ]];then        echo -e "\033[31mNothing to do! Check the source filenames please!\033[0m"    else        echo -e "$&#123;successfiles&#125; have been moved to \033[31m$&#123;destdir&#125;\033[0m"    fi&#125;main "$@"
 
 ]]></content>
       <categories>
@@ -17529,8 +17591,11 @@ cat test.txt | tr ' ' '\n'cat test.txt | sed 's/ /\n/g'
 utf8 bom 转 utf8使用macos中编译运行windows下创建的java项目，报错 Error:(1, 1) java: 非法字符: ‘\ufeff’。BOM（byte order mark）是为 UTF-16 和 UTF-32 准备的，用于标记字节序（byte order）。微软在 UTF-8 中使用 BOM 是因为这样可以把 UTF-8 和 ASCII 等编码明确区分开，但这样的文件在 Windows 之外的操作系统里会带来问题。那么，怎么把utf8 bom编码文件批量转换为utf8编码文件呢？使用下面的脚本。
 # 当前目录下递归所有文件grep -r -i -l $'^\xEF\xBB\xBF' . | xargs sed -i 's/^\xEF\xBB\xBF//g'# 当前目录下所有文件grep -i -l $'^\xEF\xBB\xBF' * | xargs sed -i 's/^\xEF\xBB\xBF//g'# macosbrew install gnu-sedgrep -r -i -l $'^\xEF\xBB\xBF' . | xargs gsed -i 's/^\xEF\xBB\xBF//g'grep -i -l $'^\xEF\xBB\xBF' * | xargs gsed -i 's/^\xEF\xBB\xBF//g'
 
-GBK编码转UTF8打开一个文件，发现中文显示乱码，大概率编码问题。使用下面的命令进行转码：
+GBK编码转UTF81、单个文件编码转换打开一个文件，发现中文显示乱码，大概率编码问题。使用下面的命令进行转码：
 iconv -f GBK -t UTF-8 inputfile &gt; outputfile
+
+2、多个文件批量编码转换
+#!/bin/bashfind . -type f -name "*.py" &gt; filename.txtwhile read line;do     iconv -f GBK -t UTF-8 $&#123;line&#125; &gt; $&#123;line&#125;.bak    mv $&#123;line&#125;.bak $&#123;line&#125;done &lt; filename.txtrm -f filename.txt
 
 读取某一列读取第一列，读取最后一列。
 echo "www.voidking.com" | awk -F'.' '&#123;print $1&#125;'echo "www.voidking.com" | awk -F'.' '&#123;print $3&#125;'echo "www.voidking.com" | awk -F'.' '&#123;print $NF&#125;'
@@ -17934,9 +17999,9 @@ tomcat使用supervisor管理
       </categories>
       <tags>
         <tag>docker</tag>
-        <tag>tomcat</tag>
         <tag>centos</tag>
         <tag>supervisor</tag>
+        <tag>tomcat</tag>
       </tags>
   </entry>
   <entry>
@@ -17996,8 +18061,8 @@ docker镜像的命名规则 registry_url/namespace/image_name:tag 默认tag是la
       </categories>
       <tags>
         <tag>docker</tag>
-        <tag>tomcat</tag>
         <tag>centos</tag>
+        <tag>tomcat</tag>
       </tags>
   </entry>
   <entry>
@@ -18440,9 +18505,9 @@ ifconfig docker0 down
       </categories>
       <tags>
         <tag>docker</tag>
-        <tag>tomcat</tag>
         <tag>centos</tag>
         <tag>nginx</tag>
+        <tag>tomcat</tag>
         <tag>ubuntu</tag>
         <tag>jdk</tag>
       </tags>
@@ -18614,17 +18679,14 @@ docker psdocker stop 3e2efd019b9a
     <title>Docker入门篇</title>
     <url>/dev-docker-start/</url>
     <content><![CDATA[容器简介奔驰车生产好之后，经过集装箱封装，从纽约运送到了上海，开箱后奔驰车可以跑在上海的大街上。软件在环境A开发好之后，经过集装箱封装，从环境A运送到了环境B，开箱后软件可以跑在环境B。这种软件集装箱技术，就是容器技术，英文叫做 Linux Container。
+容器技术的主要优点是轻量虚拟化（良好的隔离性、高资源利用率）、快捷和可移植性。
 起初，容器技术做的最好的就是Docker，Docker也几乎就是容器的代名词，后来CoreOS、Mesos、Containerd也都相继发展壮大。为了统一容器标准，OCI（Open Container Initiative）组织成立了，并于2016年4月推出了第一个开放容器标准，标准主要包括image镜像标准和runtime运行时标准。
 Docker简介
-Docker是一个开源的引擎，可以轻松的为任何应用创建一个轻量级的、可移植的、自给自足的容器。开发者在笔记本上编译测试通过的容器可以批量地在生产环境中部署，包括VMs（虚拟机）、bare metal、OpenStack 集群和其他的基础应用平台。 
+Docker是一个开源的容器引擎（管理容器的工具），可以轻松的为任何应用创建一个轻量级的、可移植的、自给自足的容器。开发者在笔记本上编译测试通过的容器可以批量地在生产环境中部署，包括VMs（虚拟机）、bare metal、OpenStack 集群和其他的基础应用平台。 
 
-Docker通常用于如下场景：
-
-web应用的自动化打包和发布。
-自动化测试和持续集成、发布。
-在服务型环境中部署和调整数据库或其他的后台应用。
-
+应用场景：开发环境搭建、自动化构建、自动化测试、自动化部署。
 Docker系统有两个程序：docker服务端和docker客户端。其中docker服务端是一个服务进程，管理着所有的容器。docker客户端则扮演着docker服务端的远程控制器，可以用来控制docker的服务端进程。大部分情况下，docker服务端和客户端运行在一台机器上。
+Docker优点：Build, Ship and Run.Build once, run anywhere.
 
 
 Docker安装以centos7系统为例。
@@ -18932,9 +18994,9 @@ Working directory：$FileDir$
       </categories>
       <tags>
         <tag>python</tag>
-        <tag>tomcat</tag>
         <tag>java</tag>
         <tag>maven</tag>
+        <tag>tomcat</tag>
         <tag>idea</tag>
       </tags>
   </entry>
@@ -25427,8 +25489,8 @@ jQzoom简介http://www.oschina.net/p/jqzoom?fromerr=tUayHgqO
       </categories>
       <tags>
         <tag>前端</tag>
-        <tag>插件</tag>
         <tag>jquery</tag>
+        <tag>插件</tag>
       </tags>
   </entry>
   <entry>
@@ -25458,8 +25520,8 @@ imagesloaded项目地址：https://github.com/desandro/imagesloaded
       </categories>
       <tags>
         <tag>前端</tag>
-        <tag>插件</tag>
         <tag>jquery</tag>
+        <tag>插件</tag>
       </tags>
   </entry>
   <entry>
@@ -25757,8 +25819,9 @@ PS：前提是sublime已经注册，注册方法参考Sublime Text 3注册码。
 PS：Settings-Default部分无法编辑，open_files_in_new_window 参数值为 true，不用管它，因为Settings-User优先级更高，会覆盖Settings-Default的配置。
 常用快捷键
 ctrl+D：选择单词，重复可增加选择下一个相同的单词。
+ctrl+alt+↑↓。同列多行同时编辑。
 ctrl+L：选择行，重复可依次增加选择下一行。
-shift+ctrl键组合+↑↓。可实现类似鼠标选中之后移动的效果。
+shift+ctrl+↑↓。可实现类似鼠标选中之后移动的效果。
 ctrl+P：搜索项目中的文件，模糊匹配文件名。
 ctrl+R：前往 method。
 ctrl+F：查找字符串。
@@ -25771,7 +25834,7 @@ ctrl+enter：在当前行后插入一行。
 ctrl+shift+enter：在当前行前插入一行。
 ctrl+shift+D：快速复制光标所在的一整行，并复制到该行之前。
 ctrl+shift+K：删除一行。
-ctrl+shift+上下键：可替换行。
+ctrl+shift+↑↓：可替换行。
 ctrl+/：注释当前行。
 ctrl+shift+/：当前位置插入注释。
 ctrl+shift+A：选中标签内的内容不包括标签，继续按会继续往上一层选择。
@@ -29245,25 +29308,6 @@ alter table userbase add constraint fk_username foreign key(username) references
       </tags>
   </entry>
   <entry>
-    <title>坐功入静</title>
-    <url>/hobby-dhyana-meditation/</url>
-    <content><![CDATA[作者：那秋生
-
-坐功是静功里最要紧的一个环节，坐功是入静的第一步。坐功有静坐功和动静兼修两种。
-
-李渔《闲情偶寄·颐养》曰：“益寿之方，全凭导引；安生之计，惟赖坐功。”儒家提倡“静坐”。王阳明说：“静坐要省察克治，静坐能使心清静收敛，从而克服自我私欲产生，通过静坐能顿悟明心见性，得道成真。”
-道家主张“坐忘”。《庄子·大宗师》：“堕肢体，黜聪明，离形去知，同于大通，此谓坐忘。”即摆脱现实形体的束缚，与自然融为一体，两两相忘。佛家的功夫是“坐禅”。音译“禅那”，简称“禅”，意谓思维修或静虑，就是趺坐而修禅，是佛教修持的主要方法之一。
-现代人就是坐不住，成天跑东跑西、忙这忙那，就像丢了魂似的，悲乎！
-]]></content>
-      <categories>
-        <category>爱好</category>
-        <category>读书</category>
-      </categories>
-      <tags>
-        <tag>笔记</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>自由与理想</title>
     <url>/hobby-freedom-and-ideal/</url>
     <content><![CDATA[作者：吴晓波
@@ -29302,6 +29346,25 @@ alter table userbase add constraint fk_username foreign key(username) references
       </categories>
       <tags>
         <tag>读者</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>坐功入静</title>
+    <url>/hobby-dhyana-meditation/</url>
+    <content><![CDATA[作者：那秋生
+
+坐功是静功里最要紧的一个环节，坐功是入静的第一步。坐功有静坐功和动静兼修两种。
+
+李渔《闲情偶寄·颐养》曰：“益寿之方，全凭导引；安生之计，惟赖坐功。”儒家提倡“静坐”。王阳明说：“静坐要省察克治，静坐能使心清静收敛，从而克服自我私欲产生，通过静坐能顿悟明心见性，得道成真。”
+道家主张“坐忘”。《庄子·大宗师》：“堕肢体，黜聪明，离形去知，同于大通，此谓坐忘。”即摆脱现实形体的束缚，与自然融为一体，两两相忘。佛家的功夫是“坐禅”。音译“禅那”，简称“禅”，意谓思维修或静虑，就是趺坐而修禅，是佛教修持的主要方法之一。
+现代人就是坐不住，成天跑东跑西、忙这忙那，就像丢了魂似的，悲乎！
+]]></content>
+      <categories>
+        <category>爱好</category>
+        <category>读书</category>
+      </categories>
+      <tags>
+        <tag>笔记</tag>
       </tags>
   </entry>
   <entry>
@@ -32312,8 +32375,8 @@ student.xml文件内容如下：
         <category>jquery</category>
       </categories>
       <tags>
-        <tag>javascript</tag>
         <tag>jquery</tag>
+        <tag>javascript</tag>
         <tag>ajax</tag>
       </tags>
   </entry>
@@ -32358,8 +32421,8 @@ live()创建的选择器可以使用die()方法来解除绑定，语法和unbind
         <category>jquery</category>
       </categories>
       <tags>
-        <tag>javascript</tag>
         <tag>jquery</tag>
+        <tag>javascript</tag>
       </tags>
   </entry>
   <entry>
@@ -32749,8 +32812,8 @@ $(“li:lt(3)”)
         <category>jquery</category>
       </categories>
       <tags>
-        <tag>javascript</tag>
         <tag>jquery</tag>
+        <tag>javascript</tag>
       </tags>
   </entry>
   <entry>
@@ -32856,8 +32919,8 @@ AjaxjQuery的Ajax也是重点，必须的展开。我靠，肿么这么多！别
         <category>jquery</category>
       </categories>
       <tags>
-        <tag>javascript</tag>
         <tag>jquery</tag>
+        <tag>javascript</tag>
       </tags>
   </entry>
   <entry>
