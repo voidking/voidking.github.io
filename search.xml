@@ -319,6 +319,58 @@ TODOtutorial.py详解、传参、接口调用airflow + django
       </tags>
   </entry>
   <entry>
+    <title>Python小技巧</title>
+    <url>/dev-python-tricks/</url>
+    <content><![CDATA[语法检查pylint 是一个能够检查Python编码质量、编码规范的工具。它分析 Python 代码中的错误，查找不符合代码风格标准（Pylint 默认使用的代码风格是 PEP 8）和有潜在问题的代码。
+个人认为正确性比风格更加重要，不妨大材小用，执行脚本之前，都使用pylint进行语法检查一下。
+pip install pylintpylint test.py
+
+
+
+导入自定义模块全局导入自己新建了一个模块，怎样让它可以被全局引用？答：导入自定义模块。具体操作方法：1、进入 xxx/python3/lib/python3.6/site-packages 目录2、新建 yyy.pth 文件，写入自定义模块的路径
+/home/voidking/scripts/vktools/
+
+详情参考python之使用.pth文件导入自定义模块
+指定文件导入自己新建了一个模块a，路径不同的情况下，怎样让它被模块b引用？答：使用 sys.path.append 函数。
+# sys.path.remove('/path/to/a')sys.path.append('/path/to/a')
+
+查找文件在指定目录中，根据文件前缀查找文件。
+import globdef find_files_by_prefix(prefix, dir_path):    file_list = list()    file_pattern = os.path.join(dir_path, '&#123;&#125;*'.format(prefix))    for f in glob.glob(file_pattern):        file_list.append(f)    return file_list
+
+删除目录和文件封装几个简单函数，删除目录和文件。
+import osimport shutil# 删除空目录def remove_dir(dir_path):    if os.path.exists(dir_path):        os.removedirs(dir_path)# 删除文件def remove_file(file_path):    if os.path.exists(file_path):        os.remove(file_path)# 删除目录和文件def remove_dir_and_file(dir_path):    if os.path.exists(dir_path):        shutil.rmtree(dir_path)
+
+url特殊字符转义from urllib import parselabelselector = parse.quote('app_id=voidking,env in (test,online)')url = f'https://www.voidking.com?labelselector=&#123;labelselector&#125;'
+
+特殊字符对应url编码表：
+空格 : %20" : %22# : %23% : %25&amp; : %26( : %28) : %29+ : %2B, : %2C/ : %2F: : %3A; : %3B&lt; : %3C= : %3D&gt; : %3E? : %3F@ : %40\ : %5C| : %7C
+
+安装pip一些情况下，在安装python时没有默认安装pip，这时就需要手动安装。
+# 方法一：python -m ensurepip# 方法二：wget https://bootstrap.pypa.io/get-pip.pypython get-pip.py -i http://pypi.douban.com/simple/ --trusted-host pypi.douban.com
+
+装饰器实现一个装饰器，功能：只要函数里传了name参数，且name参数的值为haojin，那么就把这个值替换为voidking。
+from functools import wrapsdef haojin_to_voidking(func):    @wraps(func)    def decorated(*args, **kwargs):        if 'name' in kwargs and kwargs['name'] == 'haojin':            kwargs['name'] = 'voidking'        return func(*args, **kwargs)    return decorated@haojin_to_voidkingdef print_name(name):    print(name)print_name(name='haojin')
+
+参考文档
+Python官方文档
+Python官方文档下载
+Python官方文档下载-chm格式
+Python黑魔法手册
+Python Cookbook 3rd Edition Documentation
+Google Python风格指南
+
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>python</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>测试</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Python单元测试</title>
     <url>/dev-python-unittest/</url>
     <content><![CDATA[unittest简介unittest是一个Python单元测试框架。它受到 JUnit 的启发，与其他语言中的主流单元测试框架有着相似的风格。其支持测试自动化，配置共享和关机代码测试。支持将测试样例聚合到测试集中，并将测试与报告框架独立。
@@ -493,58 +545,6 @@ unittest - 单元测试框架
       </categories>
       <tags>
         <tag>python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Python小技巧</title>
-    <url>/dev-python-tricks/</url>
-    <content><![CDATA[语法检查pylint 是一个能够检查Python编码质量、编码规范的工具。它分析 Python 代码中的错误，查找不符合代码风格标准（Pylint 默认使用的代码风格是 PEP 8）和有潜在问题的代码。
-个人认为正确性比风格更加重要，不妨大材小用，执行脚本之前，都使用pylint进行语法检查一下。
-pip install pylintpylint test.py
-
-
-
-导入自定义模块全局导入自己新建了一个模块，怎样让它可以被全局引用？答：导入自定义模块。具体操作方法：1、进入 xxx/python3/lib/python3.6/site-packages 目录2、新建 yyy.pth 文件，写入自定义模块的路径
-/home/voidking/scripts/vktools/
-
-详情参考python之使用.pth文件导入自定义模块
-指定文件导入自己新建了一个模块a，路径不同的情况下，怎样让它被模块b引用？答：使用 sys.path.append 函数。
-# sys.path.remove('/path/to/a')sys.path.append('/path/to/a')
-
-查找文件在指定目录中，根据文件前缀查找文件。
-import globdef find_files_by_prefix(prefix, dir_path):    file_list = list()    file_pattern = os.path.join(dir_path, '&#123;&#125;*'.format(prefix))    for f in glob.glob(file_pattern):        file_list.append(f)    return file_list
-
-删除目录和文件封装几个简单函数，删除目录和文件。
-import osimport shutil# 删除空目录def remove_dir(dir_path):    if os.path.exists(dir_path):        os.removedirs(dir_path)# 删除文件def remove_file(file_path):    if os.path.exists(file_path):        os.remove(file_path)# 删除目录和文件def remove_dir_and_file(dir_path):    if os.path.exists(dir_path):        shutil.rmtree(dir_path)
-
-url特殊字符转义from urllib import parselabelselector = parse.quote('app_id=voidking,env in (test,online)')url = f'https://www.voidking.com?labelselector=&#123;labelselector&#125;'
-
-特殊字符对应url编码表：
-空格 : %20" : %22# : %23% : %25&amp; : %26( : %28) : %29+ : %2B, : %2C/ : %2F: : %3A; : %3B&lt; : %3C= : %3D&gt; : %3E? : %3F@ : %40\ : %5C| : %7C
-
-安装pip一些情况下，在安装python时没有默认安装pip，这时就需要手动安装。
-# 方法一：python -m ensurepip# 方法二：wget https://bootstrap.pypa.io/get-pip.pypython get-pip.py -i http://pypi.douban.com/simple/ --trusted-host pypi.douban.com
-
-装饰器实现一个装饰器，功能：只要函数里传了name参数，且name参数的值为haojin，那么就把这个值替换为voidking。
-from functools import wrapsdef haojin_to_voidking(func):    @wraps(func)    def decorated(*args, **kwargs):        if 'name' in kwargs and kwargs['name'] == 'haojin':            kwargs['name'] = 'voidking'        return func(*args, **kwargs)    return decorated@haojin_to_voidkingdef print_name(name):    print(name)print_name(name='haojin')
-
-参考文档
-Python官方文档
-Python官方文档下载
-Python官方文档下载-chm格式
-Python黑魔法手册
-Python Cookbook 3rd Edition Documentation
-Google Python风格指南
-
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>python</category>
-      </categories>
-      <tags>
-        <tag>python</tag>
-        <tag>测试</tag>
       </tags>
   </entry>
   <entry>
@@ -3032,27 +3032,6 @@ TOKEN=$(kubectl describe secrets $(kubectl get secrets -n kube-system |grep admi
       </tags>
   </entry>
   <entry>
-    <title>MacOS小技巧</title>
-    <url>/hobby-macos-tricks/</url>
-    <content><![CDATA[使用命令打开目录和文件1、在finder中打开当前目录open .
-2、使用默认程序打开指定文件open README.md
-切换窗口1、command + tab2、三指左右滑动3、三指上滑
-
-
-快速预览选中文件或者文件夹，点击空格即可预览文件，点击上下左右可以预览其他文件。
-隔空投送接收方：打开隔空投送功能，同时接收人选择仅限联系人或所有人。
-发送方：1、打开要发送的文件，然后点按 App 窗口中的“共享”按钮 。或者，在“访达”中按住 Control 键点按相应文件，然后从快捷键菜单中选取“共享”。2、从列出的共享选项中，选取“隔空投送”。3、从“隔空投送”表单中选取一位接收者。
-或者打开“隔空投送”窗口，然后将文件拖移到接收者：1、在“访达”窗口的边栏中选择“隔空投送”。或者从菜单栏中选取“前往”&gt;“隔空投送”。2、“隔空投送”窗口随即会显示附近的“隔空投送”用户。将一个或多个文稿、照片或其他文件拖移到窗口中显示的接收者。
-详情参考 在 Mac 上使用“隔空投送”。
-传送速度非常快，网络条件不错的情况下，可以达到几百MB每秒。
-mac和ipad之间，mac和iphone之间也可以使用隔空投送，非常方便实用。
-]]></content>
-      <categories>
-        <category>爱好</category>
-        <category>电脑</category>
-      </categories>
-  </entry>
-  <entry>
     <title>MacOS系统配置</title>
     <url>/hobby-macos-system-settings/</url>
     <content><![CDATA[用户名配置系统偏好设置，用户与群组，点按锁按钮以进行修改。右键用户，高级选项。修改账户名称为vk，这个名称是shell中显示的用户名。修改全名为voidking，这个名称是mac系统显示的名称。个人目录，修改为 /Users/vk ，这个目录是新的home目录。
@@ -3108,6 +3087,27 @@ cd ..diskutil unmount /Volumes/WDdiskutil unmount force /Volumes/WD
 
 
 
+]]></content>
+      <categories>
+        <category>爱好</category>
+        <category>电脑</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>MacOS小技巧</title>
+    <url>/hobby-macos-tricks/</url>
+    <content><![CDATA[使用命令打开目录和文件1、在finder中打开当前目录open .
+2、使用默认程序打开指定文件open README.md
+切换窗口1、command + tab2、三指左右滑动3、三指上滑
+
+
+快速预览选中文件或者文件夹，点击空格即可预览文件，点击上下左右可以预览其他文件。
+隔空投送接收方：打开隔空投送功能，同时接收人选择仅限联系人或所有人。
+发送方：1、打开要发送的文件，然后点按 App 窗口中的“共享”按钮 。或者，在“访达”中按住 Control 键点按相应文件，然后从快捷键菜单中选取“共享”。2、从列出的共享选项中，选取“隔空投送”。3、从“隔空投送”表单中选取一位接收者。
+或者打开“隔空投送”窗口，然后将文件拖移到接收者：1、在“访达”窗口的边栏中选择“隔空投送”。或者从菜单栏中选取“前往”&gt;“隔空投送”。2、“隔空投送”窗口随即会显示附近的“隔空投送”用户。将一个或多个文稿、照片或其他文件拖移到窗口中显示的接收者。
+详情参考 在 Mac 上使用“隔空投送”。
+传送速度非常快，网络条件不错的情况下，可以达到几百MB每秒。
+mac和ipad之间，mac和iphone之间也可以使用隔空投送，非常方便实用。
 ]]></content>
       <categories>
         <category>爱好</category>
@@ -3258,6 +3258,91 @@ brew updatebrew install unarunar -e GBK 中文名.zipunar -e GBK -p xxxxxx 中�
 解压rarbrew install unrarunrar x package-name.rar
 
 加解密文件zip -er resources.zip resources.mdunzip resources.zip
+
+命令行发邮件邮件系统有三个组成部分：邮件用户代理（MUA，Mail User Agent）；邮件传送代理（MTA，Mail Transport Agent）；邮件分发代理（MDA，Mail Deliver Agent）。macos自带mail（mailx）命令，这是一个MUA，与之配合的是sendmail，一个MTA。但是，sendmail不支持使用外部MDA发邮件，因此需要把sendmail替换成msmtp。
+1、安装msmtp
+brew install msmtp
+
+2、配置使用msmtpsudo vim /etc/mail.rc，添加：
+set sendmail=/usr/local/bin/msmtp
+
+3、配置msmtpvim ~/.msmtprc，内容为：
+defaultsaccount defaulthost smtp.163.comport 25from quizthink@163.comauth logintls offuser quizthink@163.compassword xxxxxx
+
+4、修改 .msmtprc 权限chmod 600 ~/.msmtprc
+5、发送邮件echo &quot;Hello world&quot; | mail -s &quot;test&quot; voidking@qq.com
+screenscreen是后台运行脚本的神器。
+1、使用新的screen运行脚本screen ./main.sh
+2、把当前screen放入后台control+A D
+3、查看screenscreen -ls
+4、返回screenscreen -r 23500.ttys005.B000000349215A
+frp前提：参考《使用frp进行内网穿透》配置好frp服务端。本节中，配置macos的内网穿透，
+1、下载macos用的frp，这里下载frp_0.31.1_darwin_amd64.tar.gz。
+2、解压并配置 frpc.ini
+[common]server_addr = 120.77.36.182server_port = 7000token = 12345678[ssh]type = tcplocal_ip = 127.0.0.1local_port = 22remote_port = 3422
+
+3、启动frpc客户端
+./frpc -c frpc.ini# control+Cbrew install screenscreen ./frpc -c frpc.ini# control+A+D
+
+4、启用远程登录系统偏好设置，共享，勾选远程登录。
+5、测试
+ssh localhostssh vk@120.77.36.182 -p 3422
+
+6、临时禁用mac休眠关闭屏幕后，mac很快会进入休眠模式，无法再远程登录mac，因此需要临时禁用mac休眠。pmset noidle
+docker参考Docker on Mac with Homebrew，安装配置docker。
+1、安装dockerbrew cask install docker
+2、初始化配置启动台，点击docker图标，按照提示进行初始化配置。
+3、查看安装结果docker --version
+stretchlyStretchly is a cross-platform Electron app that reminds you to take breaks when working on your computer.这款软件界面友好，设置简单，提醒也很nice。唯一缺点是软件比较大，70M。
+brew update &amp;&amp; brew install --cask stretchly
+或者下载dmg软件包进行安装。如果下载不下来，建议使用FDM进行下载。
+virtualboxvirtualbox配置win10文件夹共享：1、启动win10虚拟机2、virtualbox菜单栏，Devices，Insert Guest Additions CD images3、win10内，点击CD驱动器里的VBoxWindowAddions.exe进行插件安装4、virtualbox win10虚拟机设置，共享文件夹5、添加共享文件，共享文件夹路径选择宿主机(Mac)上的一个路径，共享文件夹名称随意，挂载点填入X:6、win10虚拟机内出现了X盘，用于共享
+gnu-sedmac（类unix系统）使用bsd sed，而各种linux发行版用的是linux sed。因此，mac sed的用法和linux sed的用法会有一些差异，这就带来很多不便，解决办法是给mac安装linux sed。
+1、安装gnu-sedbrew install gnu-sed
+2、.bash_profile添加配置
+export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
+
+3、使配置生效source .bash_profile
+快捷cd目录1、macos中安装autojumpbrew update &amp;&amp; brew install autojump
+2、.bash_profile中添加配置
+# autojump[ -f /usr/local/etc/profile.d/autojump.sh ] &amp;&amp; . /usr/local/etc/profile.d/autojump.sh
+
+3、使配置生效source .bash_profile
+4、使用j dirname然后配合tab补全，回车跳转目录。
+PS：linux中可以通过配置CDPATH变量实现快捷cd目录.bash_profile添加：
+# workdirCDPATH=".:~:~/git"
+
+ffmpeg《m3u8视频下载方法》一文中提到ffmpeg是一个很好用的视频格式转换工具，在macos上安装和使用也很方便。
+1、安装ffmpegbrew install ffmpeg
+安装报错 tar: Error opening archive: Failed to open ‘…–bdw-gc-8.0.4_2.catalina.bottle.tar.gz’解决办法：export HOMEBREW_BOTTLE_DOMAIN=&#39;&#39;
+2、flv转mp4ffmpeg -i filename.flv filename.mp4
+好用的软件
+Chrome
+iterm2
+sublime
+wps
+百度云盘
+Skim
+CHM Viewer Star
+draw.io
+youtube-dl
+you-get
+FDM
+Movist
+sequelpro
+sequelpro测试版，解决了退出报错问题。
+Mounty
+postman
+typora
+Stretchly
+幕享
+splashtop
+JSON Viewer
+Meld
+Multipass
+Proxyman
+Wireshark
+Turbo Boost Switcher
 
 ]]></content>
       <categories>
@@ -17644,45 +17729,6 @@ curl下载文件curl -o icon.png "https://www.python.org/static/opengraph-icon-2
       </tags>
   </entry>
   <entry>
-    <title>Shell脚本之安全删除</title>
-    <url>/dev-shell-saferm/</url>
-    <content><![CDATA[前言很多时候，我们会误删文件，那么一个回收站就很有必要了。看了一些回收站的实现，都比较复杂，干脆自己写一个。
-思路：使用mv替换rm，把想要删除的文件暂时移动到回收站。
-
-
-安全删除脚本1、编写安全删除脚本，saferm.sh
-#!/bin/bashTRASHDIR="$&#123;HOME&#125;/.saferm/trash"[[ ! -d $&#123;TRASHDIR&#125; ]] &amp;&amp; mkdir -p $&#123;TRASHDIR&#125;function usage()&#123;    echo -e "    Brief: move directory and files to ~/.local/trash    Usage: alias rm=/path/to/saferm.sh            rm &lt;dir&gt;            rm &lt;file&gt;            rm &lt;file1&gt; &lt;file2&gt;    "&#125;function main()&#123;    local now=$(date "+%Y%m%d%H%M%S")    local destdir="$&#123;TRASHDIR&#125;/$&#123;now&#125;"    mkdir $&#123;destdir&#125;    local opt    while getopts "h" opt    do      case $opt in        h)          usage &amp;&amp; exit 0 ;;        \?)          usage &amp;&amp; exit 0 ;;      esac    done    local files="$*"    local successfiles=""    for file in $&#123;files&#125;;do        mv $&#123;file&#125; $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file&#125;    done    if [[ -z "$&#123;successfiles&#125;" ]];then        echo -e "\033[31mNothing to do! Check the source filenames please!\033[0m"    else        echo -e "$&#123;successfiles&#125; have been moved to \033[31m$&#123;destdir&#125;\033[0m"    fi&#125;main "$@"
-
-2、使用方法编辑 .bash_profile ，添加内容
-# safermalias rm="/path/to/saferm.sh"
-添加内容完成， source .bash_profile ，rm命令就被替换为saferm脚本了。
-以上，安全删除的功能就完成了，自己偶尔手动清理下 TRASHDIR 中的文件。以下内容可选，是对该saferm脚本的补充。
-清理回收站脚本1、清理回收站脚本，cleartrash.sh
-#!/bin/bash# Clear files in trash that been removed 3 days ago.TRASHDIR="$&#123;HOME&#125;/.saferm/trash"CLEARLOG="$&#123;TRASHDIR&#125;/clear.log"[[ -d $&#123;TRASHDIR&#125; ]] \&amp;&amp; find $&#123;TRASHDIR&#125; -mindepth 1 -type d -mtime +2 \| xargs rm -rfv | tee -a $&#123;CLEARLOG&#125;
-
-2、使用方法编辑 .bash_profile ，添加内容
-# safermalias rm="/path/to/saferm.sh"alias cleartrash="/path/to/cleartrash.sh"
-添加内容完成， source .bash_profile ，然后就可以使用 cleartrash 命令清理回收站了。
-3、定时任务参考《Linux设置定时任务》，添加定时任务。
-crontab -e，添加定时任务，每天晚上执行一次：
-5 0 * * * /bin/bash /path/to/cleartrash.sh
-
-进阶saferm.sh 脚本存在一个严重bug：无法删除文件名带空格的文件，甚至会误删文件。因为Shell默认以空格、Tab、回车作为值与值之间的分隔符，而不是做为文件名的一部分。如果文件名中带空格，就会被认为是多个文件。
-修改 saferm.sh 如下：
-#!/bin/bashTRASHDIR="$&#123;HOME&#125;/.saferm/trash"[[ ! -d $&#123;TRASHDIR&#125; ]] &amp;&amp; mkdir -p $&#123;TRASHDIR&#125;function usage()&#123;    echo -e "    Brief: Move directories or files to ~/.local/trash           You can move 1-3 files with wildcard. More is unsupported.            If file name contains space, use quotation mark please.    Usage: alias rm=/path/to/saferm.sh            rm &lt;dir&gt;            rm &lt;file&gt;            rm *.&lt;filetype&gt;            rm &lt;file1&gt; &lt;file2&gt; &lt;file3&gt;    "&#125;function main()&#123;    local now=$(date "+%Y%m%d%H%M%S")    local destdir="$&#123;TRASHDIR&#125;/$&#123;now&#125;"    mkdir $&#123;destdir&#125;    local opt    while getopts "h" opt    do      case $opt in        h)          usage &amp;&amp; exit 0 ;;        \?)          usage &amp;&amp; exit 0 ;;      esac    done    local file1="$1"    local file2="$2"    local file3="$3"    local file4="$4"    local successfiles=""    [[ -n "$&#123;file1&#125;" ]] &amp;&amp; mv "$&#123;file1&#125;" $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file1&#125;    [[ -n "$&#123;file2&#125;" ]] &amp;&amp; mv "$&#123;file2&#125;" $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file2&#125;    [[ -n "$&#123;file3&#125;" ]] &amp;&amp; mv "$&#123;file3&#125;" $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file3&#125;    [[ -n "$&#123;file4&#125;" ]] &amp;&amp; echo -e "\033[31mYou can move 1-3 files with wildcard. More is unsupported.\033[0m"    if [[ -z "$&#123;successfiles&#125;" ]];then        echo -e "\033[31mNothing to do! Check the source filenames please!\033[0m"    else        echo -e "$&#123;successfiles&#125; have been moved to \033[31m$&#123;destdir&#125;\033[0m"    fi&#125;main "$@"
-
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>shell</category>
-      </categories>
-      <tags>
-        <tag>linux</tag>
-        <tag>shell</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Shell脚本之循环读取文本</title>
     <url>/dev-shell-loop-read-file/</url>
     <content><![CDATA[需求已知mobile.txt为：
@@ -17731,6 +17777,45 @@ modify.sh内容为：
 或者使用for循环：
 #!/bin/bashfilename="applist.txt"lines=$(cat $&#123;filename&#125; | sed '/^$/d')linenum=$(echo "$&#123;lines&#125;" | wc -l)#echo -e "$&#123;lines&#125;"#echo -e "$&#123;linenum&#125;"for index in `seq 1 $&#123;lines&#125;`;do  #echo $&#123;index&#125;  line=$(echo "$&#123;lines&#125;" | sed -n "$&#123;index&#125;p")  app_id=$(echo $line | awk '&#123;print $1&#125;')  idc=$(echo $app_id | awk -F'.' '&#123;print $NF&#125;')  bash modify.sh $&#123;idc&#125; $&#123;app_id&#125;done
 
+
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>shell</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>shell</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Shell脚本之安全删除</title>
+    <url>/dev-shell-saferm/</url>
+    <content><![CDATA[前言很多时候，我们会误删文件，那么一个回收站就很有必要了。看了一些回收站的实现，都比较复杂，干脆自己写一个。
+思路：使用mv替换rm，把想要删除的文件暂时移动到回收站。
+
+
+安全删除脚本1、编写安全删除脚本，saferm.sh
+#!/bin/bashTRASHDIR="$&#123;HOME&#125;/.saferm/trash"[[ ! -d $&#123;TRASHDIR&#125; ]] &amp;&amp; mkdir -p $&#123;TRASHDIR&#125;function usage()&#123;    echo -e "    Brief: move directory and files to ~/.local/trash    Usage: alias rm=/path/to/saferm.sh            rm &lt;dir&gt;            rm &lt;file&gt;            rm &lt;file1&gt; &lt;file2&gt;    "&#125;function main()&#123;    local now=$(date "+%Y%m%d%H%M%S")    local destdir="$&#123;TRASHDIR&#125;/$&#123;now&#125;"    mkdir $&#123;destdir&#125;    local opt    while getopts "h" opt    do      case $opt in        h)          usage &amp;&amp; exit 0 ;;        \?)          usage &amp;&amp; exit 0 ;;      esac    done    local files="$*"    local successfiles=""    for file in $&#123;files&#125;;do        mv $&#123;file&#125; $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file&#125;    done    if [[ -z "$&#123;successfiles&#125;" ]];then        echo -e "\033[31mNothing to do! Check the source filenames please!\033[0m"    else        echo -e "$&#123;successfiles&#125; have been moved to \033[31m$&#123;destdir&#125;\033[0m"    fi&#125;main "$@"
+
+2、使用方法编辑 .bash_profile ，添加内容
+# safermalias rm="/path/to/saferm.sh"
+添加内容完成， source .bash_profile ，rm命令就被替换为saferm脚本了。
+以上，安全删除的功能就完成了，自己偶尔手动清理下 TRASHDIR 中的文件。以下内容可选，是对该saferm脚本的补充。
+清理回收站脚本1、清理回收站脚本，cleartrash.sh
+#!/bin/bash# Clear files in trash that been removed 3 days ago.TRASHDIR="$&#123;HOME&#125;/.saferm/trash"CLEARLOG="$&#123;TRASHDIR&#125;/clear.log"[[ -d $&#123;TRASHDIR&#125; ]] \&amp;&amp; find $&#123;TRASHDIR&#125; -mindepth 1 -type d -mtime +2 \| xargs rm -rfv | tee -a $&#123;CLEARLOG&#125;
+
+2、使用方法编辑 .bash_profile ，添加内容
+# safermalias rm="/path/to/saferm.sh"alias cleartrash="/path/to/cleartrash.sh"
+添加内容完成， source .bash_profile ，然后就可以使用 cleartrash 命令清理回收站了。
+3、定时任务参考《Linux设置定时任务》，添加定时任务。
+crontab -e，添加定时任务，每天晚上执行一次：
+5 0 * * * /bin/bash /path/to/cleartrash.sh
+
+进阶saferm.sh 脚本存在一个严重bug：无法删除文件名带空格的文件，甚至会误删文件。因为Shell默认以空格、Tab、回车作为值与值之间的分隔符，而不是做为文件名的一部分。如果文件名中带空格，就会被认为是多个文件。
+修改 saferm.sh 如下：
+#!/bin/bashTRASHDIR="$&#123;HOME&#125;/.saferm/trash"[[ ! -d $&#123;TRASHDIR&#125; ]] &amp;&amp; mkdir -p $&#123;TRASHDIR&#125;function usage()&#123;    echo -e "    Brief: Move directories or files to ~/.local/trash           You can move 1-3 files with wildcard. More is unsupported.            If file name contains space, use quotation mark please.    Usage: alias rm=/path/to/saferm.sh            rm &lt;dir&gt;            rm &lt;file&gt;            rm *.&lt;filetype&gt;            rm &lt;file1&gt; &lt;file2&gt; &lt;file3&gt;    "&#125;function main()&#123;    local now=$(date "+%Y%m%d%H%M%S")    local destdir="$&#123;TRASHDIR&#125;/$&#123;now&#125;"    mkdir $&#123;destdir&#125;    local opt    while getopts "h" opt    do      case $opt in        h)          usage &amp;&amp; exit 0 ;;        \?)          usage &amp;&amp; exit 0 ;;      esac    done    local file1="$1"    local file2="$2"    local file3="$3"    local file4="$4"    local successfiles=""    [[ -n "$&#123;file1&#125;" ]] &amp;&amp; mv "$&#123;file1&#125;" $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file1&#125;    [[ -n "$&#123;file2&#125;" ]] &amp;&amp; mv "$&#123;file2&#125;" $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file2&#125;    [[ -n "$&#123;file3&#125;" ]] &amp;&amp; mv "$&#123;file3&#125;" $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file3&#125;    [[ -n "$&#123;file4&#125;" ]] &amp;&amp; echo -e "\033[31mYou can move 1-3 files with wildcard. More is unsupported.\033[0m"    if [[ -z "$&#123;successfiles&#125;" ]];then        echo -e "\033[31mNothing to do! Check the source filenames please!\033[0m"    else        echo -e "$&#123;successfiles&#125; have been moved to \033[31m$&#123;destdir&#125;\033[0m"    fi&#125;main "$@"
 
 ]]></content>
       <categories>
@@ -28624,8 +28709,8 @@ git-scmhttp://git-scm.com/
       </categories>
       <tags>
         <tag>hexo</tag>
-        <tag>git</tag>
         <tag>ssh</tag>
+        <tag>git</tag>
       </tags>
   </entry>
   <entry>
@@ -29572,25 +29657,6 @@ alter table userbase add constraint fk_username foreign key(username) references
       </tags>
   </entry>
   <entry>
-    <title>坐功入静</title>
-    <url>/hobby-dhyana-meditation/</url>
-    <content><![CDATA[作者：那秋生
-
-坐功是静功里最要紧的一个环节，坐功是入静的第一步。坐功有静坐功和动静兼修两种。
-
-李渔《闲情偶寄·颐养》曰：“益寿之方，全凭导引；安生之计，惟赖坐功。”儒家提倡“静坐”。王阳明说：“静坐要省察克治，静坐能使心清静收敛，从而克服自我私欲产生，通过静坐能顿悟明心见性，得道成真。”
-道家主张“坐忘”。《庄子·大宗师》：“堕肢体，黜聪明，离形去知，同于大通，此谓坐忘。”即摆脱现实形体的束缚，与自然融为一体，两两相忘。佛家的功夫是“坐禅”。音译“禅那”，简称“禅”，意谓思维修或静虑，就是趺坐而修禅，是佛教修持的主要方法之一。
-现代人就是坐不住，成天跑东跑西、忙这忙那，就像丢了魂似的，悲乎！
-]]></content>
-      <categories>
-        <category>爱好</category>
-        <category>读书</category>
-      </categories>
-      <tags>
-        <tag>笔记</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>自由与理想</title>
     <url>/hobby-freedom-and-ideal/</url>
     <content><![CDATA[作者：吴晓波
@@ -29629,6 +29695,25 @@ alter table userbase add constraint fk_username foreign key(username) references
       </categories>
       <tags>
         <tag>读者</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>坐功入静</title>
+    <url>/hobby-dhyana-meditation/</url>
+    <content><![CDATA[作者：那秋生
+
+坐功是静功里最要紧的一个环节，坐功是入静的第一步。坐功有静坐功和动静兼修两种。
+
+李渔《闲情偶寄·颐养》曰：“益寿之方，全凭导引；安生之计，惟赖坐功。”儒家提倡“静坐”。王阳明说：“静坐要省察克治，静坐能使心清静收敛，从而克服自我私欲产生，通过静坐能顿悟明心见性，得道成真。”
+道家主张“坐忘”。《庄子·大宗师》：“堕肢体，黜聪明，离形去知，同于大通，此谓坐忘。”即摆脱现实形体的束缚，与自然融为一体，两两相忘。佛家的功夫是“坐禅”。音译“禅那”，简称“禅”，意谓思维修或静虑，就是趺坐而修禅，是佛教修持的主要方法之一。
+现代人就是坐不住，成天跑东跑西、忙这忙那，就像丢了魂似的，悲乎！
+]]></content>
+      <categories>
+        <category>爱好</category>
+        <category>读书</category>
+      </categories>
+      <tags>
+        <tag>笔记</tag>
       </tags>
   </entry>
   <entry>
