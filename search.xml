@@ -270,11 +270,12 @@ Airflow 调度器调度任务在一组work上执行，同时满足指定的依�
 Airflow 拥有大量的命令行工具，可以轻松在DAG上执行复杂的操作。
 Airflow 界面友好，管道、进度、问题一目了然。
 
-更多内容参考Airflow官方文档
+更多内容参考：Airflow官方文档
+Airflow视频教程：Airflow从零到神
 
 
 安装和初始化安装配置airflow，主要参考Airflow本地快速运行和Airflow Installation。
-前置条件：安装配置好python3.6，详情参考MacOS设置。
+前置条件：安装配置好python3.6，详情参考《MacOS上软件配置》。
 1、安装airflow
 pip install "apache-airflow[celery]==2.0.0" --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.0.0/constraints-3.6.txt"
 
@@ -318,48 +319,12 @@ TODOtutorial.py详解、传参、接口调用airflow + django
       </tags>
   </entry>
   <entry>
-    <title>Python小技巧</title>
-    <url>/dev-python-tricks/</url>
-    <content><![CDATA[语法检查pylint 是一个能够检查Python编码质量、编码规范的工具。它分析 Python 代码中的错误，查找不符合代码风格标准（Pylint 默认使用的代码风格是 PEP 8）和有潜在问题的代码。
-个人认为正确性比风格更加重要，不妨大材小用，执行脚本之前，都使用pylint进行语法检查一下。
-pip install pylintpylint test.py
+    <title>Python单元测试</title>
+    <url>/dev-python-unittest/</url>
+    <content><![CDATA[unittest简介unittest是一个Python单元测试框架。它受到 JUnit 的启发，与其他语言中的主流单元测试框架有着相似的风格。其支持测试自动化，配置共享和关机代码测试。支持将测试样例聚合到测试集中，并将测试与报告框架独立。
+主要参考 unittest - 单元测试框架。
 
 
-
-导入自定义模块全局导入自己新建了一个模块，怎样让它可以被全局引用？答：导入自定义模块。具体操作方法：1、进入 xxx/python3/lib/python3.6/site-packages 目录2、新建 yyy.pth 文件，写入自定义模块的路径
-/home/voidking/scripts/vktools/
-
-详情参考python之使用.pth文件导入自定义模块
-指定文件导入自己新建了一个模块a，路径不同的情况下，怎样让它被模块b引用？答：使用 sys.path.append 函数。
-# sys.path.remove('/path/to/a')sys.path.append('/path/to/a')
-
-获取脚本路径已知路径：
-path└── module_a    ├── getpath.py    └── module_b        └── getpath.py
-
-getpath.py脚本内容为：
-import osimport sysfrom module_b import getpathdef print_path():    print(f'os.getcwd() is &#123;os.getcwd()&#125;')    print(f'sys.path[0] is &#123;sys.path[0]&#125;')    print(f'sys.argv[0] is &#123;sys.argv[0]&#125;')    print(f'__file__ is &#123;__file__&#125;')    print(f'os.path.dirname(__file__) is &#123;os.path.dirname(__file__)&#125;')    print(f'os.path.abspath(__file__) is &#123;os.path.abspath(__file__)&#125;')    print(f'os.path.realpath(__file__) is &#123;os.path.realpath(__file__)&#125;')    print(f'os.path.split(os.path.realpath(__file__))[0] is &#123;os.path.split(os.path.realpath(__file__))[0]&#125;')print('------ module_a/getpath.py ------')print_path()print('---------------------------------')print('------ module_a/module_b/getpath.py ------')getpath.print_path()print('------------------------------------------')
-
-在path目录中执行脚本python module_a/getpath.py ，得到结果为：
------- module_a/getpath.py ------os.getcwd() is /Users/vk/tmp/pathsys.path[0] is /Users/vk/tmp/path/module_asys.argv[0] is module_a/getpath.py__file__ is module_a/getpath.pyos.path.dirname(__file__) is module_aos.path.abspath(__file__) is /Users/vk/tmp/path/module_a/getpath.pyos.path.realpath(__file__) is /Users/vk/tmp/path/module_a/getpath.pyos.path.split(os.path.realpath(__file__))[0] is /Users/vk/tmp/path/module_a--------------------------------------- module_a/module_b/getpath.py ------os.getcwd() is /Users/vk/tmp/pathsys.path[0] is /Users/vk/tmp/path/module_asys.argv[0] is module_a/getpath.py__file__ is /Users/vk/tmp/path/module_a/module_b/getpath.pyos.path.dirname(__file__) is /Users/vk/tmp/path/module_a/module_bos.path.abspath(__file__) is /Users/vk/tmp/path/module_a/module_b/getpath.pyos.path.realpath(__file__) is /Users/vk/tmp/path/module_a/module_b/getpath.pyos.path.split(os.path.realpath(__file__))[0] is /Users/vk/tmp/path/module_a/module_b------------------------------------------
-
-由实验结果，可以得出如下结论。
-获取执行命令的绝对路径os.getcwd()
-
-获取入口脚本的父绝对路径sys.path[0]
-
-获取执行脚本的绝对路劲os.path.abspath(__file__)os.path.realpath(__file__)
-
-获取执行脚本的父绝对路径os.path.split(os.path.realpath(__file__))[0]
-
-获取文件/目录的父路径os.path.dirname(__file__)
-
-查找文件在指定目录中，根据文件前缀查找文件。
-import globdef find_files_by_prefix(prefix, dir_path):    file_list = list()    file_pattern = os.path.join(dir_path, '&#123;&#125;*'.format(prefix))    for f in glob.glob(file_pattern):        file_list.append(f)    return file_list
-
-删除目录和文件封装几个简单函数，删除目录和文件。
-import osimport shutil# 删除空目录def remove_dir(dir_path):    if os.path.exists(dir_path):        os.removedirs(dir_path)# 删除文件def remove_file(file_path):    if os.path.exists(file_path):        os.remove(file_path)# 删除目录和文件def remove_dir_and_file(dir_path):    if os.path.exists(dir_path):        shutil.rmtree(dir_path)
-
-单元测试unittest是一个Python单元测试框架。它受到 JUnit 的启发，与其他语言中的主流单元测试框架有着相似的风格。其支持测试自动化，配置共享和关机代码测试。支持将测试样例聚合到测试集中，并将测试与报告框架独立。
 脚本编写新建一个 tests/test_demo.py 脚本，内容如下：
 import unittestclass TestStringMethods(unittest.TestCase):    def test_upper(self):        self.assertEqual('foo'.upper(), 'FOO')    def test_isupper(self):        self.assertTrue('FOO'.isupper())        self.assertFalse('Foo'.isupper())    def test_split(self):        s = 'hello world'        self.assertEqual(s.split(), ['hello', 'world'])        # check that s.split fails when the separator is not a string        with self.assertRaises(TypeError):            s.split(2)if __name__ == '__main__':    unittest.main()
 
@@ -377,12 +342,26 @@ python tests/test_demo.pypython tests/test_demo.py -vpython -m unittest tests/te
 import jsonimport unittestfrom unittest import mockimport requestsdef request_system(method: str, url: str, data=&#123;&#125;):    headers = &#123;        'Content-Type': 'application/json'    &#125;    response = requests.request(method=method, url=url, headers=headers, data=json.dumps(data))    return responsedef login(username: str, password: str):    # 以下接口暂时访问不通    LOGIN_URL='http://127.0.0.1/login'    data = &#123;        'username': username,        'password': password    &#125;    response = request_system('POST', LOGIN_URL)    if response.status == 200:        return json.loads(response.text)    else:        return Noneclass TestMockMethods(unittest.TestCase):    def test_request_system(self):        mock_response = mock.Mock()        mock_response.status_code = 200        mock_response.text = json.dumps(&#123;"code": 0, "msg":"success"&#125;)        request_system = mock.Mock(return_value=mock_response)        response = request_system(method='POST',url='http://127.0.0.1/')        print(response.status_code)        print(response.text)        self.assertEqual(200, response.status_code)    def test_login(self):        login = mock.Mock(return_value=&#123;"code": 0, "msg":"success"&#125;)        data = login(username='voidking',password='voidking')        print(data)        self.assertEqual(0, data.get('code'))if __name__ == '__main__':    unittest.main()
 
 这种模拟测试方式很巧妙，适合测试访问第三方接口，但是并不会真正发出请求。另一个问题来了，Python怎么测试自己的接口？不知道。想到以前使用Beego框架进行开发，它的单元测试就很巧妙，先在测试数据库插入数据，然后通过beego.BeeApp.Handlers.ServeHTTP(w, r)把自己临时启动起来，最后自己的单元测试调用自己的接口。其中的关键在于把自己启动起来，理论上Python也能做到。
-url特殊字符转义from urllib import parselabelselector = parse.quote('app_id=voidking,env in (test,online)')url = f'https://www.voidking.com?labelselector=&#123;labelselector&#125;'
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>python</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>测试</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Python重试</title>
+    <url>/dev-python-retry/</url>
+    <content><![CDATA[为什么需要重试？典型场景：程序的实现需要调用第三方的API，但是我们并不能保证第三方API一直好用，也不能保证网络一直畅通，所以在调用第三方API时需要加上错误重试。  
+通用场景：程序的运行不符合预期，我们知道再次调用大概率可以使之符合预期，这时就需要重试。  
+而重试逻辑我们可以通过循环多次调用实现，也可以使用封装好的重试模块。本文我们就学习一下Python中比较流行的 retrying 模块，实现一些重试Demo。
 
-特殊字符对应url编码表：
-空格 : %20" : %22# : %23% : %25&amp; : %26( : %28) : %29+ : %2B, : %2C/ : %2F: : %3A; : %3B&lt; : %3C= : %3D&gt; : %3E? : %3F@ : %40\ : %5C| : %7C
 
-函数重试函数重试，我们可以通过循环多次调用实现，也可以使用retrying包。
+安装retryingpip install retrying
 任意异常重试from retrying import retry@retry(stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrorif __name__ == '__main__':    run()
 
 当函数run抛出任意异常时，则进行重试。
@@ -403,25 +382,6 @@ wait_random_max：最大重试间隔
 当函数run抛出任意异常时，则进行重试。重试指定次数后，程序就异常结束了。这时，如果我们想要容忍异常，让run2可以正常运行，该怎么办呢？很简单，给run函数包裹一个try except即可。
 from retrying import retry@retry(wrap_exception=True,stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrordef wrap_run():    try:        run()    except:        passdef run2():    print('run2')if __name__ == '__main__':    wrap_run()    run2()
 
-操作mysql数据库python操作mysql数据库，是经常遇到的需求，下面整理一下具体操作方法。
-数据库准备create database vkphp default character set utf8 collate utf8_general_ci;use vkphp;CREATE TABLE IF NOT EXISTS `user` (  `id` int(8) NOT NULL AUTO_INCREMENT,  `name` varchar(32) NOT NULL,  `password` varchar(32) NOT NULL DEFAULT '',  PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-更多内容参考《使用Docker安装配置Mysql》和《MySQL常用命令》
-安装依赖pip3 install mysqlclient==1.3.13
-插入数据#!/usr/bin/python3# -*- coding: UTF-8 -*-import MySQLdb# 打开数据库连接db = MySQLdb.connect(host="localhost",                     port="3306",                    user="root",                     password="voidking",                     database="vkphp",                     charset='utf8')# 使用cursor()方法获取操作游标 cursor = db.cursor()# SQL 插入语句sql = "insert into `user` (`name`,`password`) values('haojin','voidking');"try:   # 执行sql语句   cursor.execute(sql)   # 提交到数据库执行   db.commit()except:   # 发生错误时回滚   db.rollback()# 关闭数据库连接db.close()
-
-其他操作参考Python 操作 MySQL 数据库。
-安装pip一些情况下，在安装python时没有默认安装pip，这时就需要手动安装。
-# 方法一：python -m ensurepip# 方法二：wget https://bootstrap.pypa.io/get-pip.pypython get-pip.py -i http://pypi.douban.com/simple/ --trusted-host pypi.douban.com
-
-参考文档
-Python官方文档
-Python官方文档下载
-Python官方文档下载-chm格式
-Python黑魔法手册
-Python Cookbook 3rd Edition Documentation
-Google Python风格指南
-unittest - 单元测试框架
 
 ]]></content>
       <categories>
@@ -431,7 +391,71 @@ unittest - 单元测试框架
       </categories>
       <tags>
         <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Python操作MySQL</title>
+    <url>/dev-python-mysql/</url>
+    <content><![CDATA[前言python操作mysql数据库进行增删查改，是经常遇到的需求，下面整理一下具体操作方法。
+数据库准备1、安装配置好mysql参考《使用Docker安装配置Mysql》
+2、创建一个测试用的数据库
+create database vkphp default character set utf8 collate utf8_general_ci;use vkphp;CREATE TABLE IF NOT EXISTS `user` (  `id` int(8) NOT NULL AUTO_INCREMENT,  `name` varchar(32) NOT NULL,  `password` varchar(32) NOT NULL DEFAULT '',  PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+更多命令参考 《MySQL常用命令》
+
+
+安装依赖pip3 install mysqlclient==1.3.13
+插入数据#!/usr/bin/python3# -*- coding: UTF-8 -*-import MySQLdb# 打开数据库连接db = MySQLdb.connect(host="localhost",                     port="3306",                    user="root",                     password="voidking",                     database="vkphp",                     charset='utf8')# 使用cursor()方法获取操作游标 cursor = db.cursor()# SQL 插入语句sql = "insert into `user` (`name`,`password`) values('haojin','voidking');"try:   # 执行sql语句   cursor.execute(sql)   # 提交到数据库执行   db.commit()except:   # 发生错误时回滚   db.rollback()# 关闭数据库连接db.close()
+
+其他操作参考Python 操作 MySQL 数据库。
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>python</category>
+        <category>mysql</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>mysql</tag>
         <tag>测试</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Python脚本路径</title>
+    <url>/dev-python-script-path/</url>
+    <content><![CDATA[怎样获取一个脚本的路径？怎样获取执行脚本的绝对路径？怎样获取执行脚本的父绝对路径？怎样获取入口脚本的绝对路径？。。。带着这些问题，我们进行一个简单的实验，获知这些问题的答案。
+
+
+路径实验路径设计path└── module_a    ├── getpath.py    └── module_b        └── getpath.py
+
+脚本内容getpath.py脚本内容为：
+import osimport sysfrom module_b import getpathdef print_path():    print(f'os.getcwd() is &#123;os.getcwd()&#125;')    print(f'sys.path[0] is &#123;sys.path[0]&#125;')    print(f'sys.argv[0] is &#123;sys.argv[0]&#125;')    print(f'__file__ is &#123;__file__&#125;')    print(f'os.path.dirname(__file__) is &#123;os.path.dirname(__file__)&#125;')    print(f'os.path.abspath(__file__) is &#123;os.path.abspath(__file__)&#125;')    print(f'os.path.realpath(__file__) is &#123;os.path.realpath(__file__)&#125;')    print(f'os.path.split(os.path.realpath(__file__))[0] is &#123;os.path.split(os.path.realpath(__file__))[0]&#125;')print('------ module_a/getpath.py ------')print_path()print('---------------------------------')print('------ module_a/module_b/getpath.py ------')getpath.print_path()print('------------------------------------------')
+
+执行脚本在path目录中执行脚本python module_a/getpath.py ，得到结果为：
+------ module_a/getpath.py ------os.getcwd() is /Users/vk/tmp/pathsys.path[0] is /Users/vk/tmp/path/module_asys.argv[0] is module_a/getpath.py__file__ is module_a/getpath.pyos.path.dirname(__file__) is module_aos.path.abspath(__file__) is /Users/vk/tmp/path/module_a/getpath.pyos.path.realpath(__file__) is /Users/vk/tmp/path/module_a/getpath.pyos.path.split(os.path.realpath(__file__))[0] is /Users/vk/tmp/path/module_a--------------------------------------- module_a/module_b/getpath.py ------os.getcwd() is /Users/vk/tmp/pathsys.path[0] is /Users/vk/tmp/path/module_asys.argv[0] is module_a/getpath.py__file__ is /Users/vk/tmp/path/module_a/module_b/getpath.pyos.path.dirname(__file__) is /Users/vk/tmp/path/module_a/module_bos.path.abspath(__file__) is /Users/vk/tmp/path/module_a/module_b/getpath.pyos.path.realpath(__file__) is /Users/vk/tmp/path/module_a/module_b/getpath.pyos.path.split(os.path.realpath(__file__))[0] is /Users/vk/tmp/path/module_a/module_b------------------------------------------
+
+实验结论由实验结果，可以得出如下结论。
+获取执行命令的绝对路径os.getcwd()
+
+获取入口脚本的父绝对路径sys.path[0]
+
+获取执行脚本的绝对路劲os.path.abspath(__file__)os.path.realpath(__file__)
+
+获取执行脚本的父绝对路径os.path.split(os.path.realpath(__file__))[0]
+
+获取文件/目录的父路径os.path.dirname(__file__)
+
+
+
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>python</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
       </tags>
   </entry>
   <entry>
@@ -472,6 +496,109 @@ unittest - 单元测试框架
       </tags>
   </entry>
   <entry>
+    <title>Python小技巧</title>
+    <url>/dev-python-tricks/</url>
+    <content><![CDATA[语法检查pylint 是一个能够检查Python编码质量、编码规范的工具。它分析 Python 代码中的错误，查找不符合代码风格标准（Pylint 默认使用的代码风格是 PEP 8）和有潜在问题的代码。
+个人认为正确性比风格更加重要，不妨大材小用，执行脚本之前，都使用pylint进行语法检查一下。
+pip install pylintpylint test.py
+
+
+
+导入自定义模块全局导入自己新建了一个模块，怎样让它可以被全局引用？答：导入自定义模块。具体操作方法：1、进入 xxx/python3/lib/python3.6/site-packages 目录2、新建 yyy.pth 文件，写入自定义模块的路径
+/home/voidking/scripts/vktools/
+
+详情参考python之使用.pth文件导入自定义模块
+指定文件导入自己新建了一个模块a，路径不同的情况下，怎样让它被模块b引用？答：使用 sys.path.append 函数。
+# sys.path.remove('/path/to/a')sys.path.append('/path/to/a')
+
+查找文件在指定目录中，根据文件前缀查找文件。
+import globdef find_files_by_prefix(prefix, dir_path):    file_list = list()    file_pattern = os.path.join(dir_path, '&#123;&#125;*'.format(prefix))    for f in glob.glob(file_pattern):        file_list.append(f)    return file_list
+
+删除目录和文件封装几个简单函数，删除目录和文件。
+import osimport shutil# 删除空目录def remove_dir(dir_path):    if os.path.exists(dir_path):        os.removedirs(dir_path)# 删除文件def remove_file(file_path):    if os.path.exists(file_path):        os.remove(file_path)# 删除目录和文件def remove_dir_and_file(dir_path):    if os.path.exists(dir_path):        shutil.rmtree(dir_path)
+
+url特殊字符转义from urllib import parselabelselector = parse.quote('app_id=voidking,env in (test,online)')url = f'https://www.voidking.com?labelselector=&#123;labelselector&#125;'
+
+特殊字符对应url编码表：
+空格 : %20" : %22# : %23% : %25&amp; : %26( : %28) : %29+ : %2B, : %2C/ : %2F: : %3A; : %3B&lt; : %3C= : %3D&gt; : %3E? : %3F@ : %40\ : %5C| : %7C
+
+安装pip一些情况下，在安装python时没有默认安装pip，这时就需要手动安装。
+# 方法一：python -m ensurepip# 方法二：wget https://bootstrap.pypa.io/get-pip.pypython get-pip.py -i http://pypi.douban.com/simple/ --trusted-host pypi.douban.com
+
+装饰器实现一个装饰器，功能：只要函数里传了name参数，且name参数的值为haojin，那么就把这个值替换为voidking。
+from functools import wrapsdef haojin_to_voidking(func):    @wraps(func)    def decorated(*args, **kwargs):        if 'name' in kwargs and kwargs['name'] == 'haojin':            kwargs['name'] = 'voidking'        return func(*args, **kwargs)    return decorated@haojin_to_voidkingdef print_name(name):    print(name)print_name(name='haojin')
+
+参考文档
+Python官方文档
+Python官方文档下载
+Python官方文档下载-chm格式
+Python黑魔法手册
+Python Cookbook 3rd Edition Documentation
+Google Python风格指南
+
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>python</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>测试</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>multipass入门篇</title>
+    <url>/dev-multipass-start/</url>
+    <content><![CDATA[multipass是啥？multipass 是一个轻量虚拟机管理器，是由Ubuntu运营公司Canonical所推出的开源项目。运行环境支持Linux、Windows、macOS，在Linux上使用的是KVM、Window上使用Hyper-V、macOS中使用HyperKit以最小开销运行VM。支持在笔记本模拟小型云。更多内容参考Multipass官网。
+
+
+安装使用multipass安装multipassbrew install multipass
+
+创建虚拟机创建一个ubuntu 18.04虚拟机。
+multipass findmultipass launch -n ubuntu18 -c 1 -m 2G -d 10G 18.04
+
+启停虚拟机multipass listmultipass stop ubuntu18multipass start ubuntu18
+
+删除虚拟机multipass delete ubuntu18multipass purge ubuntu18
+
+使用虚拟机multipass exec ubuntu18 -- lsb_release -amultipass shell ubuntu18
+
+配置远程登录上文安装好的ubuntu18虚拟机，默认是不支持远程登录的，可以按照如下步骤开启。1、切换到rootsudo su
+2、修改sshd配置，开启支持远程登录vim /etc/ssh/sshd_config，如下修改：
+Port 22ListenAddress 0.0.0.0ListenAddress ::PasswordAuthentication yes
+
+3、重启sshdsystemctl restart sshd
+4、给ubuntu用户设置一个密码passwd ubuntu
+5、登录测试ssh ubuntu@localhost
+以上，远程登录开启完成。
+安装使用Docker安装Docker在虚拟机中，使用snap方式安装docker。
+sudo susnap install dockerdocker info
+
+snap方式安装的docker，只在用户目录下拥有读写权限。如果对docker挂载路径有要求，建议使用其他方式安装。
+安装mysqldocker run --name vk-mysql -d \-p 3306:3306 \-v /opt/data/mysql:/var/lib/mysql \-e MYSQL_ROOT_PASSWORD=voidking \mysql:5.6.50
+报错为：docker: Error response from daemon: error while creating mount source path ‘/opt/data/mysql’: mkdir /opt/data: read-only file system.
+这就是刚才说到的问题，snap方式安装的docker，只在用户目录下拥有读写权限。可以改成：
+docker run --name vk-mysql -d \-p 3306:3306 \-v /home/work/data/mysql:/var/lib/mysql \-e MYSQL_ROOT_PASSWORD=voidking \mysql:5.6.50
+
+登录mysqlmysql -uroot -p登录报错：ERROR 2002 (HY000): Can’t connect to local MySQL server through socket ‘/var/run/mysqld/mysqld.sock’ (2)
+应该是mysql的版本原因，需要指定host ip。
+mysql -h127.0.0.1 -uroot -pmysql -h192.168.64.3 -P3306 -uroot -p
+
+
+
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>k8s</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
+        <tag>docker</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>MacOS安装Minikube</title>
     <url>/dev-macos-minikube/</url>
     <content><![CDATA[前言Minikube是在个人计算机上的虚拟机中运行单节点Kubernetes集群的工具。《K8S入门篇》一文中，在Windows系统中安装过Minikube。本文中，我们来学习一下在MacOS系统中安装Minikube。主要参考再见Docker Desktop，你好 Minikube！。
@@ -480,7 +607,7 @@ unittest - 单元测试框架
 操作步骤卸载Docker Desktop卸载Docker Desktop，包括Docker Client、Docker Daemon、Hyperkit等。
 brew uninstall docker
 
-PS：Docker Desktop安装方法参考《MacOS设置》。
+PS：Docker Desktop安装方法参考《MacOS上软件配置》。
 安装Docker ClientDocker Client是一个客户端，用于和Docker Daemon进行交互。
 brew install dockerdocker info
 
@@ -507,29 +634,7 @@ minikube start --kubernetes-version=v1.19.14 --driver=hyperkit --container-runti
 
 设置docker环境变量eval $(minikube docker-env)
 
-以上，Minikube安装完成，也可以正常使用Docker。但是，Docker的使用依赖Minikube的启动，这有点坑啊！能不能不启动Minikube，只启动Docker Daemon呢？可以的，使用multipass。之所以不使用virtualbox，是因为virtualbox使用virtualbox驱动，而不是hyperkit。
-安装和使用multipassmultipass 是一个轻量虚拟机管理器，是由Ubuntu运营公司Canonical所推出的开源项目。运行环境支持Linux、Windows、macOS，在Linux上使用的是KVM、Window上使用Hyper-V、macOS中使用HyperKit以最小开销运行VM。支持在笔记本模拟小型云。更多内容参考Multipass官网。
-安装multipassbrew install multipass
-
-创建虚拟机创建一个ubuntu 18.04虚拟机。
-multipass findmultipass launch -n ubuntu18 -c 1 -m 2G -d 10G 18.04
-
-启停虚拟机multipass listmultipass stop ubuntu18multipass start ubuntu18
-
-删除虚拟机multipass delete ubuntu18multipass purge ubuntu18
-
-使用虚拟机multipass exec ubuntu18 -- lsb_release -amultipass shell ubuntu18
-
-安装和使用Docker在虚拟机中，安装Docker。
-sudo susnap install dockerdocker info
-需要注意的是，使用snap安装的docker，只在用户目录下拥有读写权限。
-比如这个命令是会报错的：
-docker run --name vk-mysql -d \-p 3306:3306 \-v /opt/data/mysql:/var/lib/mysql \-e MYSQL_ROOT_PASSWORD=voidking \mysql:5.6
-报错为：docker: Error response from daemon: error while creating mount source path ‘/opt/data/mysql’: mkdir /opt/data: read-only file system.
-可以改成：
-docker run --name vk-mysql -d \-p 3306:3306 \-v /home/work/data/mysql:/var/lib/mysql \-e MYSQL_ROOT_PASSWORD=voidking \mysql:5.6
-
-或者卸载snap安装的docker，使用其他方式重新安装。
+以上，Minikube安装完成，也可以正常使用Docker。但是，Docker的使用依赖Minikube的启动，这有点坑啊！能不能不启动Minikube，只启动Docker Daemon呢？可以的，使用multipass启动一个虚拟机，然后在虚拟机上安装Docker。详情参考《multipass入门篇》。之所以不使用virtualbox，是因为virtualbox使用virtualbox驱动，而不是hyperkit。
 ]]></content>
       <categories>
         <category>专业</category>
@@ -548,7 +653,7 @@ docker run --name vk-mysql -d \-p 3306:3306 \-v /home/work/data/mysql:/var/lib/m
 
 
 环境准备系统环境：MACOS
-安装brew、git、nvm、node，具体安装方法可以参考《MacOS设置》。
+安装brew、git、nvm、node，具体安装方法可以参考《MacOS上软件配置》。
 其中，node版本选择 v12.22.5
 安装hexo1、切换国内源npm config set registry=&quot;https://registry.npm.taobao.org&quot;
 2、安装hexo
@@ -1870,7 +1975,13 @@ Python项目Debug的配置方法，参考《PyCharm调试》。不同的是，�
     <title>更好的 git commit message</title>
     <url>/dev-git-commit-message/</url>
     <content><![CDATA[还可以更好使用git很多年，也提交了很多代码，自以为使用习惯良好。因为每次提交代码，我都会在git commit message中说明清楚修改的内容。但是，偶然间读到一些关于commit message的文章，才发现还有很多进步的空间。
-本文就来学习一下编写更高质量的提交信息，主要参考 Commit message 和 Change log 编写指南、优雅的提交你的 Git Commit Message 和 Conventional Commits。
+本文就来学习一下编写更高质量的提交信息，主要参考：
+
+Commit message 和 Change log 编写指南
+优雅的提交你的 Git Commit Message 
+Conventional Commits
+你可能已经忽略的 git commit 规范
+
 
 
 约定式提交简介约定式提交规范是一种基于提交消息的轻量级约定。它提供了一组用于创建清晰的提交历史的简单规则；这使得编写基于规范的自动化工具变得更容易。 这个约定与 SemVer 相吻合， 在提交信息中描述新特性、bug 修复和破坏性变更。
@@ -2740,7 +2851,7 @@ git statusgit rm &lt;conflict-file&gt;git add .git rebase --continue
     <content><![CDATA[前言Dockerfile中的CMD和ENTRYPOINT有什么区别？docker run时默认执行什么命令，怎样覆盖默认命令？pod定义中的args和command字段有什么作用？本文，我们来回答一下这些问题。主要参考Docker RUN vs CMD vs ENTRYPOINT和Mumshad Mannambeth的课程。
 
 
-指令执行方式RUN和ENTRYPOINT指令都可以有两种执行方式：shell方式和exec方式。
+指令执行方式RUN、CMD和ENTRYPOINT指令都可以有两种执行方式：shell方式和exec方式。
 shell方式shell方式格式：&lt;instruction&gt; &lt;command&gt;
 例子：
 RUN apt-get install python3CMD echo "Hello world"ENTRYPOINT echo "Hello world"
@@ -2921,9 +3032,30 @@ TOKEN=$(kubectl describe secrets $(kubectl get secrets -n kube-system |grep admi
       </tags>
   </entry>
   <entry>
-    <title>MacOS设置</title>
-    <url>/hobby-macos-settings/</url>
-    <content><![CDATA[系统相关用户名系统偏好设置，用户与群组，点按锁按钮以进行修改。右键用户，高级选项。修改账户名称为vk，这个名称是shell中显示的用户名。修改全名为voidking，这个名称是mac系统显示的名称。个人目录，修改为 /Users/vk ，这个目录是新的home目录。
+    <title>MacOS小技巧</title>
+    <url>/hobby-macos-tricks/</url>
+    <content><![CDATA[使用命令打开目录和文件1、在finder中打开当前目录open .
+2、使用默认程序打开指定文件open README.md
+切换窗口1、command + tab2、三指左右滑动3、三指上滑
+
+
+快速预览选中文件或者文件夹，点击空格即可预览文件，点击上下左右可以预览其他文件。
+隔空投送接收方：打开隔空投送功能，同时接收人选择仅限联系人或所有人。
+发送方：1、打开要发送的文件，然后点按 App 窗口中的“共享”按钮 。或者，在“访达”中按住 Control 键点按相应文件，然后从快捷键菜单中选取“共享”。2、从列出的共享选项中，选取“隔空投送”。3、从“隔空投送”表单中选取一位接收者。
+或者打开“隔空投送”窗口，然后将文件拖移到接收者：1、在“访达”窗口的边栏中选择“隔空投送”。或者从菜单栏中选取“前往”&gt;“隔空投送”。2、“隔空投送”窗口随即会显示附近的“隔空投送”用户。将一个或多个文稿、照片或其他文件拖移到窗口中显示的接收者。
+详情参考 在 Mac 上使用“隔空投送”。
+传送速度非常快，网络条件不错的情况下，可以达到几百MB每秒。
+mac和ipad之间，mac和iphone之间也可以使用隔空投送，非常方便实用。
+]]></content>
+      <categories>
+        <category>爱好</category>
+        <category>电脑</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>MacOS系统配置</title>
+    <url>/hobby-macos-system-settings/</url>
+    <content><![CDATA[用户名配置系统偏好设置，用户与群组，点按锁按钮以进行修改。右键用户，高级选项。修改账户名称为vk，这个名称是shell中显示的用户名。修改全名为voidking，这个名称是mac系统显示的名称。个人目录，修改为 /Users/vk ，这个目录是新的home目录。
 修改完成后点击“好”，系统重启，然后整个系统恢复到出厂状态。
 
 
@@ -2974,11 +3106,24 @@ cd ..open .# 界面点击推出移动硬盘
 方法二：
 cd ..diskutil unmount /Volumes/WDdiskutil unmount force /Volumes/WD
 
-软件相关shell1、打开shellcommand＋space，输入“terminal”。或者 Launchpad，其他，终端。为了方便使用，可以把终端放到Dock。
+
+
+]]></content>
+      <categories>
+        <category>爱好</category>
+        <category>电脑</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>MacOS上软件配置</title>
+    <url>/hobby-macos-settings/</url>
+    <content><![CDATA[shell1、打开shellcommand＋space，输入“terminal”。或者 Launchpad，其他，终端。为了方便使用，可以把终端放到Dock。
 2、个性设置在home目录下创建 .bash_profile 文件，内容为：
 # llalias ll="ls -l"# for colorexport CLICOLOR=1# \h:\W \u\$export PS1='\[\033[01;33m\]\u@\h\[\033[01;31m\] \W\$\[\033[00m\] '# grepalias grep='grep --color=always'
 更好的方式是，使用ohmyzsh。
 更多关于shell的内容，可以参考《Shell实用脚本》。
+
+
 ohmyzshOh My Zsh is a delightful, open source, community-driven framework for managing your Zsh configuration. It comes bundled with thousands of helpful functions, helpers, plugins, themes, and a few things that make you shout…”Oh My ZSH!”
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"# orsh -c "$(wget https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
 
@@ -3035,8 +3180,6 @@ sudo curl -L https://raw.githubusercontent.com/beautifulcode/ssh-copy-id-for-OSX
 3、登录服务器 
 ssh jumpboxssh bastionhost
 
-加解密文件zip -er resources.zip resources.mdunzip resources.zip
-
 mysql1、安装启动mysql
 brew install mysqlmysql.server start
 
@@ -3076,7 +3219,8 @@ pyenv versionspyenv global 3.6.10pyenv rehashpython -V
 5、切换为原版本
 pyenv global systempyenv rehashpython -V
 
-nvm1、参考Node Version Manager，安装nvm
+nvmnvm是node版本管理管理工具（Node Version Manager），允许我们通过命令行快速安装和使用不同版本的node。
+1、安装nvm
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.36.0/install.sh | bash
 如果下载脚本报错，就本地创建install.sh，从网页拷贝内容到install.sh后执行。
 2、编辑 .bash_profile ，添加内容：
@@ -3087,6 +3231,11 @@ source .bash_profilenvm
 
 4、安装使用指定版本
 export NVM_NODEJS_ORG_MIRROR=https://npm.taobao.org/mirrors/nodenvm -hnvm ls-remotenvm install v10.16.3nvm listnvm use v10.16.3nvm alias default v10.16.3
+
+tldrtldr项目是社区维护的命令行工具帮助页面的集合，旨在成为对传统帮助的更简单的补充。
+1、安装pip3 install tldr
+2、使用
+tldr tartldr iconv
 
 puerpuer是一个前端工具，能够在任意目录启动web静态服务，并且实时刷新。
 1、全局安装puernpm install puer -g
@@ -3108,104 +3257,8 @@ brew updatebrew install unarunar -e GBK 中文名.zipunar -e GBK -p xxxxxx 中�
 
 解压rarbrew install unrarunrar x package-name.rar
 
-修改md5修改单个文件md5：echo -e -n &quot;\x00&quot; &gt;&gt; 你的文件
-批量修改文件的md5：find . -type f -exec bash -c &#39;echo -e -n &quot;\x00&quot; &gt;&gt; {}&#39; \;
-处理带有空格的文件名：
-find . -type f &gt; filename.txtwhile read line;do echo $line &amp;&amp; echo -e -n "\x00" &gt;&gt; "$line";done &lt; filename.txt
+加解密文件zip -er resources.zip resources.mdunzip resources.zip
 
-命令行发邮件邮件系统有三个组成部分：邮件用户代理（MUA，Mail User Agent）；邮件传送代理（MTA，Mail Transport Agent）；邮件分发代理（MDA，Mail Deliver Agent）。macos自带mail（mailx）命令，这是一个MUA，与之配合的是sendmail，一个MTA。但是，sendmail不支持使用外部MDA发邮件，因此需要把sendmail替换成msmtp。
-1、安装msmtp
-brew install msmtp
-
-2、配置使用msmtpsudo vim /etc/mail.rc，添加：
-set sendmail=/usr/local/bin/msmtp
-
-3、配置msmtpvim ~/.msmtprc，内容为：
-defaultsaccount defaulthost smtp.163.comport 25from quizthink@163.comauth logintls offuser quizthink@163.compassword xxxxxx
-
-4、修改 .msmtprc 权限chmod 600 ~/.msmtprc
-5、发送邮件echo &quot;Hello world&quot; | mail -s &quot;test&quot; voidking@qq.com
-screenscreen是后台运行脚本的神器。
-1、使用新的screen运行脚本screen ./main.sh
-2、把当前screen放入后台control+A D
-3、查看screenscreen -ls
-4、返回screenscreen -r 23500.ttys005.B000000349215A
-frp前提：参考《使用frp进行内网穿透》配置好frp服务端。本节中，配置macos的内网穿透，
-1、下载macos用的frp，这里下载frp_0.31.1_darwin_amd64.tar.gz。
-2、解压并配置 frpc.ini
-[common]server_addr = 120.77.36.182server_port = 7000token = 12345678[ssh]type = tcplocal_ip = 127.0.0.1local_port = 22remote_port = 3422
-
-3、启动frpc客户端
-./frpc -c frpc.ini# control+Cbrew install screenscreen ./frpc -c frpc.ini# control+A+D
-
-4、启用远程登录系统偏好设置，共享，勾选远程登录。
-5、测试
-ssh localhostssh vk@120.77.36.182 -p 3422
-
-6、临时禁用mac休眠关闭屏幕后，mac很快会进入休眠模式，无法再远程登录mac，因此需要临时禁用mac休眠。pmset noidle
-docker参考Docker on Mac with Homebrew，安装配置docker。
-1、安装dockerbrew cask install docker
-2、初始化配置启动台，点击docker图标，按照提示进行初始化配置。
-3、查看安装结果docker --version
-stretchlyStretchly is a cross-platform Electron app that reminds you to take breaks when working on your computer.这款软件界面友好，设置简单，提醒也很nice。唯一缺点是软件比较大，70M。
-brew update &amp;&amp; brew install --cask stretchly
-或者下载dmg软件包进行安装。如果下载不下来，建议使用FDM进行下载。
-virtualboxvirtualbox配置win10文件夹共享：1、启动win10虚拟机2、virtualbox菜单栏，Devices，Insert Guest Additions CD images3、win10内，点击CD驱动器里的VBoxWindowAddions.exe进行插件安装4、virtualbox win10虚拟机设置，共享文件夹5、添加共享文件，共享文件夹路径选择宿主机(Mac)上的一个路径，共享文件夹名称随意，挂载点填入X:6、win10虚拟机内出现了X盘，用于共享
-gnu-sedmac（类unix系统）使用bsd sed，而各种linux发行版用的是linux sed。因此，mac sed的用法和linux sed的用法会有一些差异，这就带来很多不便，解决办法是给mac安装linux sed。
-1、安装gnu-sedbrew install gnu-sed
-2、.bash_profile添加配置
-export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
-
-3、使配置生效source .bash_profile
-快捷cd目录1、macos中安装autojumpbrew update &amp;&amp; brew install autojump
-2、.bash_profile中添加配置
-# autojump[ -f /usr/local/etc/profile.d/autojump.sh ] &amp;&amp; . /usr/local/etc/profile.d/autojump.sh
-
-3、使配置生效source .bash_profile
-4、使用j dirname然后配合tab补全，回车跳转目录。
-PS：linux中可以通过配置CDPATH变量实现快捷cd目录.bash_profile添加：
-# workdirCDPATH=".:~:~/git"
-
-ffmpeg《m3u8视频下载方法》一文中提到ffmpeg是一个很好用的视频格式转换工具，在macos上安装和使用也很方便。
-1、安装ffmpegbrew install ffmpeg
-安装报错 tar: Error opening archive: Failed to open ‘…–bdw-gc-8.0.4_2.catalina.bottle.tar.gz’解决办法：export HOMEBREW_BOTTLE_DOMAIN=&#39;&#39;
-2、flv转mp4ffmpeg -i filename.flv filename.mp4
-好用的软件
-Chrome
-iterm2
-sublime
-wps
-百度云盘
-Skim
-CHM Viewer Star
-draw.io
-youtube-dl
-you-get
-FDM
-Movist
-sequelpro
-sequelpro测试版，解决了退出报错问题。
-Mounty
-postman
-typora
-Stretchly
-幕享
-splashtop
-JSON Viewer
-Meld
-Multipass
-Proxyman
-Wireshark
-
-小技巧使用命令打开目录和文件1、在finder中打开当前目录open .
-2、使用默认程序打开指定文件open README.md
-切换窗口1、command + tab2、三指左右滑动3、三指上滑
-快速预览选中文件或者文件夹，点击空格即可预览文件，点击上下左右可以预览其他文件。
-隔空投送接收方：打开隔空投送功能，同时接收人选择仅限联系人或所有人。
-发送方：1、打开要发送的文件，然后点按 App 窗口中的“共享”按钮 。或者，在“访达”中按住 Control 键点按相应文件，然后从快捷键菜单中选取“共享”。2、从列出的共享选项中，选取“隔空投送”。3、从“隔空投送”表单中选取一位接收者。
-或者打开“隔空投送”窗口，然后将文件拖移到接收者：1、在“访达”窗口的边栏中选择“隔空投送”。或者从菜单栏中选取“前往”&gt;“隔空投送”。2、“隔空投送”窗口随即会显示附近的“隔空投送”用户。将一个或多个文稿、照片或其他文件拖移到窗口中显示的接收者。
-详情参考 在 Mac 上使用“隔空投送”。
-传送速度非常快，网络条件不错的情况下，可以达到几百MB每秒。
 ]]></content>
       <categories>
         <category>爱好</category>
@@ -4758,8 +4811,8 @@ docker run -it --name vk-php -d \-p 8080:80 \-v /opt/w7/mysql:/var/lib/mysql \-v
       </categories>
       <tags>
         <tag>docker</tag>
-        <tag>php</tag>
         <tag>apache</tag>
+        <tag>php</tag>
       </tags>
   </entry>
   <entry>
@@ -6309,11 +6362,11 @@ Least Load
         <category>centos</category>
       </categories>
       <tags>
+        <tag>tomcat</tag>
         <tag>java</tag>
         <tag>maven</tag>
         <tag>centos</tag>
         <tag>mysql</tag>
-        <tag>tomcat</tag>
         <tag>git</tag>
       </tags>
   </entry>
@@ -7373,8 +7426,8 @@ TPC-W安装与配置（威斯康星大学Java版）
         <category>ubuntu</category>
       </categories>
       <tags>
-        <tag>linux</tag>
         <tag>apache</tag>
+        <tag>linux</tag>
         <tag>mysql</tag>
         <tag>ubuntu</tag>
       </tags>
@@ -7483,8 +7536,8 @@ ab -g t0.dat -t 100 -n 1000000 http://172.16.0.19/mediawiki/index.php/Main_Page
       </categories>
       <tags>
         <tag>docker</tag>
-        <tag>linux</tag>
         <tag>apache</tag>
+        <tag>linux</tag>
         <tag>ubuntu</tag>
         <tag>测试</tag>
         <tag>openstack</tag>
@@ -7609,8 +7662,8 @@ chmod a+x pt10.sh./pt10.sh
         <category>ubuntu</category>
       </categories>
       <tags>
-        <tag>linux</tag>
         <tag>apache</tag>
+        <tag>linux</tag>
         <tag>ubuntu</tag>
       </tags>
   </entry>
@@ -8919,7 +8972,7 @@ AIOps围绕质量保障、成本管理和效率提升的基本运维场景，逐
     <title>左神排序算法文字总结</title>
     <url>/dev-zuo-sort/</url>
     <content><![CDATA[前言相见恨晚！看了左神的算法视频，才知道自己到底浪费了多少时间。算法，居然能讲的这么有意思，居然能讲的这么通俗易懂！左神，不愧是左“神”！
-《leetcode刷题记录-排序算法总结》一文中，也总结过排序算法，但是和左神的讲解一比，简直就是渣渣。所以，本文按照左神的讲解，再次总结一下排序算法。
+《leetcode刷题记录-排序算法总结》一文中，也总结过排序算法，但是和左神的讲解一比，就是渣渣。所以，本文按照左神的讲解，再次总结一下排序算法。
 
 
 排序算法常见的排序算法有9个，分别是冒泡排序、选择排序、插入排序、归并排序、快速排序、堆排序、希尔排序、计数排序和基数排序。它们的时间空间复杂度如下：
@@ -8995,16 +9048,18 @@ $O(M)$
 聪明算法归并排序1、数组分割成长度为1的有序区间2、有序区间两两合并，得到长度为2的有序区间
 快速排序1、数组中随机选择一个数，小于等于这个数的元素放左，大于这个数的元素放右2、左右两边递归
 快速划分过程：（1）左区间初始值为0，划分值放在N-1位置（2）遍历数组，元素大于划分值则跳过，小于等于划分值则交换该元素与左区间加一的元素，到N-1位置则交换划分值与左区间加一的元素。
-堆排序1、已有大根堆（数组表示），把堆顶元素与最后一个元素交换，交换后最后一个元素有序2、调整后，把堆顶元素与倒第二个元素交换，交换后最后两个元素有序
+堆排序1、建立大根堆（数组表示），把堆顶元素与最后一个元素交换，交换后最后一个元素有序2、调整后，把堆顶元素与倒第二个元素交换，交换后最后两个元素有序
+完全二叉树当前节点索引为i，那么父节点为(i-1)/2，子节点为2i+1和2i+2调整大根堆：调整当前节点大于左右子节点，若发生调整则递归建立大根堆：从下往上，从第一个父节点开始视频讲解：堆排序
 希尔排序1、设定初始步长，按照步长比较元素大小并交换2、步长减一，比较元素大小并交换
 注：希尔排序是改良版的插入排序
 变态算法计数排序1、建立0-M号桶2、把元素按大小放入对应桶3、依次把0-M号桶中的元素倒出
 基数排序1、准备0-9号桶2、元素按个位数放入对应桶3、依次把0-9号桶中的元素倒出（先进先出），成为序列4、按序列把元素按十位数放入对应桶
 注：计数排序和基数排序都属于桶排序的实现，桶排序是一种排序思想。
-后记好记性不如烂笔头，后续计划对其他算法也进行总结。
-书签牛客算法基础班
+后记代码实现：排序算法  
+好记性不如烂笔头，记下来，多看几遍，多想几遍，多写几遍，熟能生巧。
+书签直通BAT — 求职算法精品课
+牛客算法基础班
 牛客算法进阶班
-直通BAT — 求职算法精品课
 ]]></content>
       <categories>
         <category>专业</category>
@@ -13654,9 +13709,9 @@ catalina.sh在执行的时候会调用同级路径下的setenv.sh来设置额外
         <category>tomcat</category>
       </categories>
       <tags>
+        <tag>tomcat</tag>
         <tag>centos</tag>
         <tag>supervisor</tag>
-        <tag>tomcat</tag>
       </tags>
   </entry>
   <entry>
@@ -14863,7 +14918,8 @@ Dubbo实现RPC调用使用入门
     <content><![CDATA[termux简介termux是个非常强大的终端模拟器，能够在android上模拟linux终端。接下来，郝同学就在自己的Honor9上尝试一下termux。
 
 
-安装termux1、安装google play2、google play中搜索“termux”3、下载安装termux
+安装termux从google play安装（已废弃）1、安装google play2、google play中搜索“termux”3、下载安装termux
+从github安装1、访问termux-app/releases2、选择apk安装包，这里选择 github-debug_x86_64.apk 版本3、下载安装即可
 安装ssh运维从访问远程服务器开始，这怎么离得开ssh命令。Termux不自带ssh命令，需先安装才能使用。
 1、安装opensshapt install openssh
 安装的openssh包括客户端ssh和服务端sshd，也就是说我们既可以使用ssh访问远程设备，也可以在本机上开启ssh服务以方便其他设备远程访问本机。默认情况下，安装openssh不开启服务端。
@@ -14897,6 +14953,8 @@ windows端远程连接使用xftp登录linux，拷贝id_rsa_honor到windows的~/.
 点击连接后，提示输入登录的用户名，不用填写，直接确定，连接成功。
 挂载手机存储打开termux终端，默认路径为 /data/data/com.termux/files/home ，但是这个路径并不是安卓系统的真实路径。直接cd到根目录，也没有权限查看文件。如果想要访问安卓系统中的文件，必须先对安卓系统的磁盘进行挂载。
 挂载方法为执行命令 termux-setup-storage ，执行之后会提示授权termux访问文件系统的权限，选择同意，然后home目录下会出现storage目录，storage目录中就是安卓系统的文件了。
+更换软件镜像源sed -i 's@^\(deb.*stable main\)$@#\1\ndeb https://mirrors.tuna.tsinghua.edu.cn/termux/termux-packages-24 stable main@' $PREFIX/etc/apt/sources.listsed -i 's@^\(deb.*games stable\)$@#\1\ndeb https://mirrors.tuna.tsinghua.edu.cn/termux/game-packages-24 games stable@' $PREFIX/etc/apt/sources.list.d/game.listsed -i 's@^\(deb.*science stable\)$@#\1\ndeb https://mirrors.tuna.tsinghua.edu.cn/termux/science-packages-24 science stable@' $PREFIX/etc/apt/sources.list.d/science.listpkg update
+
 书签神器Termux的使用日常
 debian ssh 连接android 通过termux
 Termux命令行神器初体验
@@ -16232,7 +16290,7 @@ location / &#123;      if ($uri ~ [A-Z])&#123;          rewrite_by_lua 'return n
 
 数据表相关# 创建数据表CREATE TABLE IF NOT EXISTS `user` (  `id` int(8) NOT NULL AUTO_INCREMENT,  `name` varchar(32) NOT NULL,  `password` varchar(32) NOT NULL DEFAULT '',  PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARSET=utf8;# 删除数据表drop table `user`;# 删除所有数据表SELECT CONCAT('drop table ',table_name,';') FROM information_schema.`TABLES` WHERE table_schema='vkphp';# 添加columnalter table `user` add column `deleted1` bool not null default false;# 修改columnalter table `user` change `deleted1` `deleted` bool not null default false;alter table `user` modify `deleted` int(1) not null default 0;alter table `user` modify column `deleted` int(1) not null default 0;# 设置uniquealter table `user` modify `name` varchar(32) not null unique;alter table `user` modify column `name` varchar(32) not null unique;# 删除columnalter table `user` drop `deleted`;alter table `user` drop column `deleted`;# 插入数据insert into `user` (`name`,`password`) values('haojin','voidking');# 查询数据select * from `user` where name='haojin' and password='voidking';select * from `user` where name='haojin' or password='haojin';select * from `user` where name&lt;&gt;'haojin0';select * from `user` where name like '%ao%';select * from `user` order by id asc;select * from `user` order by id desc;select * from `user` order by id desc limit 2;select * from `user` where unix_timestamp(update_time) &lt; unix_timestamp('2020-03-01 10:14:51');# 修改数据update `user` set password='haojin' where name='haojin';# 删除数据delete from `user` where name='haojin';
 
-导入导出数据# 导出数据库数据mysqldump -uroot -ppassword vkphp &gt; /root/vkphp.sql# 导出数据库user表数据mysqldump -uroot -ppassword vkphp user &gt; /root/user.sql# 导入数据库数据mysql -uroot -ppassword vkphp &lt; /root/vkphp.sqlsource /root/vkphp.sql;
+导入导出数据# 导出数据库数据mysqldump -uroot -ppassword vkphp &gt; /root/vkphp.sql# 导出数据库user表数据mysqldump -uroot -ppassword vkphp user &gt; /root/user.sql# 导出数据库user表结构mysqldump -uroot -ppassword -d vkphp user &gt; /root/user.sqlmysqldump -uroot -ppassword -d --add-drop-table vkphp user &gt; /root/user.sql# 导入数据库数据mysql -uroot -ppassword vkphp &lt; /root/vkphp.sqlsource /root/vkphp.sql;
 
 直接执行sql# shell中直接执行sqlmysql -h 192.168.56.100 -uroot -pvoidking -D vkphp -e "select * from user;"
 
@@ -16543,13 +16601,13 @@ Install Apache, PHP And MySQL On CentOS 7 (LAMP)
         <category>专业</category>
         <category>运维</category>
         <category>开发</category>
-        <category>centos</category>
         <category>apache</category>
+        <category>centos</category>
         <category>php</category>
       </categories>
       <tags>
-        <tag>php</tag>
         <tag>apache</tag>
+        <tag>php</tag>
         <tag>centos</tag>
         <tag>yum源</tag>
       </tags>
@@ -17586,6 +17644,45 @@ curl下载文件curl -o icon.png "https://www.python.org/static/opengraph-icon-2
       </tags>
   </entry>
   <entry>
+    <title>Shell脚本之安全删除</title>
+    <url>/dev-shell-saferm/</url>
+    <content><![CDATA[前言很多时候，我们会误删文件，那么一个回收站就很有必要了。看了一些回收站的实现，都比较复杂，干脆自己写一个。
+思路：使用mv替换rm，把想要删除的文件暂时移动到回收站。
+
+
+安全删除脚本1、编写安全删除脚本，saferm.sh
+#!/bin/bashTRASHDIR="$&#123;HOME&#125;/.saferm/trash"[[ ! -d $&#123;TRASHDIR&#125; ]] &amp;&amp; mkdir -p $&#123;TRASHDIR&#125;function usage()&#123;    echo -e "    Brief: move directory and files to ~/.local/trash    Usage: alias rm=/path/to/saferm.sh            rm &lt;dir&gt;            rm &lt;file&gt;            rm &lt;file1&gt; &lt;file2&gt;    "&#125;function main()&#123;    local now=$(date "+%Y%m%d%H%M%S")    local destdir="$&#123;TRASHDIR&#125;/$&#123;now&#125;"    mkdir $&#123;destdir&#125;    local opt    while getopts "h" opt    do      case $opt in        h)          usage &amp;&amp; exit 0 ;;        \?)          usage &amp;&amp; exit 0 ;;      esac    done    local files="$*"    local successfiles=""    for file in $&#123;files&#125;;do        mv $&#123;file&#125; $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file&#125;    done    if [[ -z "$&#123;successfiles&#125;" ]];then        echo -e "\033[31mNothing to do! Check the source filenames please!\033[0m"    else        echo -e "$&#123;successfiles&#125; have been moved to \033[31m$&#123;destdir&#125;\033[0m"    fi&#125;main "$@"
+
+2、使用方法编辑 .bash_profile ，添加内容
+# safermalias rm="/path/to/saferm.sh"
+添加内容完成， source .bash_profile ，rm命令就被替换为saferm脚本了。
+以上，安全删除的功能就完成了，自己偶尔手动清理下 TRASHDIR 中的文件。以下内容可选，是对该saferm脚本的补充。
+清理回收站脚本1、清理回收站脚本，cleartrash.sh
+#!/bin/bash# Clear files in trash that been removed 3 days ago.TRASHDIR="$&#123;HOME&#125;/.saferm/trash"CLEARLOG="$&#123;TRASHDIR&#125;/clear.log"[[ -d $&#123;TRASHDIR&#125; ]] \&amp;&amp; find $&#123;TRASHDIR&#125; -mindepth 1 -type d -mtime +2 \| xargs rm -rfv | tee -a $&#123;CLEARLOG&#125;
+
+2、使用方法编辑 .bash_profile ，添加内容
+# safermalias rm="/path/to/saferm.sh"alias cleartrash="/path/to/cleartrash.sh"
+添加内容完成， source .bash_profile ，然后就可以使用 cleartrash 命令清理回收站了。
+3、定时任务参考《Linux设置定时任务》，添加定时任务。
+crontab -e，添加定时任务，每天晚上执行一次：
+5 0 * * * /bin/bash /path/to/cleartrash.sh
+
+进阶saferm.sh 脚本存在一个严重bug：无法删除文件名带空格的文件，甚至会误删文件。因为Shell默认以空格、Tab、回车作为值与值之间的分隔符，而不是做为文件名的一部分。如果文件名中带空格，就会被认为是多个文件。
+修改 saferm.sh 如下：
+#!/bin/bashTRASHDIR="$&#123;HOME&#125;/.saferm/trash"[[ ! -d $&#123;TRASHDIR&#125; ]] &amp;&amp; mkdir -p $&#123;TRASHDIR&#125;function usage()&#123;    echo -e "    Brief: Move directories or files to ~/.local/trash           You can move 1-3 files with wildcard. More is unsupported.            If file name contains space, use quotation mark please.    Usage: alias rm=/path/to/saferm.sh            rm &lt;dir&gt;            rm &lt;file&gt;            rm *.&lt;filetype&gt;            rm &lt;file1&gt; &lt;file2&gt; &lt;file3&gt;    "&#125;function main()&#123;    local now=$(date "+%Y%m%d%H%M%S")    local destdir="$&#123;TRASHDIR&#125;/$&#123;now&#125;"    mkdir $&#123;destdir&#125;    local opt    while getopts "h" opt    do      case $opt in        h)          usage &amp;&amp; exit 0 ;;        \?)          usage &amp;&amp; exit 0 ;;      esac    done    local file1="$1"    local file2="$2"    local file3="$3"    local file4="$4"    local successfiles=""    [[ -n "$&#123;file1&#125;" ]] &amp;&amp; mv "$&#123;file1&#125;" $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file1&#125;    [[ -n "$&#123;file2&#125;" ]] &amp;&amp; mv "$&#123;file2&#125;" $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file2&#125;    [[ -n "$&#123;file3&#125;" ]] &amp;&amp; mv "$&#123;file3&#125;" $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file3&#125;    [[ -n "$&#123;file4&#125;" ]] &amp;&amp; echo -e "\033[31mYou can move 1-3 files with wildcard. More is unsupported.\033[0m"    if [[ -z "$&#123;successfiles&#125;" ]];then        echo -e "\033[31mNothing to do! Check the source filenames please!\033[0m"    else        echo -e "$&#123;successfiles&#125; have been moved to \033[31m$&#123;destdir&#125;\033[0m"    fi&#125;main "$@"
+
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>shell</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>shell</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Shell脚本之循环读取文本</title>
     <url>/dev-shell-loop-read-file/</url>
     <content><![CDATA[需求已知mobile.txt为：
@@ -17634,68 +17731,6 @@ modify.sh内容为：
 或者使用for循环：
 #!/bin/bashfilename="applist.txt"lines=$(cat $&#123;filename&#125; | sed '/^$/d')linenum=$(echo "$&#123;lines&#125;" | wc -l)#echo -e "$&#123;lines&#125;"#echo -e "$&#123;linenum&#125;"for index in `seq 1 $&#123;lines&#125;`;do  #echo $&#123;index&#125;  line=$(echo "$&#123;lines&#125;" | sed -n "$&#123;index&#125;p")  app_id=$(echo $line | awk '&#123;print $1&#125;')  idc=$(echo $app_id | awk -F'.' '&#123;print $NF&#125;')  bash modify.sh $&#123;idc&#125; $&#123;app_id&#125;done
 
-
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>shell</category>
-      </categories>
-      <tags>
-        <tag>linux</tag>
-        <tag>shell</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Shell脚本之模拟面试</title>
-    <url>/dev-shell-interview-mock/</url>
-    <content><![CDATA[需求已知 quiz.txt 内容为：
-介绍 Java 垃圾回收器的基本原理。介绍 HashMap 的实现原理。讲讲 Web 应用程序中的 Cookie 和 Session 是什么关系？你在生产实践中使用过哪些设计模式，是什么场景下使用的？为什么使用？Java 11 的 “本地变量类型推断” 听说过么？讲讲看。解释一下事务隔离级别。什么是一致性hash？看你做的项目不少，请介绍一个你认为最能表现你能力的项目吧。讲讲你最近开发的一个项目的业务背景和架构（或技术）。项目开发用的是瀑布模型还是敏捷模型，团队角色在什么时候、用什么工具和资源、做什么动作，以及是如何协作的。
-
-需求：从 quiz.txt 文本中，随机选出5道题（不能重复），作为面试题目。面试结束后，发送面试题目到指定邮箱，方便回顾思考。
-
-
-脚本#!/bin/bashcat /dev/null &gt; interview.txtecho "面试开始！"echo "面试开始！" &gt;&gt; interview.txtquiz=$(cat quiz.txt | grep -v -e '^[[:space:]]*$')sum=$(echo "$&#123;quiz&#125;" | wc -l)#echo $&#123;sum&#125;for i in `seq 1 5`;do  #echo "第$&#123;i&#125;题"  line=$(($&#123;RANDOM&#125;%$&#123;sum&#125;+1))  content=$(echo "$&#123;quiz&#125;" | sed -n $&#123;line&#125;p)  echo "$&#123;i&#125;、$&#123;content&#125;"  echo "$&#123;i&#125;、$&#123;content&#125;" &gt;&gt; interview.txt  quiz=$(echo "$&#123;quiz&#125;" | sed $&#123;line&#125;d)  sum=$((sum-1))  #echo $&#123;sum&#125;  read -p "是否继续下一题？[Y/N]" input  if [[ $input = "n" || $input = "N" ]];then    break  fidonecat interview.txt | mail -s "面试-`date +\%Y\%m\%d-\%H\%M\%S`" admin@voidking.com
-
-
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>shell</category>
-      </categories>
-      <tags>
-        <tag>linux</tag>
-        <tag>shell</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Shell脚本之安全删除</title>
-    <url>/dev-shell-saferm/</url>
-    <content><![CDATA[前言很多时候，我们会误删文件，那么一个回收站就很有必要了。看了一些回收站的实现，都比较复杂，干脆自己写一个。
-思路：使用mv替换rm，把想要删除的文件暂时移动到回收站。
-
-
-安全删除脚本1、编写安全删除脚本，saferm.sh
-#!/bin/bashTRASHDIR="$&#123;HOME&#125;/.saferm/trash"[[ ! -d $&#123;TRASHDIR&#125; ]] &amp;&amp; mkdir -p $&#123;TRASHDIR&#125;function usage()&#123;    echo -e "    Brief: move directory and files to ~/.local/trash    Usage: alias rm=/path/to/saferm.sh            rm &lt;dir&gt;            rm &lt;file&gt;            rm &lt;file1&gt; &lt;file2&gt;    "&#125;function main()&#123;    local now=$(date "+%Y%m%d%H%M%S")    local destdir="$&#123;TRASHDIR&#125;/$&#123;now&#125;"    mkdir $&#123;destdir&#125;    local opt    while getopts "h" opt    do      case $opt in        h)          usage &amp;&amp; exit 0 ;;        \?)          usage &amp;&amp; exit 0 ;;      esac    done    local files="$*"    local successfiles=""    for file in $&#123;files&#125;;do        mv $&#123;file&#125; $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file&#125;    done    if [[ -z "$&#123;successfiles&#125;" ]];then        echo -e "\033[31mNothing to do! Check the source filenames please!\033[0m"    else        echo -e "$&#123;successfiles&#125; have been moved to \033[31m$&#123;destdir&#125;\033[0m"    fi&#125;main "$@"
-
-2、使用方法编辑 .bash_profile ，添加内容
-# safermalias rm="/path/to/saferm.sh"
-添加内容完成， source .bash_profile ，rm命令就被替换为saferm脚本了。
-以上，安全删除的功能就完成了，自己偶尔手动清理下 TRASHDIR 中的文件。以下内容可选，是对该saferm脚本的补充。
-清理回收站脚本1、清理回收站脚本，cleartrash.sh
-#!/bin/bash# Clear files in trash that been removed 3 days ago.TRASHDIR="$&#123;HOME&#125;/.saferm/trash"CLEARLOG="$&#123;TRASHDIR&#125;/clear.log"[[ -d $&#123;TRASHDIR&#125; ]] \&amp;&amp; find $&#123;TRASHDIR&#125; -mindepth 1 -type d -mtime +2 \| xargs rm -rfv | tee -a $&#123;CLEARLOG&#125;
-
-2、使用方法编辑 .bash_profile ，添加内容
-# safermalias rm="/path/to/saferm.sh"alias cleartrash="/path/to/cleartrash.sh"
-添加内容完成， source .bash_profile ，然后就可以使用 cleartrash 命令清理回收站了。
-3、定时任务参考《Linux设置定时任务》，添加定时任务。
-crontab -e，添加定时任务，每天晚上执行一次：
-5 0 * * * /bin/bash /path/to/cleartrash.sh
-
-进阶saferm.sh 脚本存在一个严重bug：无法删除文件名带空格的文件，甚至会误删文件。因为Shell默认以空格、Tab、回车作为值与值之间的分隔符，而不是做为文件名的一部分。如果文件名中带空格，就会被认为是多个文件。
-修改 saferm.sh 如下：
-#!/bin/bashTRASHDIR="$&#123;HOME&#125;/.saferm/trash"[[ ! -d $&#123;TRASHDIR&#125; ]] &amp;&amp; mkdir -p $&#123;TRASHDIR&#125;function usage()&#123;    echo -e "    Brief: Move directories or files to ~/.local/trash           You can move 1-3 files with wildcard. More is unsupported.            If file name contains space, use quotation mark please.    Usage: alias rm=/path/to/saferm.sh            rm &lt;dir&gt;            rm &lt;file&gt;            rm *.&lt;filetype&gt;            rm &lt;file1&gt; &lt;file2&gt; &lt;file3&gt;    "&#125;function main()&#123;    local now=$(date "+%Y%m%d%H%M%S")    local destdir="$&#123;TRASHDIR&#125;/$&#123;now&#125;"    mkdir $&#123;destdir&#125;    local opt    while getopts "h" opt    do      case $opt in        h)          usage &amp;&amp; exit 0 ;;        \?)          usage &amp;&amp; exit 0 ;;      esac    done    local file1="$1"    local file2="$2"    local file3="$3"    local file4="$4"    local successfiles=""    [[ -n "$&#123;file1&#125;" ]] &amp;&amp; mv "$&#123;file1&#125;" $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file1&#125;    [[ -n "$&#123;file2&#125;" ]] &amp;&amp; mv "$&#123;file2&#125;" $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file2&#125;    [[ -n "$&#123;file3&#125;" ]] &amp;&amp; mv "$&#123;file3&#125;" $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file3&#125;    [[ -n "$&#123;file4&#125;" ]] &amp;&amp; echo -e "\033[31mYou can move 1-3 files with wildcard. More is unsupported.\033[0m"    if [[ -z "$&#123;successfiles&#125;" ]];then        echo -e "\033[31mNothing to do! Check the source filenames please!\033[0m"    else        echo -e "$&#123;successfiles&#125; have been moved to \033[31m$&#123;destdir&#125;\033[0m"    fi&#125;main "$@"
 
 ]]></content>
       <categories>
@@ -18224,9 +18259,9 @@ tomcat使用supervisor管理
       </categories>
       <tags>
         <tag>docker</tag>
+        <tag>tomcat</tag>
         <tag>centos</tag>
         <tag>supervisor</tag>
-        <tag>tomcat</tag>
       </tags>
   </entry>
   <entry>
@@ -18286,8 +18321,8 @@ docker镜像的命名规则 registry_url/namespace/image_name:tag 默认tag是la
       </categories>
       <tags>
         <tag>docker</tag>
-        <tag>centos</tag>
         <tag>tomcat</tag>
+        <tag>centos</tag>
       </tags>
   </entry>
   <entry>
@@ -18730,9 +18765,9 @@ ifconfig docker0 down
       </categories>
       <tags>
         <tag>docker</tag>
+        <tag>tomcat</tag>
         <tag>centos</tag>
         <tag>nginx</tag>
-        <tag>tomcat</tag>
         <tag>ubuntu</tag>
         <tag>jdk</tag>
       </tags>
@@ -19219,9 +19254,9 @@ Working directory：$FileDir$
       </categories>
       <tags>
         <tag>python</tag>
+        <tag>tomcat</tag>
         <tag>java</tag>
         <tag>maven</tag>
-        <tag>tomcat</tag>
         <tag>idea</tag>
       </tags>
   </entry>
@@ -25714,8 +25749,8 @@ jQzoom简介http://www.oschina.net/p/jqzoom?fromerr=tUayHgqO
       </categories>
       <tags>
         <tag>前端</tag>
-        <tag>jquery</tag>
         <tag>插件</tag>
+        <tag>jquery</tag>
       </tags>
   </entry>
   <entry>
@@ -25745,8 +25780,8 @@ imagesloaded项目地址：https://github.com/desandro/imagesloaded
       </categories>
       <tags>
         <tag>前端</tag>
-        <tag>jquery</tag>
         <tag>插件</tag>
+        <tag>jquery</tag>
       </tags>
   </entry>
   <entry>
@@ -29537,6 +29572,25 @@ alter table userbase add constraint fk_username foreign key(username) references
       </tags>
   </entry>
   <entry>
+    <title>坐功入静</title>
+    <url>/hobby-dhyana-meditation/</url>
+    <content><![CDATA[作者：那秋生
+
+坐功是静功里最要紧的一个环节，坐功是入静的第一步。坐功有静坐功和动静兼修两种。
+
+李渔《闲情偶寄·颐养》曰：“益寿之方，全凭导引；安生之计，惟赖坐功。”儒家提倡“静坐”。王阳明说：“静坐要省察克治，静坐能使心清静收敛，从而克服自我私欲产生，通过静坐能顿悟明心见性，得道成真。”
+道家主张“坐忘”。《庄子·大宗师》：“堕肢体，黜聪明，离形去知，同于大通，此谓坐忘。”即摆脱现实形体的束缚，与自然融为一体，两两相忘。佛家的功夫是“坐禅”。音译“禅那”，简称“禅”，意谓思维修或静虑，就是趺坐而修禅，是佛教修持的主要方法之一。
+现代人就是坐不住，成天跑东跑西、忙这忙那，就像丢了魂似的，悲乎！
+]]></content>
+      <categories>
+        <category>爱好</category>
+        <category>读书</category>
+      </categories>
+      <tags>
+        <tag>笔记</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>自由与理想</title>
     <url>/hobby-freedom-and-ideal/</url>
     <content><![CDATA[作者：吴晓波
@@ -29575,25 +29629,6 @@ alter table userbase add constraint fk_username foreign key(username) references
       </categories>
       <tags>
         <tag>读者</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>坐功入静</title>
-    <url>/hobby-dhyana-meditation/</url>
-    <content><![CDATA[作者：那秋生
-
-坐功是静功里最要紧的一个环节，坐功是入静的第一步。坐功有静坐功和动静兼修两种。
-
-李渔《闲情偶寄·颐养》曰：“益寿之方，全凭导引；安生之计，惟赖坐功。”儒家提倡“静坐”。王阳明说：“静坐要省察克治，静坐能使心清静收敛，从而克服自我私欲产生，通过静坐能顿悟明心见性，得道成真。”
-道家主张“坐忘”。《庄子·大宗师》：“堕肢体，黜聪明，离形去知，同于大通，此谓坐忘。”即摆脱现实形体的束缚，与自然融为一体，两两相忘。佛家的功夫是“坐禅”。音译“禅那”，简称“禅”，意谓思维修或静虑，就是趺坐而修禅，是佛教修持的主要方法之一。
-现代人就是坐不住，成天跑东跑西、忙这忙那，就像丢了魂似的，悲乎！
-]]></content>
-      <categories>
-        <category>爱好</category>
-        <category>读书</category>
-      </categories>
-      <tags>
-        <tag>笔记</tag>
       </tags>
   </entry>
   <entry>
