@@ -48,7 +48,7 @@ CKA一共180分钟，25道题；CKAD一共120分钟，20道题。
 K8S《Kubernetes权威指南：从Docker到Kubernetes实践全接触 第4版》Kubernetes Documentationkubernetes中文社区华为云-Cloud Native Lives阿里云-K8s 资源全汇总 | K8s 大咖带你 31 堂课从零入门 K8s阿里云-云原生技术公开课阿里云-云原生技术公开课（备用地址）Certified Kubernetes Administrator (CKA) with Practice TestsLabs - Certified Kubernetes Administrator with Practice TestsKubernetes Certified Application Developer (CKAD) with TestsLabs - Certified Kubernetes Application Developercka&amp;cakd考纲-curriculumStudying for the Certified Kubernetes Administrator ExamK8S TasksLearn Kubernetes using Interactive Browser-Based ScenariosPlay with KubernetesCKA CKAD Simulator
 k8s-tool备考的过程中，完善自己的k8s-tool，考试的时候可以使用。
 后记5月19日更新三个月忙碌的早晚，无休的周末，终于在今天早上，收到了CKAD的证书。加上4月份拿到的CKA证书，目标达成！CKA考了90%（74%通过），CKAD考了89%（66%通过）。
-考试心得CKA和CKAD有什么差别？1、考试内容有重叠，但是也有各自独立的内容。比如CKA会考etcd和k8s部署相关的内容，CKAD不会涉及。CKAD会有cronjob和ha的内容，CKA不会涉及。2、CKAD比CKA难度更大一些。考过了CKA，本以为可以轻松拿下CKAD，结果考试时发现CKAD的题目更复杂一些，花费时间更长。后来想想也合理，毕竟CKA需要74分通过，而CKAD只需要66分就可以通过。
+考试心得CKA和CKAD有什么差别？1、考试内容有重叠，但是也有各自独立的内容。比如CKA会考etcd和k8s部署相关的内容，CKAD不会涉及。CKAD会有探活、cronjob和hpa的内容，CKA不会涉及。2、CKAD比CKA难度更大一些。考过了CKA，本以为可以轻松拿下CKAD，结果考试时发现CKAD的题目更复杂一些，花费时间更长。后来想想也合理，毕竟CKA需要74分通过，而CKAD只需要66分就可以通过。3、其实我觉得CKA和CKAD完全可以合成一个考试，因为没有特别明显的界限，官方可能就是为了多赚点钱。
 ]]></content>
       <categories>
         <category>专业</category>
@@ -319,6 +319,83 @@ TODOtutorial.py详解、传参、接口调用airflow + django
       </tags>
   </entry>
   <entry>
+    <title>Python重试</title>
+    <url>/dev-python-retry/</url>
+    <content><![CDATA[为什么需要重试？典型场景：程序的实现需要调用第三方的API，但是我们并不能保证第三方API一直好用，也不能保证网络一直畅通，所以在调用第三方API时需要加上错误重试。  
+通用场景：程序的运行不符合预期，我们知道再次调用大概率可以使之符合预期，这时就需要重试。  
+而重试逻辑我们可以通过循环多次调用实现，也可以使用封装好的重试模块。本文我们就学习一下Python中比较流行的 retrying 模块，实现一些重试Demo。
+
+
+安装retryingpip install retrying
+任意异常重试from retrying import retry@retry(stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrorif __name__ == '__main__':    run()
+
+当函数run抛出任意异常时，则进行重试。
+
+stop_max_attempt_number：最大重试次数
+wait_random_min：最小重试间隔
+wait_random_max：最大重试间隔
+
+注意函数内不要使用try except，否则异常就被函数自己捕获处理了，不会抛给retry。
+指定异常重试from retrying import retryimport randomdef if_value_error(exception):    return isinstance(exception, ValueError)@retry(retry_on_exception=if_value_error, stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    value = random.randint(0, 10)    msg = f'value is &#123;value&#125;'    print(msg)    if value &lt;= 5:        raise ValueError('value is too small!')    else:        raise Exception('value is too large!')if __name__ == '__main__':    run()
+
+当函数run抛出ValueError异常时，则进行重试；抛出Exception异常时，不会重试。
+指定返回值重试from retrying import retryimport randomdef if_return_small(value):    return value &lt;= 5@retry(retry_on_result=if_return_small, stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    value = random.randint(0, 10)    msg = f'value is &#123;value&#125;'    print(msg)    return valueif __name__ == '__main__':    run()
+
+当函数run返回值小于5时，进行重试。
+多次重试后容忍异常from retrying import retry@retry(stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrordef run2():    print('run2')if __name__ == '__main__':    run()    run2()
+
+当函数run抛出任意异常时，则进行重试。重试指定次数后，程序就异常结束了。这时，如果我们想要容忍异常，让run2可以正常运行，该怎么办呢？很简单，给run函数包裹一个try except即可。
+from retrying import retry@retry(wrap_exception=True,stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrordef wrap_run():    try:        run()    except:        passdef run2():    print('run2')if __name__ == '__main__':    wrap_run()    run2()
+
+
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>python</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Python脚本路径</title>
+    <url>/dev-python-script-path/</url>
+    <content><![CDATA[怎样获取一个脚本的路径？怎样获取执行脚本的绝对路径？怎样获取执行脚本的父绝对路径？怎样获取入口脚本的绝对路径？。。。带着这些问题，我们进行一个简单的实验，获知这些问题的答案。
+
+
+路径实验路径设计path└── module_a    ├── getpath.py    └── module_b        └── getpath.py
+
+脚本内容getpath.py脚本内容为：
+import osimport sysfrom module_b import getpathdef print_path():    print(f'os.getcwd() is &#123;os.getcwd()&#125;')    print(f'sys.path[0] is &#123;sys.path[0]&#125;')    print(f'sys.argv[0] is &#123;sys.argv[0]&#125;')    print(f'__file__ is &#123;__file__&#125;')    print(f'os.path.dirname(__file__) is &#123;os.path.dirname(__file__)&#125;')    print(f'os.path.abspath(__file__) is &#123;os.path.abspath(__file__)&#125;')    print(f'os.path.realpath(__file__) is &#123;os.path.realpath(__file__)&#125;')    print(f'os.path.split(os.path.realpath(__file__))[0] is &#123;os.path.split(os.path.realpath(__file__))[0]&#125;')print('------ module_a/getpath.py ------')print_path()print('---------------------------------')print('------ module_a/module_b/getpath.py ------')getpath.print_path()print('------------------------------------------')
+
+执行脚本在path目录中执行脚本python module_a/getpath.py ，得到结果为：
+------ module_a/getpath.py ------os.getcwd() is /Users/vk/tmp/pathsys.path[0] is /Users/vk/tmp/path/module_asys.argv[0] is module_a/getpath.py__file__ is module_a/getpath.pyos.path.dirname(__file__) is module_aos.path.abspath(__file__) is /Users/vk/tmp/path/module_a/getpath.pyos.path.realpath(__file__) is /Users/vk/tmp/path/module_a/getpath.pyos.path.split(os.path.realpath(__file__))[0] is /Users/vk/tmp/path/module_a--------------------------------------- module_a/module_b/getpath.py ------os.getcwd() is /Users/vk/tmp/pathsys.path[0] is /Users/vk/tmp/path/module_asys.argv[0] is module_a/getpath.py__file__ is /Users/vk/tmp/path/module_a/module_b/getpath.pyos.path.dirname(__file__) is /Users/vk/tmp/path/module_a/module_bos.path.abspath(__file__) is /Users/vk/tmp/path/module_a/module_b/getpath.pyos.path.realpath(__file__) is /Users/vk/tmp/path/module_a/module_b/getpath.pyos.path.split(os.path.realpath(__file__))[0] is /Users/vk/tmp/path/module_a/module_b------------------------------------------
+
+实验结论由实验结果，可以得出如下结论。
+获取执行命令的绝对路径os.getcwd()
+
+获取入口脚本的父绝对路径sys.path[0]
+
+获取执行脚本的绝对路劲os.path.abspath(__file__)os.path.realpath(__file__)
+
+获取执行脚本的父绝对路径os.path.split(os.path.realpath(__file__))[0]
+
+获取文件/目录的父路径os.path.dirname(__file__)
+
+
+
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>python</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Python小技巧</title>
     <url>/dev-python-tricks/</url>
     <content><![CDATA[语法检查pylint 是一个能够检查Python编码质量、编码规范的工具。它分析 Python 代码中的错误，查找不符合代码风格标准（Pylint 默认使用的代码风格是 PEP 8）和有潜在问题的代码。
@@ -406,34 +483,33 @@ import jsonimport unittestfrom unittest import mockimport requestsdef request_sy
       </tags>
   </entry>
   <entry>
-    <title>Python重试</title>
-    <url>/dev-python-retry/</url>
-    <content><![CDATA[为什么需要重试？典型场景：程序的实现需要调用第三方的API，但是我们并不能保证第三方API一直好用，也不能保证网络一直畅通，所以在调用第三方API时需要加上错误重试。  
-通用场景：程序的运行不符合预期，我们知道再次调用大概率可以使之符合预期，这时就需要重试。  
-而重试逻辑我们可以通过循环多次调用实现，也可以使用封装好的重试模块。本文我们就学习一下Python中比较流行的 retrying 模块，实现一些重试Demo。
+    <title>Python打印日志</title>
+    <url>/dev-python-log/</url>
+    <content><![CDATA[输出日志到控制台import sysimport logginglog = logging.getLogger(__name__)log.setLevel(logging.DEBUG)log.addHandler(logging.StreamHandler(sys.stdout)) #默认sys.errorlog.info('print info level log to console')
 
 
-安装retryingpip install retrying
-任意异常重试from retrying import retry@retry(stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrorif __name__ == '__main__':    run()
 
-当函数run抛出任意异常时，则进行重试。
+输出日志到文件import sysimport logginglog = logging.getLogger(__name__)log.setLevel(logging.DEBUG)log.addHandler(logging.FileHandler('python.log'))log.info('print info level log to file')
+日志文件默认存储到执行命令的路径下，可以通过使用绝对路径来指定日志文件路径。
+封装日志模块1、封装一个日志模块 log.py
+#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport loggingimport logging.handlersdef init_log(log_path, level=logging.INFO, when="D", backup=7,             format="%(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s",             datefmt="%m-%d %H:%M:%S"):    """    init_log - initialize log module    Args:    log_path - Log file path prefix.    Log data will go to two files: log_path.log and log_path.log.wf    Any non-exist parent directories will be created automatically    level - msg above the level will be displayed    DEBUG &lt; INFO &lt; WARNING &lt; ERROR &lt; CRITICAL    the default value is logging.INFO    when - how to split the log file by time interval    'S' : Seconds    'M' : Minutes    'H' : Hours    'D' : Days    'W' : Week day    default value: 'D'    format - format of the log    default format:    %(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s    INFO: 12-09 18:02:42: log.py:40 * 139814749787872 HELLO WORLD    backup - how many backup file to keep    default value: 7    Raises:    OSError: fail to create log directories    IOError: fail to open log file    """    formatter = logging.Formatter(format, datefmt)    logger = logging.getLogger()    logger.setLevel(level)    dir = os.path.dirname(log_path)    if not os.path.isdir(dir):        os.makedirs(dir)    handler = logging.handlers.TimedRotatingFileHandler(log_path + ".log",                                                        when=when,                                                        backupCount=backup)    handler.setLevel(level)    handler.setFormatter(formatter)    logger.addHandler(handler)    handler = logging.handlers.TimedRotatingFileHandler(log_path + ".log.wf",                                                        when=when,                                                        backupCount=backup)    handler.setLevel(logging.WARNING)    handler.setFormatter(formatter)    logger.addHandler(handler)
 
-stop_max_attempt_number：最大重试次数
-wait_random_min：最小重试间隔
-wait_random_max：最大重试间隔
+2、使用日志模块
+#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport loggingimport logclass VKTest(object):    def __init__(self):        logging.info('print info level log to file')if __name__=="__main__":    # 日志保存到./log/vk.log和./log/vk.log.wf，按天切割，保留7天    log.init_log("./log/vk")    logging.info("程序启动!!!")    vk = VKTest()    logging.info("程序结束!!!")
 
-注意函数内不要使用try except，否则异常就被函数自己捕获处理了，不会抛给retry。
-指定异常重试from retrying import retryimport randomdef if_value_error(exception):    return isinstance(exception, ValueError)@retry(retry_on_exception=if_value_error, stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    value = random.randint(0, 10)    msg = f'value is &#123;value&#125;'    print(msg)    if value &lt;= 5:        raise ValueError('value is too small!')    else:        raise Exception('value is too large!')if __name__ == '__main__':    run()
+执行脚本后，日志内容会输出到 log/vk.log 中。
+封装日志模块2.01、封装一个日志模块 log.py
+#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport loggingimport logging.handlersDEFAULT_LOG_PATH = './log/'class Log(object):    def __init__(self,                 logfile_name='default',                 log_path=DEFAULT_LOG_PATH,                 level=logging.INFO,                 when="D",                 backup=7,                 format="%(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s",                 datefmt="%m-%d %H:%M:%S"):        """        init_log - initialize log module        Args:        log_path - Log file path prefix.        Log data will go to two files: log_path.log and log_path.log.wf        Any non-exist parent directories will be created automatically        level - msg above the level will be displayed        DEBUG &lt; INFO &lt; WARNING &lt; ERROR &lt; CRITICAL        the default value is logging.INFO        when - how to split the log file by time interval        'S' : Seconds        'M' : Minutes        'H' : Hours        'D' : Days        'W' : Week day        default value: 'D'        format - format of the log        default format:        %(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s        INFO: 12-09 18:02:42: log.py:40 * 139814749787872 HELLO WORLD        backup - how many backup file to keep        default value: 7        Raises:        OSError: fail to create log directories        IOError: fail to open log file        """        formatter = logging.Formatter(format, datefmt)        # getLogger一定要传参，否则多次调用对象创建，得到的会是同一个logger对象        # 后果就是相同的日志内容，会同时写到多个不同的日志文件中        self.logger = logging.getLogger(logfile_name)        self.logger.setLevel(level)        if not os.path.exists(log_path):            os.makedirs(log_path)                    common_log = os.path.join(log_path, logfile_name + ".log")        handler = logging.handlers.TimedRotatingFileHandler(common_log,                                                            when=when,                                                            backupCount=backup)        handler.setLevel(level)        handler.setFormatter(formatter)        self.logger.addHandler(handler)        wf_log = os.path.join(log_path, logfile_name + ".log.wf")        handler = logging.handlers.TimedRotatingFileHandler(wf_log,                                                            when=when,                                                            backupCount=backup)        handler.setLevel(logging.WARNING)        handler.setFormatter(formatter)        self.logger.addHandler(handler)    def get_logger(self):        return self.logger
 
-当函数run抛出ValueError异常时，则进行重试；抛出Exception异常时，不会重试。
-指定返回值重试from retrying import retryimport randomdef if_return_small(value):    return value &lt;= 5@retry(retry_on_result=if_return_small, stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    value = random.randint(0, 10)    msg = f'value is &#123;value&#125;'    print(msg)    return valueif __name__ == '__main__':    run()
+2、使用日志模块
+#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport log# 日志保存到./log/vk.log和./log/vk.log.wf，按天切割，保留7天logger = log.Log(logfile_name='vk_test').get_logger()logger = log.Log(logfile_name='vk').get_logger()class VKTest(object):    def __init__(self):        logger.info('print info level log to file')if __name__=="__main__":    logger.info("程序启动!!!")    vk = VKTest()    logger.info("程序结束!!!")
 
-当函数run返回值小于5时，进行重试。
-多次重试后容忍异常from retrying import retry@retry(stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrordef run2():    print('run2')if __name__ == '__main__':    run()    run2()
-
-当函数run抛出任意异常时，则进行重试。重试指定次数后，程序就异常结束了。这时，如果我们想要容忍异常，让run2可以正常运行，该怎么办呢？很简单，给run函数包裹一个try except即可。
-from retrying import retry@retry(wrap_exception=True,stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrordef wrap_run():    try:        run()    except:        passdef run2():    print('run2')if __name__ == '__main__':    wrap_run()    run2()
-
+执行脚本后，日志内容会输出到 log/vk.log 中。
+参考文档
+Python黑魔法手册
+Python Cookbook 3rd Edition Documentation
+Google Python风格指南
+unittest - 单元测试框架
 
 ]]></content>
       <categories>
@@ -471,80 +547,6 @@ create database vkphp default character set utf8 collate utf8_general_ci;use vkp
         <tag>python</tag>
         <tag>mysql</tag>
         <tag>测试</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Python脚本路径</title>
-    <url>/dev-python-script-path/</url>
-    <content><![CDATA[怎样获取一个脚本的路径？怎样获取执行脚本的绝对路径？怎样获取执行脚本的父绝对路径？怎样获取入口脚本的绝对路径？。。。带着这些问题，我们进行一个简单的实验，获知这些问题的答案。
-
-
-路径实验路径设计path└── module_a    ├── getpath.py    └── module_b        └── getpath.py
-
-脚本内容getpath.py脚本内容为：
-import osimport sysfrom module_b import getpathdef print_path():    print(f'os.getcwd() is &#123;os.getcwd()&#125;')    print(f'sys.path[0] is &#123;sys.path[0]&#125;')    print(f'sys.argv[0] is &#123;sys.argv[0]&#125;')    print(f'__file__ is &#123;__file__&#125;')    print(f'os.path.dirname(__file__) is &#123;os.path.dirname(__file__)&#125;')    print(f'os.path.abspath(__file__) is &#123;os.path.abspath(__file__)&#125;')    print(f'os.path.realpath(__file__) is &#123;os.path.realpath(__file__)&#125;')    print(f'os.path.split(os.path.realpath(__file__))[0] is &#123;os.path.split(os.path.realpath(__file__))[0]&#125;')print('------ module_a/getpath.py ------')print_path()print('---------------------------------')print('------ module_a/module_b/getpath.py ------')getpath.print_path()print('------------------------------------------')
-
-执行脚本在path目录中执行脚本python module_a/getpath.py ，得到结果为：
------- module_a/getpath.py ------os.getcwd() is /Users/vk/tmp/pathsys.path[0] is /Users/vk/tmp/path/module_asys.argv[0] is module_a/getpath.py__file__ is module_a/getpath.pyos.path.dirname(__file__) is module_aos.path.abspath(__file__) is /Users/vk/tmp/path/module_a/getpath.pyos.path.realpath(__file__) is /Users/vk/tmp/path/module_a/getpath.pyos.path.split(os.path.realpath(__file__))[0] is /Users/vk/tmp/path/module_a--------------------------------------- module_a/module_b/getpath.py ------os.getcwd() is /Users/vk/tmp/pathsys.path[0] is /Users/vk/tmp/path/module_asys.argv[0] is module_a/getpath.py__file__ is /Users/vk/tmp/path/module_a/module_b/getpath.pyos.path.dirname(__file__) is /Users/vk/tmp/path/module_a/module_bos.path.abspath(__file__) is /Users/vk/tmp/path/module_a/module_b/getpath.pyos.path.realpath(__file__) is /Users/vk/tmp/path/module_a/module_b/getpath.pyos.path.split(os.path.realpath(__file__))[0] is /Users/vk/tmp/path/module_a/module_b------------------------------------------
-
-实验结论由实验结果，可以得出如下结论。
-获取执行命令的绝对路径os.getcwd()
-
-获取入口脚本的父绝对路径sys.path[0]
-
-获取执行脚本的绝对路劲os.path.abspath(__file__)os.path.realpath(__file__)
-
-获取执行脚本的父绝对路径os.path.split(os.path.realpath(__file__))[0]
-
-获取文件/目录的父路径os.path.dirname(__file__)
-
-
-
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>python</category>
-      </categories>
-      <tags>
-        <tag>python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Python打印日志</title>
-    <url>/dev-python-log/</url>
-    <content><![CDATA[输出日志到控制台import sysimport logginglog = logging.getLogger(__name__)log.setLevel(logging.DEBUG)log.addHandler(logging.StreamHandler(sys.stdout)) #默认sys.errorlog.info('print info level log to console')
-
-输出日志到文件import sysimport logginglog = logging.getLogger(__name__)log.setLevel(logging.DEBUG)log.addHandler(logging.FileHandler('python.log'))log.info('print info level log to file')
-日志文件默认存储到执行命令的路径下，可以通过使用绝对路径来指定日志文件路径。
-封装日志模块1、封装一个日志模块 log.py
-#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport loggingimport logging.handlersdef init_log(log_path, level=logging.INFO, when="D", backup=7,             format="%(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s",             datefmt="%m-%d %H:%M:%S"):    """    init_log - initialize log module    Args:    log_path - Log file path prefix.    Log data will go to two files: log_path.log and log_path.log.wf    Any non-exist parent directories will be created automatically    level - msg above the level will be displayed    DEBUG &lt; INFO &lt; WARNING &lt; ERROR &lt; CRITICAL    the default value is logging.INFO    when - how to split the log file by time interval    'S' : Seconds    'M' : Minutes    'H' : Hours    'D' : Days    'W' : Week day    default value: 'D'    format - format of the log    default format:    %(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s    INFO: 12-09 18:02:42: log.py:40 * 139814749787872 HELLO WORLD    backup - how many backup file to keep    default value: 7    Raises:    OSError: fail to create log directories    IOError: fail to open log file    """    formatter = logging.Formatter(format, datefmt)    logger = logging.getLogger()    logger.setLevel(level)    dir = os.path.dirname(log_path)    if not os.path.isdir(dir):        os.makedirs(dir)    handler = logging.handlers.TimedRotatingFileHandler(log_path + ".log",                                                        when=when,                                                        backupCount=backup)    handler.setLevel(level)    handler.setFormatter(formatter)    logger.addHandler(handler)    handler = logging.handlers.TimedRotatingFileHandler(log_path + ".log.wf",                                                        when=when,                                                        backupCount=backup)    handler.setLevel(logging.WARNING)    handler.setFormatter(formatter)    logger.addHandler(handler)
-
-2、使用日志模块
-#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport loggingimport logclass VKTest(object):    def __init__(self):        logging.info('print info level log to file')if __name__=="__main__":    # 日志保存到./log/vk.log和./log/vk.log.wf，按天切割，保留7天    log.init_log("./log/vk")    logging.info("程序启动!!!")    vk = VKTest()    logging.info("程序结束!!!")
-
-执行脚本后，日志内容会输出到 log/vk.log 中。
-封装日志模块2.01、封装一个日志模块 log.py
-#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport loggingimport logging.handlersDEFAULT_LOG_PATH = './log/'class Log(object):    def __init__(self,                 logfile_name='default',                 log_path=DEFAULT_LOG_PATH,                 level=logging.INFO,                 when="D",                 backup=7,                 format="%(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s",                 datefmt="%m-%d %H:%M:%S"):        """        init_log - initialize log module        Args:        log_path - Log file path prefix.        Log data will go to two files: log_path.log and log_path.log.wf        Any non-exist parent directories will be created automatically        level - msg above the level will be displayed        DEBUG &lt; INFO &lt; WARNING &lt; ERROR &lt; CRITICAL        the default value is logging.INFO        when - how to split the log file by time interval        'S' : Seconds        'M' : Minutes        'H' : Hours        'D' : Days        'W' : Week day        default value: 'D'        format - format of the log        default format:        %(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s        INFO: 12-09 18:02:42: log.py:40 * 139814749787872 HELLO WORLD        backup - how many backup file to keep        default value: 7        Raises:        OSError: fail to create log directories        IOError: fail to open log file        """        formatter = logging.Formatter(format, datefmt)        # getLogger一定要传参，否则多次调用对象创建，得到的会是同一个logger对象        # 后果就是相同的日志内容，会同时写到多个不同的日志文件中        self.logger = logging.getLogger(logfile_name)        self.logger.setLevel(level)        if not os.path.exists(log_path):            os.makedirs(log_path)                    common_log = os.path.join(log_path, logfile_name + ".log")        handler = logging.handlers.TimedRotatingFileHandler(common_log,                                                            when=when,                                                            backupCount=backup)        handler.setLevel(level)        handler.setFormatter(formatter)        self.logger.addHandler(handler)        wf_log = os.path.join(log_path, logfile_name + ".log.wf")        handler = logging.handlers.TimedRotatingFileHandler(wf_log,                                                            when=when,                                                            backupCount=backup)        handler.setLevel(logging.WARNING)        handler.setFormatter(formatter)        self.logger.addHandler(handler)    def get_logger(self):        return self.logger
-
-2、使用日志模块
-#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport log# 日志保存到./log/vk.log和./log/vk.log.wf，按天切割，保留7天logger = log.Log(logfile_name='vk_test').get_logger()logger = log.Log(logfile_name='vk').get_logger()class VKTest(object):    def __init__(self):        logger.info('print info level log to file')if __name__=="__main__":    logger.info("程序启动!!!")    vk = VKTest()    logger.info("程序结束!!!")
-
-执行脚本后，日志内容会输出到 log/vk.log 中。
-参考文档
-Python黑魔法手册
-Python Cookbook 3rd Edition Documentation
-Google Python风格指南
-unittest - 单元测试框架
-
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>python</category>
-      </categories>
-      <tags>
-        <tag>python</tag>
       </tags>
   </entry>
   <entry>
@@ -3032,89 +3034,6 @@ TOKEN=$(kubectl describe secrets $(kubectl get secrets -n kube-system |grep admi
       </tags>
   </entry>
   <entry>
-    <title>MacOS系统配置</title>
-    <url>/hobby-macos-system-settings/</url>
-    <content><![CDATA[用户名配置系统偏好设置，用户与群组，点按锁按钮以进行修改。右键用户，高级选项。修改账户名称为vk，这个名称是shell中显示的用户名。修改全名为voidking，这个名称是mac系统显示的名称。个人目录，修改为 /Users/vk ，这个目录是新的home目录。
-修改完成后点击“好”，系统重启，然后整个系统恢复到出厂状态。
-
-
-密码系统偏好设置，用户与群组，更改密码。
-触控板系统偏好设置，触控板，光标与点按。勾选 轻点来点按，勾选 辅助点按，跟踪速度调整为喜欢的速度。 
-电脑名称系统偏好设置，共享，电脑名称，编辑。
-开机声音1、关闭开机声音
-sudo nvram BootAudio=%00sudo nvram SystemAudioVolume=%80
-
-2、打开开机声音
-sudo nvram BootAudio=%01sudo nvram -d SystemAudioVolume
-
-WindowServer占用资源过多系统偏好设置，辅助功能，显示，勾选减弱动态效果和减少透明度
-临时设置不关闭屏幕sudo supmset -g | grep sleeppmset -a displaysleep 30pmset -g | grep sleeppmset -a displaysleep 10pmset -g | grep sleep
-
-菜单快捷键右上角苹果按钮，点击会出现“睡眠”、“重新启动…”、“关机…”等菜单选项，这些选项可以设置对应的快捷键。以设置“睡眠”快捷键为例：右上角苹果按钮，系统偏好设置，键盘，快捷键，App快捷键，加号，菜单标题输入“睡眠”，键盘快捷键按下“control+command+S”。以上，就设置好了睡眠的快捷键。
-查看文件使用mac系统的Finder，可以查看“我的所有文件”，但是这是假的，点击这个选项只能看到最近使用的一些文件。
-解决办法：打开Finder，command＋逗号，出现Finder偏好设置，边栏，设备中勾选硬盘。然后在侧边栏中，就可以打开硬盘，看到所有文件了。
-当然， /etc 这种文件夹是看不到的。
-设置默认文件排序打开Finder，点击家目录，command＋J，选择排序方式（种类），用做默认。家目录下的所有目录，都会继承这种默认排序方式。
-禁止生成 .DS_Store.DS_Store(Desktop Services Store)文件目的在于存贮目录的自定义属性，例如显示方式为图标还是列表。
-禁止：defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool TRUE开启：defaults delete com.apple.desktopservices DSDontWriteNetworkStores
-注意：禁止生成 .DS_Store 后，已经存在的 .DS_Store 不受影响。
-清除最近项目点击左上角苹果图标，最近使用的项目，清除菜单。
-但是，上面的方法并不会清除“最近项目”这个目录下的文件记录，这是因为“最近项目”是spotlight管理的。解决办法：1、点击左上角苹果图标，系统偏好设置，聚焦，隐私，点击+号。2、选择目录A，点击选取。3、再看“最近项目”，已经不再显示目录A里的文件。需要注意的是，如果从隐私里去掉目录A，那么目录A里的文件还会慢慢出现在“最近项目”。
-如果想要改变“最近项目”目录筛选文件的规则，按照如下方法处理：1、给“最近项目”添加一个搜索条件，让其只显示最近三天内打开或修改过的项目2、在“最近项目”窗口中点击工具栏的齿轮按钮然后选择“显示搜索条件”3、在搜索项目里选择“上次打开日期”4、然后设定好相应的搜索条件，点击“存储”5、最后为其命名，切记勾选“添加到边栏”再点击“存储”6、边栏就会新增这个只显示最近 3 天项目的选项，然后把原来的“最近项目”从边栏移除掉。
-打不开软件从网络下载的软件，安装时提示：打不开“xxx”，因为它来自身份不明的开发者。
-解决办法：系统偏好设置，安全性和隐私，点锁按钮以进行更改，任何来源，允许来自任何来源。
-安装字体1、从windows系统 C:\Windows\Fonts 目录中拷贝需要的字体。2、command+shift+G，输入 /Library/Fonts，前往。3、字体放入 Fonts 目录。
-启动sftp1、系统偏好设置，共享，勾选远程登录
-2、测试sftp localhost
-目录规划${HOME}目录下，创建以下目录：
-
-tmp：在该目录中执行命令、测试脚本等，随时可删。
-scripts：成熟的脚本放在该目录下。
-git：在该目录中存放git仓库。
-
-读写ntfsmac不借助第三方软件，也是可以读写ntfs文件系统的移动硬盘的。1、查看移动硬盘名称在桌面上查看硬盘名称，或者通过diskutil list命令查看硬盘名称。
-2、修改fstab配置比如硬盘名称为WD，那么在/etc/fstab中添加配置：
-LABEL=WD none ntfs rw,auto,nobrowse
-
-3、重新插入硬盘推出硬盘，再重新插入，发现桌面不再显示该硬盘，没关系。
-4、读写移动硬盘
-df -hcd /Volumes/WDopen .
-
-5、推出移动硬盘方法一：
-cd ..open .# 界面点击推出移动硬盘
-方法二：
-cd ..diskutil unmount /Volumes/WDdiskutil unmount force /Volumes/WD
-
-
-
-]]></content>
-      <categories>
-        <category>爱好</category>
-        <category>电脑</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>MacOS小技巧</title>
-    <url>/hobby-macos-tricks/</url>
-    <content><![CDATA[使用命令打开目录和文件1、在finder中打开当前目录open .
-2、使用默认程序打开指定文件open README.md
-切换窗口1、command + tab2、三指左右滑动3、三指上滑
-
-
-快速预览选中文件或者文件夹，点击空格即可预览文件，点击上下左右可以预览其他文件。
-隔空投送接收方：打开隔空投送功能，同时接收人选择仅限联系人或所有人。
-发送方：1、打开要发送的文件，然后点按 App 窗口中的“共享”按钮 。或者，在“访达”中按住 Control 键点按相应文件，然后从快捷键菜单中选取“共享”。2、从列出的共享选项中，选取“隔空投送”。3、从“隔空投送”表单中选取一位接收者。
-或者打开“隔空投送”窗口，然后将文件拖移到接收者：1、在“访达”窗口的边栏中选择“隔空投送”。或者从菜单栏中选取“前往”&gt;“隔空投送”。2、“隔空投送”窗口随即会显示附近的“隔空投送”用户。将一个或多个文稿、照片或其他文件拖移到窗口中显示的接收者。
-详情参考 在 Mac 上使用“隔空投送”。
-传送速度非常快，网络条件不错的情况下，可以达到几百MB每秒。
-mac和ipad之间，mac和iphone之间也可以使用隔空投送，非常方便实用。
-]]></content>
-      <categories>
-        <category>爱好</category>
-        <category>电脑</category>
-      </categories>
-  </entry>
-  <entry>
     <title>MacOS上软件配置</title>
     <url>/hobby-macos-settings/</url>
     <content><![CDATA[shell1、打开shellcommand＋space，输入“terminal”。或者 Launchpad，其他，终端。为了方便使用，可以把终端放到Dock。
@@ -3344,6 +3263,89 @@ Proxyman
 Wireshark
 Turbo Boost Switcher
 
+]]></content>
+      <categories>
+        <category>爱好</category>
+        <category>电脑</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>MacOS系统配置</title>
+    <url>/hobby-macos-system-settings/</url>
+    <content><![CDATA[用户名配置系统偏好设置，用户与群组，点按锁按钮以进行修改。右键用户，高级选项。修改账户名称为vk，这个名称是shell中显示的用户名。修改全名为voidking，这个名称是mac系统显示的名称。个人目录，修改为 /Users/vk ，这个目录是新的home目录。
+修改完成后点击“好”，系统重启，然后整个系统恢复到出厂状态。
+
+
+密码系统偏好设置，用户与群组，更改密码。
+触控板系统偏好设置，触控板，光标与点按。勾选 轻点来点按，勾选 辅助点按，跟踪速度调整为喜欢的速度。 
+电脑名称系统偏好设置，共享，电脑名称，编辑。
+开机声音1、关闭开机声音
+sudo nvram BootAudio=%00sudo nvram SystemAudioVolume=%80
+
+2、打开开机声音
+sudo nvram BootAudio=%01sudo nvram -d SystemAudioVolume
+
+WindowServer占用资源过多系统偏好设置，辅助功能，显示，勾选减弱动态效果和减少透明度
+临时设置不关闭屏幕sudo supmset -g | grep sleeppmset -a displaysleep 30pmset -g | grep sleeppmset -a displaysleep 10pmset -g | grep sleep
+
+菜单快捷键右上角苹果按钮，点击会出现“睡眠”、“重新启动…”、“关机…”等菜单选项，这些选项可以设置对应的快捷键。以设置“睡眠”快捷键为例：右上角苹果按钮，系统偏好设置，键盘，快捷键，App快捷键，加号，菜单标题输入“睡眠”，键盘快捷键按下“control+command+S”。以上，就设置好了睡眠的快捷键。
+查看文件使用mac系统的Finder，可以查看“我的所有文件”，但是这是假的，点击这个选项只能看到最近使用的一些文件。
+解决办法：打开Finder，command＋逗号，出现Finder偏好设置，边栏，设备中勾选硬盘。然后在侧边栏中，就可以打开硬盘，看到所有文件了。
+当然， /etc 这种文件夹是看不到的。
+设置默认文件排序打开Finder，点击家目录，command＋J，选择排序方式（种类），用做默认。家目录下的所有目录，都会继承这种默认排序方式。
+禁止生成 .DS_Store.DS_Store(Desktop Services Store)文件目的在于存贮目录的自定义属性，例如显示方式为图标还是列表。
+禁止：defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool TRUE开启：defaults delete com.apple.desktopservices DSDontWriteNetworkStores
+注意：禁止生成 .DS_Store 后，已经存在的 .DS_Store 不受影响。
+清除最近项目点击左上角苹果图标，最近使用的项目，清除菜单。
+但是，上面的方法并不会清除“最近项目”这个目录下的文件记录，这是因为“最近项目”是spotlight管理的。解决办法：1、点击左上角苹果图标，系统偏好设置，聚焦，隐私，点击+号。2、选择目录A，点击选取。3、再看“最近项目”，已经不再显示目录A里的文件。需要注意的是，如果从隐私里去掉目录A，那么目录A里的文件还会慢慢出现在“最近项目”。
+如果想要改变“最近项目”目录筛选文件的规则，按照如下方法处理：1、给“最近项目”添加一个搜索条件，让其只显示最近三天内打开或修改过的项目2、在“最近项目”窗口中点击工具栏的齿轮按钮然后选择“显示搜索条件”3、在搜索项目里选择“上次打开日期”4、然后设定好相应的搜索条件，点击“存储”5、最后为其命名，切记勾选“添加到边栏”再点击“存储”6、边栏就会新增这个只显示最近 3 天项目的选项，然后把原来的“最近项目”从边栏移除掉。
+打不开软件从网络下载的软件，安装时提示：打不开“xxx”，因为它来自身份不明的开发者。
+解决办法：系统偏好设置，安全性和隐私，点锁按钮以进行更改，任何来源，允许来自任何来源。
+安装字体1、从windows系统 C:\Windows\Fonts 目录中拷贝需要的字体。2、command+shift+G，输入 /Library/Fonts，前往。3、字体放入 Fonts 目录。
+启动sftp1、系统偏好设置，共享，勾选远程登录
+2、测试sftp localhost
+目录规划${HOME}目录下，创建以下目录：
+
+tmp：在该目录中执行命令、测试脚本等，随时可删。
+scripts：成熟的脚本放在该目录下。
+git：在该目录中存放git仓库。
+
+读写ntfsmac不借助第三方软件，也是可以读写ntfs文件系统的移动硬盘的。1、查看移动硬盘名称在桌面上查看硬盘名称，或者通过diskutil list命令查看硬盘名称。
+2、修改fstab配置比如硬盘名称为WD，那么在/etc/fstab中添加配置：
+LABEL=WD none ntfs rw,auto,nobrowse
+
+3、重新插入硬盘推出硬盘，再重新插入，发现桌面不再显示该硬盘，没关系。
+4、读写移动硬盘
+df -hcd /Volumes/WDopen .
+
+5、推出移动硬盘方法一：
+cd ..open .# 界面点击推出移动硬盘
+方法二：
+cd ..diskutil unmount /Volumes/WDdiskutil unmount force /Volumes/WD
+
+
+
+]]></content>
+      <categories>
+        <category>爱好</category>
+        <category>电脑</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>MacOS小技巧</title>
+    <url>/hobby-macos-tricks/</url>
+    <content><![CDATA[使用命令打开目录和文件1、在finder中打开当前目录open .
+2、使用默认程序打开指定文件open README.md
+切换窗口1、command + tab2、三指左右滑动3、三指上滑
+
+
+快速预览选中文件或者文件夹，点击空格即可预览文件，点击上下左右可以预览其他文件。
+隔空投送接收方：打开隔空投送功能，同时接收人选择仅限联系人或所有人。
+发送方：1、打开要发送的文件，然后点按 App 窗口中的“共享”按钮 。或者，在“访达”中按住 Control 键点按相应文件，然后从快捷键菜单中选取“共享”。2、从列出的共享选项中，选取“隔空投送”。3、从“隔空投送”表单中选取一位接收者。
+或者打开“隔空投送”窗口，然后将文件拖移到接收者：1、在“访达”窗口的边栏中选择“隔空投送”。或者从菜单栏中选取“前往”&gt;“隔空投送”。2、“隔空投送”窗口随即会显示附近的“隔空投送”用户。将一个或多个文稿、照片或其他文件拖移到窗口中显示的接收者。
+详情参考 在 Mac 上使用“隔空投送”。
+传送速度非常快，网络条件不错的情况下，可以达到几百MB每秒。
+mac和ipad之间，mac和iphone之间也可以使用隔空投送，非常方便实用。
 ]]></content>
       <categories>
         <category>爱好</category>
@@ -4301,7 +4303,7 @@ D类
 etcd cluster、CoreDNS
 
 
-本文学习使用kubeadm进行k8s集群的升级。
+本文学习使用kubeadm进行k8s集群的升级，参考升级 kubeadm 集群。
 
 
 升级顺序推荐的升级方法，是根据minor版本号逐级进行升级。比如v1.10.0想要升级到v1.13.0，不应该直接升级到v1.13.0，而是应该v1.10.0-&gt;v1.11.0-&gt;v1.12.0-&gt;v1.13.0。
@@ -9608,9 +9610,13 @@ ansible Jinja2 filters
 
 
 后记至此，playbooks最基础的东西学习完毕。更高级的用法，在使用中再慢慢学习。
-书签Ansible Documentation
+书签
+Ansible Documentation
 Ansible中文权威指南
 Ansible精讲
+Ansible Tutorial for Beginners: Ultimate Playbook &amp; Examples
+Working with Ansible Playbooks – Tips &amp; Tricks with Examples
+
 ]]></content>
       <categories>
         <category>专业</category>
@@ -12217,19 +12223,29 @@ scp test@192.168.56.102:~/.ssh/* .ssh/
 本文主要参考Ubuntu mail命令发送邮件 和 如何通过Shell脚本实现发送邮件通知功能？。
 
 
-mail基础安装1、安装mailutilssudo apt-get install mailutils
-2、General type of mail configuration选择Internet Site。
-3、System mail name输入mail.voidking.com。
-mail命令命令格式：mail [OPTION...] [address...]常用到的选项，一个是s，代表主题；一个是A，代表附件。其他的需要时查看help。
-使用普通邮件目标：给邮箱 voidking@qq.com 发送邮件，主题为“Hello VoidKing”，内容为“Welcome to mail world！”
-方法一：mail -s &#39;Hello VoidKing&#39; voidking@qq.com提示Cc，这里不需要抄送，就直接回车。然后输入邮件内容“Welcome to mail world！”，回车，ctrl+D，发送邮件。
-但是，等待了几分钟，并没有收到邮件，垃圾箱也没有。mail，查看email的发送状态为Undelivered Mail Returned，原来没有投递出去。
-查看邮件系统日志：tail -n 50 /var/spool/mail/test，提示host mx3.qq.com[183.57.48.35] said: 550 Mail content denied。看来qq邮箱的垃圾邮件防御机制做的不错，那就换个163邮箱，没想到依然失败。
-那就换一台服务器！发送给 voidking@qq.com ，成功！很尴尬。。。
-方法二：如果方法一发送邮件失败，可以试一下：
-mail -s 'Hello VoidKing' voidking@qq.com &lt;&lt;&lt; 'Welcome to mail world!'echo 'Welcome to mail world！' | mail -s "Hello VoidKing" voidking@qq.com
+安装配置mailubuntu1、安装mailutilssudo apt-get install mailutils
+2、General type of mail configuration 选择 Internet Site
+3、System mail name 输入 mail.voidking.com
+centos7安装配置过程参考 Centos 7 安装 Mail发送邮件
+1、获取发送者邮箱授权密码登录 https://mail.163.com设置，POP3/SMTP/IMAP，授权密码管理
+授权码是用于登录第三方邮件客户端的专用密码。适用于登录以下服务: 您开启的服务（例如POP3/IMAP/SMTP）、Exchange/CardDAV/CalDAV服务。
+2、安装邮件MUAyum install -y mailx
+3、配置 /etc/mail.rc，在尾部添加：
+set from=quizthink@163.comset smtp=smtps://smtp.163.com:465set smtp-auth=loginset smtp-auth-user=quizthink@163.comset smtp-auth-password=xxxset ssl-verify=ignoreset nss-config-dir=/root/.certs
 
-高级邮件1、从文本读入内容发送邮件mail -s &#39;Error report&#39; voidking@qq.com &lt; /tmp/log/ganglia/error-20180524.log
+不要使用25端口，阿里云服务器和163邮件服务器25端口不通。
+4、配置数字证书
+mkdir -p /root/.certs/echo -n | openssl s_client -connect smtp.163.com:465 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' &gt; ~/.certs/163.crtcertutil -A -n "GeoTrust SSL CA" -t "C,," -d ~/.certs -i ~/.certs/163.crtcertutil -A -n "GeoTrust Global CA" -t "C,," -d ~/.certs -i ~/.certs/163.crtcertutil -L -d /root/.certscd /root/.certs/certutil -A -n "GeoTrust SSL CA - G3" -t "Pu,Pu,Pu" -d ./ -i 163.crt
+
+5、测试发送邮件echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com查看邮箱，正常的话应该已经收到邮件了。如果没有收到邮件，可以查看日志进行排查：tail /var/log/maillog
+macos参考《MacOS上软件配置》中的命令行发邮件部分
+mail命令命令格式mail [OPTION...] [address...]常用到的选项，一个是s，代表主题；一个是A，代表附件。其他的需要时查看help。
+发送普通邮件目标：给邮箱 voidking@qq.com 发送邮件，主题为“Hello VoidKing”，内容为“Welcome to mail world！”
+echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com
+但是，等待了几分钟，并没有收到邮件，垃圾箱也没有。mail，查看email的发送状态为Undelivered Mail Returned，原来没有投递出去。
+查看邮件系统日志：tail -n 50 /var/spool/mail/test提示host mx3.qq.com[183.57.48.35] said: 550 Mail content denied。看来qq邮箱的垃圾邮件防御机制做的不错，那就换个163邮箱，没想到依然失败。
+换一台服务器？发送给 voidking@qq.com ，成功！很尴尬。。。就这么着吧
+发送高级邮件1、从文本读入内容发送邮件mail -s &#39;Error report&#39; voidking@qq.com &lt; /tmp/log/ganglia/error-20180524.log
 2、发送附件mail -s &#39;Error report&#39; voidking@qq.com -A /tmp/log/ganglia/ganglia-20180524.log &lt; /tmp/log/ganglia/error-20180524.log
 3、指定发件人echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com -aFrom:haojin@qq.com
 失败了，收不到邮件，不知道什么原因，留个坑吧。
@@ -23119,30 +23135,6 @@ anon-access = read #匿名用户可读auth-access = write #授权用户可写pas
       </tags>
   </entry>
   <entry>
-    <title>关于写论文的思考</title>
-    <url>/essay-write-paper/</url>
-    <content><![CDATA[前言原来，专硕是不需要发论文的。但是，如果发一篇SCI，就可以拿到国家奖学金，很有吸引力！毕竟，研究生期间，没啥收入，两万块是个很大的数目。
-老师们讲了很多关于写论文的内容，做下记录，也许能用到。
-
-
-思路1、问题2、原因3、解决方案4、抽象5、应用
-海尔迈耶系列问题你要做什么？不要用术语，清晰的表达你的目标。这件事现在是怎么做的？现在的做法有什么局限？谁在关心？你的方法有哪些创新？你为什么觉得你的方法能够成功？如果你的方法能够成功，它能带来怎样的变化？你的方法需要花多少钱？需要花费多少资源？要怎样在过程中和结束进行评估？
-自查问题我要做什么？解决什么问题？别人是怎样解决的？我的方法好在哪里？
-为什么没人做？在哪个方面有用？用在哪里？已有方法可以达到什么效果？我的方法可以有哪些提升？
-值不值得做？能不能做？市场预期是怎样的？依据的标准、理论、方法、政策是什么？
-产生这个问题原因是什么？别人为什么没有解决？我为什么能解决？我的方法局限性在哪里？后续怎样改进？
-标题明确标题中应该包含：技术点，研究点/核心（算法），结果（可行性分析报告，研究报告，系统）
-综述性论文为什么需要软件体系结构？软件体系结构是什么？软件体系结构要研究什么？当前的问题有哪些？总结和展望。
-Tips不一定非要做出来，发挥想象。评述参考文献。内容不要太多，突出自己研究的内容。不是具体工作，要抽取出做的东西。重要的是解决问题的 过程、 思路。有困难，不清晰，别人解决不了，所以才立项。从学习知识到创造知识。从会议、沙龙等寻找切入点。
-]]></content>
-      <categories>
-        <category>随笔</category>
-      </categories>
-      <tags>
-        <tag>思考</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>搭建自己的云盘服务</title>
     <url>/dev-build-owncloud/</url>
     <content><![CDATA[前言
@@ -28709,8 +28701,8 @@ git-scmhttp://git-scm.com/
       </categories>
       <tags>
         <tag>hexo</tag>
-        <tag>ssh</tag>
         <tag>git</tag>
+        <tag>ssh</tag>
       </tags>
   </entry>
   <entry>
@@ -29657,6 +29649,25 @@ alter table userbase add constraint fk_username foreign key(username) references
       </tags>
   </entry>
   <entry>
+    <title>坐功入静</title>
+    <url>/hobby-dhyana-meditation/</url>
+    <content><![CDATA[作者：那秋生
+
+坐功是静功里最要紧的一个环节，坐功是入静的第一步。坐功有静坐功和动静兼修两种。
+
+李渔《闲情偶寄·颐养》曰：“益寿之方，全凭导引；安生之计，惟赖坐功。”儒家提倡“静坐”。王阳明说：“静坐要省察克治，静坐能使心清静收敛，从而克服自我私欲产生，通过静坐能顿悟明心见性，得道成真。”
+道家主张“坐忘”。《庄子·大宗师》：“堕肢体，黜聪明，离形去知，同于大通，此谓坐忘。”即摆脱现实形体的束缚，与自然融为一体，两两相忘。佛家的功夫是“坐禅”。音译“禅那”，简称“禅”，意谓思维修或静虑，就是趺坐而修禅，是佛教修持的主要方法之一。
+现代人就是坐不住，成天跑东跑西、忙这忙那，就像丢了魂似的，悲乎！
+]]></content>
+      <categories>
+        <category>爱好</category>
+        <category>读书</category>
+      </categories>
+      <tags>
+        <tag>笔记</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>自由与理想</title>
     <url>/hobby-freedom-and-ideal/</url>
     <content><![CDATA[作者：吴晓波
@@ -29695,25 +29706,6 @@ alter table userbase add constraint fk_username foreign key(username) references
       </categories>
       <tags>
         <tag>读者</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>坐功入静</title>
-    <url>/hobby-dhyana-meditation/</url>
-    <content><![CDATA[作者：那秋生
-
-坐功是静功里最要紧的一个环节，坐功是入静的第一步。坐功有静坐功和动静兼修两种。
-
-李渔《闲情偶寄·颐养》曰：“益寿之方，全凭导引；安生之计，惟赖坐功。”儒家提倡“静坐”。王阳明说：“静坐要省察克治，静坐能使心清静收敛，从而克服自我私欲产生，通过静坐能顿悟明心见性，得道成真。”
-道家主张“坐忘”。《庄子·大宗师》：“堕肢体，黜聪明，离形去知，同于大通，此谓坐忘。”即摆脱现实形体的束缚，与自然融为一体，两两相忘。佛家的功夫是“坐禅”。音译“禅那”，简称“禅”，意谓思维修或静虑，就是趺坐而修禅，是佛教修持的主要方法之一。
-现代人就是坐不住，成天跑东跑西、忙这忙那，就像丢了魂似的，悲乎！
-]]></content>
-      <categories>
-        <category>爱好</category>
-        <category>读书</category>
-      </categories>
-      <tags>
-        <tag>笔记</tag>
       </tags>
   </entry>
   <entry>
