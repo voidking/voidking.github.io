@@ -319,46 +319,6 @@ TODOtutorial.py详解、传参、接口调用airflow + django
       </tags>
   </entry>
   <entry>
-    <title>Python重试</title>
-    <url>/dev-python-retry/</url>
-    <content><![CDATA[为什么需要重试？典型场景：程序的实现需要调用第三方的API，但是我们并不能保证第三方API一直好用，也不能保证网络一直畅通，所以在调用第三方API时需要加上错误重试。  
-通用场景：程序的运行不符合预期，我们知道再次调用大概率可以使之符合预期，这时就需要重试。  
-而重试逻辑我们可以通过循环多次调用实现，也可以使用封装好的重试模块。本文我们就学习一下Python中比较流行的 retrying 模块，实现一些重试Demo。
-
-
-安装retryingpip install retrying
-任意异常重试from retrying import retry@retry(stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrorif __name__ == '__main__':    run()
-
-当函数run抛出任意异常时，则进行重试。
-
-stop_max_attempt_number：最大重试次数
-wait_random_min：最小重试间隔
-wait_random_max：最大重试间隔
-
-注意函数内不要使用try except，否则异常就被函数自己捕获处理了，不会抛给retry。
-指定异常重试from retrying import retryimport randomdef if_value_error(exception):    return isinstance(exception, ValueError)@retry(retry_on_exception=if_value_error, stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    value = random.randint(0, 10)    msg = f'value is &#123;value&#125;'    print(msg)    if value &lt;= 5:        raise ValueError('value is too small!')    else:        raise Exception('value is too large!')if __name__ == '__main__':    run()
-
-当函数run抛出ValueError异常时，则进行重试；抛出Exception异常时，不会重试。
-指定返回值重试from retrying import retryimport randomdef if_return_small(value):    return value &lt;= 5@retry(retry_on_result=if_return_small, stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    value = random.randint(0, 10)    msg = f'value is &#123;value&#125;'    print(msg)    return valueif __name__ == '__main__':    run()
-
-当函数run返回值小于5时，进行重试。
-多次重试后容忍异常from retrying import retry@retry(stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrordef run2():    print('run2')if __name__ == '__main__':    run()    run2()
-
-当函数run抛出任意异常时，则进行重试。重试指定次数后，程序就异常结束了。这时，如果我们想要容忍异常，让run2可以正常运行，该怎么办呢？很简单，给run函数包裹一个try except即可。
-from retrying import retry@retry(wrap_exception=True,stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrordef wrap_run():    try:        run()    except:        passdef run2():    print('run2')if __name__ == '__main__':    wrap_run()    run2()
-
-
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>python</category>
-      </categories>
-      <tags>
-        <tag>python</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Python脚本路径</title>
     <url>/dev-python-script-path/</url>
     <content><![CDATA[怎样获取一个脚本的路径？怎样获取执行脚本的绝对路径？怎样获取执行脚本的父绝对路径？怎样获取入口脚本的绝对路径？。。。带着这些问题，我们进行一个简单的实验，获知这些问题的答案。
@@ -483,33 +443,34 @@ import jsonimport unittestfrom unittest import mockimport requestsdef request_sy
       </tags>
   </entry>
   <entry>
-    <title>Python打印日志</title>
-    <url>/dev-python-log/</url>
-    <content><![CDATA[输出日志到控制台import sysimport logginglog = logging.getLogger(__name__)log.setLevel(logging.DEBUG)log.addHandler(logging.StreamHandler(sys.stdout)) #默认sys.errorlog.info('print info level log to console')
+    <title>Python重试</title>
+    <url>/dev-python-retry/</url>
+    <content><![CDATA[为什么需要重试？典型场景：程序的实现需要调用第三方的API，但是我们并不能保证第三方API一直好用，也不能保证网络一直畅通，所以在调用第三方API时需要加上错误重试。  
+通用场景：程序的运行不符合预期，我们知道再次调用大概率可以使之符合预期，这时就需要重试。  
+而重试逻辑我们可以通过循环多次调用实现，也可以使用封装好的重试模块。本文我们就学习一下Python中比较流行的 retrying 模块，实现一些重试Demo。
 
 
+安装retryingpip install retrying
+任意异常重试from retrying import retry@retry(stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrorif __name__ == '__main__':    run()
 
-输出日志到文件import sysimport logginglog = logging.getLogger(__name__)log.setLevel(logging.DEBUG)log.addHandler(logging.FileHandler('python.log'))log.info('print info level log to file')
-日志文件默认存储到执行命令的路径下，可以通过使用绝对路径来指定日志文件路径。
-封装日志模块1、封装一个日志模块 log.py
-#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport loggingimport logging.handlersdef init_log(log_path, level=logging.INFO, when="D", backup=7,             format="%(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s",             datefmt="%m-%d %H:%M:%S"):    """    init_log - initialize log module    Args:    log_path - Log file path prefix.    Log data will go to two files: log_path.log and log_path.log.wf    Any non-exist parent directories will be created automatically    level - msg above the level will be displayed    DEBUG &lt; INFO &lt; WARNING &lt; ERROR &lt; CRITICAL    the default value is logging.INFO    when - how to split the log file by time interval    'S' : Seconds    'M' : Minutes    'H' : Hours    'D' : Days    'W' : Week day    default value: 'D'    format - format of the log    default format:    %(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s    INFO: 12-09 18:02:42: log.py:40 * 139814749787872 HELLO WORLD    backup - how many backup file to keep    default value: 7    Raises:    OSError: fail to create log directories    IOError: fail to open log file    """    formatter = logging.Formatter(format, datefmt)    logger = logging.getLogger()    logger.setLevel(level)    dir = os.path.dirname(log_path)    if not os.path.isdir(dir):        os.makedirs(dir)    handler = logging.handlers.TimedRotatingFileHandler(log_path + ".log",                                                        when=when,                                                        backupCount=backup)    handler.setLevel(level)    handler.setFormatter(formatter)    logger.addHandler(handler)    handler = logging.handlers.TimedRotatingFileHandler(log_path + ".log.wf",                                                        when=when,                                                        backupCount=backup)    handler.setLevel(logging.WARNING)    handler.setFormatter(formatter)    logger.addHandler(handler)
+当函数run抛出任意异常时，则进行重试。
 
-2、使用日志模块
-#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport loggingimport logclass VKTest(object):    def __init__(self):        logging.info('print info level log to file')if __name__=="__main__":    # 日志保存到./log/vk.log和./log/vk.log.wf，按天切割，保留7天    log.init_log("./log/vk")    logging.info("程序启动!!!")    vk = VKTest()    logging.info("程序结束!!!")
+stop_max_attempt_number：最大重试次数
+wait_random_min：最小重试间隔
+wait_random_max：最大重试间隔
 
-执行脚本后，日志内容会输出到 log/vk.log 中。
-封装日志模块2.01、封装一个日志模块 log.py
-#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport loggingimport logging.handlersDEFAULT_LOG_PATH = './log/'class Log(object):    def __init__(self,                 logfile_name='default',                 log_path=DEFAULT_LOG_PATH,                 level=logging.INFO,                 when="D",                 backup=7,                 format="%(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s",                 datefmt="%m-%d %H:%M:%S"):        """        init_log - initialize log module        Args:        log_path - Log file path prefix.        Log data will go to two files: log_path.log and log_path.log.wf        Any non-exist parent directories will be created automatically        level - msg above the level will be displayed        DEBUG &lt; INFO &lt; WARNING &lt; ERROR &lt; CRITICAL        the default value is logging.INFO        when - how to split the log file by time interval        'S' : Seconds        'M' : Minutes        'H' : Hours        'D' : Days        'W' : Week day        default value: 'D'        format - format of the log        default format:        %(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s        INFO: 12-09 18:02:42: log.py:40 * 139814749787872 HELLO WORLD        backup - how many backup file to keep        default value: 7        Raises:        OSError: fail to create log directories        IOError: fail to open log file        """        formatter = logging.Formatter(format, datefmt)        # getLogger一定要传参，否则多次调用对象创建，得到的会是同一个logger对象        # 后果就是相同的日志内容，会同时写到多个不同的日志文件中        self.logger = logging.getLogger(logfile_name)        self.logger.setLevel(level)        if not os.path.exists(log_path):            os.makedirs(log_path)                    common_log = os.path.join(log_path, logfile_name + ".log")        handler = logging.handlers.TimedRotatingFileHandler(common_log,                                                            when=when,                                                            backupCount=backup)        handler.setLevel(level)        handler.setFormatter(formatter)        self.logger.addHandler(handler)        wf_log = os.path.join(log_path, logfile_name + ".log.wf")        handler = logging.handlers.TimedRotatingFileHandler(wf_log,                                                            when=when,                                                            backupCount=backup)        handler.setLevel(logging.WARNING)        handler.setFormatter(formatter)        self.logger.addHandler(handler)    def get_logger(self):        return self.logger
+注意函数内不要使用try except，否则异常就被函数自己捕获处理了，不会抛给retry。
+指定异常重试from retrying import retryimport randomdef if_value_error(exception):    return isinstance(exception, ValueError)@retry(retry_on_exception=if_value_error, stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    value = random.randint(0, 10)    msg = f'value is &#123;value&#125;'    print(msg)    if value &lt;= 5:        raise ValueError('value is too small!')    else:        raise Exception('value is too large!')if __name__ == '__main__':    run()
 
-2、使用日志模块
-#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport log# 日志保存到./log/vk.log和./log/vk.log.wf，按天切割，保留7天logger = log.Log(logfile_name='vk_test').get_logger()logger = log.Log(logfile_name='vk').get_logger()class VKTest(object):    def __init__(self):        logger.info('print info level log to file')if __name__=="__main__":    logger.info("程序启动!!!")    vk = VKTest()    logger.info("程序结束!!!")
+当函数run抛出ValueError异常时，则进行重试；抛出Exception异常时，不会重试。
+指定返回值重试from retrying import retryimport randomdef if_return_small(value):    return value &lt;= 5@retry(retry_on_result=if_return_small, stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    value = random.randint(0, 10)    msg = f'value is &#123;value&#125;'    print(msg)    return valueif __name__ == '__main__':    run()
 
-执行脚本后，日志内容会输出到 log/vk.log 中。
-参考文档
-Python黑魔法手册
-Python Cookbook 3rd Edition Documentation
-Google Python风格指南
-unittest - 单元测试框架
+当函数run返回值小于5时，进行重试。
+多次重试后容忍异常from retrying import retry@retry(stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrordef run2():    print('run2')if __name__ == '__main__':    run()    run2()
+
+当函数run抛出任意异常时，则进行重试。重试指定次数后，程序就异常结束了。这时，如果我们想要容忍异常，让run2可以正常运行，该怎么办呢？很简单，给run函数包裹一个try except即可。
+from retrying import retry@retry(wrap_exception=True,stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrordef wrap_run():    try:        run()    except:        passdef run2():    print('run2')if __name__ == '__main__':    wrap_run()    run2()
+
 
 ]]></content>
       <categories>
@@ -547,6 +508,45 @@ create database vkphp default character set utf8 collate utf8_general_ci;use vkp
         <tag>python</tag>
         <tag>mysql</tag>
         <tag>测试</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Python打印日志</title>
+    <url>/dev-python-log/</url>
+    <content><![CDATA[输出日志到控制台import sysimport logginglog = logging.getLogger(__name__)log.setLevel(logging.DEBUG)log.addHandler(logging.StreamHandler(sys.stdout)) #默认sys.errorlog.info('print info level log to console')
+
+
+
+输出日志到文件import sysimport logginglog = logging.getLogger(__name__)log.setLevel(logging.DEBUG)log.addHandler(logging.FileHandler('python.log'))log.info('print info level log to file')
+日志文件默认存储到执行命令的路径下，可以通过使用绝对路径来指定日志文件路径。
+封装日志模块1、封装一个日志模块 log.py
+#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport loggingimport logging.handlersdef init_log(log_path, level=logging.INFO, when="D", backup=7,             format="%(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s",             datefmt="%m-%d %H:%M:%S"):    """    init_log - initialize log module    Args:    log_path - Log file path prefix.    Log data will go to two files: log_path.log and log_path.log.wf    Any non-exist parent directories will be created automatically    level - msg above the level will be displayed    DEBUG &lt; INFO &lt; WARNING &lt; ERROR &lt; CRITICAL    the default value is logging.INFO    when - how to split the log file by time interval    'S' : Seconds    'M' : Minutes    'H' : Hours    'D' : Days    'W' : Week day    default value: 'D'    format - format of the log    default format:    %(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s    INFO: 12-09 18:02:42: log.py:40 * 139814749787872 HELLO WORLD    backup - how many backup file to keep    default value: 7    Raises:    OSError: fail to create log directories    IOError: fail to open log file    """    formatter = logging.Formatter(format, datefmt)    logger = logging.getLogger()    logger.setLevel(level)    dir = os.path.dirname(log_path)    if not os.path.isdir(dir):        os.makedirs(dir)    handler = logging.handlers.TimedRotatingFileHandler(log_path + ".log",                                                        when=when,                                                        backupCount=backup)    handler.setLevel(level)    handler.setFormatter(formatter)    logger.addHandler(handler)    handler = logging.handlers.TimedRotatingFileHandler(log_path + ".log.wf",                                                        when=when,                                                        backupCount=backup)    handler.setLevel(logging.WARNING)    handler.setFormatter(formatter)    logger.addHandler(handler)
+
+2、使用日志模块
+#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport loggingimport logclass VKTest(object):    def __init__(self):        logging.info('print info level log to file')if __name__=="__main__":    # 日志保存到./log/vk.log和./log/vk.log.wf，按天切割，保留7天    log.init_log("./log/vk")    logging.info("程序启动!!!")    vk = VKTest()    logging.info("程序结束!!!")
+
+执行脚本后，日志内容会输出到 log/vk.log 中。
+封装日志模块2.01、封装一个日志模块 log.py
+#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport loggingimport logging.handlersDEFAULT_LOG_PATH = './log/'class Log(object):    def __init__(self,                 logfile_name='default',                 log_path=DEFAULT_LOG_PATH,                 level=logging.INFO,                 when="D",                 backup=7,                 format="%(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s",                 datefmt="%m-%d %H:%M:%S"):        """        init_log - initialize log module        Args:        log_path - Log file path prefix.        Log data will go to two files: log_path.log and log_path.log.wf        Any non-exist parent directories will be created automatically        level - msg above the level will be displayed        DEBUG &lt; INFO &lt; WARNING &lt; ERROR &lt; CRITICAL        the default value is logging.INFO        when - how to split the log file by time interval        'S' : Seconds        'M' : Minutes        'H' : Hours        'D' : Days        'W' : Week day        default value: 'D'        format - format of the log        default format:        %(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s        INFO: 12-09 18:02:42: log.py:40 * 139814749787872 HELLO WORLD        backup - how many backup file to keep        default value: 7        Raises:        OSError: fail to create log directories        IOError: fail to open log file        """        formatter = logging.Formatter(format, datefmt)        # getLogger一定要传参，否则多次调用对象创建，得到的会是同一个logger对象        # 后果就是相同的日志内容，会同时写到多个不同的日志文件中        self.logger = logging.getLogger(logfile_name)        self.logger.setLevel(level)        if not os.path.exists(log_path):            os.makedirs(log_path)                    common_log = os.path.join(log_path, logfile_name + ".log")        handler = logging.handlers.TimedRotatingFileHandler(common_log,                                                            when=when,                                                            backupCount=backup)        handler.setLevel(level)        handler.setFormatter(formatter)        self.logger.addHandler(handler)        wf_log = os.path.join(log_path, logfile_name + ".log.wf")        handler = logging.handlers.TimedRotatingFileHandler(wf_log,                                                            when=when,                                                            backupCount=backup)        handler.setLevel(logging.WARNING)        handler.setFormatter(formatter)        self.logger.addHandler(handler)    def get_logger(self):        return self.logger
+
+2、使用日志模块
+#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport log# 日志保存到./log/vk.log和./log/vk.log.wf，按天切割，保留7天logger = log.Log(logfile_name='vk_test').get_logger()logger = log.Log(logfile_name='vk').get_logger()class VKTest(object):    def __init__(self):        logger.info('print info level log to file')if __name__=="__main__":    logger.info("程序启动!!!")    vk = VKTest()    logger.info("程序结束!!!")
+
+执行脚本后，日志内容会输出到 log/vk.log 中。
+参考文档
+Python黑魔法手册
+Python Cookbook 3rd Edition Documentation
+Google Python风格指南
+unittest - 单元测试框架
+
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>python</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
       </tags>
   </entry>
   <entry>
@@ -2315,7 +2315,7 @@ macosbrew install helmhelm version
 
 linux1、查找需要的release版本
 2、下载并安装
-wget https://get.helm.sh/helm-v3.2.4-linux-amd64.tar.gztar -xzvf helm-v2.16.9-linux-amd64.tar.gzmv linux-amd64/helm /usr/local/bin/helmhelm version
+wget https://get.helm.sh/helm-v3.2.4-linux-amd64.tar.gztar -xzvf helm-v3.2.4-linux-amd64.tar.gzmv linux-amd64/helm /usr/local/bin/helmhelm version
 
 使用Helm使用条件：安装配置k8s集群；配置kubectl，可以访问k8s；安装helm。
 查看帮助：
@@ -2329,7 +2329,10 @@ helm -hhelm get -h
 helm repo updatehelm show chart stable/mysqlhelm show all stable/mysqlhelm install stable/mysql --generate-name
 
 4、卸载mysql
-helm lshelm uninstall smiling-penguinhelm status smiling-penguin]]></content>
+helm lshelm uninstall mysqlhelm status mysql
+
+
+]]></content>
       <categories>
         <category>专业</category>
         <category>运维</category>
@@ -3270,6 +3273,27 @@ Turbo Boost Switcher
       </categories>
   </entry>
   <entry>
+    <title>MacOS小技巧</title>
+    <url>/hobby-macos-tricks/</url>
+    <content><![CDATA[使用命令打开目录和文件1、在finder中打开当前目录open .
+2、使用默认程序打开指定文件open README.md
+切换窗口1、command + tab2、三指左右滑动3、三指上滑
+
+
+快速预览选中文件或者文件夹，点击空格即可预览文件，点击上下左右可以预览其他文件。
+隔空投送接收方：打开隔空投送功能，同时接收人选择仅限联系人或所有人。
+发送方：1、打开要发送的文件，然后点按 App 窗口中的“共享”按钮 。或者，在“访达”中按住 Control 键点按相应文件，然后从快捷键菜单中选取“共享”。2、从列出的共享选项中，选取“隔空投送”。3、从“隔空投送”表单中选取一位接收者。
+或者打开“隔空投送”窗口，然后将文件拖移到接收者：1、在“访达”窗口的边栏中选择“隔空投送”。或者从菜单栏中选取“前往”&gt;“隔空投送”。2、“隔空投送”窗口随即会显示附近的“隔空投送”用户。将一个或多个文稿、照片或其他文件拖移到窗口中显示的接收者。
+详情参考 在 Mac 上使用“隔空投送”。
+传送速度非常快，网络条件不错的情况下，可以达到几百MB每秒。
+mac和ipad之间，mac和iphone之间也可以使用隔空投送，非常方便实用。
+]]></content>
+      <categories>
+        <category>爱好</category>
+        <category>电脑</category>
+      </categories>
+  </entry>
+  <entry>
     <title>MacOS系统配置</title>
     <url>/hobby-macos-system-settings/</url>
     <content><![CDATA[用户名配置系统偏好设置，用户与群组，点按锁按钮以进行修改。右键用户，高级选项。修改账户名称为vk，这个名称是shell中显示的用户名。修改全名为voidking，这个名称是mac系统显示的名称。个人目录，修改为 /Users/vk ，这个目录是新的home目录。
@@ -3325,27 +3349,6 @@ cd ..diskutil unmount /Volumes/WDdiskutil unmount force /Volumes/WD
 
 
 
-]]></content>
-      <categories>
-        <category>爱好</category>
-        <category>电脑</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>MacOS小技巧</title>
-    <url>/hobby-macos-tricks/</url>
-    <content><![CDATA[使用命令打开目录和文件1、在finder中打开当前目录open .
-2、使用默认程序打开指定文件open README.md
-切换窗口1、command + tab2、三指左右滑动3、三指上滑
-
-
-快速预览选中文件或者文件夹，点击空格即可预览文件，点击上下左右可以预览其他文件。
-隔空投送接收方：打开隔空投送功能，同时接收人选择仅限联系人或所有人。
-发送方：1、打开要发送的文件，然后点按 App 窗口中的“共享”按钮 。或者，在“访达”中按住 Control 键点按相应文件，然后从快捷键菜单中选取“共享”。2、从列出的共享选项中，选取“隔空投送”。3、从“隔空投送”表单中选取一位接收者。
-或者打开“隔空投送”窗口，然后将文件拖移到接收者：1、在“访达”窗口的边栏中选择“隔空投送”。或者从菜单栏中选取“前往”&gt;“隔空投送”。2、“隔空投送”窗口随即会显示附近的“隔空投送”用户。将一个或多个文稿、照片或其他文件拖移到窗口中显示的接收者。
-详情参考 在 Mac 上使用“隔空投送”。
-传送速度非常快，网络条件不错的情况下，可以达到几百MB每秒。
-mac和ipad之间，mac和iphone之间也可以使用隔空投送，非常方便实用。
 ]]></content>
       <categories>
         <category>爱好</category>
@@ -7387,6 +7390,7 @@ sudo ping instance_internal_ip -i 0.001 &gt;&gt; ping.log
         <category>专业</category>
         <category>运维</category>
         <category>openstack</category>
+        <category>libvirt</category>
       </categories>
       <tags>
         <tag>linux</tag>
@@ -7620,6 +7624,7 @@ ab -g t0.dat -t 100 -n 1000000 http://172.16.0.19/mediawiki/index.php/Main_Page
         <category>运维</category>
         <category>测试</category>
         <category>openstack</category>
+        <category>libvirt</category>
       </categories>
       <tags>
         <tag>docker</tag>
@@ -8161,6 +8166,7 @@ vim /etc/init/libvirt-bin.conf，如下修改：
         <category>专业</category>
         <category>运维</category>
         <category>ubuntu</category>
+        <category>libvirt</category>
       </categories>
       <tags>
         <tag>linux</tag>
@@ -8241,6 +8247,7 @@ How to Put a KVM Guest Domain on a Bridged Network
         <category>专业</category>
         <category>运维</category>
         <category>ubuntu</category>
+        <category>libvirt</category>
       </categories>
       <tags>
         <tag>网络</tag>
@@ -8252,11 +8259,11 @@ How to Put a KVM Guest Domain on a Bridged Network
   <entry>
     <title>使用Libvirt创建虚拟机</title>
     <url>/dev-libvirt-create-vm/</url>
-    <content><![CDATA[libvirt简介参考QEMU和QEMU-KVM的关系，可以了解到，KVM实现对CPU的底层虚拟化和内存的虚拟化，使Linux内核成为虚拟化层，需要x86架构的，支持虚拟化功能的硬件支持（比如Intel VT，AMD-V），是一种全虚拟化架构。QEMU是一套由Fabrice Bellard编写的模拟处理器的自由软件，它是一个完整的可以单独运行的软件，可以独立模拟出整台计算机，包括CPU，内存，IO设备，通过一个特殊的“重编译器”对特定的处理器的二进制代码进行翻译，从而具有了跨平台的通用性。
-总的来说，QEMU是一个独立的虚拟化解决方案，并不依赖KVM（它本身自己可以做CPU和内存的模拟，只不过效率较低），而KVM是另一套虚拟化解决方案，对CPU进行虚拟效率较高（采用了硬件辅助虚拟化），但本身不提供其他设备的虚拟化，借用了QEMU的代码进行了定制，所以KVM方案一定要依赖QEMU。
-Libvirt是用于管理虚拟化平台的开源的API，后台程序和管理工具。它可以用于管理KVM、Xen、VMware ESX，QEMU和其他虚拟化技术。
+    <content><![CDATA[libvirt简介KVM（Kernel-based Virtual Machine）实现对CPU的底层虚拟化和内存的虚拟化，使Linux内核成为虚拟化层，需要x86架构的，支持虚拟化功能的硬件支持（比如Intel VT，AMD-V），是一种全虚拟化架构。QEMU是一套由Fabrice Bellard编写的模拟处理器的自由软件，它是一个完整的可以单独运行的软件，可以独立模拟出整台计算机，包括CPU，内存，IO设备，通过一个特殊的“重编译器”对特定的处理器的二进制代码进行翻译，从而具有了跨平台的通用性。
+总的来说，QEMU是一个独立的虚拟化解决方案，并不依赖KVM，它本身自己可以做CPU和内存的模拟，只不过效率较低。而KVM是另一套虚拟化解决方案，对CPU进行虚拟效率较高（采用了硬件辅助虚拟化），但本身不提供其他设备的虚拟化，借用了QEMU的代码进行了定制，所以KVM方案一定要依赖QEMU。
+而Libvirt是用于管理虚拟化平台的开源的API，后台程序和管理工具。它可以用于管理KVM、Xen、VMware ESX，QEMU和其他虚拟化技术。
 Libvirt主要由三个部分组成：API库，一个守护进程libvirtd和一个默认命令行管理工具 virsh。
-更多内容参考libvirt 介绍。
+更多内容参考QEMU和QEMU-KVM的关系和libvirt 介绍。
 
 
 实验环境不能直接在OpenStack环境中实验，因为这样会破坏OpenStack。而且，使用kolla安装的OpenStack，没有virsh命令，libvirt是运行在容器中的。
@@ -8364,6 +8371,7 @@ Documentation/Networking
         <category>专业</category>
         <category>运维</category>
         <category>ubuntu</category>
+        <category>libvirt</category>
       </categories>
       <tags>
         <tag>linux</tag>
@@ -8731,6 +8739,7 @@ Performance analysis of “post-copy” live migration in Openstack
         <category>运维</category>
         <category>测试</category>
         <category>openstack</category>
+        <category>libvirt</category>
       </categories>
       <tags>
         <tag>docker</tag>
@@ -8850,6 +8859,7 @@ openstack network listopenstack floating listopenstack floating ip create public
         <category>专业</category>
         <category>运维</category>
         <category>openstack</category>
+        <category>libvirt</category>
       </categories>
       <tags>
         <tag>docker</tag>
@@ -8913,6 +8923,7 @@ PS：可以在其他节点使用virsh命令测试连通性virsh -c qemu+tcp://co
         <category>专业</category>
         <category>运维</category>
         <category>openstack</category>
+        <category>libvirt</category>
       </categories>
       <tags>
         <tag>docker</tag>
@@ -11330,6 +11341,7 @@ chgrp nova /etc/nova/nova.conf
         <category>专业</category>
         <category>运维</category>
         <category>openstack</category>
+        <category>libvirt</category>
       </categories>
       <tags>
         <tag>linux</tag>
