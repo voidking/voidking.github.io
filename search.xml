@@ -63,14 +63,11 @@ k8s-tool备考的过程中，完善自己的k8s-tool，考试的时候可以使�
       </tags>
   </entry>
   <entry>
-    <title>Hexo配置Travis CI自动发布</title>
+    <title>Hexo配置Travis CI自动构建发布</title>
     <url>/dev-hexo-travis-ci/</url>
-    <content><![CDATA[CI, CD and CDCI，CONTINUOUS INTEGRATION，持续集成。在持续集成环境中，开发人员将会频繁的提交代码到主干。这些新提交在最终合并到主线之前，都需要通过编译和自动化测试流进行验证。
-CD，CONTINUOUS DELIVERY，持续交付。持续交付就是应用发布出去的过程。这个过程可以确保我们尽可能快的实现交付。这就意味着除了自动化测试，我们还需要有自动化的发布流，以及通过一个按键就可以随时随地实现应用的部署上线。为了发挥持续交付的优势，一般需要先进行小批量发布，尽快部署到生产线，以便在出现问题时方便进行故障排除。
-CD，CONTINUOUS DEPLOYMENT，持续部署。持续部署是持续集成和持续交付的合并。当开发人员在主分支中合并一个提交时，会触发工作流，包括构建、单元测试、预发布、验收测试、生产发布、冒烟测试等。如果一切顺利，则成功部署到生产环境中。如果某个工作流失败，则不会部署到生产环境。
-更多关于CI/CD内容参考详解CI、CD &amp; CD和什么是 CI/CD？，关于发布环境的划分参考Deployment environment。
-在gitlab中，无论是CI、CD还是CD，都可以通过配置gitlab-ci.yml来实现。而github，在2019年8月8日也支持内置的CI/CD了。但是本文中，并不是使用github内置的CI/CD，而是使用Travis CI来实现hexo的自动发布。
-《Hexo配置多个git仓库》一文中已经学习了hexo配置多个git仓库的方法，发布项目也很简单。为什么还需要hexo的自动发布？因为发布流程还可以更简单。而且，现在的发布方式，如果想要多台电脑同时使用，那么每台电脑都需要配置hexo环境，很麻烦。如果本地只负责写写markdown文件，而构建发布都放到云端，是不是更加美好？本文要做的，就是这样一件事。
+    <content><![CDATA[为什么要配置自动构建发布？《Hexo配置多个git仓库》一文中已经学习了hexo配置多个git仓库的方法，发布项目也很简单。为什么还需要hexo的自动发布？因为发布流程还可以更简单。而且，现在的发布方式，如果想要多台电脑同时使用，那么每台电脑都需要配置hexo环境，很麻烦。如果本地只负责写写markdown文件，而构建发布都放到云端，是不是更加美好？本文要做的，就是这样一件事。
+在gitlab中，CI/CD可以通过配置gitlab-ci.yml来实现。而github，在2019年8月8日也支持内置的CI/CD了。但是本文中，并不是使用github内置的CI/CD，而是使用Travis CI来实现hexo的自动构建发布。
+更多关于CI/CD的内容，参考《GitLab CI/CD》
 
 
 安装配置本地hexo参考《Hexo环境搭建2018年5月版》，安装v10.16.3版本的node，创建hexo项目，然后把需要的依赖写入package.json：
@@ -101,12 +98,14 @@ after_success:- git config --global user.name "voidking"- git config --global us
         <category>专业</category>
         <category>运维</category>
         <category>开发</category>
-        <category>hexo</category>
         <category>CICD</category>
+        <category>hexo</category>
+        <category>git</category>
       </categories>
       <tags>
-        <tag>hexo</tag>
+        <tag>git</tag>
         <tag>cicd</tag>
+        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -174,6 +173,55 @@ curl http://8.136.13.58curl http://8.136.13.58 -L
       <tags>
         <tag>docker</tag>
         <tag>nginx</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux配置网络代理</title>
+    <url>/dev-linux-network-proxy/</url>
+    <content><![CDATA[网络代理《Linux配置SNAT上网》一文中，我们了解到，通过SNAT的方式能够让局域网中所有主机都能访问外网。而网络代理，也能让局域网中所有主机都能访问外网。并且，如果网络代理支持科学上网，那么所有使用这个代理的主机也可以科学上网。
+本文我们就来学习一下Linux中常见的网络代理配置方法，参考文档：
+
+linux设置代理上网
+docker pull 配置代理
+
+已知网络代理的IP和PORT为：192.168.56.1:7890
+
+
+bash环境网络代理bash环境网络代理设置，适用于curl命令。
+临时配置export https_proxy=http://192.168.56.1:7890 http_proxy=http://192.168.56.1:7890 all_proxy=socks5://192.168.56.1:7890 ftp_proxy=http://192.168.56.1:7890
+
+永久生效1、写入配置内容到.bash_profile文件中
+export https_proxy=http://192.168.56.1:7890 export http_proxy=http://192.168.56.1:7890 export all_proxy=socks5://192.168.56.1:7890export ftp_proxy=http://192.168.56.1:7890
+
+2、使生效source .bash_profile
+wget代理编辑文件/etc/wgetrc，添加内容：
+http_proxy = 192.168.56.1:7890  ftp_proxy = 192.168.56.1:7890
+
+yum代理编辑文件/etc/yum.conf，添加内容：
+proxy=192.168.56.1:7890
+
+浏览器上网代理以Firefox浏览器为例：Edit -&gt; Preferences -&gt; Advanced -&gt; Network在Connection下点击Settings，manual proxy configuration里设置IP和PORT。
+docker pull代理1、创建docker配置目录mkdir /etc/systemd/system/docker.service.d
+2、添加代理配置vim /etc/systemd/system/docker.service.d/http-proxy.conf，写入内容为：
+[Service]Environment="HTTP_PROXY=http://192.168.56.1:7890"Environment="HTTPS_PROXY=http://192.168.56.1:7890"
+
+3、重启docker
+systemctl daemon-reloadsystemctl restart docker
+
+4、查看docker代理docker info | grep Proxy
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>docker</category>
+        <category>网络</category>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>网络</tag>
+        <tag>docker</tag>
+        <tag>linux</tag>
+        <tag>centos</tag>
       </tags>
   </entry>
   <entry>
@@ -319,6 +367,113 @@ TODOtutorial.py详解、传参、接口调用airflow + django
       </tags>
   </entry>
   <entry>
+    <title>Python打印日志</title>
+    <url>/dev-python-log/</url>
+    <content><![CDATA[输出日志到控制台import sysimport logginglog = logging.getLogger(__name__)log.setLevel(logging.DEBUG)log.addHandler(logging.StreamHandler(sys.stdout)) #默认sys.errorlog.info('print info level log to console')
+
+
+
+输出日志到文件import sysimport logginglog = logging.getLogger(__name__)log.setLevel(logging.DEBUG)log.addHandler(logging.FileHandler('python.log'))log.info('print info level log to file')
+日志文件默认存储到执行命令的路径下，可以通过使用绝对路径来指定日志文件路径。
+封装日志模块1、封装一个日志模块 log.py
+#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport loggingimport logging.handlersdef init_log(log_path, level=logging.INFO, when="D", backup=7,             format="%(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s",             datefmt="%m-%d %H:%M:%S"):    """    init_log - initialize log module    Args:    log_path - Log file path prefix.    Log data will go to two files: log_path.log and log_path.log.wf    Any non-exist parent directories will be created automatically    level - msg above the level will be displayed    DEBUG &lt; INFO &lt; WARNING &lt; ERROR &lt; CRITICAL    the default value is logging.INFO    when - how to split the log file by time interval    'S' : Seconds    'M' : Minutes    'H' : Hours    'D' : Days    'W' : Week day    default value: 'D'    format - format of the log    default format:    %(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s    INFO: 12-09 18:02:42: log.py:40 * 139814749787872 HELLO WORLD    backup - how many backup file to keep    default value: 7    Raises:    OSError: fail to create log directories    IOError: fail to open log file    """    formatter = logging.Formatter(format, datefmt)    logger = logging.getLogger()    logger.setLevel(level)    dir = os.path.dirname(log_path)    if not os.path.isdir(dir):        os.makedirs(dir)    handler = logging.handlers.TimedRotatingFileHandler(log_path + ".log",                                                        when=when,                                                        backupCount=backup)    handler.setLevel(level)    handler.setFormatter(formatter)    logger.addHandler(handler)    handler = logging.handlers.TimedRotatingFileHandler(log_path + ".log.wf",                                                        when=when,                                                        backupCount=backup)    handler.setLevel(logging.WARNING)    handler.setFormatter(formatter)    logger.addHandler(handler)
+
+2、使用日志模块
+#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport loggingimport logclass VKTest(object):    def __init__(self):        logging.info('print info level log to file')if __name__=="__main__":    # 日志保存到./log/vk.log和./log/vk.log.wf，按天切割，保留7天    log.init_log("./log/vk")    logging.info("程序启动!!!")    vk = VKTest()    logging.info("程序结束!!!")
+
+执行脚本后，日志内容会输出到 log/vk.log 中。
+封装日志模块2.01、封装一个日志模块 log.py
+#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport loggingimport logging.handlersDEFAULT_LOG_PATH = './log/'class Log(object):    def __init__(self,                 logfile_name='default',                 log_path=DEFAULT_LOG_PATH,                 level=logging.INFO,                 when="D",                 backup=7,                 format="%(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s",                 datefmt="%m-%d %H:%M:%S"):        """        init_log - initialize log module        Args:        log_path - Log file path prefix.        Log data will go to two files: log_path.log and log_path.log.wf        Any non-exist parent directories will be created automatically        level - msg above the level will be displayed        DEBUG &lt; INFO &lt; WARNING &lt; ERROR &lt; CRITICAL        the default value is logging.INFO        when - how to split the log file by time interval        'S' : Seconds        'M' : Minutes        'H' : Hours        'D' : Days        'W' : Week day        default value: 'D'        format - format of the log        default format:        %(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s        INFO: 12-09 18:02:42: log.py:40 * 139814749787872 HELLO WORLD        backup - how many backup file to keep        default value: 7        Raises:        OSError: fail to create log directories        IOError: fail to open log file        """        formatter = logging.Formatter(format, datefmt)        # getLogger一定要传参，否则多次调用对象创建，得到的会是同一个logger对象        # 后果就是相同的日志内容，会同时写到多个不同的日志文件中        self.logger = logging.getLogger(logfile_name)        self.logger.setLevel(level)        if not os.path.exists(log_path):            os.makedirs(log_path)                    common_log = os.path.join(log_path, logfile_name + ".log")        handler = logging.handlers.TimedRotatingFileHandler(common_log,                                                            when=when,                                                            backupCount=backup)        handler.setLevel(level)        handler.setFormatter(formatter)        self.logger.addHandler(handler)        wf_log = os.path.join(log_path, logfile_name + ".log.wf")        handler = logging.handlers.TimedRotatingFileHandler(wf_log,                                                            when=when,                                                            backupCount=backup)        handler.setLevel(logging.WARNING)        handler.setFormatter(formatter)        self.logger.addHandler(handler)    def get_logger(self):        return self.logger
+
+2、使用日志模块
+#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport log# 日志保存到./log/vk.log和./log/vk.log.wf，按天切割，保留7天logger = log.Log(logfile_name='vk_test').get_logger()logger = log.Log(logfile_name='vk').get_logger()class VKTest(object):    def __init__(self):        logger.info('print info level log to file')if __name__=="__main__":    logger.info("程序启动!!!")    vk = VKTest()    logger.info("程序结束!!!")
+
+执行脚本后，日志内容会输出到 log/vk.log 中。
+参考文档
+Python黑魔法手册
+Python Cookbook 3rd Edition Documentation
+Google Python风格指南
+unittest - 单元测试框架
+
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>python</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Python操作MySQL</title>
+    <url>/dev-python-mysql/</url>
+    <content><![CDATA[前言python操作mysql数据库进行增删查改，是经常遇到的需求，下面整理一下具体操作方法。
+数据库准备1、安装配置好mysql参考《使用Docker安装配置Mysql》
+2、创建一个测试用的数据库
+create database vkphp default character set utf8 collate utf8_general_ci;use vkphp;CREATE TABLE IF NOT EXISTS `user` (  `id` int(8) NOT NULL AUTO_INCREMENT,  `name` varchar(32) NOT NULL,  `password` varchar(32) NOT NULL DEFAULT '',  PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+更多命令参考 《MySQL常用命令》
+
+
+安装依赖pip3 install mysqlclient==1.3.13
+插入数据#!/usr/bin/python3# -*- coding: UTF-8 -*-import MySQLdb# 打开数据库连接db = MySQLdb.connect(host="localhost",                     port="3306",                    user="root",                     password="voidking",                     database="vkphp",                     charset='utf8')# 使用cursor()方法获取操作游标 cursor = db.cursor()# SQL 插入语句sql = "insert into `user` (`name`,`password`) values('haojin','voidking');"try:   # 执行sql语句   cursor.execute(sql)   # 提交到数据库执行   db.commit()except:   # 发生错误时回滚   db.rollback()# 关闭数据库连接db.close()
+
+其他操作参考Python 操作 MySQL 数据库。
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>python</category>
+        <category>mysql</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>mysql</tag>
+        <tag>测试</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Python重试</title>
+    <url>/dev-python-retry/</url>
+    <content><![CDATA[为什么需要重试？典型场景：程序的实现需要调用第三方的API，但是我们并不能保证第三方API一直好用，也不能保证网络一直畅通，所以在调用第三方API时需要加上错误重试。  
+通用场景：程序的运行不符合预期，我们知道再次调用大概率可以使之符合预期，这时就需要重试。  
+而重试逻辑我们可以通过循环多次调用实现，也可以使用封装好的重试模块。本文我们就学习一下Python中比较流行的 retrying 模块，实现一些重试Demo。
+
+
+安装retryingpip install retrying
+任意异常重试from retrying import retry@retry(stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrorif __name__ == '__main__':    run()
+
+当函数run抛出任意异常时，则进行重试。
+
+stop_max_attempt_number：最大重试次数
+wait_random_min：最小重试间隔
+wait_random_max：最大重试间隔
+
+注意函数内不要使用try except，否则异常就被函数自己捕获处理了，不会抛给retry。
+指定异常重试from retrying import retryimport randomdef if_value_error(exception):    return isinstance(exception, ValueError)@retry(retry_on_exception=if_value_error, stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    value = random.randint(0, 10)    msg = f'value is &#123;value&#125;'    print(msg)    if value &lt;= 5:        raise ValueError('value is too small!')    else:        raise Exception('value is too large!')if __name__ == '__main__':    run()
+
+当函数run抛出ValueError异常时，则进行重试；抛出Exception异常时，不会重试。
+指定返回值重试from retrying import retryimport randomdef if_return_small(value):    return value &lt;= 5@retry(retry_on_result=if_return_small, stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    value = random.randint(0, 10)    msg = f'value is &#123;value&#125;'    print(msg)    return valueif __name__ == '__main__':    run()
+
+当函数run返回值小于5时，进行重试。
+多次重试后容忍异常from retrying import retry@retry(stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrordef run2():    print('run2')if __name__ == '__main__':    run()    run2()
+
+当函数run抛出任意异常时，则进行重试。重试指定次数后，程序就异常结束了。这时，如果我们想要容忍异常，让run2可以正常运行，该怎么办呢？很简单，给run函数包裹一个try except即可。
+from retrying import retry@retry(wrap_exception=True,stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrordef wrap_run():    try:        run()    except:        passdef run2():    print('run2')if __name__ == '__main__':    wrap_run()    run2()
+
+
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>python</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Python脚本路径</title>
     <url>/dev-python-script-path/</url>
     <content><![CDATA[怎样获取一个脚本的路径？怎样获取执行脚本的绝对路径？怎样获取执行脚本的父绝对路径？怎样获取入口脚本的绝对路径？。。。带着这些问题，我们进行一个简单的实验，获知这些问题的答案。
@@ -440,113 +595,6 @@ import jsonimport unittestfrom unittest import mockimport requestsdef request_sy
       <tags>
         <tag>python</tag>
         <tag>测试</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Python重试</title>
-    <url>/dev-python-retry/</url>
-    <content><![CDATA[为什么需要重试？典型场景：程序的实现需要调用第三方的API，但是我们并不能保证第三方API一直好用，也不能保证网络一直畅通，所以在调用第三方API时需要加上错误重试。  
-通用场景：程序的运行不符合预期，我们知道再次调用大概率可以使之符合预期，这时就需要重试。  
-而重试逻辑我们可以通过循环多次调用实现，也可以使用封装好的重试模块。本文我们就学习一下Python中比较流行的 retrying 模块，实现一些重试Demo。
-
-
-安装retryingpip install retrying
-任意异常重试from retrying import retry@retry(stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrorif __name__ == '__main__':    run()
-
-当函数run抛出任意异常时，则进行重试。
-
-stop_max_attempt_number：最大重试次数
-wait_random_min：最小重试间隔
-wait_random_max：最大重试间隔
-
-注意函数内不要使用try except，否则异常就被函数自己捕获处理了，不会抛给retry。
-指定异常重试from retrying import retryimport randomdef if_value_error(exception):    return isinstance(exception, ValueError)@retry(retry_on_exception=if_value_error, stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    value = random.randint(0, 10)    msg = f'value is &#123;value&#125;'    print(msg)    if value &lt;= 5:        raise ValueError('value is too small!')    else:        raise Exception('value is too large!')if __name__ == '__main__':    run()
-
-当函数run抛出ValueError异常时，则进行重试；抛出Exception异常时，不会重试。
-指定返回值重试from retrying import retryimport randomdef if_return_small(value):    return value &lt;= 5@retry(retry_on_result=if_return_small, stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    value = random.randint(0, 10)    msg = f'value is &#123;value&#125;'    print(msg)    return valueif __name__ == '__main__':    run()
-
-当函数run返回值小于5时，进行重试。
-多次重试后容忍异常from retrying import retry@retry(stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrordef run2():    print('run2')if __name__ == '__main__':    run()    run2()
-
-当函数run抛出任意异常时，则进行重试。重试指定次数后，程序就异常结束了。这时，如果我们想要容忍异常，让run2可以正常运行，该怎么办呢？很简单，给run函数包裹一个try except即可。
-from retrying import retry@retry(wrap_exception=True,stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrordef wrap_run():    try:        run()    except:        passdef run2():    print('run2')if __name__ == '__main__':    wrap_run()    run2()
-
-
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>python</category>
-      </categories>
-      <tags>
-        <tag>python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Python操作MySQL</title>
-    <url>/dev-python-mysql/</url>
-    <content><![CDATA[前言python操作mysql数据库进行增删查改，是经常遇到的需求，下面整理一下具体操作方法。
-数据库准备1、安装配置好mysql参考《使用Docker安装配置Mysql》
-2、创建一个测试用的数据库
-create database vkphp default character set utf8 collate utf8_general_ci;use vkphp;CREATE TABLE IF NOT EXISTS `user` (  `id` int(8) NOT NULL AUTO_INCREMENT,  `name` varchar(32) NOT NULL,  `password` varchar(32) NOT NULL DEFAULT '',  PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-更多命令参考 《MySQL常用命令》
-
-
-安装依赖pip3 install mysqlclient==1.3.13
-插入数据#!/usr/bin/python3# -*- coding: UTF-8 -*-import MySQLdb# 打开数据库连接db = MySQLdb.connect(host="localhost",                     port="3306",                    user="root",                     password="voidking",                     database="vkphp",                     charset='utf8')# 使用cursor()方法获取操作游标 cursor = db.cursor()# SQL 插入语句sql = "insert into `user` (`name`,`password`) values('haojin','voidking');"try:   # 执行sql语句   cursor.execute(sql)   # 提交到数据库执行   db.commit()except:   # 发生错误时回滚   db.rollback()# 关闭数据库连接db.close()
-
-其他操作参考Python 操作 MySQL 数据库。
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>python</category>
-        <category>mysql</category>
-      </categories>
-      <tags>
-        <tag>python</tag>
-        <tag>mysql</tag>
-        <tag>测试</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Python打印日志</title>
-    <url>/dev-python-log/</url>
-    <content><![CDATA[输出日志到控制台import sysimport logginglog = logging.getLogger(__name__)log.setLevel(logging.DEBUG)log.addHandler(logging.StreamHandler(sys.stdout)) #默认sys.errorlog.info('print info level log to console')
-
-
-
-输出日志到文件import sysimport logginglog = logging.getLogger(__name__)log.setLevel(logging.DEBUG)log.addHandler(logging.FileHandler('python.log'))log.info('print info level log to file')
-日志文件默认存储到执行命令的路径下，可以通过使用绝对路径来指定日志文件路径。
-封装日志模块1、封装一个日志模块 log.py
-#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport loggingimport logging.handlersdef init_log(log_path, level=logging.INFO, when="D", backup=7,             format="%(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s",             datefmt="%m-%d %H:%M:%S"):    """    init_log - initialize log module    Args:    log_path - Log file path prefix.    Log data will go to two files: log_path.log and log_path.log.wf    Any non-exist parent directories will be created automatically    level - msg above the level will be displayed    DEBUG &lt; INFO &lt; WARNING &lt; ERROR &lt; CRITICAL    the default value is logging.INFO    when - how to split the log file by time interval    'S' : Seconds    'M' : Minutes    'H' : Hours    'D' : Days    'W' : Week day    default value: 'D'    format - format of the log    default format:    %(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s    INFO: 12-09 18:02:42: log.py:40 * 139814749787872 HELLO WORLD    backup - how many backup file to keep    default value: 7    Raises:    OSError: fail to create log directories    IOError: fail to open log file    """    formatter = logging.Formatter(format, datefmt)    logger = logging.getLogger()    logger.setLevel(level)    dir = os.path.dirname(log_path)    if not os.path.isdir(dir):        os.makedirs(dir)    handler = logging.handlers.TimedRotatingFileHandler(log_path + ".log",                                                        when=when,                                                        backupCount=backup)    handler.setLevel(level)    handler.setFormatter(formatter)    logger.addHandler(handler)    handler = logging.handlers.TimedRotatingFileHandler(log_path + ".log.wf",                                                        when=when,                                                        backupCount=backup)    handler.setLevel(logging.WARNING)    handler.setFormatter(formatter)    logger.addHandler(handler)
-
-2、使用日志模块
-#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport loggingimport logclass VKTest(object):    def __init__(self):        logging.info('print info level log to file')if __name__=="__main__":    # 日志保存到./log/vk.log和./log/vk.log.wf，按天切割，保留7天    log.init_log("./log/vk")    logging.info("程序启动!!!")    vk = VKTest()    logging.info("程序结束!!!")
-
-执行脚本后，日志内容会输出到 log/vk.log 中。
-封装日志模块2.01、封装一个日志模块 log.py
-#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport loggingimport logging.handlersDEFAULT_LOG_PATH = './log/'class Log(object):    def __init__(self,                 logfile_name='default',                 log_path=DEFAULT_LOG_PATH,                 level=logging.INFO,                 when="D",                 backup=7,                 format="%(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s",                 datefmt="%m-%d %H:%M:%S"):        """        init_log - initialize log module        Args:        log_path - Log file path prefix.        Log data will go to two files: log_path.log and log_path.log.wf        Any non-exist parent directories will be created automatically        level - msg above the level will be displayed        DEBUG &lt; INFO &lt; WARNING &lt; ERROR &lt; CRITICAL        the default value is logging.INFO        when - how to split the log file by time interval        'S' : Seconds        'M' : Minutes        'H' : Hours        'D' : Days        'W' : Week day        default value: 'D'        format - format of the log        default format:        %(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s        INFO: 12-09 18:02:42: log.py:40 * 139814749787872 HELLO WORLD        backup - how many backup file to keep        default value: 7        Raises:        OSError: fail to create log directories        IOError: fail to open log file        """        formatter = logging.Formatter(format, datefmt)        # getLogger一定要传参，否则多次调用对象创建，得到的会是同一个logger对象        # 后果就是相同的日志内容，会同时写到多个不同的日志文件中        self.logger = logging.getLogger(logfile_name)        self.logger.setLevel(level)        if not os.path.exists(log_path):            os.makedirs(log_path)                    common_log = os.path.join(log_path, logfile_name + ".log")        handler = logging.handlers.TimedRotatingFileHandler(common_log,                                                            when=when,                                                            backupCount=backup)        handler.setLevel(level)        handler.setFormatter(formatter)        self.logger.addHandler(handler)        wf_log = os.path.join(log_path, logfile_name + ".log.wf")        handler = logging.handlers.TimedRotatingFileHandler(wf_log,                                                            when=when,                                                            backupCount=backup)        handler.setLevel(logging.WARNING)        handler.setFormatter(formatter)        self.logger.addHandler(handler)    def get_logger(self):        return self.logger
-
-2、使用日志模块
-#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport log# 日志保存到./log/vk.log和./log/vk.log.wf，按天切割，保留7天logger = log.Log(logfile_name='vk_test').get_logger()logger = log.Log(logfile_name='vk').get_logger()class VKTest(object):    def __init__(self):        logger.info('print info level log to file')if __name__=="__main__":    logger.info("程序启动!!!")    vk = VKTest()    logger.info("程序结束!!!")
-
-执行脚本后，日志内容会输出到 log/vk.log 中。
-参考文档
-Python黑魔法手册
-Python Cookbook 3rd Edition Documentation
-Google Python风格指南
-unittest - 单元测试框架
-
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>python</category>
-      </categories>
-      <tags>
-        <tag>python</tag>
       </tags>
   </entry>
   <entry>
@@ -754,12 +802,12 @@ Ran out of free trial build credits available for private repositories.Travis CI
         <category>专业</category>
         <category>运维</category>
         <category>开发</category>
-        <category>hexo</category>
         <category>CICD</category>
+        <category>hexo</category>
       </categories>
       <tags>
-        <tag>hexo</tag>
         <tag>cicd</tag>
+        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -938,12 +986,12 @@ git add .git commmit -m "简化travis.yml"git push
         <category>专业</category>
         <category>运维</category>
         <category>开发</category>
-        <category>hexo</category>
         <category>CICD</category>
+        <category>hexo</category>
       </categories>
       <tags>
-        <tag>hexo</tag>
         <tag>cicd</tag>
+        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -2302,7 +2350,13 @@ helm是k8s的包管理工具，就像yum之于centos，apt之于ubuntu。不同�
 wordpress/  Chart.yaml          # A YAML file containing information about the chart  LICENSE             # OPTIONAL: A plain text file containing the license for the chart  README.md           # OPTIONAL: A human-readable README file  requirements.yaml   # OPTIONAL: A YAML file listing dependencies for the chart  values.yaml         # The default configuration values for this chart  charts/             # A directory containing any charts upon which this chart depends.  templates/          # A directory of templates that, when combined with values,                      # will generate valid Kubernetes manifest files.  templates/NOTES.txt # OPTIONAL: A plain text file containing short usage notes
 
 Helm2包括两个组件：客户端（Helm Client）和服务端（Tiller）。Helm发送指令给Tiller(gRPC协议)，Tiller主要用于管理各种应用发布的版本，并且与k8s进行交互。不过，在 Helm3 中 Tiller 被移除掉了，Helm直接与k8s进行交互，版本相关的数据存储在k8s中。
-更多内容，参考helm/helm、Helm 从入门到实践 | 从 0 开始制作一个 Helm Charts、Helm用户与开发者指南。
+餐口：
+
+helm/helm
+使用Helm
+Helm 从入门到实践 | 从 0 开始制作一个 Helm Charts
+Helm用户与开发者指南。
+
 
 
 体验Helm越来越喜欢用katacoda来学习新技能，Helm也可以在上面通过实践学习。
@@ -2317,7 +2371,7 @@ linux1、查找需要的release版本
 2、下载并安装
 wget https://get.helm.sh/helm-v3.2.4-linux-amd64.tar.gztar -xzvf helm-v3.2.4-linux-amd64.tar.gzmv linux-amd64/helm /usr/local/bin/helmhelm version
 
-使用Helm使用条件：安装配置k8s集群；配置kubectl，可以访问k8s；安装helm。
+使用Helm安装软件使用条件：安装配置k8s集群；配置kubectl，可以访问k8s；安装helm。helm和kubectl一样，可以在一台机器上管理多个k8s集群，使用kubectl config use-context xxx切换一下集群即可。
 查看帮助：
 helm -hhelm get -h
 
@@ -2326,12 +2380,20 @@ helm -hhelm get -h
 
 2、查看可以安装的chartshelm search repo stable
 3、在k8s集群安装mysql
-helm repo updatehelm show chart stable/mysqlhelm show all stable/mysqlhelm install stable/mysql --generate-name
+helm repo updatehelm show chart stable/mysqlhelm show all stable/mysql# helm install mysql-test stable/mysql helm install stable/mysql --generate-namehelm status mysql
 
 4、卸载mysql
 helm lshelm uninstall mysqlhelm status mysql
 
-
+修改默认配置如果我们想修改mysql的默认配置，该怎么办呢？
+1、获取mysql配置helm fetch stable/mysql
+2、解压tar -xzvf mysql-xxx.tgz
+3、编辑values.yaml文件配置项改为我们需要的配置。
+4、执行安装在values所在目录下，执行命令helm install -f values.yaml . --namespace mysql
+创建chart1、创建charthelm create wecms
+2、验证charthelm lint
+3、打包charthelm package wecms
+4、使用chart安装helm install wecms ./wecms-0.1.0.tgz
 ]]></content>
       <categories>
         <category>专业</category>
@@ -2411,8 +2473,8 @@ apiVersion: monitoring.coreos.com/v1kind: PrometheusRulemetadata:  labels:    pr
       </categories>
       <tags>
         <tag>k8s</tag>
-        <tag>监控</tag>
         <tag>prometheus</tag>
+        <tag>监控</tag>
       </tags>
   </entry>
   <entry>
@@ -2457,8 +2519,8 @@ curl "http://192.168.56.102:9115/probe?module=http_2xx&amp;target=http://prometh
         <category>监控</category>
       </categories>
       <tags>
-        <tag>监控</tag>
         <tag>prometheus</tag>
+        <tag>监控</tag>
       </tags>
   </entry>
   <entry>
@@ -2532,8 +2594,8 @@ count(&#123;job="kube-controller-manager"&#125;) by (__name__)count(&#123;job="k
       </categories>
       <tags>
         <tag>k8s</tag>
-        <tag>监控</tag>
         <tag>prometheus</tag>
+        <tag>监控</tag>
       </tags>
   </entry>
   <entry>
@@ -2597,8 +2659,8 @@ resolution是可选的。默认值为全局评估间隔。
         <category>监控</category>
       </categories>
       <tags>
-        <tag>监控</tag>
         <tag>prometheus</tag>
+        <tag>监控</tag>
       </tags>
   </entry>
   <entry>
@@ -2641,11 +2703,11 @@ grafana的配置文件为 /etc/grafana/grafana.ini ，可以进入容器进行�
         <category>监控</category>
       </categories>
       <tags>
+        <tag>prometheus</tag>
+        <tag>监控</tag>
         <tag>docker</tag>
         <tag>centos</tag>
         <tag>grafana</tag>
-        <tag>监控</tag>
-        <tag>prometheus</tag>
       </tags>
   </entry>
   <entry>
@@ -2719,7 +2781,7 @@ alertmanager1、登录dockerhub查看需要的alertmanager。
 3、创建配置文件alertmanager.yml
 global:  resolve_timeout: 5mroute:  group_by: ['exam']  #与prometheus配置文件rules.yml中配置规则名对应  group_wait: 10s #报警等待时间  group_interval: 10s #报警间隔时间  repeat_interval: 1m #重复报警间隔时间  receiver: 'web.hook' #告警处理方式，我们这里通过web.hook方式，也可以配置成邮件等方式receivers:  - name: 'web.hook'    webhook_configs:      - url: 'http://192.168.56.102:8080/exam/test' #告警webhook地址，告警信息会post到该地址，需要编写服务接收该告警数据inhibit_rules:  - source_match:      severity: 'critical'    target_match:      severity: 'warning' #目标告警状态    equal: ['alertname', 'dev', 'instance']
 
-4、启动push gateway
+4、启动alertmanager
 docker run --name=alertmanager -d \-p 9093:9093 \-v $(pwd)/alertmanager.yml:/etc/alertmanager/alertmanager.yml \prom/alertmanager:v0.15.0 --config.file=/etc/alertmanager/alertmanager.yml --storage.path=/alertmanager
 
 5、测试服务浏览器访问 http://192.168.56.102:9093/
@@ -2750,10 +2812,10 @@ go get github.com/gin-gonic/gingo run main.go
         <category>监控</category>
       </categories>
       <tags>
+        <tag>prometheus</tag>
+        <tag>监控</tag>
         <tag>docker</tag>
         <tag>centos</tag>
-        <tag>监控</tag>
-        <tag>prometheus</tag>
       </tags>
   </entry>
   <entry>
@@ -3037,6 +3099,89 @@ TOKEN=$(kubectl describe secrets $(kubectl get secrets -n kube-system |grep admi
       </tags>
   </entry>
   <entry>
+    <title>MacOS系统配置</title>
+    <url>/hobby-macos-system-settings/</url>
+    <content><![CDATA[用户名配置系统偏好设置，用户与群组，点按锁按钮以进行修改。右键用户，高级选项。修改账户名称为vk，这个名称是shell中显示的用户名。修改全名为voidking，这个名称是mac系统显示的名称。个人目录，修改为 /Users/vk ，这个目录是新的home目录。
+修改完成后点击“好”，系统重启，然后整个系统恢复到出厂状态。
+
+
+密码系统偏好设置，用户与群组，更改密码。
+触控板系统偏好设置，触控板，光标与点按。勾选 轻点来点按，勾选 辅助点按，跟踪速度调整为喜欢的速度。 
+电脑名称系统偏好设置，共享，电脑名称，编辑。
+开机声音1、关闭开机声音
+sudo nvram BootAudio=%00sudo nvram SystemAudioVolume=%80
+
+2、打开开机声音
+sudo nvram BootAudio=%01sudo nvram -d SystemAudioVolume
+
+WindowServer占用资源过多系统偏好设置，辅助功能，显示，勾选减弱动态效果和减少透明度
+临时设置不关闭屏幕sudo supmset -g | grep sleeppmset -a displaysleep 30pmset -g | grep sleeppmset -a displaysleep 10pmset -g | grep sleep
+
+菜单快捷键右上角苹果按钮，点击会出现“睡眠”、“重新启动…”、“关机…”等菜单选项，这些选项可以设置对应的快捷键。以设置“睡眠”快捷键为例：右上角苹果按钮，系统偏好设置，键盘，快捷键，App快捷键，加号，菜单标题输入“睡眠”，键盘快捷键按下“control+command+S”。以上，就设置好了睡眠的快捷键。
+查看文件使用mac系统的Finder，可以查看“我的所有文件”，但是这是假的，点击这个选项只能看到最近使用的一些文件。
+解决办法：打开Finder，command＋逗号，出现Finder偏好设置，边栏，设备中勾选硬盘。然后在侧边栏中，就可以打开硬盘，看到所有文件了。
+当然， /etc 这种文件夹是看不到的。
+设置默认文件排序打开Finder，点击家目录，command＋J，选择排序方式（种类），用做默认。家目录下的所有目录，都会继承这种默认排序方式。
+禁止生成 .DS_Store.DS_Store(Desktop Services Store)文件目的在于存贮目录的自定义属性，例如显示方式为图标还是列表。
+禁止：defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool TRUE开启：defaults delete com.apple.desktopservices DSDontWriteNetworkStores
+注意：禁止生成 .DS_Store 后，已经存在的 .DS_Store 不受影响。
+清除最近项目点击左上角苹果图标，最近使用的项目，清除菜单。
+但是，上面的方法并不会清除“最近项目”这个目录下的文件记录，这是因为“最近项目”是spotlight管理的。解决办法：1、点击左上角苹果图标，系统偏好设置，聚焦，隐私，点击+号。2、选择目录A，点击选取。3、再看“最近项目”，已经不再显示目录A里的文件。需要注意的是，如果从隐私里去掉目录A，那么目录A里的文件还会慢慢出现在“最近项目”。
+如果想要改变“最近项目”目录筛选文件的规则，按照如下方法处理：1、给“最近项目”添加一个搜索条件，让其只显示最近三天内打开或修改过的项目2、在“最近项目”窗口中点击工具栏的齿轮按钮然后选择“显示搜索条件”3、在搜索项目里选择“上次打开日期”4、然后设定好相应的搜索条件，点击“存储”5、最后为其命名，切记勾选“添加到边栏”再点击“存储”6、边栏就会新增这个只显示最近 3 天项目的选项，然后把原来的“最近项目”从边栏移除掉。
+打不开软件从网络下载的软件，安装时提示：打不开“xxx”，因为它来自身份不明的开发者。
+解决办法：系统偏好设置，安全性和隐私，点锁按钮以进行更改，任何来源，允许来自任何来源。
+安装字体1、从windows系统 C:\Windows\Fonts 目录中拷贝需要的字体。2、command+shift+G，输入 /Library/Fonts，前往。3、字体放入 Fonts 目录。
+启动sftp1、系统偏好设置，共享，勾选远程登录
+2、测试sftp localhost
+目录规划${HOME}目录下，创建以下目录：
+
+tmp：在该目录中执行命令、测试脚本等，随时可删。
+scripts：成熟的脚本放在该目录下。
+git：在该目录中存放git仓库。
+
+读写ntfsmac不借助第三方软件，也是可以读写ntfs文件系统的移动硬盘的。1、查看移动硬盘名称在桌面上查看硬盘名称，或者通过diskutil list命令查看硬盘名称。
+2、修改fstab配置比如硬盘名称为WD，那么在/etc/fstab中添加配置：
+LABEL=WD none ntfs rw,auto,nobrowse
+
+3、重新插入硬盘推出硬盘，再重新插入，发现桌面不再显示该硬盘，没关系。
+4、读写移动硬盘
+df -hcd /Volumes/WDopen .
+
+5、推出移动硬盘方法一：
+cd ..open .# 界面点击推出移动硬盘
+方法二：
+cd ..diskutil unmount /Volumes/WDdiskutil unmount force /Volumes/WD
+
+
+
+]]></content>
+      <categories>
+        <category>爱好</category>
+        <category>电脑</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>MacOS小技巧</title>
+    <url>/hobby-macos-tricks/</url>
+    <content><![CDATA[使用命令打开目录和文件1、在finder中打开当前目录open .
+2、使用默认程序打开指定文件open README.md
+切换窗口1、command + tab2、三指左右滑动3、三指上滑
+
+
+快速预览选中文件或者文件夹，点击空格即可预览文件，点击上下左右可以预览其他文件。
+隔空投送接收方：打开隔空投送功能，同时接收人选择仅限联系人或所有人。
+发送方：1、打开要发送的文件，然后点按 App 窗口中的“共享”按钮 。或者，在“访达”中按住 Control 键点按相应文件，然后从快捷键菜单中选取“共享”。2、从列出的共享选项中，选取“隔空投送”。3、从“隔空投送”表单中选取一位接收者。
+或者打开“隔空投送”窗口，然后将文件拖移到接收者：1、在“访达”窗口的边栏中选择“隔空投送”。或者从菜单栏中选取“前往”&gt;“隔空投送”。2、“隔空投送”窗口随即会显示附近的“隔空投送”用户。将一个或多个文稿、照片或其他文件拖移到窗口中显示的接收者。
+详情参考 在 Mac 上使用“隔空投送”。
+传送速度非常快，网络条件不错的情况下，可以达到几百MB每秒。
+mac和ipad之间，mac和iphone之间也可以使用隔空投送，非常方便实用。
+]]></content>
+      <categories>
+        <category>爱好</category>
+        <category>电脑</category>
+      </categories>
+  </entry>
+  <entry>
     <title>MacOS上软件配置</title>
     <url>/hobby-macos-settings/</url>
     <content><![CDATA[shell1、打开shellcommand＋space，输入“terminal”。或者 Launchpad，其他，终端。为了方便使用，可以把终端放到Dock。
@@ -3273,89 +3418,6 @@ Turbo Boost Switcher
       </categories>
   </entry>
   <entry>
-    <title>MacOS小技巧</title>
-    <url>/hobby-macos-tricks/</url>
-    <content><![CDATA[使用命令打开目录和文件1、在finder中打开当前目录open .
-2、使用默认程序打开指定文件open README.md
-切换窗口1、command + tab2、三指左右滑动3、三指上滑
-
-
-快速预览选中文件或者文件夹，点击空格即可预览文件，点击上下左右可以预览其他文件。
-隔空投送接收方：打开隔空投送功能，同时接收人选择仅限联系人或所有人。
-发送方：1、打开要发送的文件，然后点按 App 窗口中的“共享”按钮 。或者，在“访达”中按住 Control 键点按相应文件，然后从快捷键菜单中选取“共享”。2、从列出的共享选项中，选取“隔空投送”。3、从“隔空投送”表单中选取一位接收者。
-或者打开“隔空投送”窗口，然后将文件拖移到接收者：1、在“访达”窗口的边栏中选择“隔空投送”。或者从菜单栏中选取“前往”&gt;“隔空投送”。2、“隔空投送”窗口随即会显示附近的“隔空投送”用户。将一个或多个文稿、照片或其他文件拖移到窗口中显示的接收者。
-详情参考 在 Mac 上使用“隔空投送”。
-传送速度非常快，网络条件不错的情况下，可以达到几百MB每秒。
-mac和ipad之间，mac和iphone之间也可以使用隔空投送，非常方便实用。
-]]></content>
-      <categories>
-        <category>爱好</category>
-        <category>电脑</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>MacOS系统配置</title>
-    <url>/hobby-macos-system-settings/</url>
-    <content><![CDATA[用户名配置系统偏好设置，用户与群组，点按锁按钮以进行修改。右键用户，高级选项。修改账户名称为vk，这个名称是shell中显示的用户名。修改全名为voidking，这个名称是mac系统显示的名称。个人目录，修改为 /Users/vk ，这个目录是新的home目录。
-修改完成后点击“好”，系统重启，然后整个系统恢复到出厂状态。
-
-
-密码系统偏好设置，用户与群组，更改密码。
-触控板系统偏好设置，触控板，光标与点按。勾选 轻点来点按，勾选 辅助点按，跟踪速度调整为喜欢的速度。 
-电脑名称系统偏好设置，共享，电脑名称，编辑。
-开机声音1、关闭开机声音
-sudo nvram BootAudio=%00sudo nvram SystemAudioVolume=%80
-
-2、打开开机声音
-sudo nvram BootAudio=%01sudo nvram -d SystemAudioVolume
-
-WindowServer占用资源过多系统偏好设置，辅助功能，显示，勾选减弱动态效果和减少透明度
-临时设置不关闭屏幕sudo supmset -g | grep sleeppmset -a displaysleep 30pmset -g | grep sleeppmset -a displaysleep 10pmset -g | grep sleep
-
-菜单快捷键右上角苹果按钮，点击会出现“睡眠”、“重新启动…”、“关机…”等菜单选项，这些选项可以设置对应的快捷键。以设置“睡眠”快捷键为例：右上角苹果按钮，系统偏好设置，键盘，快捷键，App快捷键，加号，菜单标题输入“睡眠”，键盘快捷键按下“control+command+S”。以上，就设置好了睡眠的快捷键。
-查看文件使用mac系统的Finder，可以查看“我的所有文件”，但是这是假的，点击这个选项只能看到最近使用的一些文件。
-解决办法：打开Finder，command＋逗号，出现Finder偏好设置，边栏，设备中勾选硬盘。然后在侧边栏中，就可以打开硬盘，看到所有文件了。
-当然， /etc 这种文件夹是看不到的。
-设置默认文件排序打开Finder，点击家目录，command＋J，选择排序方式（种类），用做默认。家目录下的所有目录，都会继承这种默认排序方式。
-禁止生成 .DS_Store.DS_Store(Desktop Services Store)文件目的在于存贮目录的自定义属性，例如显示方式为图标还是列表。
-禁止：defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool TRUE开启：defaults delete com.apple.desktopservices DSDontWriteNetworkStores
-注意：禁止生成 .DS_Store 后，已经存在的 .DS_Store 不受影响。
-清除最近项目点击左上角苹果图标，最近使用的项目，清除菜单。
-但是，上面的方法并不会清除“最近项目”这个目录下的文件记录，这是因为“最近项目”是spotlight管理的。解决办法：1、点击左上角苹果图标，系统偏好设置，聚焦，隐私，点击+号。2、选择目录A，点击选取。3、再看“最近项目”，已经不再显示目录A里的文件。需要注意的是，如果从隐私里去掉目录A，那么目录A里的文件还会慢慢出现在“最近项目”。
-如果想要改变“最近项目”目录筛选文件的规则，按照如下方法处理：1、给“最近项目”添加一个搜索条件，让其只显示最近三天内打开或修改过的项目2、在“最近项目”窗口中点击工具栏的齿轮按钮然后选择“显示搜索条件”3、在搜索项目里选择“上次打开日期”4、然后设定好相应的搜索条件，点击“存储”5、最后为其命名，切记勾选“添加到边栏”再点击“存储”6、边栏就会新增这个只显示最近 3 天项目的选项，然后把原来的“最近项目”从边栏移除掉。
-打不开软件从网络下载的软件，安装时提示：打不开“xxx”，因为它来自身份不明的开发者。
-解决办法：系统偏好设置，安全性和隐私，点锁按钮以进行更改，任何来源，允许来自任何来源。
-安装字体1、从windows系统 C:\Windows\Fonts 目录中拷贝需要的字体。2、command+shift+G，输入 /Library/Fonts，前往。3、字体放入 Fonts 目录。
-启动sftp1、系统偏好设置，共享，勾选远程登录
-2、测试sftp localhost
-目录规划${HOME}目录下，创建以下目录：
-
-tmp：在该目录中执行命令、测试脚本等，随时可删。
-scripts：成熟的脚本放在该目录下。
-git：在该目录中存放git仓库。
-
-读写ntfsmac不借助第三方软件，也是可以读写ntfs文件系统的移动硬盘的。1、查看移动硬盘名称在桌面上查看硬盘名称，或者通过diskutil list命令查看硬盘名称。
-2、修改fstab配置比如硬盘名称为WD，那么在/etc/fstab中添加配置：
-LABEL=WD none ntfs rw,auto,nobrowse
-
-3、重新插入硬盘推出硬盘，再重新插入，发现桌面不再显示该硬盘，没关系。
-4、读写移动硬盘
-df -hcd /Volumes/WDopen .
-
-5、推出移动硬盘方法一：
-cd ..open .# 界面点击推出移动硬盘
-方法二：
-cd ..diskutil unmount /Volumes/WDdiskutil unmount force /Volumes/WD
-
-
-
-]]></content>
-      <categories>
-        <category>爱好</category>
-        <category>电脑</category>
-      </categories>
-  </entry>
-  <entry>
     <title>安装部署K8S集群的艰难之路</title>
     <url>/dev-install-k8s-the-hard-way/</url>
     <content><![CDATA[前言《使用kubeadm安装部署K8S集群》一文中，使用kubeadm安装部署了k8s集群。但是，kubeadm的安装方式太简单了，而cka的要求不止这么简单。因此，我们还需要学习从零开始，一个一个组件安装配置k8s集群的方法，所谓k8s the hard way。
@@ -3523,10 +3585,12 @@ systemctl daemon-reloadsystemctl restart docker
         <category>专业</category>
         <category>运维</category>
         <category>k8s</category>
+        <category>docker</category>
       </categories>
       <tags>
         <tag>k8s</tag>
         <tag>docker</tag>
+        <tag>harbor</tag>
       </tags>
   </entry>
   <entry>
@@ -3536,21 +3600,23 @@ systemctl daemon-reloadsystemctl restart docker
 Role-based access control (RBAC) is a method of regulating access to computer or network resources based on the roles of individual users within your organization.
 
 更多内容，参考Using RBAC Authorization。
-《SSL和TLS》文中，通过API签名一节，创建了新用户jane，并且给该用户的证书进行签名。现在我们有了jane.crt和jane.key，本文中会配置jane拥有一些k8s集群的管理权限。
+《为K8S创建用户账户和服务账户》一文中，我们创建了新用户jane，并且使用CA证书给该用户签发了证书。现在我们有了jane.crt和jane.key，本文中会给jane配置一些k8s集群的管理权限。
 
 
 角色和绑定首先，给用户jane配置权限，使其能够创建和查看default空间下的pods。
-命令实现1、创建角色
+命令实现授权1、创建角色
 kubectl create role --helpkubectl create role developer --resource=pods --verb=list,create
 
 2、角色绑定
 kubectl create rolebinding dev-user-binding --role=developer --user=jane
 
-3、验证权限
-kubectl auth can-i list pods --as janekubectl get pods --as jane
-至此，用户jane的权限配置完成。
-manifest实现---kind: RoleapiVersion: rbac.authorization.k8s.io/v1metadata:  namespace: default  name: developerrules:- apiGroups: [""]  resources: ["pods"]  verbs: ["list", "create"]---kind: RoleBindingapiVersion: rbac.authorization.k8s.io/v1metadata:  name: dev-user-bindingsubjects:- kind: User  name: jane  apiGroup: rbac.authorization.k8s.ioroleRef:  kind: Role  name: developer  apiGroup: rbac.authorization.k8s.iomaster
+manifest实现授权直接通过配置清单，也可以实现角色创建和角色绑定。
+1、创建授权文件auth.yaml
+---kind: RoleapiVersion: rbac.authorization.k8s.io/v1metadata:  namespace: default  name: developerrules:- apiGroups: [""]  resources: ["pods"]  verbs: ["list", "create"]---kind: RoleBindingapiVersion: rbac.authorization.k8s.io/v1metadata:  name: dev-user-bindingsubjects:- kind: User  name: jane  apiGroup: rbac.authorization.k8s.ioroleRef:  kind: Role  name: developer  apiGroup: rbac.authorization.k8s.iomaster
 
+2、执行授权kubectl apply -f auth.yaml
+验证权限kubectl auth can-i list pods --as janekubectl get pods --as jane
+至此，用户jane的权限配置完成。
 集群角色和绑定以上，给jane授权，是在namespace范围内的。当我们想给jane授权cluster范围的权限时，就需要clusterroles。
 比如，我们想给jane授权node相关的权限，可以如下实现。
 命令实现1、创建集群角色
@@ -3559,30 +3625,50 @@ kubectl create clusterrole node-reader --verb=get,list,watch --resource=nodes
 2、绑定集群角色
 kubectl create clusterrolebinding node-reader-binding --user=jane --clusterrole=node-reader
 
-manifest实现---apiVersion: rbac.authorization.k8s.io/v1kind: ClusterRolemetadata:  creationTimestamp: null  name: node-readerrules:- apiGroups:  - ""  resources:  - nodes  verbs:  - get  - list  - watch---apiVersion: rbac.authorization.k8s.io/v1beta1kind: ClusterRoleBindingmetadata:  creationTimestamp: null  name: node-reader-bindingroleRef:  apiGroup: rbac.authorization.k8s.io  kind: ClusterRole  name: node-readersubjects:- apiGroup: rbac.authorization.k8s.io  kind: User  name: jane
+manifest实现1、创建授权文件auth.yaml
+---apiVersion: rbac.authorization.k8s.io/v1kind: ClusterRolemetadata:  creationTimestamp: null  name: node-readerrules:- apiGroups:  - ""  resources:  - nodes  verbs:  - get  - list  - watch---apiVersion: rbac.authorization.k8s.io/v1beta1kind: ClusterRoleBindingmetadata:  creationTimestamp: null  name: node-reader-bindingroleRef:  apiGroup: rbac.authorization.k8s.io  kind: ClusterRole  name: node-readersubjects:- apiGroup: rbac.authorization.k8s.io  kind: User  name: jane
 
-其他如果使用clusterrole指定的资源是pods这种namespace级别的资源，该集群角色绑定给jane后会有什么效果？答：jane对所有namespace中的pods资源拥有clusterrole中定义的操作权限。
-配置文件用户jane已经拥有了需要的权限，该怎样访问k8s集群呢？答案是通过kubeconfig文件。
-kubeconfig1、查看配置kubectl config view记录当前的server地址。
+2、执行授权kubectl apply -f auth.yaml
+授权范围如果使用clusterrole指定的资源是pods这种namespace级别的资源，该集群角色绑定给jane后会有什么效果？答：jane对所有namespace中的pods资源拥有clusterrole中定义的操作权限。
+
+ClusterRole + ClusterRoleBinding = All Namespaces
+ClusterRole + RoleBindings = Particular Namespaces
+Role + RoleBinding = Same Namespace
+
+更多内容参考How to Use ClusterRoleBinding With A ServiceAccount in All Namespaces (or a few)
+logs&amp;exec命令权限授权apiVersion: rbac.authorization.k8s.io/v1kind: Rolemetadata:  namespace: default  name: pod-and-pod-logs-readerrules:- apiGroups:   - ""  resources:   - pods  - pods/log  verbs:   - get  - list  - watch- apiGroups:   - ""  resources:   - pods/exec  verbs:   - create
+
+详情参考kubernetes RBAC role verbs to exec to pod
+CRD资源授权如果是CRD资源需要授权，可以先查看CRD资源，然后写入到yaml文件。例如，想要授权sparkapplition资源的操作权限：
+1、首先查看spark crd资源kubectl get crd | grep spark
+看到内容为：
+scheduledsparkapplications.sparkoperator.k8s.io       sparkapplications.sparkoperator.k8s.io
+
+2、编写clusterrole yaml
+apiVersion: rbac.authorization.k8s.io/v1kind: ClusterRolemetadata:  creationTimestamp: null  name: sparkdev-rolerules:- apiGroups:  - "sparkoperator.k8s.io"  resources:  - sparkapplications  - scheduledsparkapplications  verbs:  - get  - list  - watch  - create  - update  - patch  - delete
+
+访问K8S集群用户jane已经拥有了需要的权限，该怎样访问k8s集群呢？答案是通过kubeconfig文件。
+获取集群基本信息假设当前用户是admin，那么可以通过命令拿到apiserver地址和ca.crt文件。
+1、查看apiserver地址kubectl config view | grep server
 2、保存ca.crt
 cat .kube/config | grep certificate-authority-data | awk '&#123;print $2&#125;' | base64 --decode &gt; ca.crt
 
-jane.kubeconfig1、设置集群参数
+生成jane.kubeconfig1、生成（设置）kubeconfig集群参数
 kubectl config set-cluster kubernetes \--server="https://172.17.0.69:6443" \--certificate-authority=/root/ca.crt \--embed-certs=true \--kubeconfig=jane.kubeconfig
 当前目录生成jane.kubeconfig文件。
-2、设置客户端认证参数
+2、设置kubeconfig客户端认证参数
 kubectl config set-credentials jane \--client-certificate=/root/jane.crt \--client-key=/root/jane.key \--embed-certs=true \--kubeconfig=jane.kubeconfig
 
-3、设置上下文参数
+3、设置kubeconfig上下文参数
 kubectl config set-context jane@kubernetes \--cluster=kubernetes \--user=jane \--namespace=default \--kubeconfig=jane.kubeconfig
 
 4、查看配置
 cat jane.kubeconfigkubectl config view --kubeconfig jane.kubeconfig
 
-5、设置默认上下文
+验证访问1、设置默认上下文
 export KUBECONFIG=/root/jane.kubeconfigkubectl config use-context jane@kubernetes --kubeconfig=jane.kubeconfig
 
-6、权限测试kubectl get pods如果没有配置权限，会输出：
+2、执行命令kubectl get pods如果没有配置权限，会输出：
 Error from server (Forbidden): pods is forbidden: User "jane" cannot list resource "pods" in API group "" in the namespace "default"
 如果配置好了权限，会输出pod相关信息。
 但是，以上权限测试只是在minikube或者katacoda平台生效。如果使用kodekloud或者阿里云k8s集群，会报错：
@@ -4185,7 +4271,7 @@ CA
 TLS 的基本工作方式是，客户端使用非对称加密与服务器进行通信，实现身份验证并协商对称加密使用的密钥，然后对称加密算法采用协商密钥对信息以及信息摘要进行加密通信，不同的节点之间采用的对称密钥不同，从而可以保证信息只能通信双方获取。例如，在 HTTPS 协议中，客户端发出请求，服务端会将公钥发给客户端，客户端验证过后生成一个密钥再用公钥加密后发送给服务端（非对称加密），双方会在 TLS 握手过程中生成一个协商密钥（对称密钥），成功后建立加密连接。通信过程中客户端将请求数据用协商密钥加密后发送，服务端也用协商密钥解密，响应也用相同的协商密钥。后续的通信使用对称加密是因为对称加解密快，而握手过程中非对称加密可以保证加密的有效性，但是过程复杂，计算量相对来说也大。
 更多内容参考SSL/TLS 详解
 自建CA并签发证书《CentOS7安装配置GitLab》一文中，添加SSL一节详细描述了自建CA并签发SSL证书的过程。更多内容，可以参考基于OpenSSL自建CA和颁发SSL证书和使用 OpenSSL 自建 CA 并签发证书。
-k8s中证书管理查看证书1、查看证书位置
+K8S中的数字证书查看证书1、查看证书位置
 ps aux | grep kubelet# find config filecat /var/lib/kubelet/config.yaml | grep staticPodPathcd /etc/kubernetes/manifestscat kube-apiserver.yaml
 
 2、查看证书详情
@@ -4194,22 +4280,59 @@ openssl x509 -in /etc/kubernetes/pki/apiserver.crt -text
 签名签名，或者签名过期后重新签名
 openssl x509 -req -in /etc/kubernetes/pki/apiserver-etcd-client.csr -CA /etc/kubernetes/pki/etcd/ca.crt -CAkey /etc/kubernetes/pki/etcd/ca.key -CAcreateserial -out /etc/kubernetes/pki/apiserver-etcd-client.crt
 
-通过API签名1、为新用户创建证书
-openssl genrsa -out jane.key 2048openssl req -new -key jane.key -subj  "/CN=jane" -out jane.csrcat jane.csr | base64 | tr -d '\n'
+书签OpenSSL 与 SSL 数字证书概念贴SSL/TLS 原理详解
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>k8s</category>
+      </categories>
+      <tags>
+        <tag>tls</tag>
+        <tag>ssl</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>为K8S创建用户账户和服务账户</title>
+    <url>/dev-k8s-useraccount-serviceaccount/</url>
+    <content><![CDATA[k8s中的账户简介k8s中的账户分为useraccount和serviceaccount，主要差异有四点：
 
-2、创建jane-csr.yaml文件
+useraccount是给人使用的，serviceaccount是给pod中进程调用APIServer使用的
+useraccount是跨namespace的，serviceaccount是局限在它所在的namespace的
+useraccount不能通过k8s api添加，但是能够通过证书签名方式进行认证；serviceaccount可以通过k8s api添加
+每个namespace都有一个默认的serviceaccount，叫做default
+
+本文中，我们主要研究怎样为K8S创建用户账户和怎样创建服务账户。
+
+
+创建用户账户需求：创建一个名为jane的用户账户。
+创建用户账户，涉及到非对称加密，可以参考《SSL和TLS》。
+创建用户密钥对openssl genrsa -out jane.key 2048openssl req -new -key jane.key -subj  "/CN=jane" -out jane.csr
+其中，key文件是私钥；csr文件是证书签名申请（Certificate Signing Request），里面包含证书的公钥和其他信息。
+使用CA签名假设可以登录运行kube-controller-manager的master节点，那么可以直接在该节点进行CA签名。
+1、查看签名用的CA路径
+cat /etc/kubernetes/manifests/kube-controller-manager.yaml | grep ca.crtcat /etc/kubernetes/manifests/kube-controller-manager.yaml | grep ca.key
+
+查到的路径为/etc/kubernetes/pki/etcd/ca.crt 和 /etc/kubernetes/pki/etcd/ca.key
+2、使用CA签名
+openssl x509 -req -in /root/jane.csr -CA /etc/kubernetes/pki/etcd/ca.crt -CAkey /etc/kubernetes/pki/etcd/ca.key -CAcreateserial -out /root/jane.crt
+其中，crt文件是签名后的证书。
+以上，有了crt和key，这俩加起来就是jane用户账户。一般的用户账户是用户名和密码，K8S的用户账户就是签名证书和私钥。
+使用API签名如果无法直接使用CA证书进行签名，那么可以通过APIServer的方式进行签名。
+1、查看证书签名申请，base64加密
+cat jane.csr | base64 | tr -d '\n'
+
+2、创建jane-csr.yaml文件，把证书签名申请的内容粘贴到spec.request部分
 apiVersion: certificates.k8s.io/v1beta1kind: CertificateSigningRequestmetadata:  name: janespec:  groups:  - system:authenticated  usages:  - digital signature  - key encipherment  - server auth  - client auth  request: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURSBSRVFVRVNULS0tLS0KTUlJQ1ZEQ0NBVHdDQVFBd0R6RU5NQXNHQTFVRUF3d0VhbUZ1WlRDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRApnZ0VQQURDQ0FRb0NnZ0VCQUtxbWFIa3BJeE94dDN2UmxJT1FnSUFxSUFsekhQcTRRVTBDTDVhS04xbmY4NXRzCi9LU3o0eml1a1hEQ1NOSVNIT1pWbTY5NzVJa3RXcGFySmhaTXptc1B2eUFSeXFWbWY2L1h0bmwyeE0xblhaUzAKZGc0b0E1dXFuR0w2dHpaQzF3VFY4RVFIZnRlcWYzbUpTN2JtdlppaXFlak12a2UzVkk5RTNFK0xsUUttNnVXRwprS2RDZ2ZHNUszRGJFczR1VzR6M0lMdTdEa1BlamJodWFtYzlxYVZNRVpLSGZ0bnlBYlFITkZVLzhvWVYvR1VzCnRFVWZMRXBBTmlqUFc5U0pPWHJtNUg1NXhOdExXVHMwenU3YlRSZWE0ZjFVaDFCbkZuUkhWYUJqNysydHpITTgKaklJS01KakdWOS9rUVltRmo3UTJZUW1wYzdXWGpPZEFWcHBSc1kwQ0F3RUFBYUFBTUEwR0NTcUdTSWIzRFFFQgpDd1VBQTRJQkFRQUZ2ZUxrUmYxd0xDQmN6cWdMVkJIUGZBa0MzeU1CTDA3VXl0QUlCcVhkR3h1QWtyL3NQT1dkClNxTkhIRkNzQVNmU0lNVC96djBrQS9yN3Fnd25BMCtZREZJSjNzUlBKZkJmNm1Ic3FrbjlPd1htR1E3d0orNFQKWXVCc1lJSllnNWtzVWJoQVhiQkVZekk2OUY0Uk52U0d0K1ZLOHBBdUQzcXRvejJsd3liV0cvaUo4V3FESTZNegpuMURBeDBkRDZmRWhIKy9DTWdSREY5OExCL1ZqMWZOUUlqZ2k3Rmc1aTByU1NtZUdUMllOblJldERZYWN4aWlzCjNFN1B4STdYWDd2QjRjY3pITlUrTG92N3JnSkVXM3lRMXZRTXRCNTZlbWJaNGVnL01XZEhkeWliVXo2aDQ1ZW8KUGN5b3QxaW1wdFRyK3kwSkt0SmJ1YllQOGd2RG5FeFYKLS0tLS1FTkQgQ0VSVElGSUNBVEUgUkVRVUVTVC0tLS0tCg==
 
 3、签名请求并通过
-kubectl apply -f jane-csr.yamlkubectl get csr kubectl certificate approve janekubectl get csr jane -o yamlkubectl get csr jane -o jsonpath='&#123;.status.certificate&#125;' | base64 --decode &gt; jane.crt
+kubectl apply -f jane-csr.yamlkubectl get csr kubectl certificate approve jane
 
-或者，直接使用openssl命令进行签名：
-openssl x509 -req -in /root/jane.csr -CA /etc/kubernetes/pki/etcd/ca.crt -CAkey /etc/kubernetes/pki/etcd/ca.key -CAcreateserial -out /root/jane.crt
+4、导出签名证书
+kubectl get csr jane -o yamlkubectl get csr jane -o jsonpath='&#123;.status.certificate&#125;' | base64 --decode &gt; jane.crt
 
-PS：查看签名用的CA
-cat /etc/kubernetes/manifests/kube-controller-manager.yaml | grep ca.crtcat /etc/kubernetes/manifests/kube-controller-manager.yaml | grep ca.key
-
-更多内容，参考Manage TLS Certificates in a Cluster。
+以上，有了crt和key，这俩加起来就是jane用户账户。
+更多内容参考Manage TLS Certificates in a Cluster。
 证书格式转换X.509是一种证书标准，定义了证书中应该包含哪些内容，详情参考RFC5280，SSL使用的就是这种证书标准。同样的X.509证书，可能有不同的编码格式，目前有以下两种编码格式。PEM：Privacy Enhanced Mail，BASE64编码，以”—–BEGIN—–”开头，”—–END—–”结尾。查看PEM格式证书的信息：openssl x509 -in cert.pem -text -noout
 DER：Distinguished Encoding Rules，二进制格式，不可读。查看DER格式证书的信息：openssl x509 -in cert.der -inform der -text -noout
 问题来了，k8s中的证书，除了使用pem格式，还有就是crt格式，并没有der格式啊？这是因为，crt只是一个文件后缀，编码格式可能是pem也可能是der。
@@ -4225,8 +4348,6 @@ DER：Distinguished Encoding Rules，二进制格式，不可读。查看DER格�
       </categories>
       <tags>
         <tag>k8s</tag>
-        <tag>docker</tag>
-        <tag>tls</tag>
       </tags>
   </entry>
   <entry>
@@ -4446,12 +4567,12 @@ sudo: falselanguage: node_jsnode_js:- 10.16.3cache: npmbranches:  only:  - maste
         <category>专业</category>
         <category>运维</category>
         <category>开发</category>
-        <category>hexo</category>
         <category>CICD</category>
+        <category>hexo</category>
       </categories>
       <tags>
-        <tag>hexo</tag>
         <tag>cicd</tag>
+        <tag>hexo</tag>
         <tag>gulp</tag>
       </tags>
   </entry>
@@ -4485,13 +4606,13 @@ hexo配置多个git仓库为了维护两个站点，所以每次更新，需要�
       <categories>
         <category>专业</category>
         <category>开发</category>
-        <category>hexo</category>
         <category>工具</category>
+        <category>hexo</category>
         <category>git</category>
       </categories>
       <tags>
-        <tag>hexo</tag>
         <tag>git</tag>
+        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -4726,8 +4847,8 @@ tar -xzvf prometheus-2.15.2.linux-amd64.tar.gzmv prometheus-2.15.2.linux-amd64 p
         <category>监控</category>
       </categories>
       <tags>
-        <tag>监控</tag>
         <tag>prometheus</tag>
+        <tag>监控</tag>
       </tags>
   </entry>
   <entry>
@@ -5010,8 +5131,8 @@ https域名访问参考《CentOS7安装配置GitLab》添加SSL一节，生成�
         <category>docker</category>
       </categories>
       <tags>
-        <tag>docker</tag>
         <tag>git</tag>
+        <tag>docker</tag>
       </tags>
   </entry>
   <entry>
@@ -5706,70 +5827,228 @@ client-go操作K8Sclient-go实际上是封装了REST请求的客户端库，能�
       </tags>
   </entry>
   <entry>
-    <title>kubectl常用命令</title>
-    <url>/dev-kubectl/</url>
-    <content><![CDATA[kubectl简介
-Kubectl is a command line interface for running commands against Kubernetes clusters. 
+    <title>kubectl命令——故障排查篇</title>
+    <url>/dev-kubectl-trouble-shooting/</url>
+    <content><![CDATA[故障排查思路故障排查的第一步是先给问题分类。这个问题是哪个资源对象出了问题？pod、service、configmap、…？参考文档：
 
-没错，kubectl是一个命令行工具，用来控制K8S集群。kubectl该怎么读？可以参考HowToPronounce-kubectl，郝同学喜欢读作kubecontrol。
-kubectl命令格式为：
-kubectl [command] [TYPE] [NAME] [flags]
-
-更多内容，参考：
-
-Overview of kubectl
-kubectl Cheat Sheet
-The Kubectl Book
-Kubernetes kubectl 命令表
-
-《K8S入门篇》一文中，已经学习了kubectl的安装方法，并且使用了一些简单命令。本文整理一下kubectl的常用命令，方便记忆和复习。
+应用故障排查
+Kubernetes 网络异常分类及排错指南
 
 
 
-环境准备指定配置文件# 指定默认配置文件export KUBECONFIG=~/.kube/config# 查看kubectl配置kubectl config view# 指定配置文件和contextkubectl config --kubeconfig=/root/vk-kube-config use-context voidking@kubenertes# 指定单次运行配置文件kubectl get deployments --kubeconfig=/root/.kube/configkubectl get deployments --kubeconfig /root/.kube/config# 指定默认namespacekubectl config set-context --current --namespace=voidkingkubectl config set-context $(kubectl config current-context) --namespace=voidking# 多个配置整合成一个配置KUBECONFIG=~/.kube/config:~/Downloads/new-config kubectl config view --merge --flatten &gt; ~/.kube/newconfigexport KUBECONFIG=~/.kube/newconfig# 同时使用多个配置export KUBECONFIG=~/.kube/config:~/Download/new-config# 查看使用配置kubectl config get-contextskubectl config use-context voidking@kubenertes
+Pods排查查看pod详细信息kubectl describe pods ${POD_NAME}
+查看容器日志kubectl logs ${POD_NAME} ${CONTAINER_NAME}
+查看crashed容器日志kubectl logs --previous ${POD_NAME} ${CONTAINER_NAME}
+查看运行的容器内部日志kubectl exec ${POD_NAME} -c ${CONTAINER_NAME} -- cat /var/log/cassandra/system.log
+查看运行的容器内部日志（pod只有一个容器）kubectl exec ${POD_NAME} -- cat /var/log/cassandra/system.log
+RC排查Replication Controllers排查，监控rc相关事件kubectl describe rc ${CONTROLLER_NAME}
+Services排查查看endpoints资源，service选择到了哪些pod和端口kubectl get endpoints ${SERVICE_NAME}
+查看集群信息查看集群信息kubectl cluster-infokubectl cluster-info dump
 
-命令自动补全1、linux下配置
-yum install -y bash-completionsource &lt;(kubectl completion bash)echo "source &lt;(kubectl completion bash)" &gt;&gt; ~/.bash_profile
+查看集群状态kubectl get cs
+查看node资源使用kubectl top node
+查看集群事件kubectl get ev
+容器交互执行命令1、登录容器
+kubectl exec -it pod-name /bin/bashkubectl exec -it pod-name -c container-name /bin/bashkubectl exec -it pod-name -c container-name sh
 
-2、mac下配置
-brew install bash-completionsource &lt;(kubectl completion zsh)echo "source &lt;(kubectl completion zsh)" &gt;&gt; ~/.bash_profile
+2、直接执行命令
+kubectl exec pod-name envkubectl exec pod-name -- envkubectl exec pod-name -it -- envkubectl exec -n default pod-name -it -- env# 命令带参数时必须加双横线kubectl exec pod-name -- sh -c 'echo $&#123;LANG&#125;'
 
-使用别名缩写# kubectl缩写为k# alias k=kubectlalias k="/usr/local/bin/kubectl"complete -F __start_kubectl k# 可选aliasalias kg="kubectl get"alisa kd="kubectl describe"
-建议把配置写入 .bash_profile ，登录后别名自动生效。
-查看集群信息# 查看集群信息kubectl cluster-infokubectl cluster-info dump# 查看集群状态kubectl get cs# 查看node资源使用kubectl top node# 查看集群事件kubectl get ev
+拷贝文件拷贝pod内容到宿主机kubectl cp podname-564949c96c-m986n:/path/filename .
+查看IP范围service cidr怎样查看一个k8s集群的service ip范围？
+kubeadm config view | grep Subnetkubectl get pods -n kube-system kube-apiserver-master -oyaml | grep service-cluster-ip-range
 
-查看帮助查看资源缩写kubectl describekubectl api-resources
-建议记住常用资源的SHORTNAMES，可以提升输入效率。此外，记住常用资源的APIGROUP，可以提高编写yaml文件时的效率。
-查看可用api版本kubectl api-versions
-yaml帮助yaml文件分成四部分，apiVersion、kind、metadata和spec。apiVersion和kind是关联的，参考kubectl api-resources。metadata必填name、namespace、labels。pod.spec主要填containers的name和image；deployment.spec主要填replicas、template和selector；service.spec主要填selector、ports和type。
-编写yaml文件的过程中，如果忘记了某些结构和字段，可以使用kubectl explain命令来获取帮助。
+pod cidr怎样查看一个k8s集群的pod ip范围？
+kubeadm config view | grep Subnetkubectl cluster-info dump | grep -i cidr
+
+如果上面两个方法都找不到，那么还可以通过网络组件的日志来查看，以weave为例。
+docker ps | grep weavedocker logs &lt;weave-container-id&gt; | grep ipalloc-range
+
+
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>k8s</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
+        <tag>docker</tag>
+        <tag>kubectl</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>kubectl命令——调度篇</title>
+    <url>/dev-kubectl-schedule/</url>
+    <content><![CDATA[调度是啥？在 K8S 中，调度 是指将 Pod 放置到合适的节点上，以便对应节点上的 Kubelet 能够运行这些 Pod。调度器通过 K8S 的监测（Watch）机制来发现集群中新创建且尚未被调度到节点上的 Pod，把它调度到一个合适的节点上运行。K8S调度分为两个阶段：过滤和打分。过滤阶段会将所有满足 Pod 调度需求的节点选出来；在打分阶段会为 Pod 从所有可调度节点中选取一个最合适的节点。最后，会将pod调度到得分最高的节点上。
+我们可以约束一个 Pod 限制其只能在特定的节点上运行，或优先在特定的节点上运行。具体方法包括：
+
+nodeName
+label和nodeSelector
+亲和性与反亲和性
+Pod 拓扑分布约束
+
+我们也可以约束一些 Pod 不能在特定的节点上运行。具体方法是使用污点（taint）和容忍（tolerations）。
+参考文档：
+
+Kubernetes 调度器
+将 Pod 指派给节点
+Pod 拓扑分布约束
+污点和容忍度
+
+nodeNamepod想要指定调度到某个node，可以直接在spec下制定nodeName字段
+spec:  nodeName: node1
+
+label和nodeSelector添加labelkubectl label nodes node1 key1=value1,key2=value2
+添加nodeSelectornode添加label后，pod想要指定调度到这个node，可以在spec下添加nodeSelector字段
+spec:  nodeSelector:    key1: value1
+
+删除label如果不再使用某个label，可以进行删除。kubectl label nodes node1 key2-
+
+
+亲和性与反亲和性节点亲和性添加labelkubectl label nodes node1 key1=value1,key2=value2
+添加affinitynode添加label后，pod想要指定调度到这个node，也可以在spec下添加affinity字段
+spec:  affinity:    nodeAffinity:      requiredDuringSchedulingIgnoredDuringExecution:        nodeSelectorTerms:        - matchExpressions:          - key: key1            operator: In            values:            - value1            - valuex      preferredDuringSchedulingIgnoredDuringExecution:      - weight: 1        preference:          matchExpressions:          - key: key2            operator: In            values:            - value2            - valuey
+
+pod亲和性pod反亲和性Pod 拓扑分布约束污点和容忍添加taintkubectl taint nodes node1 key1=value1:NoSchedulekubectl taint nodes node1 key2=value2:PreferNoSchedulekubectl taint nodes node1 key3=value3:NoExecute
+
+添加tolerationsnode添加taint后，pod想要调度到这个node，需要在spec下添加tolerations字段：
+spec:  tolerations:  - key: "key1"    operator: "Equal"    value: "value1"    effect: "NoSchedule"  - key: "key2"    operator: "Exists"    effect: "PreferNoSchedule"  - key: "key3"    operator: "Equal"    value: "value3"    effect: "NoExecute"
+
+删除taintkubectl taint nodes node1 value1:NoSchedule-
+node封锁如果node存在问题，或者node需要升级维护，这时需要对node进行封锁，并且驱除pod。
+封锁node，不允许分配podkubectl cordon nodename
+从指定node驱除podkubectl drain nodename --ignore-daemonsets
+解除node的封锁，允许分配podkubectl uncordon nodename
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>k8s</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
+        <tag>kubectl</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>kubectl命令——资源对象增删查改篇</title>
+    <url>/dev-kubectl-curd/</url>
+    <content><![CDATA[K8S资源对象是啥？在 Kubernetes 系统中，Kubernetes 对象 是持久化的实体。 Kubernetes 使用这些实体去表示整个集群的状态，具体包括pod、replicaset、deployment、service、configmap、secret等等。
+参考文档：
+
+理解 Kubernetes 对象
+Kubernetes 对象管理
+
+
+
+资源对象管理方式资源对象的管理有三种方式：指令式命令、指令式对象配置和声明式对象配置。其中，指令式对象配置和声明式对象配置都要依赖资源对象的yaml/json定义文件。
+指令式命令使用指令式命令时，用户可以在集群中的活动对象上进行操作。用户将操作传给 kubectl 命令作为参数或标志。这是开始或者在集群中运行一次性任务的推荐方法。因为这种方式直接在活跃对象上操作，所以它不提供以前配置的历史记录。例如，创建一个nginx deployment：kubectl create deployment nginx --image nginx
+指令式对象配置在指令式对象配置中，kubectl 命令指定操作（创建、更新和删除），可选标志和至少一个文件名。指定的文件必须包含 YAML 或 JSON 格式的对象的完整定义。例如，创建配置文件中定义的对象（前提是写好了nginx.yaml）：kubectl create -f nginx.yaml
+通过覆盖更新配置文件中定义的对象：kubectl replace -f nginx.yaml
+删除两个配置文件中定义的对象：kubectl delete -f nginx.yaml -f redis.yaml
+声明式对象配置使用声明式对象配置时，用户对本地存储的对象配置文件进行操作，但是用户未定义要对该文件执行的操作。 kubectl 会自动检测每个文件的创建、更新和删除操作。这使得配置可以在目录上工作，根据目录中配置文件对不同的对象执行不同的操作。例如，处理 configs 目录中的所有对象配置文件，创建并更新活跃对象。可以首先使用 diff 子命令查看将要进行的更改，然后再进行应用：
+kubectl diff -f configs/kubectl apply -f configs/
+
+与指令式对象配置相比的优点：
+
+对活动对象所做的更改即使未合并到配置文件中，也会被保留下来。
+声明性对象配置更好地支持对目录进行操作并自动检测每个文件的操作类型（创建，更新，删除）。
+
+与指令式对象配置相比的缺点：
+
+声明式对象配置难于调试并且出现异常时结果难以理解。
+使用 diff 产生的部分更新会创建复杂的合并和补丁操作。
+
+资源对象yaml/json文件详解yaml/json文件构成k8s资源对象的yaml文件分成四部分，apiVersion、kind、metadata和spec。
+
+apiVersion和kind是关联的，参考kubectl api-resources。
+metadata必填name、namespace、labels。
+pod.spec主要填containers的name和image；deployment.spec主要填replicas、template和selector；service.spec主要填selector、ports和type。
+
+yaml/json编写编写k8s资源对象的yaml/json文件，有三种方法：
+
+纯手工编写（难度最高）
+使用--dry-run生成yaml/json文件，然后修改
+从线上导出yaml/json文件，然后修改
+
+生成文件模板生成deployment的yaml/json文件模板（推荐）：
+kubectl create deployment vk-deploy --image=nginx --dry-run -o yaml &gt; deploy-name.yamlkubectl create deployment vk-deploy --image=nginx --dry-run -o json &gt; deploy-name.json
+
+更多内容，参考Kubernetes kubectl create deployment 命令详解。
+注意，我们并不需要在deployment中指定容器对外暴露的ports，因为该字段只是一个提示作用。
+
+List of ports to expose from the container. Exposing a port here gives the system additional information about the network connections a container uses, but is primarily informational. Not specifying a port here DOES NOT prevent that port from being exposed. Any port which is listening on the default “0.0.0.0” address inside a container will be accessible from the network. Cannot be updated.
+
+生成deployment的yaml文件模板（即将废弃）：
+kubectl run vk-deploy --image=nginx --dry-run -o yaml
+会出现提示：kubectl run –generator=deployment/apps.v1 is DEPRECATED and will be removed in a future version. Use kubectl run –generator=run-pod/v1 or kubectl create instead.因为官方不推荐使用 run-pod/v1 以外的其他生成器，其他生成器不久后就会弃用。更多内容参考kubectl run。
+导出文件模板从K8S集群中导出已经存在的资源对象的yaml文件（即将废弃）：
+kubectl get deploy/deployment-name -o yaml --export &gt; deploy-name.yaml
+也会出现提示：Flag –export has been deprecated, This flag is deprecated and will be removed in future.很尴尬，–export 也要弃用了，且用且珍惜吧。
+yaml/json验证kubectl create --validate -f deploy-name.yaml --dry-run=client
+需要注意的是，--dry-run=client参数要带着，否则验证成功后，这个文件直接就提交给k8s了。
+yaml/json帮助编写yaml文件的过程中，如果忘记了某些结构和字段，可以使用kubectl explain命令来获取帮助。
 1、查看资源包含哪些字段以查看deployment的yaml包含哪些字段为例：
 kubectl explain deploymentkubectl explain deployment --api-version=apps/v1
 
 2、查看子字段以查看节点亲和性字段为例：
 kubectl explain deployment.spec.template.spec.affinitykubectl explain deployment.spec.template.spec.affinity.nodeAffinity...kubectl explain deployment.spec.template.spec.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms.matchExpressions
 
-资源相关查看资源1、查看集群的所有资源
-kubectl get allkubectl get all -o wide# 根据label筛选所有资源kubectl get all -l 'env=dev'
+pod yaml生成pod的yaml文件模板比较常用，这里单独做一下记录。
+kubectl run vkpod --image=nginx --restart=Never --dry-run=client -oyamlkubectl run vk-pod --image=nginx --generator=run-pod/v1 -l 'name=vk-pod,env=dev' --dry-run -o yamlkubectl run vk-pod --image=nginx --generator=run-pod/v1 --labels='name=vk-pod,env=dev' --dry-run -o yamlkubectl run vk-pod --image=busybox --generator=run-pod/v1 --dry-run -o yaml --command -- sleep 1000
 
-2、查看deployment
-# 查看deploymentkubectl get deploykubectl get deploy -n voidking -o widekubectl get deploy -l 'env=dev'kubectl get deploy --selector='env=dev'kubectl get deploy --all-namespaceskubectl get deploy --show-labels# 查看deployment实时变化kubectl get deploy --watch# 查看指定deploymentkubectl get deploy/deployment-namekubectl get deploy deployment-name# 指定namespacekubectl get deploy -n voidking# 根据label选择deploymentkubectl get deploy --selector="name=nginx,type=frontend"# 查看deployment详细信息kubectl describe deploy
-pod、service、node的查看方法和deployment相同。
-创建资源kubectl create -f deploy.yamlkubectl apply -f deploy.yaml
+更多内容，参考Kubernetes kubectl run 命令详解和kubectl 的用法约定。
+查看资源对象查看可用api版本kubectl api-versions
+查看资源缩写kubectl describekubectl api-resources
+建议记住常用资源的SHORTNAMES，可以提升输入效率。此外，记住常用资源的APIGROUP，可以提高编写yaml文件时的效率。
+查看所有资源对象kubectl get allkubectl get all -o wide
 
-更新资源# 编辑集群中的资源kubectl edit deployment deployment-name# 比较manifest与集群中当前资源的不同kubectl diff -f deploy.yaml# 应用最新定义kubectl replace -f deploy.yamlkubectl apply -f deploy.yaml# 添加labelkubectl label deployment deployment-name new-label=awesome# 添加annotationkubectl annotate deployment deployment-name icon-url=http://goo.gl/XXBTWq # 部分修改deploymentkubectl patch deployment deployment-name --type json -p='[&#123;"op": "remove", "path": "/spec/template/spec/containers/0/livenessProbe"&#125;]'
+根据label筛选资源对象kubectl get all -l &#39;env=dev&#39;
+查看指定的资源对象以deployment资源对象为例，其他资源对象操作方法相同。
+查看所有空间的所有deployment，deployment可以缩写为deploykubectl get deployment --all-namespaces
+查看指定空间下的所有deployment，默认空间default
+kubectl get deploykubectl get deploy -n voidkingkubectl get deploy -n voidking -o wide
 
-删除资源kubectl delete deployment deployment-name
+查看deployment，显示labelkubectl get deploy --show-labels
+根据label筛选deployment
+kubectl get deploy -l 'env=dev'kubectl get deploy --selector='env=dev'kubectl get deploy --selector="env=dev,type=frontend"
 
-扩缩容方法一：通过扩缩容命令。
+查看指定的deployment
+kubectl get deploy/deployment-namekubectl get deploy/deployment-name -o widekubectl get deploy/deployment-name -o yaml
+
+查看deployment详细信息kubectl describe deploy/deployment-name
+查看deployment实时变化kubectl get deploy/deployment-name --watch
+创建资源对象以deployment资源对象为例，其他资源对象操作方法相同。
+指令式命令kubectl create deployment vk-deploy --image=nginx
+指令式对象配置指令式对象配置，需要依赖定义好的资源对象yaml文件。
+kubectl create -f deploy.yaml
+声明式对象配置和指令式对象配置唯一不同的是，kubectl create 改为 kubectl apply。
+更新资源对象以deployment资源对象为例，其他资源对象操作方法相同。
+# 编辑集群中的资源kubectl edit deployment deployment-name# 比较manifest与集群中当前资源的不同kubectl diff -f deploy.yaml# 应用最新定义kubectl replace -f deploy.yamlkubectl apply -f deploy.yaml# 添加labelkubectl label deployment deployment-name new-label=awesome# 添加annotationkubectl annotate deployment deployment-name icon-url=http://goo.gl/XXBTWq # 部分修改deploymentkubectl patch deployment deployment-name --type json -p='[&#123;"op": "remove", "path": "/spec/template/spec/containers/0/livenessProbe"&#125;]'
+
+删除资源对象以deployment资源对象为例，其他资源对象操作方法相同。
+kubectl delete deployment deployment-name
+
+扩缩容扩缩容针对pod对象，需要操作deployment对象。
+方法一：扩缩容命令。
 kubectl scale --replicas=2 deployment deployment-name
 
-方法二：通过更新yaml文件。
-暴露服务# 为deployment创建clusterip，暴露clusterip的80端口kubectl expose deployment deployment-name --port=80 --name svc-name# 为deployment创建clusterip，暴露clusterip的6789端口kubectl expose deployment deployment-name --target-port=80 --port=6789kubectl expose -f vk-deploy.yaml --target-port=80 --port=6789# 创建nodeport，暴露clusterip的80端口，暴露node的随机端口kubectl expose deployment deployment-name --port=80 --type=NodePort --name svc-name# 创建clusterip，暴露clusterip的80端口kubectl create service clusterip svc-name --tcp=80:80# 创建nodeport，暴露clusterip的80端口，暴露node的30080端口kubectl create service nodeport svc-name --tcp=80:80 --node-port=30080
+方法二：更新yaml文件。
+创建service/暴露服务命令式指令为deployment创建clusterip，暴露clusterip的80端口，对应pod的80端口kubectl expose deployment deployment-name --port=80 --name svc-name
+为deployment创建clusterip，暴露clusterip的6789端口，对应pod的80端口
+kubectl expose deployment deployment-name --target-port=80 --port=6789kubectl expose -f vk-deploy.yaml --target-port=80 --port=6789
 
+创建nodeport，暴露clusterip的80端口，对应pod的80端口，暴露node的随机端口kubectl expose deployment deployment-name --port=80 --type=NodePort --name svc-name
+创建clusterip，暴露clusterip的80端口，对应pod的80端口kubectl create service clusterip svc-name --tcp=80:80
+创建nodeport，暴露clusterip的80端口，对应pod的pod端口，暴露node的30080端口kubectl create service nodeport svc-name --tcp=80:80 --node-port=30080
+命令式配置文件生成service的yaml文件模板（推荐方法）：kubectl create service clusterip vk-svc --tcp=&quot;5678:80&quot; --dry-run -o yaml &gt; service.yaml
+创建servicekubectl create -f service.yaml
+更多内容，参考Kubernetes kubectl create service 命令详解和Service。
+声明式配置文件创建servicekubectl apply -f service.yaml
 版本回退# 查看发布历史kubectl rollout history deployment deployment-name# 查看发布状态kubectl rollout status deployment deployment-name# 回退到上一个版本kubectl rollout undo deployment deployment-name
 
-cm和secret1、创建configmap
+configmap和secret1、创建configmap
 kubectl create configmap special-config --from-literal=special.how=very --from-literal=special.type=charmkubectl create configmap game-config-3 --from-file=&lt;my-key-name&gt;=&lt;path-to-file&gt;
 
 2、创建secret
@@ -5790,73 +6069,6 @@ kubectl apply -f .kubectl apply -f .
 mv ns.yaml 00-ns.yamlmv cm.yaml 01-cm.yamlmv deploy.yaml 02-deploy.yamlkubectl apply -f .
 
 资源拼接参考 Kustomize。
-yaml相关导出yaml或json文件# 导出deployment的yaml文件kubectl get deploy -o yaml &gt; deploy.yaml# 导出deployment的json文件kubectl get deploy -o json &gt; deploy.json# 导出指定deployment的yaml文件kubectl get deploy/deployment-name -o yaml &gt; deploy-name.yaml# 导出指定deployment的json文件kubectl get deploy/deployment-name -o json &gt; deploy-name.json
-pod、service、node的yaml/json文件的导出方法和deployment相同。
-pod yaml生成pod的yaml文件模板：
-kubectl run vkpod --image=nginx --restart=Never --dry-run=client -oyamlkubectl run vk-pod --image=nginx --generator=run-pod/v1 -l 'name=vk-pod,env=dev' --dry-run -o yamlkubectl run vk-pod --image=nginx --generator=run-pod/v1 --labels='name=vk-pod,env=dev' --dry-run -o yamlkubectl run vk-pod --image=busybox --generator=run-pod/v1 --dry-run -o yaml --command -- sleep 1000
-
-更多内容，参考Kubernetes kubectl run 命令详解和kubectl 的用法约定。
-deployment yaml1、生成deployment的yaml文件模板（历史方法）：
-kubectl run vk-deploy --image=nginx --dry-run -o yaml
-会出现提示：kubectl run –generator=deployment/apps.v1 is DEPRECATED and will be removed in a future version. Use kubectl run –generator=run-pod/v1 or kubectl create instead.因为官方不推荐使用 run-pod/v1 以外的其他生成器，其他生成器不久后就会弃用。更多内容参考kubectl run。
-2、从已有K8S集群中已有资源中导出yaml模板文件（历史方法）：
-kubectl get deploy/deployment-name -o yaml --export &gt; deploy-name.yaml
-也会出现提示：Flag –export has been deprecated, This flag is deprecated and will be removed in future.很尴尬，–export 也要弃用了，且用且珍惜吧。
-3、生成deployment的yaml文件模板（推荐方法）：
-kubectl create deployment vk-deploy --image=nginx --dry-run -o yaml
-
-更多内容，参考Kubernetes kubectl create deployment 命令详解。
-注意，我们并不需要在deployment中指定容器对外暴露的ports，因为该字段只是一个提示作用。
-
-List of ports to expose from the container. Exposing a port here gives the system additional information about the network connections a container uses, but is primarily informational. Not specifying a port here DOES NOT prevent that port from being exposed. Any port which is listening on the default “0.0.0.0” address inside a container will be accessible from the network. Cannot be updated.
-
-service yaml生成service的yaml文件模板（推荐方法）：
-kubectl create service clusterip vk-svc --tcp="5678:80" --dry-run -o yaml
-
-更多内容，参考Kubernetes kubectl create service 命令详解和Service。
-yaml验证kubectl create --validate -f deployment.yaml
-
-node相关taint和tolerations# 添加taintkubectl taint nodes node1 key1=value1:NoSchedulekubectl taint nodes node1 key2=value2:PreferNoSchedulekubectl taint nodes node1 key3=value3:NoExecute# 删除taintkubectl taint nodes node1 value1:NoSchedule-
-
-同时，要在pod yaml的spec下添加tolerations字段：
-spec:  tolerations:  - key: "key1"    operator: "Equal"    value: "value1"    effect: "NoSchedule"  - key: "key2"    operator: "Exists"    effect: "PreferNoSchedule"  - key: "key3"    operator: "Equal"    value: "value3"    effect: "NoExecute"
-
-label和affinity# 添加labelkubectl label nodes node1 key1=value1,key2=value2# 删除labelkubectl label nodes node1 key1-
-
-同时，要在pod yaml中添加tolerations字段：
-nodeSelector:  disktype: ssd
-或者，使用：
-spec:  affinity:    nodeAffinity:      requiredDuringSchedulingIgnoredDuringExecution:        nodeSelectorTerms:        - matchExpressions:          - key: key1            operator: In            values:            - value1            - valuex      preferredDuringSchedulingIgnoredDuringExecution:      - weight: 1        preference:          matchExpressions:          - key: key2            operator: In            values:            - value2            - valuey
-
-node封锁如果node存在问题，或者node需要升级维护，这时需要对node进行封锁，并且驱除pod。
-# 封锁node，不允许分配podkubectl cordon nodename# 从指定node驱除podkubectl drain nodename --ignore-daemonsets# 解除node的封锁，允许分配podkubectl uncordon nodename
-
-容器交互执行命令1、登录容器
-kubectl exec -it pod-name /bin/bashkubectl exec -it pod-name -c container-name /bin/bashkubectl exec -it pod-name -c container-name sh
-
-2、直接执行命令
-kubectl exec pod-name envkubectl exec pod-name -- envkubectl exec pod-name -it -- envkubectl exec -n default pod-name -it -- env# 命令带参数时必须加双横线kubectl exec pod-name -- sh -c 'echo $&#123;LANG&#125;'
-
-拷贝文件# 拷贝pod内容到宿主机kubectl cp podname-564949c96c-m986n:/path/filename .
-
-故障排查故障排查的第一步是先给问题分下类。这个问题是什么？Pods，Replication Controller或者Service？更多内容参考应用故障排查。
-Pods排查# 查看pod详细信息kubectl describe pods $&#123;POD_NAME&#125;# 查看容器日志kubectl logs $&#123;POD_NAME&#125; $&#123;CONTAINER_NAME&#125;# 查看crashed容器日志kubectl logs --previous $&#123;POD_NAME&#125; $&#123;CONTAINER_NAME&#125;# 查看运行的容器内部日志kubectl exec $&#123;POD_NAME&#125; -c $&#123;CONTAINER_NAME&#125; -- cat /var/log/cassandra/system.log# 查看运行的容器内部日志（pod只有一个容器）kubectl exec $&#123;POD_NAME&#125; -- cat /var/log/cassandra/system.log
-
-RC排查Replication Controllers排查
-# 监控rc相关事件kubectl describe rc $&#123;CONTROLLER_NAME&#125;
-
-Services排查# 查看endpoints资源，service选择到了哪些pod和端口kubectl get endpoints $&#123;SERVICE_NAME&#125;
-
-小技巧service cidr怎样查看一个k8s集群的service ip范围？
-kubeadm config view | grep Subnetkubectl get pods -n kube-system kube-apiserver-master -oyaml | grep service-cluster-ip-range
-
-pod cidr怎样查看一个k8s集群的pod ip范围？
-kubeadm config view | grep Subnetkubectl cluster-info dump | grep -i cidr
-
-如果上面两个方法都找不到，那么还可以通过网络组件的日志来查看，以weave为例。
-docker ps | grep weavedocker logs &lt;weave-container-id&gt; | grep ipalloc-range
-
-k8s工具箱voidking/k8s-tool
 ]]></content>
       <categories>
         <category>专业</category>
@@ -5865,7 +6077,67 @@ k8s工具箱voidking/k8s-tool
       </categories>
       <tags>
         <tag>k8s</tag>
-        <tag>docker</tag>
+        <tag>kubectl</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>kubectl命令——配置篇</title>
+    <url>/dev-kubectl-config/</url>
+    <content><![CDATA[kubectl简介
+Kubectl is a command line interface for running commands against Kubernetes clusters. 
+
+没错，kubectl是一个命令行工具，用来控制K8S集群。kubectl该怎么读？可以参考HowToPronounce-kubectl，郝同学喜欢读作kubecontrol。
+kubectl命令格式为：
+kubectl [command] [TYPE] [NAME] [flags]
+
+更多内容，参考：
+
+Overview of kubectl
+kubectl Cheat Sheet
+The Kubectl Book
+Kubernetes kubectl 命令表
+
+《K8S入门篇》一文中，已经学习了kubectl的安装方法，并且使用了一些简单命令。本文学习kubectl的配置方法和配置技巧。
+
+
+获取kubeconfig要想正常使用kubectl命令，首先要拿到用户认证配置信息（kubeconfig）。
+kubeconfig获取方式：
+
+使用kubeadm安装的K8S集群，默认的kubeconfig配置文件路径为 /etc/kubernetes/admin.conf
+使用minikube安装的K8S集群，默认的kubeconfig配置文件路径为 ${HOME}/.kube/config
+用户默认使用的kubeconfig配置文件路径为 ${HOME}/.kube/config
+阿里云/腾讯云等云平台提供的K8S集群，从集群管理页面上获取kubeconfig配置，保存为 ${HOME}/.kube/config 即可
+
+指定配置文件如果有多个集群的多个kubeconfig配置文件，那么我们可能需要指定一个配置文件。
+指定默认配置文件export KUBECONFIG=~/.kube/config
+查看kubeconfig配置内容kubectl config view
+指定配置文件和contextkubectl config --kubeconfig=/root/vk-kube-config use-context voidking@kubenertes
+指定单次命令的配置文件kubectl get deployments --kubeconfig=/root/.kube/config
+指定默认的namespacekubectl config set-context --current --namespace=voidkingkubectl config set-context $(kubectl config current-context) --namespace=voidking
+
+配置整合同时使用多个配置export KUBECONFIG=~/.kube/config:~/Download/new-config
+多个配置整合成一个配置KUBECONFIG=~/.kube/config:~/Downloads/new-config kubectl config view --merge --flatten &gt; ~/.kube/newconfigexport KUBECONFIG=~/.kube/newconfig
+
+查看和使用配置kubectl config get-contextskubectl config use-context voidking@kubenertes
+
+命令自动补全linux系统配置yum install -y bash-completionsource /usr/share/bash-completion/bash_completionsource &lt;(kubectl completion bash)echo "source /usr/share/bash-completion/bash_completion" &gt;&gt; ~/.bash_profileecho "source &lt;(kubectl completion bash)" &gt;&gt; ~/.bash_profile
+
+配置后，输入kubectl get s后，两次按下tab键，会提示可以选择的资源。输入kubectl get sec后，按下tab键，会自动补全命令。
+mac系统配置brew install bash-completionsource &lt;(kubectl completion zsh)echo "source &lt;(kubectl completion zsh)" &gt;&gt; ~/.bash_profile
+
+快捷命令kubectl缩写为kwhich kubectlalias k="/usr/local/bin/kubectl"complete -F __start_kubectl k
+
+建议把配置写入 .bash_profile ，登录shell后别名自动生效。
+命令合并alias kg="kubectl get"alisa kd="kubectl describe"
+kubectl get合并为kg，kubectl describe合并为kd。
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>k8s</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
         <tag>kubectl</tag>
       </tags>
   </entry>
@@ -5909,12 +6181,16 @@ Federation 提供跨可用区的集群
 Fluentd-elasticsearch 提供集群日志采集、存储与查询
 
 更多内容，参考Kubernetes 架构原理。
-Minikube安装Minikube是在个人计算机上的虚拟机中运行单节点Kubernetes集群的工具。因为minikube要启动virtualbox虚拟机，在虚拟机中运行k8s集群。所以这里有两个安装思路：思路一、在centos7虚拟机中安装virtualbox，以及minikube。思路二、在本机win10中安装virtualbox，以及minikube。
-对于思路一，经过尝试（详见扩展学习），发现virtualbox不支持Intel处理器的嵌套虚拟化，因此minikube无法在centos7虚拟机中再启动虚拟机，该思路不可行。
-本文接下来使用思路二进行安装，默认virtualbox已经安装完成。安装方法主要参考Install Minikube and Docker with VirtualBox on Windows 10 Home和Kubernetes 学习笔记之 MiniKube 安装。
+Minikube安装Minikube是在个人计算机上的虚拟机中运行单节点Kubernetes集群的工具。因为minikube要启动virtualbox虚拟机，在虚拟机中运行k8s集群。所以这里有两个安装思路：思路一：在centos7虚拟机中安装virtualbox，以及minikube。思路二：在本机win10中安装virtualbox，以及minikube。
+对于思路一，因为virtualbox不支持Intel处理器的嵌套虚拟化，因此minikube无法在centos7虚拟机中再启动虚拟机，该思路不可行。
+本文接下来使用思路二进行安装，默认virtualbox已经安装完成。安装方法参考
+
+Install Minikube and Docker with VirtualBox on Windows 10 Home
+Kubernetes 学习笔记之 MiniKube 安装
+
 安装Docker Toolbox1、下载Docker Toolbox，双击安装。
 2、启动Docker Toolbox打开Docker quickstart terminal，Docker会进行初始化。
-镜像加速器参考Docker入门中的镜像加速器一节，本文中使用阿里云的镜像加速器。
+镜像加速器参考《Docker镜像下载加速》配置镜像加速器，本文中使用阿里云的镜像加速器。
 1、访问阿里云镜像加速器，得到一个专属的加速地址。
 2、对于Docker Toolbox用户，首先进入default虚拟机docker-machine ssh default
 3、设置加速地址
@@ -5977,32 +6253,6 @@ minikube stopminikube delete
 minikube常用命令# 进入节点服务器minikube ssh# 执行节点服务器命令，例如查看节点 docker infominikube ssh -- docker info# 查看插件，启用插件minikube addons listminikube addons enable heapsterminikube addons disable heapster
 
 后记至此，跑通了Minikube的第一个Deployment，k8s的万里长征开始了第一步。接下来继续深入学习，目标是拿到双证：Certified Kubernetes Administrator (CKA) Program和Certified Kubernetes Application Developer (CKAD) Program，具体要求参考curriculum。
-扩展学习CentOS7中安装VBox在centos7中安装virtualbox，如下流程：
-1、添加安装源
-yum install epel-releasewget -P /etc/yum.repos.d/ http://download.virtualbox.org/virtualbox/rpm/rhel/virtualbox.repoyum makecache fastyum list | grep virtualbox
-
-2、安装virtualboxyum install VirtualBox-5.2
-3、验证安装vboxmanage -V报错：
-WARNING: The vboxdrv kernel module is not loaded. Either there is no module         available for the current kernel (3.10.0-957.el7.x86_64) or it failed to         load. Please recompile the kernel module and install it by           sudo /sbin/vboxconfig         You will not be able to start VMs until this problem is fixed.5.2.32r132073
-
-4、修复（1）安装gcc等yum install gcc perl make
-（2）安装kernel headeryum install kernel-devel
-（3）安装rcvboxdrvrcvboxdrv setup如果依然缺少依赖，那么按照提示继续安装，比如yum install kernel-devel-3.10.0-957.el7.x86_64
-（4）再次验证安装vboxmanage -V
-centos7安装minikube1、安装kubectl（1）下载最新版kubectl
-curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
-或者下载指定版本kubectl
-curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl
-
-（2）添加执行权限chmod +x ./kubectl
-（3）移动kubectl到bin目录mv ./kubectl /usr/local/bin/kubectl
-（4）验证安装kubectl version
-2、安装minikube（1）下载minikube
-curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 \  &amp;&amp; chmod +x minikube
-
-（2）移动minikub到bin目录install minikube /usr/local/bin
-（3）验证安装minikube version
-（4）启动minikubeminikube start如果报错machine does not exist，那么需要清空本地状态：minikube delete
 书签Learn Kubernetes Basics
 Interactive Tutorial - Creating a Cluster
 Installing Kubernetes with Minikube
@@ -6452,12 +6702,12 @@ Least Load
         <category>centos</category>
       </categories>
       <tags>
+        <tag>git</tag>
         <tag>tomcat</tag>
         <tag>java</tag>
         <tag>maven</tag>
         <tag>centos</tag>
         <tag>mysql</tag>
-        <tag>git</tag>
       </tags>
   </entry>
   <entry>
@@ -6546,9 +6796,9 @@ Https原理及流程
         <category>centos</category>
       </categories>
       <tags>
+        <tag>git</tag>
         <tag>linux</tag>
         <tag>centos</tag>
-        <tag>git</tag>
         <tag>https</tag>
       </tags>
   </entry>
@@ -6962,9 +7212,9 @@ zabbix常见指标项梳理
         <category>监控</category>
       </categories>
       <tags>
+        <tag>监控</tag>
         <tag>linux</tag>
         <tag>ubuntu</tag>
-        <tag>监控</tag>
         <tag>zabbix</tag>
       </tags>
   </entry>
@@ -7517,8 +7767,8 @@ TPC-W安装与配置（威斯康星大学Java版）
         <category>ubuntu</category>
       </categories>
       <tags>
-        <tag>apache</tag>
         <tag>linux</tag>
+        <tag>apache</tag>
         <tag>mysql</tag>
         <tag>ubuntu</tag>
       </tags>
@@ -7628,8 +7878,8 @@ ab -g t0.dat -t 100 -n 1000000 http://172.16.0.19/mediawiki/index.php/Main_Page
       </categories>
       <tags>
         <tag>docker</tag>
-        <tag>apache</tag>
         <tag>linux</tag>
+        <tag>apache</tag>
         <tag>ubuntu</tag>
         <tag>测试</tag>
         <tag>openstack</tag>
@@ -7754,8 +8004,8 @@ chmod a+x pt10.sh./pt10.sh
         <category>ubuntu</category>
       </categories>
       <tags>
-        <tag>apache</tag>
         <tag>linux</tag>
+        <tag>apache</tag>
         <tag>ubuntu</tag>
       </tags>
   </entry>
@@ -8462,8 +8712,8 @@ gv重选刚才选择的选区，o在选择区两端跳动。ctrl+v、3j垂直下
       <categories>
         <category>专业</category>
         <category>运维</category>
-        <category>linux</category>
         <category>工具</category>
+        <category>linux</category>
         <category>编辑器</category>
       </categories>
       <tags>
@@ -11958,8 +12208,8 @@ gridname "Center of Cloud Computing"
         <category>监控</category>
       </categories>
       <tags>
-        <tag>ubuntu</tag>
         <tag>监控</tag>
+        <tag>ubuntu</tag>
         <tag>ganglia</tag>
       </tags>
   </entry>
@@ -13339,9 +13589,9 @@ Alias /ganglia /usr/share/ganglia-webfrontend&lt;Directory "/usr/share/ganglia-w
         <category>监控</category>
       </categories>
       <tags>
+        <tag>监控</tag>
         <tag>apache</tag>
         <tag>ubuntu</tag>
-        <tag>监控</tag>
         <tag>ganglia</tag>
       </tags>
   </entry>
@@ -14003,8 +14253,8 @@ gmetad.conf：gmetad配置文件（1）
         <category>监控</category>
       </categories>
       <tags>
-        <tag>ubuntu</tag>
         <tag>监控</tag>
+        <tag>ubuntu</tag>
         <tag>ganglia</tag>
       </tags>
   </entry>
@@ -16337,8 +16587,8 @@ file:///storage/emulated/0/Android/data/io.dcloud.HBuilder/.HBuilder/apps/HBuild
       </categories>
       <tags>
         <tag>android</tag>
-        <tag>chrome</tag>
         <tag>hbuilder</tag>
+        <tag>chrome</tag>
       </tags>
   </entry>
   <entry>
@@ -19006,6 +19256,41 @@ $L_k$表示（本次移动）蚂蚁k经过的路径和。
       </tags>
   </entry>
   <entry>
+    <title>Docker镜像迁移/分享</title>
+    <url>/dev-docker-image-migrate/</url>
+    <content><![CDATA[问题描述在没有外网的情况下，怎样把 docker image 分享给局域网的其他用户？
+解决办法解决办法有两个，一个是搭建本地镜像仓库，一个是导出导入镜像。
+
+
+搭建本地镜像仓库搭建本地镜像仓库，把镜像push到本地镜像仓库，其他机器pull即可。
+假设需求为本机有镜像 busybox:1.25，现在想要把这个镜像分享给其他机器。
+1、有镜像的机器执行：
+docker tag busybox:1.25 harbor.voidking.com/base/busybox:1.25docker login harbor.voidking.comdocker push harbor.voidking.com/base/busybox:1.25
+
+2、其他机器执行：
+docker pull harbor.voidking.com/base/busybox:1.25docker tag harbor.voidking.com/base/busybox:1.25 busybox:1.25
+
+导出导入镜像导出导入镜像，主要依赖docker save和docker load命令。
+假设需求为本机有镜像 busybox:1.25，现在想要把这个镜像分享给其他机器。
+1、有镜像的机器导出镜像docker save -o busybox.tar busybox:1.25
+2、拷贝压缩包到其他机器
+3、其他机器导入镜像docker load &lt; busybox.tar
+假设需求为本机有很多个镜像，现在想要把这些镜像全部导出到其他机器。
+1、有镜像的机器导出所有镜像docker save $(docker images | grep -v REPOSITORY | awk &#39;BEGIN{OFS=&quot;:&quot;;ORS=&quot; &quot;}{print $1,$2}&#39;) -o all.tar
+2、拷贝压缩包到其他机器
+3、其他机器导入镜像docker load -i all.tar
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>docker</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>harbor</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Docker静态IP设置</title>
     <url>/dev-docker-static-ip/</url>
     <content><![CDATA[前言Docker容器运行的时候默认会自动分配一个默认网桥所在网段的IP地址。但很多时候我们可能需要让容器运行在预先指定的静态IP地址上，因为早期的版本不支持静态IP，因此网上大部分方法都是借助pipework等去实现，然而在最新的版本中，Docker已经内嵌支持在启动时指定静态IP了。
@@ -19049,30 +19334,13 @@ docker psdocker stop 3e2efd019b9a
       </tags>
   </entry>
   <entry>
-    <title>Docker入门篇</title>
-    <url>/dev-docker-start/</url>
-    <content><![CDATA[容器简介奔驰车生产好之后，经过集装箱封装，从纽约运送到了上海，开箱后奔驰车可以跑在上海的大街上。软件在环境A开发好之后，经过集装箱封装，从环境A运送到了环境B，开箱后软件可以跑在环境B。这种软件集装箱技术，就是容器技术，英文叫做 Linux Container。
-容器技术的主要优点是轻量虚拟化（良好的隔离性、高资源利用率）、快捷和可移植性。
-起初，容器技术做的最好的就是Docker，Docker也几乎就是容器的代名词，后来CoreOS、Mesos、Containerd也都相继发展壮大。为了统一容器标准，OCI（Open Container Initiative）组织成立了，并于2016年4月推出了第一个开放容器标准，标准主要包括image镜像标准和runtime运行时标准。
-Docker简介
-Docker是一个开源的容器引擎（管理容器的工具），可以轻松的为任何应用创建一个轻量级的、可移植的、自给自足的容器。开发者在笔记本上编译测试通过的容器可以批量地在生产环境中部署，包括VMs（虚拟机）、bare metal、OpenStack 集群和其他的基础应用平台。 
-
-应用场景：开发环境搭建、自动化构建、自动化测试、自动化部署。
-Docker系统有两个程序：docker服务端和docker客户端。其中docker服务端是一个服务进程，管理着所有的容器。docker客户端则扮演着docker服务端的远程控制器，可以用来控制docker的服务端进程。大部分情况下，docker服务端和客户端运行在一台机器上。
-Docker优点：Build, Ship and Run.Build once, run anywhere.
+    <title>Docker镜像下载加速</title>
+    <url>/dev-docker-image-download-speedup/</url>
+    <content><![CDATA[问题描述使用 Docker 的时候，需要经常从官方获取镜像，但是拉取镜像的过程非常耗时，严重影响使用 Docker 的体验。
+解决办法解决办法很简单，使用镜像加速器。比较好的镜像加速器有DaoCloud、阿里云、腾讯云，下文中我们来配置体验一下。
 
 
-Docker安装以centos7系统为例。
-1、安装yum-utilsyum install yum-utils
-2、添加docker-ce源
-# 官方源yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo# 阿里云源，国内更快yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
-
-3、更新yum包yum makecache fast
-4、安装docker-ceyum install docker-ce
-5、启动docker-ce并设置开机启动
-systemctl start dockersystemctl enable docker
-
-镜像加速器DaoCloud使用 Docker 的时候，需要经常从官方获取镜像，但是拉取镜像的过程非常耗时，严重影响使用 Docker 的体验。因此DaoCloud推出了加速器工具解决这个难题，通过智能路由和缓存机制，提升了国内网络访问 Docker Hub 的速度，目前已经拥有了广泛的用户群体，并得到了 Docker 官方的大力推荐。
+DaoCloudDaoCloud通过智能路由和缓存机制，提升了国内网络访问 Docker Hub 的速度，目前已经拥有了广泛的用户群体，并得到了 Docker 官方的大力推荐。
 1、访问DaoCloud官网，注册一个账号。
 2、访问配置 Docker 加速器，可以获得一个专属加速地址（每次访问都会获得不同的地址）。
 3、参考Docker 加速器，创建或修改 /etc/docker/daemon.json，内容为：
@@ -19091,10 +19359,29 @@ systemctl daemon-reloadsystemctl restart docker
 systemctl daemon-reloadsystemctl restart docker
 
 4、验证配置docker info
-腾讯云修改 /etc/docker/daemon.json 配置为：
+腾讯云1、修改 /etc/docker/daemon.json 配置为：
 &#123;   "registry-mirrors": [       "https://mirror.ccs.tencentyun.com"  ]&#125;
-其他步骤同上。
-Docker使用版本和帮助# 查看版本docker version# 查看帮助docker# 查看docker start帮助docker start --helpdocker help start
+
+2、重启docker
+systemctl daemon-reloadsystemctl restart docker
+
+3、验证配置docker info
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>docker</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Docker常用命令</title>
+    <url>/dev-docker-command/</url>
+    <content><![CDATA[查看版本和帮助# 查看版本docker version# 查看帮助docker# 查看docker start帮助docker start --helpdocker help start
+
+
 
 镜像查找下载github是存储代码的仓库，而docker hub是存储docker镜像的仓库。
 docker hub上面的镜像命名方式为：&lt;username&gt;/&lt;imagename&gt;:&lt;tag&gt;，比如voidking/nginx:v1.0其中 tag 可以省略，省略则默认使用 latest 。
@@ -19104,8 +19391,6 @@ docker search busyboxcurl -s "https://registry.hub.docker.com/v1/repositories/bu
 
 2、通过docker命令下载镜像，例如下载 busybox 镜像docker pull busybox:1.25
 3、查看本地镜像docker images
-helloworlddocker镜像运行起来，便会生成一个docker容器。docker容器可以理解为在沙盒中运行的进程，这个沙盒包含了该进程运行所必须的资源，包括文件系统、系统类库、shell 环境等等。这个沙盒默认不会运行任何程序，我们需要指定一个程序在启动容器时运行。这个程序对应的进程是该容器的1号进程，当该进程结束的时候，容器也会完全停止。
-看一个例子：docker run busybox:1.25 echo &quot;helloworld&quot;busybox:1.25 镜像作为模板启动一个容器，容器中运行echo程序，参数为”helloworld”。容器启动后，输出了 helloworld ，然后就停止了。这是因为，1号进程（echo进程）停止了，容器也随之停止。
 创建/启动容器怎样创建/启动一个容器，并让它保持运行呢？答：在启动容器时，指定一个长期运行的前台进程作为1号进程。例如：docker run --name vk-busybox -d busybox:1.25 sleep 3600以上命令的含义： 
 
 docker run 表示启动一个容器
@@ -19127,11 +19412,25 @@ docker run --restart=always vk-busyboxdocker update --restart=always vk-busybox
 5、查看容器详细信息  
 docker inspect &lt;container_name&gt;docker inspect &lt;container_id&gt;
 
+查看容器日志1、查看容器日志
+docker logs &lt;container_name&gt;docker logs --tail=100 &lt;container_name&gt;
+
+2、查找容器日志docker logs --tail=100 vk-busybox | grep xxx
+管道符只对stdout有效，如果容器日志输出到了stderr，就会发现grep无效，这时就需要重定向。docker logs --tail=100 vk-busybox 2&gt;&amp;1 | grep xxx
 进入容器容器启动后，怎样进入一个容器？答：使用docker exec命令。docker exec -it vk-busybox /bin/sh
 修改容器并保存进入容器后，我们对容器进行了修改，比如创建了一个文件 /tmp/test.txt 。现在想要把这个容器保存成镜像，方便以后复用，该怎么操作？答：使用docker commit命令，类似于git commit。  
 docker commit vk-busybox voidking/vk-busybox:v1.0以上命令，把修改后的 vk-busybox 容器保存成了镜像 voidking/vk-busybox:v1.0 。docker commit时，除了使用容器名称，也可以使用容器id。
 分享镜像我们在本地保存了 voidking/vk-busybox:v1.0 镜像，怎样把它分享出去？答：使用docker push命令，类似于git push。docker push voidking/vk-busybox:v1.0该命令把 voidking/vk-busybox:v1.0 镜像推送到 docker hub，所属账户为 voidking 。  
 记得push前，需要docker login，进行登录鉴权。
+修改镜像名修改镜像名，上传到自己的镜像仓库
+docker tag voidking/vk-busybox:v1.0 harbor.voidking.com/voidking/vk-busybox:v1.0docker login harbor.voidking.comdocekr push harbor.voidking.com/voidking/vk-busybox:v1.0
+
+如果报错：Get https://harbor.voidking.com:80/v2/: http: server gave HTTP response to HTTPS client那么可以通过修改docker配置解决：1、修改/etc/docker/daemon.json，添加
+&#123;    "insecure-registries": ["harbor.voidking.com:80"]&#125;
+
+2、重启docker
+systemctl daemon-reloadsystemctl restart docker
+
 删除容器和镜像删除单个容器  
 docker rm &lt;container_name&gt;docker rm &lt;container_id&gt;
 
@@ -19163,13 +19462,51 @@ ll /proc/$$/nsll /proc/&lt;pid&gt;/ns
 在容器net namespace执行命令（需要宿主机上有route命令）  
 nsenter -t &lt;pid&gt; -n ip addnsenter -t &lt;pid&gt; -n route -nnsenter -t &lt;pid&gt; -n iptables -A OUTPUT -p tcp --dport 7535 -j DROP
 
-Docker镜像迁移在不联网的情况下，怎样把 docker image 分享给局域网的其他用户？
-单个镜像本机有镜像 busybox:1.25，现在想要把这个镜像导出到其他机器。
-1、导出镜像docker save -o busybox.tar busybox:1.25
-2、导入镜像docker load &lt; busybox.tar
-全部镜像假设本机有很多个镜像，现在想要把些镜像全部导出到其他机器。
-1、导出所有镜像docker save $(docker images | grep -v REPOSITORY | awk &#39;BEGIN{OFS=&quot;:&quot;;ORS=&quot; &quot;}{print $1,$2}&#39;) -o all.tar
-2、导入镜像docker load -i all.tar
+书签什么是Docker?
+docker入门教程
+Docker入门实战
+中国第一套Docker实战案例视频课程（入门到高级）
+Docker实战案例源码
+Docker实战案例文档
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>docker</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Docker入门篇</title>
+    <url>/dev-docker-start/</url>
+    <content><![CDATA[容器简介奔驰车生产好之后，经过集装箱封装，从纽约运送到了上海，开箱后奔驰车可以跑在上海的大街上。软件在环境A开发好之后，经过集装箱封装，从环境A运送到了环境B，开箱后软件可以跑在环境B。这种软件集装箱技术，就是容器技术，英文叫做 Linux Container。
+容器技术的主要优点是轻量虚拟化（良好的隔离性、高资源利用率）、快捷和可移植性。
+起初，容器技术做的最好的就是Docker，Docker也几乎就是容器的代名词，后来CoreOS、Mesos、Containerd也都相继发展壮大。为了统一容器标准，OCI（Open Container Initiative）组织成立了，并于2016年4月推出了第一个开放容器标准，标准主要包括image镜像标准和runtime运行时标准。
+Docker简介
+Docker是一个开源的容器引擎（管理容器的工具），可以轻松的为任何应用创建一个轻量级的、可移植的、自给自足的容器。开发者在笔记本上编译测试通过的容器可以批量地在生产环境中部署，包括VMs（虚拟机）、bare metal、OpenStack 集群和其他的基础应用平台。 
+
+应用场景：开发环境搭建、自动化构建、自动化测试、自动化部署。
+Docker系统有两个程序：docker服务端和docker客户端。其中docker服务端是一个服务进程，管理着所有的容器。docker客户端则扮演着docker服务端的远程控制器，可以用来控制docker的服务端进程。大部分情况下，docker服务端和客户端运行在一台机器上。
+Docker优点：Build, Ship and Run.Build once, run anywhere.
+
+
+Docker安装以centos7系统为例。
+1、安装yum-utilsyum install yum-utils
+2、添加docker-ce源
+# 官方源yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo# 阿里云源，国内更快yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+
+3、更新yum包yum makecache fast
+4、安装docker-ceyum install docker-ce
+5、启动docker-ce并设置开机启动
+systemctl start dockersystemctl enable docker
+
+helloworlddocker run busybox:1.25 echo &quot;helloworld&quot;
+国际惯例，先跑一个helloworld。
+busybox:1.25 镜像作为模板启动一个容器，容器中运行echo程序，参数为”helloworld”。容器启动后，输出了 helloworld ，然后就停止了。这是因为，1号进程（echo进程）停止了，容器也随之停止。
+原理：docker镜像运行起来，便会生成一个docker容器。docker容器可以理解为在沙盒中运行的进程，这个沙盒包含了该进程运行所必须的资源，包括文件系统、系统类库、shell 环境等等。这个沙盒默认不会运行任何程序，我们需要指定一个程序在启动容器时运行。这个程序对应的进程是该容器的1号进程，当该进程结束的时候，容器也会完全停止。
+Docker常用命令参考《Docker常用命令》
 书签什么是Docker?
 docker入门教程
 Docker入门实战
@@ -19186,6 +19523,7 @@ Docker实战案例文档
       <tags>
         <tag>docker</tag>
         <tag>centos</tag>
+        <tag>harbor</tag>
       </tags>
   </entry>
   <entry>
@@ -19261,8 +19599,8 @@ SpringMVC+Spring4+Mybatis3集成，开发简单Web项目+源码下载
       <categories>
         <category>专业</category>
         <category>开发</category>
-        <category>java</category>
         <category>工具</category>
+        <category>java</category>
         <category>编辑器</category>
       </categories>
       <tags>
@@ -19361,8 +19699,8 @@ Working directory：$FileDir$
         <category>专业</category>
         <category>开发</category>
         <category>python</category>
-        <category>java</category>
         <category>工具</category>
+        <category>java</category>
         <category>编辑器</category>
       </categories>
       <tags>
@@ -20332,8 +20670,8 @@ confluence语言包下载页https://translations.atlassian.com/dashboard/downloa
       <categories>
         <category>专业</category>
         <category>运维</category>
-        <category>centos</category>
         <category>工具</category>
+        <category>centos</category>
         <category>wiki</category>
       </categories>
       <tags>
@@ -23844,9 +24182,9 @@ PS：渲染文档同样由后端负责编写。后端渲染虽然不便于前后
         <category>专业</category>
       </categories>
       <tags>
+        <tag>git</tag>
         <tag>jira</tag>
         <tag>wiki</tag>
-        <tag>git</tag>
       </tags>
   </entry>
   <entry>
@@ -23998,8 +24336,8 @@ virtualbox中ubuntu硬盘扩展，Gparted无法进入图形界面http://blog.sin
       <categories>
         <category>专业</category>
         <category>运维</category>
-        <category>网络</category>
         <category>centos</category>
+        <category>网络</category>
         <category>ubuntu</category>
       </categories>
       <tags>
@@ -25838,8 +26176,8 @@ jQzoom简介http://www.oschina.net/p/jqzoom?fromerr=tUayHgqO
       </categories>
       <tags>
         <tag>前端</tag>
-        <tag>插件</tag>
         <tag>jquery</tag>
+        <tag>插件</tag>
       </tags>
   </entry>
   <entry>
@@ -25869,8 +26207,8 @@ imagesloaded项目地址：https://github.com/desandro/imagesloaded
       </categories>
       <tags>
         <tag>前端</tag>
-        <tag>插件</tag>
         <tag>jquery</tag>
+        <tag>插件</tag>
       </tags>
   </entry>
   <entry>
@@ -27543,8 +27881,8 @@ Git与svn的区别http://blog.csdn.net/huacuilaifa/article/details/19124635
         <category>android</category>
       </categories>
       <tags>
-        <tag>android</tag>
         <tag>git</tag>
+        <tag>android</tag>
       </tags>
   </entry>
   <entry>
@@ -28712,8 +29050,8 @@ git-scmhttp://git-scm.com/
         <category>hexo</category>
       </categories>
       <tags>
-        <tag>hexo</tag>
         <tag>git</tag>
+        <tag>hexo</tag>
         <tag>ssh</tag>
       </tags>
   </entry>
@@ -29661,25 +29999,6 @@ alter table userbase add constraint fk_username foreign key(username) references
       </tags>
   </entry>
   <entry>
-    <title>坐功入静</title>
-    <url>/hobby-dhyana-meditation/</url>
-    <content><![CDATA[作者：那秋生
-
-坐功是静功里最要紧的一个环节，坐功是入静的第一步。坐功有静坐功和动静兼修两种。
-
-李渔《闲情偶寄·颐养》曰：“益寿之方，全凭导引；安生之计，惟赖坐功。”儒家提倡“静坐”。王阳明说：“静坐要省察克治，静坐能使心清静收敛，从而克服自我私欲产生，通过静坐能顿悟明心见性，得道成真。”
-道家主张“坐忘”。《庄子·大宗师》：“堕肢体，黜聪明，离形去知，同于大通，此谓坐忘。”即摆脱现实形体的束缚，与自然融为一体，两两相忘。佛家的功夫是“坐禅”。音译“禅那”，简称“禅”，意谓思维修或静虑，就是趺坐而修禅，是佛教修持的主要方法之一。
-现代人就是坐不住，成天跑东跑西、忙这忙那，就像丢了魂似的，悲乎！
-]]></content>
-      <categories>
-        <category>爱好</category>
-        <category>读书</category>
-      </categories>
-      <tags>
-        <tag>笔记</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>自由与理想</title>
     <url>/hobby-freedom-and-ideal/</url>
     <content><![CDATA[作者：吴晓波
@@ -29718,6 +30037,25 @@ alter table userbase add constraint fk_username foreign key(username) references
       </categories>
       <tags>
         <tag>读者</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>坐功入静</title>
+    <url>/hobby-dhyana-meditation/</url>
+    <content><![CDATA[作者：那秋生
+
+坐功是静功里最要紧的一个环节，坐功是入静的第一步。坐功有静坐功和动静兼修两种。
+
+李渔《闲情偶寄·颐养》曰：“益寿之方，全凭导引；安生之计，惟赖坐功。”儒家提倡“静坐”。王阳明说：“静坐要省察克治，静坐能使心清静收敛，从而克服自我私欲产生，通过静坐能顿悟明心见性，得道成真。”
+道家主张“坐忘”。《庄子·大宗师》：“堕肢体，黜聪明，离形去知，同于大通，此谓坐忘。”即摆脱现实形体的束缚，与自然融为一体，两两相忘。佛家的功夫是“坐禅”。音译“禅那”，简称“禅”，意谓思维修或静虑，就是趺坐而修禅，是佛教修持的主要方法之一。
+现代人就是坐不住，成天跑东跑西、忙这忙那，就像丢了魂似的，悲乎！
+]]></content>
+      <categories>
+        <category>爱好</category>
+        <category>读书</category>
+      </categories>
+      <tags>
+        <tag>笔记</tag>
       </tags>
   </entry>
   <entry>
@@ -32728,8 +33066,8 @@ student.xml文件内容如下：
         <category>jquery</category>
       </categories>
       <tags>
-        <tag>jquery</tag>
         <tag>javascript</tag>
+        <tag>jquery</tag>
         <tag>ajax</tag>
       </tags>
   </entry>
@@ -32774,8 +33112,8 @@ live()创建的选择器可以使用die()方法来解除绑定，语法和unbind
         <category>jquery</category>
       </categories>
       <tags>
-        <tag>jquery</tag>
         <tag>javascript</tag>
+        <tag>jquery</tag>
       </tags>
   </entry>
   <entry>
@@ -33165,8 +33503,8 @@ $(“li:lt(3)”)
         <category>jquery</category>
       </categories>
       <tags>
-        <tag>jquery</tag>
         <tag>javascript</tag>
+        <tag>jquery</tag>
       </tags>
   </entry>
   <entry>
@@ -33272,8 +33610,8 @@ AjaxjQuery的Ajax也是重点，必须的展开。我靠，肿么这么多！别
         <category>jquery</category>
       </categories>
       <tags>
-        <tag>jquery</tag>
         <tag>javascript</tag>
+        <tag>jquery</tag>
       </tags>
   </entry>
   <entry>
