@@ -98,14 +98,14 @@ after_success:- git config --global user.name "voidking"- git config --global us
         <category>专业</category>
         <category>运维</category>
         <category>开发</category>
-        <category>CICD</category>
         <category>hexo</category>
+        <category>CICD</category>
         <category>git</category>
       </categories>
       <tags>
+        <tag>hexo</tag>
         <tag>git</tag>
         <tag>cicd</tag>
-        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -116,43 +116,51 @@ after_success:- git config --global user.name "voidking"- git config --global us
 
 
 安装Nginx1、登录dockerhub查看需要的Nginx - Docker Official Images。
-2、下载nginx镜像（以1.17.7为例）docker pull nginx:1.17.7
-3、拷贝nginx镜像中的文件到宿主机
-docker run --name tmp-nginx -d nginx:1.17.7mkdir -p /opt/nginxdocker cp tmp-nginx:/etc/nginx/conf.d /opt/nginx/docker cp tmp-nginx:/usr/share/nginx/html /opt/nginx/docker stop tmp-nginxdocker rm tmp-nginx
+2、下载nginx镜像（以1.17.7为例）
+docker pull nginx:1.17.7
 
-4、启动nginx服务
-docker run --name vk-nginx -d --privileged=true \-p 80:80 -p 443:443 \-v /opt/nginx/conf.d:/etc/nginx/conf.d:ro \-v /opt/nginx/ssl:/etc/nginx/ssl:ro \-v /opt/nginx/html:/usr/share/nginx/html:ro \-v /opt/nginx/work:/usr/share/nginx/work:ro \-v /opt/nginx/log:/var/log/nginx:rw \nginx:1.17.7
+3、创建nginx挂载目录
+mkdir -p /opt/nginx/&#123;conf,html,ssl,work,log&#125;
+
+4、拷贝nginx镜像中的配置到宿主机
+docker run --name tmp-nginx -d nginx:1.17.7docker cp tmp-nginx:/etc/nginx/nginx.conf /opt/nginx/conf/docker cp tmp-nginx:/etc/nginx/conf.d/ /opt/nginx/conf/docker cp tmp-nginx:/usr/share/nginx/html/. /opt/nginx/html/docker stop tmp-nginxdocker rm tmp-nginx
+
+5、启动nginx服务
+docker run --name vk-nginx -d --privileged=true \-p 80:80 -p 443:443 \-v /opt/nginx/conf/nginx.conf:/etc/nginx/nginx.conf:ro \-v /opt/nginx/conf/conf.d:/etc/nginx/conf.d:ro \-v /opt/nginx/ssl:/etc/nginx/ssl:ro \-v /opt/nginx/html:/usr/share/nginx/html:ro \-v /opt/nginx/work:/usr/share/nginx/work:ro \-v /opt/nginx/log:/var/log/nginx:rw \nginx:1.17.7
 
 以上命令：
 
 命名容器为vk-nginx，后台运行
 映射宿主机80、443端口到容器的80、443端口
-挂载宿主机目录/opt/nginx/conf.d到容器目录/etc/nginx/conf.d
-挂载宿主机目录/opt/nginx/ssl到容器目录/etc/nginx/ssl
-挂载宿主机目录/opt/nginx/html到容器目录/usr/share/nginx/html
-挂载宿主机目录/opt/nginx/work到容器目录/usr/share/nginx/work
-挂载宿主机目录/opt/nginx/log到容器目录/var/nginx/log
+挂载宿主机文件 /opt/nginx/conf/nginx.conf 到容器文件 /etc/nginx/nginx.conf
+挂载宿主机目录 /opt/nginx/conf/conf.d 到容器目录 /etc/nginx/conf.d
+挂载宿主机目录 /opt/nginx/ssl 到容器目录 /etc/nginx/ssl
+挂载宿主机目录 /opt/nginx/html 到容器目录 /usr/share/nginx/html
+挂载宿主机目录 /opt/nginx/work 到容器目录 /usr/share/nginx/work
+挂载宿主机目录 /opt/nginx/log 到容器目录 /var/nginx/log
 
 更多启动命令参数可以参考How to use this image。
-5、验证安装docker ps，nginx启动正常的话就可以看到vk-nginx容器。curl localhost，可以看到html文本。浏览器访问 http://8.136.13.58 ，可以看到Welcome to nginx!
+6、验证安装（1）docker ps，nginx启动正常的话就可以看到vk-nginx容器。（2）curl localhost，可以看到html文本。（3）浏览器访问 http://8.136.13.58 ，可以看到Welcome to nginx!
 配置使用Nginx以添加 www.voidking.com 域名为例，参考《Hexo启用https加密连接》和《Hexo加速访问》。
 1、下载博客项目
 mkdir /opt/nginx/workgit clone https://gitee.com/voidking/voidking.github.io.git voidking
 
 2、上传证书上传 1_www.voidking.com_bundle.crt 和 2_www.voidking.com.key 到/opt/nginx/conf.d/ssl目录
 3、创建配置文件
-cd /opt/nginx/conf.dvim www.voidking.com.conf
+cd /opt/nginx/conf/conf.dvim www.voidking.com.conf
 
 内容为：
-server &#123;    listen 80;    listen 443 ssl;    server_name www.voidking.com;    charset utf-8;    ssl_certificate /etc/nginx/ssl/1_www.voidking.com_bundle.crt;    ssl_certificate_key  /etc/nginx/ssl/2_www.voidking.com.key;    ssl_session_timeout  5m;    ssl_protocols SSLv3 TLSv1 TLSv1.1 TLSv1.2;    ssl_ciphers  HIGH:!ADH:!EXPORT56:RC4+RSA:+MEDIUM;    ssl_prefer_server_ciphers on;    if ($ssl_protocol = "") &#123;        return 301 https://$host$request_uri;    &#125;    location / &#123;        proxy_set_header   Host             $host;        proxy_set_header   X-Real-IP        $remote_addr;        proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;        root /usr/share/nginx/work/voidking/;        index index.html;    &#125;    error_page 404 /404.html;    location = /404.html &#123;        root /usr/share/nginx/work/voidking/;        index 404.html;    &#125;    location ~ /\.git &#123;        return 404;    &#125;&#125;
+server &#123;    listen 80;    listen 443 ssl;    server_name www.voidking.com;    charset utf-8;    ssl_certificate &#x2F;etc&#x2F;nginx&#x2F;ssl&#x2F;1_www.voidking.com_bundle.crt;    ssl_certificate_key  &#x2F;etc&#x2F;nginx&#x2F;ssl&#x2F;2_www.voidking.com.key;    ssl_session_timeout  5m;    ssl_protocols SSLv3 TLSv1 TLSv1.1 TLSv1.2;    ssl_ciphers  HIGH:!ADH:!EXPORT56:RC4+RSA:+MEDIUM;    ssl_prefer_server_ciphers on;    if ($ssl_protocol &#x3D; &quot;&quot;) &#123;        return 301 https:&#x2F;&#x2F;$host$request_uri;    &#125;    location &#x2F; &#123;        proxy_set_header   Host             $host;        proxy_set_header   X-Real-IP        $remote_addr;        proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;        root &#x2F;usr&#x2F;share&#x2F;nginx&#x2F;work&#x2F;voidking&#x2F;;        index index.html;    &#125;    error_page 404 &#x2F;404.html;    location &#x3D; &#x2F;404.html &#123;        root &#x2F;usr&#x2F;share&#x2F;nginx&#x2F;work&#x2F;voidking&#x2F;;        index 404.html;    &#125;    location ~ &#x2F;\.git &#123;        return 404;    &#125;&#125;
 
-4、重启nginxdocker restart vk-nginx
+4、重启nginx
+docker restart vk-nginx
+
 5、查看是否启动成功
 docker psdocker logs vk-nginxdocker logs --tail 10 vk-nginx
 
 至此， www.voidking.com 域名配置完成，在dnspod添加好解析即可访问，nice。
 七牛图床配置七牛图床，http访问不收费，https收费。为了给图床省钱，使用nginx配置了一层代理，添加了域名 cdn.voidking.com.conf 的配置：
-server &#123;    listen 80;    listen 443 ssl;    server_name cdn.voidking.com;    charset utf-8;    #ssl配置    ssl_certificate /etc/nginx/ssl/1_cdn.voidking.com_bundle.crt;    ssl_certificate_key  /etc/nginx/ssl/2_cdn.voidking.com.key;    ssl_session_timeout  5m;    ssl_protocols SSLv3 TLSv1 TLSv1.1 TLSv1.2;    ssl_ciphers  HIGH:!ADH:!EXPORT56:RC4+RSA:+MEDIUM;    if ($ssl_protocol = "") &#123;        return 301 https://$host$request_uri;    &#125;    location / &#123;        proxy_set_header   Host             $host;        proxy_set_header   X-Real-IP        $remote_addr;        proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;        proxy_pass http://qiniu.cdn.voidking.com;    &#125;&#125;
+server &#123;    listen 80;    listen 443 ssl;    server_name cdn.voidking.com;    charset utf-8;    #ssl配置    ssl_certificate &#x2F;etc&#x2F;nginx&#x2F;ssl&#x2F;1_cdn.voidking.com_bundle.crt;    ssl_certificate_key  &#x2F;etc&#x2F;nginx&#x2F;ssl&#x2F;2_cdn.voidking.com.key;    ssl_session_timeout  5m;    ssl_protocols SSLv3 TLSv1 TLSv1.1 TLSv1.2;    ssl_ciphers  HIGH:!ADH:!EXPORT56:RC4+RSA:+MEDIUM;    if ($ssl_protocol &#x3D; &quot;&quot;) &#123;        return 301 https:&#x2F;&#x2F;$host$request_uri;    &#125;    location &#x2F; &#123;        proxy_set_header   Host             $host;        proxy_set_header   X-Real-IP        $remote_addr;        proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;        proxy_pass http:&#x2F;&#x2F;qiniu.cdn.voidking.com;    &#125;&#125;
 
 重定向问题排查有一天，通过chrome浏览器访问 http://8.136.13.58 ，发现报错 403
 仔细看了下地址栏，原来是 http 自动转到了 https。本地curl验证一下是否是chrome的问题：
@@ -171,8 +179,8 @@ curl http://8.136.13.58curl http://8.136.13.58 -L
         <category>nginx</category>
       </categories>
       <tags>
-        <tag>docker</tag>
         <tag>nginx</tag>
+        <tag>docker</tag>
       </tags>
   </entry>
   <entry>
@@ -190,15 +198,16 @@ docker pull 配置代理
 bash环境网络代理bash环境网络代理设置，适用于curl命令。
 临时配置export https_proxy=http://192.168.56.1:7890 http_proxy=http://192.168.56.1:7890 all_proxy=socks5://192.168.56.1:7890 ftp_proxy=http://192.168.56.1:7890
 
-永久生效1、写入配置内容到.bash_profile文件中
+永久生效1、写入配置内容到.bashrc文件中
 export https_proxy=http://192.168.56.1:7890 export http_proxy=http://192.168.56.1:7890 export all_proxy=socks5://192.168.56.1:7890export ftp_proxy=http://192.168.56.1:7890
 
-2、使生效source .bash_profile
+写到.bashrc，无论是登录session还是非登录session，都可以使用这些变量，详情参考bash_profile和bashrc的区别。
+2、使生效source .bashrc
 wget代理编辑文件/etc/wgetrc，添加内容：
 http_proxy = 192.168.56.1:7890  ftp_proxy = 192.168.56.1:7890
 
 yum代理编辑文件/etc/yum.conf，添加内容：
-proxy=192.168.56.1:7890
+http_proxy=http://192.168.56.1:7890https_proxy=https://192.168.56.1:7890
 
 浏览器上网代理以Firefox浏览器为例：Edit -&gt; Preferences -&gt; Advanced -&gt; Network在Connection下点击Settings，manual proxy configuration里设置IP和PORT。
 docker pull代理1、创建docker配置目录mkdir /etc/systemd/system/docker.service.d
@@ -318,8 +327,14 @@ Airflow 调度器调度任务在一组work上执行，同时满足指定的依�
 Airflow 拥有大量的命令行工具，可以轻松在DAG上执行复杂的操作。
 Airflow 界面友好，管道、进度、问题一目了然。
 
-更多内容参考：Airflow官方文档
-Airflow视频教程：Airflow从零到神
+学习资料：
+
+Airflow官方文档
+Airflow从零到神
+没看过这篇文章，别说你会用Airflow
+你不可不知的任务调度神器-AirFlow
+海外的工程师是如何使用Airflow的？
+
 
 
 安装和初始化安装配置airflow，主要参考Airflow本地快速运行和Airflow Installation。
@@ -367,33 +382,34 @@ TODOtutorial.py详解、传参、接口调用airflow + django
       </tags>
   </entry>
   <entry>
-    <title>Python打印日志</title>
-    <url>/dev-python-log/</url>
-    <content><![CDATA[输出日志到控制台import sysimport logginglog = logging.getLogger(__name__)log.setLevel(logging.DEBUG)log.addHandler(logging.StreamHandler(sys.stdout)) #默认sys.errorlog.info('print info level log to console')
+    <title>Python重试</title>
+    <url>/dev-python-retry/</url>
+    <content><![CDATA[为什么需要重试？典型场景：程序的实现需要调用第三方的API，但是我们并不能保证第三方API一直好用，也不能保证网络一直畅通，所以在调用第三方API时需要加上错误重试。  
+通用场景：程序的运行不符合预期，我们知道再次调用大概率可以使之符合预期，这时就需要重试。  
+而重试逻辑我们可以通过循环多次调用实现，也可以使用封装好的重试模块。本文我们就学习一下Python中比较流行的 retrying 模块，实现一些重试Demo。
 
 
+安装retryingpip install retrying
+任意异常重试from retrying import retry@retry(stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrorif __name__ == '__main__':    run()
 
-输出日志到文件import sysimport logginglog = logging.getLogger(__name__)log.setLevel(logging.DEBUG)log.addHandler(logging.FileHandler('python.log'))log.info('print info level log to file')
-日志文件默认存储到执行命令的路径下，可以通过使用绝对路径来指定日志文件路径。
-封装日志模块1、封装一个日志模块 log.py
-#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport loggingimport logging.handlersdef init_log(log_path, level=logging.INFO, when="D", backup=7,             format="%(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s",             datefmt="%m-%d %H:%M:%S"):    """    init_log - initialize log module    Args:    log_path - Log file path prefix.    Log data will go to two files: log_path.log and log_path.log.wf    Any non-exist parent directories will be created automatically    level - msg above the level will be displayed    DEBUG &lt; INFO &lt; WARNING &lt; ERROR &lt; CRITICAL    the default value is logging.INFO    when - how to split the log file by time interval    'S' : Seconds    'M' : Minutes    'H' : Hours    'D' : Days    'W' : Week day    default value: 'D'    format - format of the log    default format:    %(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s    INFO: 12-09 18:02:42: log.py:40 * 139814749787872 HELLO WORLD    backup - how many backup file to keep    default value: 7    Raises:    OSError: fail to create log directories    IOError: fail to open log file    """    formatter = logging.Formatter(format, datefmt)    logger = logging.getLogger()    logger.setLevel(level)    dir = os.path.dirname(log_path)    if not os.path.isdir(dir):        os.makedirs(dir)    handler = logging.handlers.TimedRotatingFileHandler(log_path + ".log",                                                        when=when,                                                        backupCount=backup)    handler.setLevel(level)    handler.setFormatter(formatter)    logger.addHandler(handler)    handler = logging.handlers.TimedRotatingFileHandler(log_path + ".log.wf",                                                        when=when,                                                        backupCount=backup)    handler.setLevel(logging.WARNING)    handler.setFormatter(formatter)    logger.addHandler(handler)
+当函数run抛出任意异常时，则进行重试。
 
-2、使用日志模块
-#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport loggingimport logclass VKTest(object):    def __init__(self):        logging.info('print info level log to file')if __name__=="__main__":    # 日志保存到./log/vk.log和./log/vk.log.wf，按天切割，保留7天    log.init_log("./log/vk")    logging.info("程序启动!!!")    vk = VKTest()    logging.info("程序结束!!!")
+stop_max_attempt_number：最大重试次数
+wait_random_min：最小重试间隔
+wait_random_max：最大重试间隔
 
-执行脚本后，日志内容会输出到 log/vk.log 中。
-封装日志模块2.01、封装一个日志模块 log.py
-#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport loggingimport logging.handlersDEFAULT_LOG_PATH = './log/'class Log(object):    def __init__(self,                 logfile_name='default',                 log_path=DEFAULT_LOG_PATH,                 level=logging.INFO,                 when="D",                 backup=7,                 format="%(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s",                 datefmt="%m-%d %H:%M:%S"):        """        init_log - initialize log module        Args:        log_path - Log file path prefix.        Log data will go to two files: log_path.log and log_path.log.wf        Any non-exist parent directories will be created automatically        level - msg above the level will be displayed        DEBUG &lt; INFO &lt; WARNING &lt; ERROR &lt; CRITICAL        the default value is logging.INFO        when - how to split the log file by time interval        'S' : Seconds        'M' : Minutes        'H' : Hours        'D' : Days        'W' : Week day        default value: 'D'        format - format of the log        default format:        %(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s        INFO: 12-09 18:02:42: log.py:40 * 139814749787872 HELLO WORLD        backup - how many backup file to keep        default value: 7        Raises:        OSError: fail to create log directories        IOError: fail to open log file        """        formatter = logging.Formatter(format, datefmt)        # getLogger一定要传参，否则多次调用对象创建，得到的会是同一个logger对象        # 后果就是相同的日志内容，会同时写到多个不同的日志文件中        self.logger = logging.getLogger(logfile_name)        self.logger.setLevel(level)        if not os.path.exists(log_path):            os.makedirs(log_path)                    common_log = os.path.join(log_path, logfile_name + ".log")        handler = logging.handlers.TimedRotatingFileHandler(common_log,                                                            when=when,                                                            backupCount=backup)        handler.setLevel(level)        handler.setFormatter(formatter)        self.logger.addHandler(handler)        wf_log = os.path.join(log_path, logfile_name + ".log.wf")        handler = logging.handlers.TimedRotatingFileHandler(wf_log,                                                            when=when,                                                            backupCount=backup)        handler.setLevel(logging.WARNING)        handler.setFormatter(formatter)        self.logger.addHandler(handler)    def get_logger(self):        return self.logger
+注意函数内不要使用try except，否则异常就被函数自己捕获处理了，不会抛给retry。
+指定异常重试from retrying import retryimport randomdef if_value_error(exception):    return isinstance(exception, ValueError)@retry(retry_on_exception=if_value_error, stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    value = random.randint(0, 10)    msg = f'value is &#123;value&#125;'    print(msg)    if value &lt;= 5:        raise ValueError('value is too small!')    else:        raise Exception('value is too large!')if __name__ == '__main__':    run()
 
-2、使用日志模块
-#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport log# 日志保存到./log/vk.log和./log/vk.log.wf，按天切割，保留7天logger = log.Log(logfile_name='vk_test').get_logger()logger = log.Log(logfile_name='vk').get_logger()class VKTest(object):    def __init__(self):        logger.info('print info level log to file')if __name__=="__main__":    logger.info("程序启动!!!")    vk = VKTest()    logger.info("程序结束!!!")
+当函数run抛出ValueError异常时，则进行重试；抛出Exception异常时，不会重试。
+指定返回值重试from retrying import retryimport randomdef if_return_small(value):    return value &lt;= 5@retry(retry_on_result=if_return_small, stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    value = random.randint(0, 10)    msg = f'value is &#123;value&#125;'    print(msg)    return valueif __name__ == '__main__':    run()
 
-执行脚本后，日志内容会输出到 log/vk.log 中。
-参考文档
-Python黑魔法手册
-Python Cookbook 3rd Edition Documentation
-Google Python风格指南
-unittest - 单元测试框架
+当函数run返回值小于5时，进行重试。
+多次重试后容忍异常from retrying import retry@retry(stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrordef run2():    print('run2')if __name__ == '__main__':    run()    run2()
+
+当函数run抛出任意异常时，则进行重试。重试指定次数后，程序就异常结束了。这时，如果我们想要容忍异常，让run2可以正常运行，该怎么办呢？很简单，给run函数包裹一个try except即可。
+from retrying import retry@retry(wrap_exception=True,stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrordef wrap_run():    try:        run()    except:        passdef run2():    print('run2')if __name__ == '__main__':    wrap_run()    run2()
+
 
 ]]></content>
       <categories>
@@ -434,34 +450,68 @@ create database vkphp default character set utf8 collate utf8_general_ci;use vkp
       </tags>
   </entry>
   <entry>
-    <title>Python重试</title>
-    <url>/dev-python-retry/</url>
-    <content><![CDATA[为什么需要重试？典型场景：程序的实现需要调用第三方的API，但是我们并不能保证第三方API一直好用，也不能保证网络一直畅通，所以在调用第三方API时需要加上错误重试。  
-通用场景：程序的运行不符合预期，我们知道再次调用大概率可以使之符合预期，这时就需要重试。  
-而重试逻辑我们可以通过循环多次调用实现，也可以使用封装好的重试模块。本文我们就学习一下Python中比较流行的 retrying 模块，实现一些重试Demo。
+    <title>Python单元测试</title>
+    <url>/dev-python-unittest/</url>
+    <content><![CDATA[unittest简介unittest是一个Python单元测试框架。它受到 JUnit 的启发，与其他语言中的主流单元测试框架有着相似的风格。其支持测试自动化，配置共享和关机代码测试。支持将测试样例聚合到测试集中，并将测试与报告框架独立。
+主要参考 unittest - 单元测试框架。
 
 
-安装retryingpip install retrying
-任意异常重试from retrying import retry@retry(stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrorif __name__ == '__main__':    run()
+脚本编写新建一个 tests/test_demo.py 脚本，内容如下：
+import unittestclass TestStringMethods(unittest.TestCase):    def test_upper(self):        self.assertEqual('foo'.upper(), 'FOO')    def test_isupper(self):        self.assertTrue('FOO'.isupper())        self.assertFalse('Foo'.isupper())    def test_split(self):        s = 'hello world'        self.assertEqual(s.split(), ['hello', 'world'])        # check that s.split fails when the separator is not a string        with self.assertRaises(TypeError):            s.split(2)if __name__ == '__main__':    unittest.main()
 
-当函数run抛出任意异常时，则进行重试。
+继承 unittest.TestCase 就创建了一个测试样例。上述三个独立的测试是三个类的方法，这些方法的命名都以 test 开头。 这个命名约定告诉测试运行者类的哪些方法表示测试。
+每个测试的关键是：调用 assertEqual() 来检查预期的输出； 调用 assertTrue() 或 assertFalse() 来验证一个条件；调用 assertRaises() 来验证抛出了一个特定的异常。
+通过 setUp() 和 tearDown() 方法，可以设置测试开始前与完成后需要执行的指令。
+最后的代码块中，演示了运行测试的一个简单的方法。 unittest.main() 提供了一个测试脚本的命令行接口。
+执行测试方法一：脚本级别调用（直接运行脚本）
+python tests/test_demo.pypython tests/test_demo.py -vpython -m unittest tests/test_demo.py
 
-stop_max_attempt_number：最大重试次数
-wait_random_min：最小重试间隔
-wait_random_max：最大重试间隔
+方法二：包、模块、类和方法级别调用
+# 包级别调用（进入tests目录查找所有test_*.py文件并运行）python -m unittest discover -s tests -p "test_*.py"# 模块级别调用python -m unittest tests.test_demo# 类级别调用python -m unittest tests.test_demo.TestStringMethods# 方法级别调用python -m unittest tests.test_demo.TestStringMethods.test_upper
 
-注意函数内不要使用try except，否则异常就被函数自己捕获处理了，不会抛给retry。
-指定异常重试from retrying import retryimport randomdef if_value_error(exception):    return isinstance(exception, ValueError)@retry(retry_on_exception=if_value_error, stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    value = random.randint(0, 10)    msg = f'value is &#123;value&#125;'    print(msg)    if value &lt;= 5:        raise ValueError('value is too small!')    else:        raise Exception('value is too large!')if __name__ == '__main__':    run()
+单元测试之mock单元测试时，如果涉及网络请求，建议使用mock模块来模拟。
+import jsonimport unittestfrom unittest import mockimport requestsdef request_system(method: str, url: str, data=&#123;&#125;):    headers = &#123;        'Content-Type': 'application/json'    &#125;    response = requests.request(method=method, url=url, headers=headers, data=json.dumps(data))    return responsedef login(username: str, password: str):    # 以下接口暂时访问不通    LOGIN_URL='http://127.0.0.1/login'    data = &#123;        'username': username,        'password': password    &#125;    response = request_system('POST', LOGIN_URL)    if response.status == 200:        return json.loads(response.text)    else:        return Noneclass TestMockMethods(unittest.TestCase):    def test_request_system(self):        mock_response = mock.Mock()        mock_response.status_code = 200        mock_response.text = json.dumps(&#123;"code": 0, "msg":"success"&#125;)        request_system = mock.Mock(return_value=mock_response)        response = request_system(method='POST',url='http://127.0.0.1/')        print(response.status_code)        print(response.text)        self.assertEqual(200, response.status_code)    def test_login(self):        login = mock.Mock(return_value=&#123;"code": 0, "msg":"success"&#125;)        data = login(username='voidking',password='voidking')        print(data)        self.assertEqual(0, data.get('code'))if __name__ == '__main__':    unittest.main()
 
-当函数run抛出ValueError异常时，则进行重试；抛出Exception异常时，不会重试。
-指定返回值重试from retrying import retryimport randomdef if_return_small(value):    return value &lt;= 5@retry(retry_on_result=if_return_small, stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    value = random.randint(0, 10)    msg = f'value is &#123;value&#125;'    print(msg)    return valueif __name__ == '__main__':    run()
+这种模拟测试方式很巧妙，适合测试访问第三方接口，但是并不会真正发出请求。另一个问题来了，Python怎么测试自己的接口？不知道。想到以前使用Beego框架进行开发，它的单元测试就很巧妙，先在测试数据库插入数据，然后通过beego.BeeApp.Handlers.ServeHTTP(w, r)把自己临时启动起来，最后自己的单元测试调用自己的接口。其中的关键在于把自己启动起来，理论上Python也能做到。
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>开发</category>
+        <category>python</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>测试</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Python打印日志</title>
+    <url>/dev-python-log/</url>
+    <content><![CDATA[输出日志到控制台import sysimport logginglog = logging.getLogger(__name__)log.setLevel(logging.DEBUG)log.addHandler(logging.StreamHandler(sys.stdout)) #默认sys.errorlog.info('print info level log to console')
 
-当函数run返回值小于5时，进行重试。
-多次重试后容忍异常from retrying import retry@retry(stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrordef run2():    print('run2')if __name__ == '__main__':    run()    run2()
 
-当函数run抛出任意异常时，则进行重试。重试指定次数后，程序就异常结束了。这时，如果我们想要容忍异常，让run2可以正常运行，该怎么办呢？很简单，给run函数包裹一个try except即可。
-from retrying import retry@retry(wrap_exception=True,stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrordef wrap_run():    try:        run()    except:        passdef run2():    print('run2')if __name__ == '__main__':    wrap_run()    run2()
 
+输出日志到文件import sysimport logginglog = logging.getLogger(__name__)log.setLevel(logging.DEBUG)log.addHandler(logging.FileHandler('python.log'))log.info('print info level log to file')
+日志文件默认存储到执行命令的路径下，可以通过使用绝对路径来指定日志文件路径。
+封装日志模块1、封装一个日志模块 log.py
+#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport loggingimport logging.handlersdef init_log(log_path, level=logging.INFO, when="D", backup=7,             format="%(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s",             datefmt="%m-%d %H:%M:%S"):    """    init_log - initialize log module    Args:    log_path - Log file path prefix.    Log data will go to two files: log_path.log and log_path.log.wf    Any non-exist parent directories will be created automatically    level - msg above the level will be displayed    DEBUG &lt; INFO &lt; WARNING &lt; ERROR &lt; CRITICAL    the default value is logging.INFO    when - how to split the log file by time interval    'S' : Seconds    'M' : Minutes    'H' : Hours    'D' : Days    'W' : Week day    default value: 'D'    format - format of the log    default format:    %(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s    INFO: 12-09 18:02:42: log.py:40 * 139814749787872 HELLO WORLD    backup - how many backup file to keep    default value: 7    Raises:    OSError: fail to create log directories    IOError: fail to open log file    """    formatter = logging.Formatter(format, datefmt)    logger = logging.getLogger()    logger.setLevel(level)    dir = os.path.dirname(log_path)    if not os.path.isdir(dir):        os.makedirs(dir)    handler = logging.handlers.TimedRotatingFileHandler(log_path + ".log",                                                        when=when,                                                        backupCount=backup)    handler.setLevel(level)    handler.setFormatter(formatter)    logger.addHandler(handler)    handler = logging.handlers.TimedRotatingFileHandler(log_path + ".log.wf",                                                        when=when,                                                        backupCount=backup)    handler.setLevel(logging.WARNING)    handler.setFormatter(formatter)    logger.addHandler(handler)
+
+2、使用日志模块
+#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport loggingimport logclass VKTest(object):    def __init__(self):        logging.info('print info level log to file')if __name__=="__main__":    # 日志保存到./log/vk.log和./log/vk.log.wf，按天切割，保留7天    log.init_log("./log/vk")    logging.info("程序启动!!!")    vk = VKTest()    logging.info("程序结束!!!")
+
+执行脚本后，日志内容会输出到 log/vk.log 中。
+封装日志模块2.01、封装一个日志模块 log.py
+#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport loggingimport logging.handlersDEFAULT_LOG_PATH = './log/'class Log(object):    def __init__(self,                 logfile_name='default',                 log_path=DEFAULT_LOG_PATH,                 level=logging.INFO,                 when="D",                 backup=7,                 format="%(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s",                 datefmt="%m-%d %H:%M:%S"):        """        init_log - initialize log module        Args:        log_path - Log file path prefix.        Log data will go to two files: log_path.log and log_path.log.wf        Any non-exist parent directories will be created automatically        level - msg above the level will be displayed        DEBUG &lt; INFO &lt; WARNING &lt; ERROR &lt; CRITICAL        the default value is logging.INFO        when - how to split the log file by time interval        'S' : Seconds        'M' : Minutes        'H' : Hours        'D' : Days        'W' : Week day        default value: 'D'        format - format of the log        default format:        %(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s        INFO: 12-09 18:02:42: log.py:40 * 139814749787872 HELLO WORLD        backup - how many backup file to keep        default value: 7        Raises:        OSError: fail to create log directories        IOError: fail to open log file        """        formatter = logging.Formatter(format, datefmt)        # getLogger一定要传参，否则多次调用对象创建，得到的会是同一个logger对象        # 后果就是相同的日志内容，会同时写到多个不同的日志文件中        self.logger = logging.getLogger(logfile_name)        self.logger.setLevel(level)        if not os.path.exists(log_path):            os.makedirs(log_path)                    common_log = os.path.join(log_path, logfile_name + ".log")        handler = logging.handlers.TimedRotatingFileHandler(common_log,                                                            when=when,                                                            backupCount=backup)        handler.setLevel(level)        handler.setFormatter(formatter)        self.logger.addHandler(handler)        wf_log = os.path.join(log_path, logfile_name + ".log.wf")        handler = logging.handlers.TimedRotatingFileHandler(wf_log,                                                            when=when,                                                            backupCount=backup)        handler.setLevel(logging.WARNING)        handler.setFormatter(formatter)        self.logger.addHandler(handler)    def get_logger(self):        return self.logger
+
+2、使用日志模块
+#!/usr/bin/env python# -*- coding: utf-8 -*-import osimport log# 日志保存到./log/vk.log和./log/vk.log.wf，按天切割，保留7天logger = log.Log(logfile_name='vk_test').get_logger()logger = log.Log(logfile_name='vk').get_logger()class VKTest(object):    def __init__(self):        logger.info('print info level log to file')if __name__=="__main__":    logger.info("程序启动!!!")    vk = VKTest()    logger.info("程序结束!!!")
+
+执行脚本后，日志内容会输出到 log/vk.log 中。
+参考文档
+Python黑魔法手册
+Python Cookbook 3rd Edition Documentation
+Google Python风格指南
+unittest - 单元测试框架
 
 ]]></content>
       <categories>
@@ -551,41 +601,6 @@ Python黑魔法手册
 Python Cookbook 3rd Edition Documentation
 Google Python风格指南
 
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>开发</category>
-        <category>python</category>
-      </categories>
-      <tags>
-        <tag>python</tag>
-        <tag>测试</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Python单元测试</title>
-    <url>/dev-python-unittest/</url>
-    <content><![CDATA[unittest简介unittest是一个Python单元测试框架。它受到 JUnit 的启发，与其他语言中的主流单元测试框架有着相似的风格。其支持测试自动化，配置共享和关机代码测试。支持将测试样例聚合到测试集中，并将测试与报告框架独立。
-主要参考 unittest - 单元测试框架。
-
-
-脚本编写新建一个 tests/test_demo.py 脚本，内容如下：
-import unittestclass TestStringMethods(unittest.TestCase):    def test_upper(self):        self.assertEqual('foo'.upper(), 'FOO')    def test_isupper(self):        self.assertTrue('FOO'.isupper())        self.assertFalse('Foo'.isupper())    def test_split(self):        s = 'hello world'        self.assertEqual(s.split(), ['hello', 'world'])        # check that s.split fails when the separator is not a string        with self.assertRaises(TypeError):            s.split(2)if __name__ == '__main__':    unittest.main()
-
-继承 unittest.TestCase 就创建了一个测试样例。上述三个独立的测试是三个类的方法，这些方法的命名都以 test 开头。 这个命名约定告诉测试运行者类的哪些方法表示测试。
-每个测试的关键是：调用 assertEqual() 来检查预期的输出； 调用 assertTrue() 或 assertFalse() 来验证一个条件；调用 assertRaises() 来验证抛出了一个特定的异常。
-通过 setUp() 和 tearDown() 方法，可以设置测试开始前与完成后需要执行的指令。
-最后的代码块中，演示了运行测试的一个简单的方法。 unittest.main() 提供了一个测试脚本的命令行接口。
-执行测试方法一：脚本级别调用（直接运行脚本）
-python tests/test_demo.pypython tests/test_demo.py -vpython -m unittest tests/test_demo.py
-
-方法二：包、模块、类和方法级别调用
-# 包级别调用（进入tests目录查找所有test_*.py文件并运行）python -m unittest discover -s tests -p "test_*.py"# 模块级别调用python -m unittest tests.test_demo# 类级别调用python -m unittest tests.test_demo.TestStringMethods# 方法级别调用python -m unittest tests.test_demo.TestStringMethods.test_upper
-
-单元测试之mock单元测试时，如果涉及网络请求，建议使用mock模块来模拟。
-import jsonimport unittestfrom unittest import mockimport requestsdef request_system(method: str, url: str, data=&#123;&#125;):    headers = &#123;        'Content-Type': 'application/json'    &#125;    response = requests.request(method=method, url=url, headers=headers, data=json.dumps(data))    return responsedef login(username: str, password: str):    # 以下接口暂时访问不通    LOGIN_URL='http://127.0.0.1/login'    data = &#123;        'username': username,        'password': password    &#125;    response = request_system('POST', LOGIN_URL)    if response.status == 200:        return json.loads(response.text)    else:        return Noneclass TestMockMethods(unittest.TestCase):    def test_request_system(self):        mock_response = mock.Mock()        mock_response.status_code = 200        mock_response.text = json.dumps(&#123;"code": 0, "msg":"success"&#125;)        request_system = mock.Mock(return_value=mock_response)        response = request_system(method='POST',url='http://127.0.0.1/')        print(response.status_code)        print(response.text)        self.assertEqual(200, response.status_code)    def test_login(self):        login = mock.Mock(return_value=&#123;"code": 0, "msg":"success"&#125;)        data = login(username='voidking',password='voidking')        print(data)        self.assertEqual(0, data.get('code'))if __name__ == '__main__':    unittest.main()
-
-这种模拟测试方式很巧妙，适合测试访问第三方接口，但是并不会真正发出请求。另一个问题来了，Python怎么测试自己的接口？不知道。想到以前使用Beego框架进行开发，它的单元测试就很巧妙，先在测试数据库插入数据，然后通过beego.BeeApp.Handlers.ServeHTTP(w, r)把自己临时启动起来，最后自己的单元测试调用自己的接口。其中的关键在于把自己启动起来，理论上Python也能做到。
 ]]></content>
       <categories>
         <category>专业</category>
@@ -802,12 +817,12 @@ Ran out of free trial build credits available for private repositories.Travis CI
         <category>专业</category>
         <category>运维</category>
         <category>开发</category>
-        <category>CICD</category>
         <category>hexo</category>
+        <category>CICD</category>
       </categories>
       <tags>
-        <tag>cicd</tag>
         <tag>hexo</tag>
+        <tag>cicd</tag>
       </tags>
   </entry>
   <entry>
@@ -986,12 +1001,12 @@ git add .git commmit -m "简化travis.yml"git push
         <category>专业</category>
         <category>运维</category>
         <category>开发</category>
-        <category>CICD</category>
         <category>hexo</category>
+        <category>CICD</category>
       </categories>
       <tags>
-        <tag>cicd</tag>
         <tag>hexo</tag>
+        <tag>cicd</tag>
       </tags>
   </entry>
   <entry>
@@ -2470,6 +2485,7 @@ apiVersion: monitoring.coreos.com/v1kind: PrometheusRulemetadata:  labels:    pr
         <category>运维</category>
         <category>k8s</category>
         <category>监控</category>
+        <category>prometheus</category>
       </categories>
       <tags>
         <tag>k8s</tag>
@@ -2517,6 +2533,7 @@ curl "http://192.168.56.102:9115/probe?module=http_2xx&amp;target=http://prometh
         <category>专业</category>
         <category>运维</category>
         <category>监控</category>
+        <category>prometheus</category>
       </categories>
       <tags>
         <tag>prometheus</tag>
@@ -2657,6 +2674,7 @@ resolution是可选的。默认值为全局评估间隔。
         <category>专业</category>
         <category>运维</category>
         <category>监控</category>
+        <category>prometheus</category>
       </categories>
       <tags>
         <tag>prometheus</tag>
@@ -2739,29 +2757,40 @@ alertmanager，处理报警
 
 
 prometheus server1、登录dockerhub查看需要的prometheus server。
-2、下载prometheus server镜像（以v2.18.0为例）docker pull prom/prometheus:v2.18.0
-3、创建配置文件创建prometheus.yml，内容为
+2、下载prometheus server镜像（以v2.18.0为例）
+docker pull prom/prometheus:v2.18.0
+
+3、准备配置文件
+mkdir -p /opt/prometheus/vim /opt/prometheus/prometheus.yml
+
+prometheus.yml文件内容为：
 global:  scrape_interval: 15s #默认采集监控数据时间间隔  external_labels:    monitor: 'my-monitor'scrape_configs:  #监控对象设置  - job_name: prometheus #任务名称    scrape_interval: 5s #每隔5s获取一次监控数据    static_configs: #监控对象地址      - targets: ['127.0.0.1:9090']  # 将自己加入到监控对象中
-创建rules.yml，内容为空。
+
 4、启动prometheus server
-docker run --name=prometheus -d \-p 9090:9090 \-v $(pwd)/prometheus.yml:/etc/prometheus/prometheus.yml \-v $(pwd)/rules.yml:/etc/prometheus/rules.yml \prom/prometheus:v2.18.0 --config.file=/etc/prometheus/prometheus.yml --web.enable-lifecycle
+docker run --name=prometheus -d \-p 9090:9090 \-v /opt/prometheus:/etc/prometheus \prom/prometheus:v2.18.0 --config.file=/etc/prometheus/prometheus.yml --web.enable-lifecycle
 
 5、测试服务浏览器访问 http://192.168.56.102:9090/
 6、查看targets浏览器访问 http://192.168.56.102:9090/targets/
 7、查看指标浏览器访问 http://192.168.56.102:9090/metrics/
 node exporter1、登录dockerhub查看需要的node exporter。
-2、下载node-exporter镜像（以v1.0.0为例）docker pull prom/node-exporter:v1.0.0
+2、下载node-exporter镜像（以v1.0.0为例）
+docker pull prom/node-exporter:v1.0.0
+
 3、启动node exporter
 docker run --name=node-exporter -d \-p 9100:9100 \docker run --name=node-exporter -d \  -p 9100:9100 \  --net="host" \  --pid="host" \  -v "/:/host:ro,rslave" \  prom/node-exporter:v1.0.0 \  --path.rootfs=/host
 
 promserver收集exporter数据1、修改prometheus.yml
 global:  scrape_interval: 15s #默认采集监控数据时间间隔  external_labels:    monitor: 'my-monitor'scrape_configs:  #监控对象设置  - job_name: prometheus #任务名称    scrape_interval: 5s #每隔5s获取一次监控数据    static_configs: #监控对象地址      - targets: ['127.0.0.1:9090']  # 将自己加入到监控对象中      - targets: ['192.168.56.102:9100']        labels:          group: 'client-node-exporter'
 
-2、重新加载配置文件curl -X POST http://localhost:9090/-/reload然而我重新加载配置文件并不生效，最后重启了prometheus server。
+2、重新加载配置文件
+curl -X POST http://localhost:9090/-/reload
+然而我重新加载配置文件并不生效，最后重启了prometheus server。
 3、查看targets浏览器访问 http://192.168.56.102:9090/targets/
 push gatewayPrometheus采集数据是用的pull方式，prometheus配置文件设置的5秒就是采集数据的频率。但是有些数据并不适合采用这样的方式，对这样的数据可以使用Push Gateway服务。PushGateway比较适合临时作业和批处理作业，由于这些作业是short-lived的，如果采用pull的模式，可能在prometheus采集之前，作业已经执行结束。pushgateway相当于一个暂存器，这些临时作业将metrics数据缓存到pushgateway中，然后等待Prometheus来pull数据。
 1、登录dockerhub查看需要的pushgateway。
-2、下载pushgateway镜像（以v1.1.0为例）docker pull prom/pushgateway:v1.1.0
+2、下载pushgateway镜像（以v1.1.0为例）
+docker pull prom/pushgateway:v1.1.0
+
 3、启动push gateway
 docker run --name=pushgateway -d \-p 9091:9091 \prom/pushgateway:v1.1.0
 
@@ -2776,20 +2805,28 @@ global:  scrape_interval: 15s #默认采集监控数据时间间隔  external_la
 2、重新加载配置或者重启promserver
 3、在promserver查看数据
 alertmanager1、登录dockerhub查看需要的alertmanager。
-2、下载alertmanager镜像（以v0.15.0为例）docker pull prom/alertmanager:v0.15.0
+2、下载alertmanager镜像（以v0.15.0为例）
+docker pull prom/alertmanager:v0.15.0
+
 高版本比如v0.20.0打开页面后会报错，Uncaught TypeError: Cannot read property ‘elmFs’ of undefined
-3、创建配置文件alertmanager.yml
-global:  resolve_timeout: 5mroute:  group_by: ['exam']  #与prometheus配置文件rules.yml中配置规则名对应  group_wait: 10s #报警等待时间  group_interval: 10s #报警间隔时间  repeat_interval: 1m #重复报警间隔时间  receiver: 'web.hook' #告警处理方式，我们这里通过web.hook方式，也可以配置成邮件等方式receivers:  - name: 'web.hook'    webhook_configs:      - url: 'http://192.168.56.102:8080/exam/test' #告警webhook地址，告警信息会post到该地址，需要编写服务接收该告警数据inhibit_rules:  - source_match:      severity: 'critical'    target_match:      severity: 'warning' #目标告警状态    equal: ['alertname', 'dev', 'instance']
+3、创建配置文件
+mkdir -p /opt/alertmanager/vim /opt/alertmanager/alertmanager.yml
+
+alertmanager.yml内容为：
+global:  resolve_timeout: 5mroute:  group_by: ['exam']  #与prometheus告警规则配置的groupname对应  group_wait: 10s #报警等待时间  group_interval: 10s #报警间隔时间  repeat_interval: 1m #重复报警间隔时间  receiver: 'web.hook' #告警处理方式，我们这里通过web.hook方式，也可以配置成邮件等方式receivers:  - name: 'web.hook'    webhook_configs:      - url: 'http://192.168.56.102:8080/exam/test' #告警webhook地址，告警信息会post到该地址，需要编写服务接收该告警数据inhibit_rules:  - source_match:      severity: 'critical'    target_match:      severity: 'warning' #目标告警状态    equal: ['alertname', 'dev', 'instance']
 
 4、启动alertmanager
-docker run --name=alertmanager -d \-p 9093:9093 \-v $(pwd)/alertmanager.yml:/etc/alertmanager/alertmanager.yml \prom/alertmanager:v0.15.0 --config.file=/etc/alertmanager/alertmanager.yml --storage.path=/alertmanager
+docker run --name=alertmanager -d \-p 9093:9093 \-v /opt/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml \prom/alertmanager:v0.15.0 --config.file=/etc/alertmanager/alertmanager.yml --storage.path=/alertmanager
 
 5、测试服务浏览器访问 http://192.168.56.102:9093/
-告警配置1、编辑rules.yml，设置报警规则
+告警配置1、设置报警规则
+mkdir -p /opt/prometheus/rules/vim /opt/prometheus/rules/exam.rules
+
+exam.rules内容为
 groups:  - name: exam    rules:      - alert: exam告警测试        expr: chinese &gt; 100 #语文成绩大于100告警，注：我们在pushgateway推送数据的时候，设置的是120，因此会触发告警        for: 1m        labels:          status: warning        annotations:          summary: "&#123;&#123;$labels.instance&#125;&#125;:语文成绩优秀! nb了!!!"          description: "&#123;&#123;$labels.instance&#125;&#125;: 语文成绩优秀! nbnbnb!!!"
 
-2、编辑prometheus.yml配置文件，添加alertmanager配置和rules.yml文件
-global:  scrape_interval: 15s #默认采集监控数据时间间隔  external_labels:    monitor: 'my-monitor'scrape_configs:  #监控对象设置  - job_name: prometheus #任务名称    scrape_interval: 5s #每隔5s获取一次监控数据    static_configs: #监控对象地址      - targets: ['127.0.0.1:9090']  # 将自己加入到监控对象中      - targets: ['192.168.56.102:9100']        labels:          group: 'client-node-exporter'      - targets: ['192.168.56.102:9091']        labels:          group: 'pushgateway'rule_files:  - /etc/prometheus/rules.yml   #告警规则文件路径alerting:   #告警管理器设置  alertmanagers:    - static_configs:      - targets: ['192.168.56.102:9093'] #告警信息会发送给alertmanager进一步处理
+2、编辑prometheus.yml配置文件，添加alertmanager配置和报警规则配置
+global:  scrape_interval: 15s #默认采集监控数据时间间隔  external_labels:    monitor: 'my-monitor'scrape_configs:  #监控对象设置  - job_name: prometheus #任务名称    scrape_interval: 5s #每隔5s获取一次监控数据    static_configs: #监控对象地址      - targets: ['127.0.0.1:9090']  # 将自己加入到监控对象中      - targets: ['192.168.56.102:9100']        labels:          group: 'client-node-exporter'      - targets: ['192.168.56.102:9091']        labels:          group: 'pushgateway'alerting:   #告警管理器设置  alertmanagers:    - static_configs:      - targets: ['192.168.56.102:9093'] #告警信息会发送给alertmanager进一步处理rule_files:  - /etc/prometheus/rules/*.rules   #告警规则文件路径，对应宿主机 /opt/prometheus/rules/*.rules
 
 3、重新加载配置或者重启promserver
 4、在prometheus alerts页面查看告警
@@ -2810,12 +2847,12 @@ go get github.com/gin-gonic/gingo run main.go
         <category>运维</category>
         <category>docker</category>
         <category>监控</category>
+        <category>prometheus</category>
       </categories>
       <tags>
         <tag>prometheus</tag>
         <tag>监控</tag>
         <tag>docker</tag>
-        <tag>centos</tag>
       </tags>
   </entry>
   <entry>
@@ -3010,6 +3047,7 @@ APP：下厨房
 存肉：买来肉之后按一顿的份量切块，每块分别放入保鲜膜，冷冻。
 化肉：盐+白醋
 磨刀：碗底，同一个方向
+炖羊肉：葱姜萝卜盐，不要放八角
 
 书签你是明白了哪几个基本原理之后而厨艺大增的？
 来自专业厨师的36个无价的烹饪技巧
@@ -3099,6 +3137,326 @@ TOKEN=$(kubectl describe secrets $(kubectl get secrets -n kube-system |grep admi
       </tags>
   </entry>
   <entry>
+    <title>MacOS上软件配置</title>
+    <url>/hobby-macos-settings/</url>
+    <content><![CDATA[shell1、打开shellcommand＋space，输入terminal。或者 Launchpad，其他，终端。为了方便使用，可以把终端放到Dock。
+2、个性设置在home目录下创建 .bash_profile 文件，内容为：
+# llalias ll="ls -l"# for colorexport CLICOLOR=1# \h:\W \u\$export PS1='\[\033[01;33m\]\u@\h\[\033[01;31m\] \W\$\[\033[00m\] '# grepalias grep='grep --color=always'
+更好的方式是，使用ohmyzsh。
+更多关于shell的内容，可以参考《Shell实用脚本》。
+
+
+ohmyzshOh My Zsh is a delightful, open source, community-driven framework for managing your Zsh configuration. It comes bundled with thousands of helpful functions, helpers, plugins, themes, and a few things that make you shout…”Oh My ZSH!”
+sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"# orsh -c "$(wget https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
+
+安装完ohmyzsh后，默认使用的shell配置文件是 .zshrc ，在最后添加：
+# bash_profilesource ~/.bash_profile
+平时添加环境配置，依然在 .bash_profile 中添加，这样就保持了和linux配置的一致性。
+在 .zshrc 或者 .bash_profile 中添加一些设置后，也许会提示：
+zsh compinit: insecure directories, run compaudit for list.Ignore insecure directories and continue [y] or abort compinit [n]?
+
+解决办法：
+compaudit | xargs chmod g-w,o-w
+
+brewbrew 全称Homebrew，是Mac OSX上的软件包管理工具。
+安装brew：
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"# 国内安装失败的话，建议换下面的脚本/bin/zsh -c "$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh)"
+
+更换homebrew源：
+cd "$(brew --repo)" &amp;&amp; git remote set-url origin git://mirrors.ustc.edu.cn/brew.gitcd "$(brew --repo homebrew/core)" &amp;&amp; git remote set-url origin git://mirrors.ustc.edu.cn/homebrew-core.gitcd "$(brew --repo homebrew/cask)" &amp;&amp; git remote set-url origin git://mirrors.ustc.edu.cn/homebrew-cask.gitbrew update# 还原cd "$(brew --repo)" &amp;&amp; git remote set-url origin https://github.com/Homebrew/brew.gitcd "$(brew --repo homebrew/core)" &amp;&amp; git remote set-url origin https://github.com/Homebrew/homebrew-core.gitcd "$(brew --repo homebrew/cask)" &amp;&amp; git remote set-url origin https://github.com/Homebrew/homebrew-cask.gitbrew update
+更多内容参考Homebrew/Linuxbrew 镜像使用帮助。
+使用国内brew源如果出现下面这种问题：tar: Error opening archive: Failed to open ‘xxx.catalina.bottle.tar.gz’
+那么需要暂时改回默认的brew源：
+unset HOMEBREW_BREW_GIT_REMOTEunset HOMEBREW_CORE_GIT_REMOTEunset HOMEBREW_BOTTLE_DOMAIN
+
+iterm2安装iterm2
+配置rzsz1、安装iterm2-zmodem
+brew install wgetbrew install lrzszgit clone https://github.com/aikuyun/iterm2-zmodem.gitcd iterm2-zmodemcp iterm2-* /usr/local/bincd /usr/local/binchmod +x iterm2-*
+
+2、iterm2配置项 
+Profiles-&gt;OpenProfiles-&gt;EditProfiles-&gt;Advanced-&gt;Tirgger，添加
+Regular expression:  &#x2F;*&#x2F;*B0100Action: Run Silent CoprocessParameters: &#x2F;usr&#x2F;local&#x2F;bin&#x2F;iterm2-send-zmodem.shInstant: trueRegular expression:  &#x2F;*&#x2F;*B00000000000000Action: Run Silent CoprocessParameters: &#x2F;usr&#x2F;local&#x2F;bin&#x2F;iterm2-recv-zmodem.shInstant: true
+
+clone session1、Iterm2-&gt;Preferences-&gt;Profiles-&gt;Working Directory勾选 Reuse previous session’s directory
+2、编辑 .ssh/config 文件，添加
+host *ControlMaster autoControlPath ~&#x2F;.ssh&#x2F;master-%r@%h:%pServerAliveInterval 60
+
+3、重新打开终端，第一次登录需要密码。第二次登录同一台机器，就不需要密码了，nice。
+更换主题和背景色更换主题：Iterm2-&gt;Preferences-&gt;Appearance-&gt;General-&gt;Theme更换背景色：Iterm2-&gt;Preferences-&gt;Profiles-&gt;Colors-&gt;Color Presets
+gitgit配置参考《常用git命令》。
+sublimesublime破解方法：
+1、vim /etc/hosts，添加
+127.0.0.1 www.sublimetext.com127.0.0.1 license.sublimehq.com
+
+2、sublime中输入license
+----- BEGIN LICENSE -----Member J2TeaMSingle User LicenseEA7E-1011316D7DA350E 1B8B0760 972F8B60 F3E64036B9B4E234 F356F38F 0AD1E3B7 0E9C5FADFA0A2ABE 25F65BD8 D51458E5 3923CE8087428428 79079A01 AA69F319 A1AF29A4A684C2DC 0B1583D4 19CBD290 217618CD5653E0A0 BACE3948 BB2EE45E 422D2C87DD9AF44B 99C49590 D2DBDEE1 75860FD28C8BB2AD B2ECE5A4 EFC08AF2 25A9B864------ END LICENSE ------
+
+该方法已失效。
+ssh config登录远程服务器，需要执行命令
+ssh username@host -p port
+记忆这些信息是很麻烦的，因此我们需要一个简单的方法。
+1、创建 .ssh/config 文件，内容为
+Host jumpboxHostName jumpbox.voidking.comUser voidkingPort 2345IdentityFile ~&#x2F;.ssh&#x2F;id_rsaHost bastionhostHostName 45.68.78.134User rootPort 3456IdentityFile ~&#x2F;.ssh&#x2F;id_rsa
+
+2、配置authorized_keys
+sudo curl -L https://raw.githubusercontent.com/beautifulcode/ssh-copy-id-for-OSX/master/install.sh | shssh-copy-id -i ~/.ssh/id_rsa.pub jumpboxssh-copy-id -i ~/.ssh/id_rsa.pub bastionhost
+
+3、登录服务器 
+ssh jumpboxssh bastionhost
+
+mysql1、安装启动mysql
+brew install mysqlmysql.server start
+
+2、mysqlclient连接mysql
+mysql -uroot
+
+3、使用sequelpro连接mysql报错： MySQL said: Authentication plugin ‘caching_sha2_password’ cannot be loaded: dlopen(/usr/local/mysql/lib/plugin/caching_sha2_password.so, 2): image not found
+解决：参考MySQL重置密码，设置密码。
+mysqlclient1、安装mysqlclient
+brew install mysql-connector-c
+
+2、编辑 .zshrc 添加路径
+# mysqlexport PATH="/usr/local/Cellar/mysql-client/8.0.19/bin:$PATH"
+
+java1、访问Java SE Downloads页面，下载dmg文件并安装
+2、编辑 .bash_profile 文件，添加
+JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-14.0.1.jdk/Contents/HomeCLASSPATH=$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/dt.jar:.PATH=$JAVA_HOME/bin:$PATH:.export JAVA_HOMEexport CLASSPATHexport PATH
+
+3、测试安装
+source .bash_profilejava --version
+
+pyenv参考CentOS安装配置pyenv。不同的是，本节是在macos环境中使用pyenv。1、安装pyenv
+brew install pyenv
+
+2、配置pyenv在 .bash_profile 中添加
+export PYENV_ROOT="$HOME/.pyenv"export PATH="$PYENV_ROOT/shims:$PATH"if command -v pyenv 1&gt;/dev/null 2&gt;&amp;1; then eval "$(pyenv init -)"fi
+
+使配置生效：
+source ~/.bash_profile
+
+3、安装python3.6.10
+pyenv install -lpyenv install -v 3.6.10pyenv rehash
+
+如果安装很慢，这里提供一个小技巧：提前下载安装包。
+mkdir ~/.pyenv/cachecd ~/.pyenv/cachewget https://www.python.org/ftp/python/3.6.10/Python-3.6.10.tar.xz
+
+4、切换python版本
+pyenv versionspyenv global 3.6.10pyenv rehashpython -V
+
+5、切换为原版本
+pyenv global systempyenv rehashpython -V
+
+nvmnvm是node版本管理管理工具（Node Version Manager），允许我们通过命令行快速安装和使用不同版本的node。
+1、安装nvm
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.36.0/install.sh | bash
+如果下载脚本报错，就本地创建install.sh，从网页拷贝内容到install.sh后执行。
+2、编辑 .bash_profile ，添加内容：
+export NVM_DIR="$HOME/.nvm"[ -s "$NVM_DIR/nvm.sh" ] &amp;&amp; \. "$NVM_DIR/nvm.sh"  # This loads nvm[ -s "$NVM_DIR/bash_completion" ] &amp;&amp; \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+3、使配置生效
+source .bash_profilenvm
+
+4、安装使用指定版本
+export NVM_NODEJS_ORG_MIRROR=https://npm.taobao.org/mirrors/nodenvm -hnvm ls-remotenvm install v10.16.3nvm listnvm use v10.16.3nvm alias default v10.16.3
+
+tldrtldr项目是社区维护的命令行工具帮助页面的集合，旨在成为对传统帮助的更简单的补充。
+1、安装b
+pip3 install tldr
+
+2、使用
+tldr tartldr iconv
+
+puerpuer是一个前端工具，能够在任意目录启动web静态服务，并且实时刷新。
+1、全局安装puer
+npm install puer -g
+
+2、启动服务
+cd /path/to/workspacepuer
+
+svrx是puer的进化版，同样好用。1、全局安装svrx
+npm install @svrx/cli -g
+
+2、启动服务
+cd /path/to/workspacesvrx
+
+压缩与解压zip压缩和解压zip文件：
+zip filename.zip filenameunzip filename.zip
+
+加密压缩和解压zip文件：
+zip -er filename.zip filenamezip -er -P xxxxxx filename.zip filenamefor i in `ls`;do zip -er -P xxxxxx $i.zip $i;doneunzip -P xxxxxx filename.zipfor i in *.zip;do unzip -P xxxxxx $i;done
+
+解压中文名zip文件：
+brew updatebrew install unarunar -e GBK 中文名.zipunar -e GBK -p xxxxxx 中文名.zipfor i in *.zip;do unar -e GBK -p xxxxxx $i;done
+
+解压rarbrew install unrarunrar x package-name.rar
+
+命令行发邮件邮件系统有三个组成部分：邮件用户代理（MUA，Mail User Agent）；邮件传送代理（MTA，Mail Transport Agent）；邮件分发代理（MDA，Mail Deliver Agent）。macos自带mail（mailx）命令，这是一个MUA，与之配合的是sendmail，一个MTA。但是，sendmail不支持使用外部MDA发邮件，因此需要把sendmail替换成msmtp。
+1、安装msmtp
+brew install msmtp
+
+2、配置使用msmtp
+sudo vim /etc/mail.rc
+
+mail.rc中添加：
+set sendmail=/usr/local/bin/msmtp
+
+3、配置msmtp
+vim ~/.msmtprc
+
+.msmtprc 内容为：
+defaultsaccount defaulthost smtp.163.comport 25from quizthink@163.comauth logintls offuser quizthink@163.compassword xxxxxx
+
+4、修改 .msmtprc 权限
+chmod 600 ~/.msmtprc
+
+5、发送邮件
+echo "Hello world" | mail -s "test" voidking@qq.com
+
+screenscreen是后台运行脚本的神器。
+1、使用新的screen运行脚本
+screen ./main.sh
+
+2、把当前screen放入后台control+A D
+3、查看screen
+screen -ls
+
+4、返回screen
+screen -r 23500.ttys005.B000000349215A
+
+frp前提：参考《使用frp进行内网穿透》配置好frp服务端。本节中，配置macos的内网穿透，
+1、下载macos用的frp，这里下载frp_0.31.1_darwin_amd64.tar.gz。
+2、解压并配置 frpc.ini
+[common]server_addr &#x3D; 120.77.36.182server_port &#x3D; 7000token &#x3D; 12345678[ssh]type &#x3D; tcplocal_ip &#x3D; 127.0.0.1local_port &#x3D; 22remote_port &#x3D; 3422
+
+3、启动frpc客户端
+./frpc -c frpc.ini# control+Cbrew install screenscreen ./frpc -c frpc.ini# control+A+D
+
+4、启用远程登录系统偏好设置，共享，勾选远程登录。
+5、测试
+ssh localhostssh vk@120.77.36.182 -p 3422
+
+6、临时禁用mac休眠关闭屏幕后，mac很快会进入休眠模式，无法再远程登录mac，因此需要临时禁用mac休眠。
+pmset noidle
+
+docker参考Docker on Mac with Homebrew，安装配置docker。
+1、安装docker
+brew cask install docker
+
+2、初始化配置启动台，点击docker图标，按照提示进行初始化配置。
+3、查看安装结果  
+docker --version
+
+stretchlyStretchly is a cross-platform Electron app that reminds you to take breaks when working on your computer.这款软件界面友好，设置简单，提醒也很nice。唯一缺点是软件比较大，70M。
+brew update &amp;&amp; brew install --cask stretchly
+
+或者下载dmg软件包进行安装。如果下载不下来，建议使用FDM进行下载。
+virtualboxvirtualbox配置win10文件夹共享：1、启动win10虚拟机2、virtualbox菜单栏，Devices，Insert Guest Additions CD images3、win10内，点击CD驱动器里的VBoxWindowAddions.exe进行插件安装4、virtualbox win10虚拟机设置，共享文件夹5、添加共享文件，共享文件夹路径选择宿主机(Mac)上的一个路径，共享文件夹名称随意，挂载点填入X:6、win10虚拟机内出现了X盘，用于共享
+gnu-sedmac（类unix系统）使用bsd sed，而各种linux发行版用的是linux sed。因此，mac sed的用法和linux sed的用法会有一些差异，这就带来很多不便，解决办法是给mac安装linux sed。
+1、安装gnu-sed
+brew install gnu-sed
+
+2、.bash_profile添加配置
+export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
+
+3、使配置生效
+source .bash_profile
+
+快捷cd目录1、macos中安装autojump
+brew update &amp;&amp; brew install autojump
+
+2、.bash_profile中添加配置
+# autojump[ -f /usr/local/etc/profile.d/autojump.sh ] &amp;&amp; . /usr/local/etc/profile.d/autojump.sh
+
+3、使配置生效
+source .bash_profile
+
+4、使用
+j dirname
+然后配合tab补全，回车跳转目录。
+PS：linux中可以通过配置CDPATH变量实现快捷cd目录.bash_profile添加：
+# workdirCDPATH=".:~:~/git"
+
+ffmpeg《m3u8视频下载方法》一文中提到ffmpeg是一个很好用的视频格式转换工具，在macos上安装和使用也很方便。
+1、安装ffmpeg
+brew install ffmpeg
+
+安装报错 tar: Error opening archive: Failed to open ‘…–bdw-gc-8.0.4_2.catalina.bottle.tar.gz’解决办法：
+export HOMEBREW_BOTTLE_DOMAIN=''
+
+2、flv转mp4
+ffmpeg -i filename.flv filename.mp4
+
+openconnectanyconnect下载费劲，需要注册并填写完整信息，而且配置也很麻烦，因此选择使用openconnect替代。
+1、安装openconnect
+brew install openconnect
+
+2、启动openconnect
+sudo openconnect vpn.voidking.com
+第一次成功连接后，第二次连接时想要修改用户名密码，但是没有找到入口，于是换成图形界面的openconnect。
+3、安装图形界面的openconnect
+brew install openconnect-gui --cask
+
+参考文档：
+
+RV34x: Install Cisco AnyConnect Secure Mobility Client on a Mac Computer
+MacOS上使用Openconnect代替Cisco Anyconnect
+
+好用的软件
+Chrome，浏览器
+iterm2，shell终端
+sublime，编辑器
+wps，文档表格编辑器
+百度云盘，云盘
+Skim，pdf阅读器
+CHM Viewer Star，chm阅读器
+draw.io/diagrams，软件工程绘图软件。小技巧：飞书云文档绘图和本地绘图可以相互复制粘贴。
+youtube-dl，视频下载工具
+you-get，视频下载工具
+FDM，下载工具
+Movist，视频播放器
+sequelpro，mysql客户端。sequelpro测试版解决了退出报错问题
+Mounty，磁盘挂载工具
+postman，接口测试工具
+typora，markdown编辑器
+Stretchly，提醒休息工具
+幕享，屏幕共享工具
+splashtop，屏幕共享工具
+JSON Viewer，json格式化工具
+Meld，代码对比工具
+Multipass，虚拟机管理工具
+Proxyman，抓包工具
+Wireshark，抓包工具
+Turbo Boost Switcher，CPU温度监测工具
+openconnect，anyconnect替代工具
+
+]]></content>
+      <categories>
+        <category>爱好</category>
+        <category>电脑</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>MacOS小技巧</title>
+    <url>/hobby-macos-tricks/</url>
+    <content><![CDATA[使用命令打开目录和文件1、在finder中打开当前目录open .
+2、使用默认程序打开指定文件open README.md
+切换窗口1、command + tab2、三指左右滑动3、三指上滑
+
+
+快速预览选中文件或者文件夹，点击空格即可预览文件，点击上下左右可以预览其他文件。
+隔空投送接收方：打开隔空投送功能，同时接收人选择仅限联系人或所有人。
+发送方：1、打开要发送的文件，然后点按 App 窗口中的“共享”按钮 。或者，在“访达”中按住 Control 键点按相应文件，然后从快捷键菜单中选取“共享”。2、从列出的共享选项中，选取“隔空投送”。3、从“隔空投送”表单中选取一位接收者。
+或者打开“隔空投送”窗口，然后将文件拖移到接收者：1、在“访达”窗口的边栏中选择“隔空投送”。或者从菜单栏中选取“前往”&gt;“隔空投送”。2、“隔空投送”窗口随即会显示附近的“隔空投送”用户。将一个或多个文稿、照片或其他文件拖移到窗口中显示的接收者。
+详情参考 在 Mac 上使用“隔空投送”。
+传送速度非常快，网络条件不错的情况下，可以达到几百MB每秒。
+mac和ipad之间，mac和iphone之间也可以使用隔空投送，非常方便实用。
+]]></content>
+      <categories>
+        <category>爱好</category>
+        <category>电脑</category>
+      </categories>
+  </entry>
+  <entry>
     <title>MacOS系统配置</title>
     <url>/hobby-macos-system-settings/</url>
     <content><![CDATA[用户名配置系统偏好设置，用户与群组，点按锁按钮以进行修改。右键用户，高级选项。修改账户名称为vk，这个名称是shell中显示的用户名。修改全名为voidking，这个名称是mac系统显示的名称。个人目录，修改为 /Users/vk ，这个目录是新的home目录。
@@ -3153,263 +3511,6 @@ cd ..open .# 界面点击推出移动硬盘
 cd ..diskutil unmount /Volumes/WDdiskutil unmount force /Volumes/WD
 
 
-
-]]></content>
-      <categories>
-        <category>爱好</category>
-        <category>电脑</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>MacOS小技巧</title>
-    <url>/hobby-macos-tricks/</url>
-    <content><![CDATA[使用命令打开目录和文件1、在finder中打开当前目录open .
-2、使用默认程序打开指定文件open README.md
-切换窗口1、command + tab2、三指左右滑动3、三指上滑
-
-
-快速预览选中文件或者文件夹，点击空格即可预览文件，点击上下左右可以预览其他文件。
-隔空投送接收方：打开隔空投送功能，同时接收人选择仅限联系人或所有人。
-发送方：1、打开要发送的文件，然后点按 App 窗口中的“共享”按钮 。或者，在“访达”中按住 Control 键点按相应文件，然后从快捷键菜单中选取“共享”。2、从列出的共享选项中，选取“隔空投送”。3、从“隔空投送”表单中选取一位接收者。
-或者打开“隔空投送”窗口，然后将文件拖移到接收者：1、在“访达”窗口的边栏中选择“隔空投送”。或者从菜单栏中选取“前往”&gt;“隔空投送”。2、“隔空投送”窗口随即会显示附近的“隔空投送”用户。将一个或多个文稿、照片或其他文件拖移到窗口中显示的接收者。
-详情参考 在 Mac 上使用“隔空投送”。
-传送速度非常快，网络条件不错的情况下，可以达到几百MB每秒。
-mac和ipad之间，mac和iphone之间也可以使用隔空投送，非常方便实用。
-]]></content>
-      <categories>
-        <category>爱好</category>
-        <category>电脑</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>MacOS上软件配置</title>
-    <url>/hobby-macos-settings/</url>
-    <content><![CDATA[shell1、打开shellcommand＋space，输入“terminal”。或者 Launchpad，其他，终端。为了方便使用，可以把终端放到Dock。
-2、个性设置在home目录下创建 .bash_profile 文件，内容为：
-# llalias ll="ls -l"# for colorexport CLICOLOR=1# \h:\W \u\$export PS1='\[\033[01;33m\]\u@\h\[\033[01;31m\] \W\$\[\033[00m\] '# grepalias grep='grep --color=always'
-更好的方式是，使用ohmyzsh。
-更多关于shell的内容，可以参考《Shell实用脚本》。
-
-
-ohmyzshOh My Zsh is a delightful, open source, community-driven framework for managing your Zsh configuration. It comes bundled with thousands of helpful functions, helpers, plugins, themes, and a few things that make you shout…”Oh My ZSH!”
-sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"# orsh -c "$(wget https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
-
-安装完ohmyzsh后，默认使用的shell配置文件是 .zshrc ，在最后添加：
-# bash_profilesource ~/.bash_profile
-平时添加环境配置，依然在 .bash_profile 中添加，这样就保持了和linux配置的一致性。
-在 .zshrc 或者 .bash_profile 中添加一些设置后，也许会提示：
-zsh compinit: insecure directories, run compaudit for list.Ignore insecure directories and continue [y] or abort compinit [n]?
-
-解决办法：
-compaudit | xargs chmod g-w,o-w
-
-brewbrew 全称Homebrew，是Mac OSX上的软件包管理工具。
-安装brew：
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"# 国内安装失败的话，建议换下面的脚本/bin/zsh -c "$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh)"
-
-更换homebrew源：
-cd "$(brew --repo)" &amp;&amp; git remote set-url origin git://mirrors.ustc.edu.cn/brew.gitcd "$(brew --repo homebrew/core)" &amp;&amp; git remote set-url origin git://mirrors.ustc.edu.cn/homebrew-core.gitcd "$(brew --repo homebrew/cask)" &amp;&amp; git remote set-url origin git://mirrors.ustc.edu.cn/homebrew-cask.gitbrew update# 还原cd "$(brew --repo)" &amp;&amp; git remote set-url origin https://github.com/Homebrew/brew.gitcd "$(brew --repo homebrew/core)" &amp;&amp; git remote set-url origin https://github.com/Homebrew/homebrew-core.gitcd "$(brew --repo homebrew/cask)" &amp;&amp; git remote set-url origin https://github.com/Homebrew/homebrew-cask.gitbrew update
-更多内容参考Homebrew/Linuxbrew 镜像使用帮助。
-使用国内brew源如果出现下面这种问题：tar: Error opening archive: Failed to open ‘xxx.catalina.bottle.tar.gz’
-那么需要暂时改回默认的brew源：
-unset HOMEBREW_BREW_GIT_REMOTEunset HOMEBREW_CORE_GIT_REMOTEunset HOMEBREW_BOTTLE_DOMAIN
-
-iterm2安装iterm2
-配置rzsz1、安装iterm2-zmodem
-brew install wgetbrew install lrzszgit clone https://github.com/aikuyun/iterm2-zmodem.gitcd iterm2-zmodemcp iterm2-* /usr/local/bincd /usr/local/binchmod +x iterm2-*
-
-2、iterm2配置项 
-Profiles-&gt;OpenProfiles-&gt;EditProfiles-&gt;Advanced-&gt;Tirgger，添加
-Regular expression:  /*/*B0100Action: Run Silent CoprocessParameters: /usr/local/bin/iterm2-send-zmodem.shInstant: trueRegular expression:  /*/*B00000000000000Action: Run Silent CoprocessParameters: /usr/local/bin/iterm2-recv-zmodem.shInstant: true
-
-clone session1、Iterm2-&gt;Preferences-&gt;Profiles-&gt;Working Directory勾选 Reuse previous session’s directory
-2、编辑 .ssh/config 文件，添加
-host *ControlMaster autoControlPath ~/.ssh/master-%r@%h:%pServerAliveInterval 60
-
-3、重新打开终端，第一次登录需要密码。第二次登录同一台机器，就不需要密码了，nice。
-更换主题和背景色更换主题：Iterm2-&gt;Preferences-&gt;Appearance-&gt;General-&gt;Theme更换背景色：Iterm2-&gt;Preferences-&gt;Profiles-&gt;Colors-&gt;Color Presets
-gitgit配置参考《常用git命令》。
-sublimesublime破解方法：
-1、vim /etc/hosts，添加
-127.0.0.1 www.sublimetext.com127.0.0.1 license.sublimehq.com
-
-2、sublime中输入license
------ BEGIN LICENSE -----Member J2TeaMSingle User LicenseEA7E-1011316D7DA350E 1B8B0760 972F8B60 F3E64036B9B4E234 F356F38F 0AD1E3B7 0E9C5FADFA0A2ABE 25F65BD8 D51458E5 3923CE8087428428 79079A01 AA69F319 A1AF29A4A684C2DC 0B1583D4 19CBD290 217618CD5653E0A0 BACE3948 BB2EE45E 422D2C87DD9AF44B 99C49590 D2DBDEE1 75860FD28C8BB2AD B2ECE5A4 EFC08AF2 25A9B864------ END LICENSE ------
-
-该方法已失效。
-ssh config登录远程服务器，需要ssh username@host -p port在记忆这些信息是很麻烦的，因此我们需要一个简单的方法。
-1、创建 .ssh/config 文件，内容为
-Host jumpboxHostName jumpbox.voidking.comUser voidkingPort 2345IdentityFile ~/.ssh/id_rsaHost bastionhostHostName 45.68.78.134User rootPort 3456IdentityFile ~/.ssh/id_rsa
-
-2、配置authorized_keys
-sudo curl -L https://raw.githubusercontent.com/beautifulcode/ssh-copy-id-for-OSX/master/install.sh | shssh-copy-id -i ~/.ssh/id_rsa.pub jumpboxssh-copy-id -i ~/.ssh/id_rsa.pub bastionhost
-
-3、登录服务器 
-ssh jumpboxssh bastionhost
-
-mysql1、安装启动mysql
-brew install mysqlmysql.server start
-
-2、mysqlclient连接mysql
-mysql -uroot
-
-3、使用sequelpro连接mysql报错： MySQL said: Authentication plugin ‘caching_sha2_password’ cannot be loaded: dlopen(/usr/local/mysql/lib/plugin/caching_sha2_password.so, 2): image not found
-解决：参考MySQL重置密码，设置密码。
-mysqlclient1、安装mysqlclient
-brew install mysql-connector-c
-2、编辑 .zshrc 添加路径
-# mysqlexport PATH="/usr/local/Cellar/mysql-client/8.0.19/bin:$PATH"
-
-java1、访问Java SE Downloads页面，下载dmg文件并安装
-2、编辑 .bash_profile 文件，添加
-JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-14.0.1.jdk/Contents/HomeCLASSPATH=$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/dt.jar:.PATH=$JAVA_HOME/bin:$PATH:.export JAVA_HOMEexport CLASSPATHexport PATH
-
-3、测试安装
-source .bash_profilejava --version
-
-pyenv参考CentOS安装配置pyenv。不同的是，本节是在macos环境中使用pyenv。1、安装pyenvbrew install pyenv
-2、配置pyenv在 .bash_profile 中添加
-export PYENV_ROOT="$HOME/.pyenv"export PATH="$PYENV_ROOT/shims:$PATH"if command -v pyenv 1&gt;/dev/null 2&gt;&amp;1; then eval "$(pyenv init -)"fi
-
-使配置生效：
-source ~/.bash_profile
-
-3、安装python3.6.10
-pyenv install -lpyenv install -v 3.6.10pyenv rehash
-
-如果安装很慢，这里提供一个小技巧：提前下载安装包。
-mkdir ~/.pyenv/cachecd ~/.pyenv/cachewget https://www.python.org/ftp/python/3.6.10/Python-3.6.10.tar.xz
-
-4、切换python版本
-pyenv versionspyenv global 3.6.10pyenv rehashpython -V
-
-5、切换为原版本
-pyenv global systempyenv rehashpython -V
-
-nvmnvm是node版本管理管理工具（Node Version Manager），允许我们通过命令行快速安装和使用不同版本的node。
-1、安装nvm
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.36.0/install.sh | bash
-如果下载脚本报错，就本地创建install.sh，从网页拷贝内容到install.sh后执行。
-2、编辑 .bash_profile ，添加内容：
-export NVM_DIR="$HOME/.nvm"[ -s "$NVM_DIR/nvm.sh" ] &amp;&amp; \. "$NVM_DIR/nvm.sh"  # This loads nvm[ -s "$NVM_DIR/bash_completion" ] &amp;&amp; \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-3、使配置生效
-source .bash_profilenvm
-
-4、安装使用指定版本
-export NVM_NODEJS_ORG_MIRROR=https://npm.taobao.org/mirrors/nodenvm -hnvm ls-remotenvm install v10.16.3nvm listnvm use v10.16.3nvm alias default v10.16.3
-
-tldrtldr项目是社区维护的命令行工具帮助页面的集合，旨在成为对传统帮助的更简单的补充。
-1、安装pip3 install tldr
-2、使用
-tldr tartldr iconv
-
-puerpuer是一个前端工具，能够在任意目录启动web静态服务，并且实时刷新。
-1、全局安装puernpm install puer -g
-2、启动服务
-cd /path/to/workspacepuer
-
-svrx是puer的进化版，同样好用。1、全局安装svrxnpm install @svrx/cli -g
-2、启动服务
-cd /path/to/workspacesvrx
-
-解压zip压缩和解压zip文件：
-zip filename.zip filenameunzip filename.zip
-
-加密压缩和解压zip文件：
-zip -e filename.zip filenameunzip -P xxxxxx filename.zipfor i in *.zip;do unzip -P xxxxxx $i;done
-
-解压中文名zip文件：
-brew updatebrew install unarunar -e GBK 中文名.zipunar -e GBK -p xxxxxx 中文名.zipfor i in *.zip;do unar -e GBK -p xxxxxx $i;done
-
-解压rarbrew install unrarunrar x package-name.rar
-
-加解密文件zip -er resources.zip resources.mdunzip resources.zip
-
-命令行发邮件邮件系统有三个组成部分：邮件用户代理（MUA，Mail User Agent）；邮件传送代理（MTA，Mail Transport Agent）；邮件分发代理（MDA，Mail Deliver Agent）。macos自带mail（mailx）命令，这是一个MUA，与之配合的是sendmail，一个MTA。但是，sendmail不支持使用外部MDA发邮件，因此需要把sendmail替换成msmtp。
-1、安装msmtp
-brew install msmtp
-
-2、配置使用msmtpsudo vim /etc/mail.rc，添加：
-set sendmail=/usr/local/bin/msmtp
-
-3、配置msmtpvim ~/.msmtprc，内容为：
-defaultsaccount defaulthost smtp.163.comport 25from quizthink@163.comauth logintls offuser quizthink@163.compassword xxxxxx
-
-4、修改 .msmtprc 权限chmod 600 ~/.msmtprc
-5、发送邮件echo &quot;Hello world&quot; | mail -s &quot;test&quot; voidking@qq.com
-screenscreen是后台运行脚本的神器。
-1、使用新的screen运行脚本screen ./main.sh
-2、把当前screen放入后台control+A D
-3、查看screenscreen -ls
-4、返回screenscreen -r 23500.ttys005.B000000349215A
-frp前提：参考《使用frp进行内网穿透》配置好frp服务端。本节中，配置macos的内网穿透，
-1、下载macos用的frp，这里下载frp_0.31.1_darwin_amd64.tar.gz。
-2、解压并配置 frpc.ini
-[common]server_addr = 120.77.36.182server_port = 7000token = 12345678[ssh]type = tcplocal_ip = 127.0.0.1local_port = 22remote_port = 3422
-
-3、启动frpc客户端
-./frpc -c frpc.ini# control+Cbrew install screenscreen ./frpc -c frpc.ini# control+A+D
-
-4、启用远程登录系统偏好设置，共享，勾选远程登录。
-5、测试
-ssh localhostssh vk@120.77.36.182 -p 3422
-
-6、临时禁用mac休眠关闭屏幕后，mac很快会进入休眠模式，无法再远程登录mac，因此需要临时禁用mac休眠。pmset noidle
-docker参考Docker on Mac with Homebrew，安装配置docker。
-1、安装dockerbrew cask install docker
-2、初始化配置启动台，点击docker图标，按照提示进行初始化配置。
-3、查看安装结果docker --version
-stretchlyStretchly is a cross-platform Electron app that reminds you to take breaks when working on your computer.这款软件界面友好，设置简单，提醒也很nice。唯一缺点是软件比较大，70M。
-brew update &amp;&amp; brew install --cask stretchly
-或者下载dmg软件包进行安装。如果下载不下来，建议使用FDM进行下载。
-virtualboxvirtualbox配置win10文件夹共享：1、启动win10虚拟机2、virtualbox菜单栏，Devices，Insert Guest Additions CD images3、win10内，点击CD驱动器里的VBoxWindowAddions.exe进行插件安装4、virtualbox win10虚拟机设置，共享文件夹5、添加共享文件，共享文件夹路径选择宿主机(Mac)上的一个路径，共享文件夹名称随意，挂载点填入X:6、win10虚拟机内出现了X盘，用于共享
-gnu-sedmac（类unix系统）使用bsd sed，而各种linux发行版用的是linux sed。因此，mac sed的用法和linux sed的用法会有一些差异，这就带来很多不便，解决办法是给mac安装linux sed。
-1、安装gnu-sedbrew install gnu-sed
-2、.bash_profile添加配置
-export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
-
-3、使配置生效source .bash_profile
-快捷cd目录1、macos中安装autojumpbrew update &amp;&amp; brew install autojump
-2、.bash_profile中添加配置
-# autojump[ -f /usr/local/etc/profile.d/autojump.sh ] &amp;&amp; . /usr/local/etc/profile.d/autojump.sh
-
-3、使配置生效source .bash_profile
-4、使用j dirname然后配合tab补全，回车跳转目录。
-PS：linux中可以通过配置CDPATH变量实现快捷cd目录.bash_profile添加：
-# workdirCDPATH=".:~:~/git"
-
-ffmpeg《m3u8视频下载方法》一文中提到ffmpeg是一个很好用的视频格式转换工具，在macos上安装和使用也很方便。
-1、安装ffmpegbrew install ffmpeg
-安装报错 tar: Error opening archive: Failed to open ‘…–bdw-gc-8.0.4_2.catalina.bottle.tar.gz’解决办法：export HOMEBREW_BOTTLE_DOMAIN=&#39;&#39;
-2、flv转mp4ffmpeg -i filename.flv filename.mp4
-好用的软件
-Chrome
-iterm2
-sublime
-wps
-百度云盘
-Skim
-CHM Viewer Star
-draw.io
-youtube-dl
-you-get
-FDM
-Movist
-sequelpro
-sequelpro测试版，解决了退出报错问题。
-Mounty
-postman
-typora
-Stretchly
-幕享
-splashtop
-JSON Viewer
-Meld
-Multipass
-Proxyman
-Wireshark
-Turbo Boost Switcher
 
 ]]></content>
       <categories>
@@ -3972,111 +4073,107 @@ Kubeadm is a tool built to provide kubeadm init and kubeadm join as best-practic
 5、验证安装。
 环境准备1、配置主机名
 2、配置IP地址
-3、允许 iptables 检查桥接流量
+安装docker参考Docker入门，安装Docker
+允许iptables检查桥接流量允许 iptables 检查桥接流量，允许流量转发
 cat &lt;&lt;EOF | sudo tee /etc/modules-load.d/k8s.confbr_netfilterEOFcat &lt;&lt;EOF | sudo tee /etc/sysctl.d/k8s.confnet.bridge.bridge-nf-call-ip6tables = 1net.bridge.bridge-nf-call-iptables = 1EOFsudo sysctl --system
 
-4、参考Docker入门，安装Docker
-安装kubeadm参考安装kubeadm。
-1、确认系统版本cat /etc/redhat-release
-2、执行安装kubeadm、kubelet和kubectl（两个节点都要执行）
-cat &lt;&lt;EOF | sudo tee /etc/yum.repos.d/kubernetes.repo[kubernetes]name=Kubernetesbaseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-\$basearchenabled=1gpgcheck=1repo_gpgcheck=1gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpgexclude=kubelet kubeadm kubectlEOF# 将 SELinux 设置为 permissive 模式（相当于将其禁用）sudo setenforce 0sudo sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/configsudo yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetessudo systemctl enable --now kubelet
+所有节点都要执行。
+安装kubeadm+kubelet+kubectl参考安装kubeadm。
+准备kubernetes.repo配置cat &lt;&lt;EOF | sudo tee /etc/yum.repos.d/kubernetes.repo[kubernetes]name=Kubernetesbaseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-$basearchenabled=1gpgcheck=1repo_gpgcheck=0gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpgexclude=kubelet kubeadm kubectlEOF
+
+如果不能连通google，kubernetes.repo中的baseurl就替换成aliyun
+cat &lt;&lt;EOF | sudo tee /etc/yum.repos.d/kubernetes.repo[kubernetes]name=Kubernetesbaseurl=https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64enabled=1gpgcheck=0EOF
+
+所有节点都要执行。
+SELinux设置为permissive模式将 SELinux 设置为 permissive 模式（相当于将其禁用）
+sudo setenforce 0sudo sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
+
+安装kubeadm+kubelet+kubectl1、安装默认版本的kubeadm+kubelet+kubectl
+sudo yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetessudo systemctl enable --now kubelet
 
 centos安装这些组件时如果报错：[Errno -1] repomd.xml signature could not be verified for kubernetes不考虑安全性的话，最简单的解决办法是修改 /etc/yum.repos.d/kubernetes.repo 文件，设置 repo_gpgcheck=0
-3、查看kubelet版本kubelet --version
+2、查看kubelet版本kubelet --version
+如果想要安装指定版本的k8s，比如1.22.15，那么需要安装指定版本的kubeadm、kubelet和kubectl。
+sudo yum remove -y kubelet kubeadm kubectlsudo yum list kubeadm kubelet kubectl --showduplicatessudo yum install -y kubeadm-1.22.15-0 kubelet-1.22.15-0 kubectl-1.22.15-0 --disableexcludes=kubernetes
+下文中kubeadm.conf中的版本也需要同步修改kubernetesVersion: 1.22.15
+关闭swap
+Swap disabled. You MUST disable swap in order for the kubelet to work properly.
+
+如官方文档所说，kubelet正常工作的前提是关闭swap，否则kubeadm执行初始化时会报错：“–cgroups-per-qos enabled, but –cgroup-root was not specified.  defaulting to /““Failed to run kubelet” err=”failed to run Kubelet: running with swap on is not supported, please disable swap!报错查看方法：
+systemctl status kubeletjournalctl -xeu kubelet
+
+1、临时关闭swapswapoff -a
+2、永久关闭swapsed -i &#39;/ swap / s/^/#/&#39; /etc/fstab或者编辑 /etc/fstab，手动注释掉swap配置。
+#/dev/mapper/centos-swap swap swap defaults 0 0
+
+无论是master节点，还是worker节点，记得都要关闭swap。
+配置cgroup驱动
+Both the container runtime and the kubelet have a property called “cgroup driver”, which is important for the management of cgroups on Linux machines.
+
+如官方文档所说，cgroup驱动对于在linux中管理cgroups中非常重要。因此需要正确配置 kubelet 的 cgroup 驱动以匹配 kubeadm 集群中的容器运行时的 cgroup 驱动，详情参考 配置 cgroup 驱动
+否则kubeadm执行初始化时会报错：[kubelet-check] It seems like the kubelet isn’t running or healthy.The kubelet is not runningThe kubelet is unhealthy due to a misconfiguration of the node in some way (required cgroups disabled)这是因为， docker 和 kubelet 服务中的cgroup不一致，docker默认使用cgroupfs，kubelet默认使用systemdcgroup驱动查看方法：
+docker system info | grep -i drivercat /var/lib/kubelet/config.yaml | grep cgroup
+
+方法一：kubelet匹配docker编辑kubeadm.conf，添加kubelet的cgroup配置，指定驱动为cgroupfs
+---kind: KubeletConfigurationapiVersion: kubelet.config.k8s.io/v1beta1#cgroupDriver: systemdcgroupDriver: cgroupfs
+
+方法二：docker匹配kubelet编辑 /etc/docker/daemon.json ，添加：
+&#123;    "exec-opts": [        "native.cgroupdriver=systemd"    ]&#125;
+重启docker
+systemctl daemon-reloadsystemctl restart docker
+
+这里选择方法二，因为官方更加推荐，可以避免后续kubeadm升级可能引发的cgroup驱动问题。
 初始化master节点参考Installing kubeadm on your hosts。
-下载镜像文件下载必须的镜像文件（默认从gcr.io下载）kubeadm config images pull
-下载失败处理办法如果下载镜像文件失败，那么需要科学上网，或者更改为国内源。这里选择更改为国内源。
+下载镜像文件kubeadm默认从gcr.io下载k8s组件镜像，国内需要科学上网，或者更改为国内源。本文选择更改为国内源。
 1、导出一份默认配置文件kubeadm config print init-defaults &gt; kubeadm.conf
-2、改为国内源编辑kubeadm.conf，imageRepository改为：
+默认配置内容为：
+apiVersion: kubeadm.k8s.io/v1beta3bootstrapTokens:- groups:  - system:bootstrappers:kubeadm:default-node-token  token: abcdef.0123456789abcdef  ttl: 24h0m0s  usages:  - signing  - authenticationkind: InitConfigurationlocalAPIEndpoint:  advertiseAddress: 1.2.3.4  bindPort: 6443nodeRegistration:  criSocket: /var/run/dockershim.sock  imagePullPolicy: IfNotPresent  name: node  taints: null---apiServer:  timeoutForControlPlane: 4m0sapiVersion: kubeadm.k8s.io/v1beta3certificatesDir: /etc/kubernetes/pkiclusterName: kubernetescontrollerManager: &#123;&#125;dns: &#123;&#125;etcd:  local:    dataDir: /var/lib/etcdimageRepository: k8s.gcr.iokind: ClusterConfigurationkubernetesVersion: 1.23.0networking:  dnsDomain: cluster.local  serviceSubnet: 10.96.0.0/12scheduler: &#123;&#125;
+
+2、下载地址改为国内镜像源编辑kubeadm.conf，imageRepository改为国内源
 imageRepository: registry.cn-hangzhou.aliyuncs.com/google_containers
 
-3、指定配置文件，重新执行下载kubeadm config images pull --config kubeadm.conf
+3、指定配置文件，执行下载kubeadm config images pull --config kubeadm.conf
 [config/images] Pulled registry.cn-hangzhou.aliyuncs.com/google_containers/kube-apiserver:v1.23.0[config/images] Pulled registry.cn-hangzhou.aliyuncs.com/google_containers/kube-controller-manager:v1.23.0[config/images] Pulled registry.cn-hangzhou.aliyuncs.com/google_containers/kube-scheduler:v1.23.0[config/images] Pulled registry.cn-hangzhou.aliyuncs.com/google_containers/kube-proxy:v1.23.0[config/images] Pulled registry.cn-hangzhou.aliyuncs.com/google_containers/pause:3.6[config/images] Pulled registry.cn-hangzhou.aliyuncs.com/google_containers/etcd:3.5.1-0[config/images] Pulled registry.cn-hangzhou.aliyuncs.com/google_containers/coredns:v1.8.6
-执行初始化kubeadm init# orkubeadm init --config kubeadm.conf
+k8s集群配置编辑kubeadm.conf，指定k8s集群配置，详情参考kubeadm 配置 (v1beta2)
+advertiseAddress修改 localAPIEndpoint.advertiseAddress 字段，也就是apiserver对外开放的地址，这里改为master节点地址（因为没有配置高可用）
+localAPIEndpoint:  advertiseAddress: 192.168.56.200  bindPort: 6443
+
+如果在执行初始前不指定可用的advertiseAddress，那么kubeadm init初始化时会报错：Error getting node” err=”node “node” not found
+指定节点名称修改 nodeRegistration.name 字段，这个字段会作为执行初始化的这个master节点的名称。建议改为master节点的主机名，否则默认就会叫node。
+nodeRegistration:  criSocket: /var/run/dockershim.sock  imagePullPolicy: IfNotPresent  name: master  taints: null
+
+如果在执行初始化前没有指定节点名字，想要修改的话，需要修改kubeadm.conf后重新部署k8s集群。
+不重新部署k8s集群，是否可以直接编辑修改节点的名称？kubectl edit nodes/node，修改如下：
+metadata:  labels:    kubernetes.io/hostname: master  name: master
+
+很遗憾，不可以，会报错：error: At least one of apiVersion, kind and name was changed
+指定pod ip范围添加 networking.podSubnet 字段，指定pod ip范围（pod-network-cidr）
+networking:  podSubnet: "10.244.0.0/16"
+
+关于pod ip范围和servcie ip范围的设置，可以参考子网划分详解与子网划分实例精析和详解网络分类ABC
+如果在执行初始化前没有指定pod ip范围，也是可以正常初始化的，但是后面会导致CNI插件无法正常启动。比如kube-flannel会报错：Error registering network: failed to acquire lease: node “node” pod cidr not assigned后期想要修改的话，需要修改kubeadm.conf后重新部署k8s集群。
+不重新部署k8s集群，能否补救？这个是可以的编辑 /etc/kubernetes/manifests/kube-controller-manager.yaml ，添加参数：
+- command:  - --allocate-node-cidrs=true  - --cluster-cidr=10.244.0.0/16
+然后重启kubelet：systemctl restart kubelet
+执行初始化#rm -rf /etc/kubernetes/manifests/ #kubeadm resetkubeadm init --config kubeadm.conf
 完成后，屏幕输出会提示创建配置文件，以及添加worker node的join命令，记录下来。例如：
 kubeadm join 192.168.56.200:6443 --token abcdef.0123456789abcdef \    --discovery-token-ca-cert-hash sha256:6743eaae41ba8fd99e495e3df94ff9a996878e7c9cf8ac590a3c52b97ea8012e
 
 PS：如果忘记了添加worker node的join命令，可以重新生成。
 kubeadm token create --helpkubeadm token create --print-join-command
 生成新的join命令后，之前的join命令同样可以使用。
-初始化报错解决办法执行初始化报错：[kubelet-check] It seems like the kubelet isn’t running or healthy.The kubelet is not runningThe kubelet is unhealthy due to a misconfiguration of the node in some way (required cgroups disabled)
-看着是 cgroup 问题，确认一下。
-docker system info | grep -i drivercat /var/lib/kubelet/config.yaml | grep cgroup
-发现 docker 和 kubelet 服务中的cgroup不一致。
-方法一：修改docker配置和kubelet保持一致。编辑 /etc/docker/daemon.json ，添加：
-&#123;    "exec-opts": [        "native.cgroupdriver=systemd"    ]&#125;
-
-方法二：修改kubelet配置和docker保持一致。kubeadm.conf中添加：
----kind: KubeletConfigurationapiVersion: kubelet.config.k8s.io/v1beta1#cgroupDriver: systemdcgroupDriver: cgroupfs
-
-重启docker，然后重新执行初始化：
-systemctl daemon-reloadsystemctl restart docker#rm -rf /etc/kubernetes/manifests/ kubeadm resetkubeadm init --config kubeadm.conf
-
-还是报同样的错误。查看错误详情：
-systemctl status kubeletjournalctl -xeu kubelet#systemctl daemon-reload#systemctl restart kubelet
-“–cgroups-per-qos enabled, but –cgroup-root was not specified.  defaulting to /““Failed to run kubelet” err=”failed to run Kubelet: running with swap on is not supported, please disable swap!
-看这个提示，问题就很明显了，不支持swap，需要关闭。swapoff -a编辑 /etc/fstab，注释掉swap配置。
-#/dev/mapper/centos-swap swap swap defaults 0 0
-
-再次重新执行初始化：
-kubeadm resetkubeadm init --config kubeadm.conf
-
-出现新的报错：Error getting node” err=”node &quot;node&quot; not found
-编辑kubeadm.conf，修改apiserver地址。
-advertiseAddress: 192.168.56.200
-
-再次重新执行初始化：
-kubeadm resetkubeadm init --config kubeadm.conf
-
-至此，终于成功初始化！
-避免初始化报错的方法1、修改kubelet配置和docker保持一致。kubeadm.conf中添加：
----kind: KubeletConfigurationapiVersion: kubelet.config.k8s.io/v1beta1#cgroupDriver: systemdcgroupDriver: cgroupfs
-
-2、修改apiserver地址为本机地址编辑kubeadm.conf，修改advertiseAddress字段。
-advertiseAddress: 192.168.56.200
-
-3、关闭swapswapoff -a编辑 /etc/fstab，注释掉swap配置。
-#/dev/mapper/centos-swap swap swap defaults 0 0
-
-4、执行初始化
-#kubeadm resetkubeadm init --config kubeadm.conf
-
 创建配置文件mkdir -p $HOME/.kubecp -i /etc/kubernetes/admin.conf $HOME/.kube/configchown $(id -u):$(id -g) $HOME/.kube/config
 
 验证安装docker ps -akubectl get nodeskubectl get pods --namespace kube-system
 
-验证发现问题问题一：master节点的名字叫node问题不大，这是因为在初始化的时候没有指定节点名字。在kubeadm.conf里指定即可（需要重新安装）。
-nodeRegistration:  criSocket: /var/run/dockershim.sock  imagePullPolicy: IfNotPresent  name: master  taints: null
-
-不重新安装的话，是否可以直接编辑修改节点的名称？kubectl edit nodes/node，修改如下：
-metadata:  labels:    kubernetes.io/hostname: master  name: master
-
-很遗憾，不可以，报错：error: At least one of apiVersion, kind and name was changed
-没关系，就这么着吧，不改了。
-问题二：coredns处于pending状态查看coredns报错信息：
+验证发现问题问题一：coredns处于pending状态查看coredns报错信息：
 kubectl get deployment/coredns -n kube-system -o yamlkubectl get pods -n kube-systemkubectl describe pods coredns-65c54cc984-srzl4 -n kube-systemkubectl logs pods coredns-65c54cc984-srzl4 -n kube-system
 Warning  FailedScheduling  2m57s (x36 over 38m)  default-scheduler  0/1 nodes are available: 1 node(s) had taint {node.kubernetes.io/not-ready: }, that the pod didn’t tolerate.原来是coredns默认无法部署在master节点，因为没有配置容忍。参考污点和容忍度进行配置即可。kubectl edit deployment/coredns -n kube-system -o yamltolerations部分添加：
 tolerations:- effect: NoSchedule  key: node.kubernetes.io/not-ready
 
-问题三：coredns无法启动问题二解决后，coredns可以调度了，但是无法启动。kubectl describe pods/coredns-55b7b56cf8-jv2dc -n kube-systemnetwork is not ready: container runtime network not ready: NetworkReady=false reason:NetworkPluginNotReady message:docker: network plugin is not ready: cni config uninitialized
-仔细研读使用 kubeadm 创建集群，原来问题二是符合预期的，master节点还没有ready，因为缺少cni插件。
-参考集群网络系统选择一个cni插件，这里我们选择flannel。
-kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
-
-问题四：kube-flannel无法启动Error registering network: failed to acquire lease: node “node” pod cidr not assigned看来是初始化的时候没有加 pod-network-cidr 参数导致的，在kubeadm.conf中添加配置即可（需要重新安装）。
-networking:  podSubnet: "10.244.0.0/16"
-
-不重新安装的话，怎么补救呢？编辑 /etc/kubernetes/manifests/kube-controller-manager.yaml ，添加参数：
-- command:  - --allocate-node-cidrs=true  - --cluster-cidr=10.244.0.0/16
-然后重启kubelet：systemctl restart kubelet
-kubectl get pods --all-namespaces至此，所有组件全部启动成功。
-避免验证发现错误的办法1、在kubeadm.conf里指定节点名称
-nodeRegistration:  criSocket: /var/run/dockershim.sock  imagePullPolicy: IfNotPresent  name: master  taints: null
-
-2、在kubeadm.conf中添加pod网络配置
-networking:  podSubnet: "10.244.0.0/16"
-
-3、安装cni插件
+问题二：coredns无法启动问题一解决后，coredns可以调度了，但是无法启动。kubectl describe pods/coredns-55b7b56cf8-jv2dc -n kube-systemnetwork is not ready: container runtime network not ready: NetworkReady=false reason:NetworkPluginNotReady message:docker: network plugin is not ready: cni config uninitialized
+仔细研读使用 kubeadm 创建集群，原来问题一是符合预期的，master节点还没有ready，因为缺少cni插件。
+安装CNI插件参考集群网络系统选择一个cni插件，这里我们选择flannel。
 kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
 
 node01加入k8s集群1、使用join命令，添加node01节点到集群
@@ -4099,9 +4196,8 @@ sonobuoy官网地址：sonobuoy源码地址：vmware-tanzu/sonobuoy
 参考How to solve CoreDNS always stuck at “waiting for kubernetes”?，发现需要关闭防火墙，低级错误！
 systemctl status firewalldsystemctl stop firewalldsystemctl disable firewalld
 
-
-
-
+集群配置更改执行kubeadm init初始化后，kubeadm.conf中的内容就写入到了k8s集群了configmap，可以通过kubectl命令查看。kubectl get cm kubeadm-config -n kube-system -oyaml
+如果想要修改配置，可以直接修改kubeadm-config这个configmap，详情参考重新配置 kubeadm 集群。
 ]]></content>
       <categories>
         <category>专业</category>
@@ -4109,6 +4205,7 @@ systemctl status firewalldsystemctl stop firewalldsystemctl disable firewalld
         <category>k8s</category>
         <category>docker</category>
         <category>centos</category>
+        <category>网络</category>
       </categories>
       <tags>
         <tag>k8s</tag>
@@ -4567,12 +4664,12 @@ sudo: falselanguage: node_jsnode_js:- 10.16.3cache: npmbranches:  only:  - maste
         <category>专业</category>
         <category>运维</category>
         <category>开发</category>
-        <category>CICD</category>
         <category>hexo</category>
+        <category>CICD</category>
       </categories>
       <tags>
-        <tag>cicd</tag>
         <tag>hexo</tag>
+        <tag>cicd</tag>
         <tag>gulp</tag>
       </tags>
   </entry>
@@ -4606,13 +4703,13 @@ hexo配置多个git仓库为了维护两个站点，所以每次更新，需要�
       <categories>
         <category>专业</category>
         <category>开发</category>
-        <category>工具</category>
         <category>hexo</category>
+        <category>工具</category>
         <category>git</category>
       </categories>
       <tags>
-        <tag>git</tag>
         <tag>hexo</tag>
+        <tag>git</tag>
       </tags>
   </entry>
   <entry>
@@ -4845,6 +4942,7 @@ tar -xzvf prometheus-2.15.2.linux-amd64.tar.gzmv prometheus-2.15.2.linux-amd64 p
         <category>专业</category>
         <category>运维</category>
         <category>监控</category>
+        <category>prometheus</category>
       </categories>
       <tags>
         <tag>prometheus</tag>
@@ -5131,8 +5229,8 @@ https域名访问参考《CentOS7安装配置GitLab》添加SSL一节，生成�
         <category>docker</category>
       </categories>
       <tags>
-        <tag>git</tag>
         <tag>docker</tag>
+        <tag>git</tag>
       </tags>
   </entry>
   <entry>
@@ -5405,6 +5503,13 @@ import timeimport redisfrom flask import Flaskapp = Flask(__name__)cache = redis
 4、测试应用curl http://127.0.0.1:15000
 常用命令# 构建和运行应用docker-compose up# 构建和后台运行应用docker-compose up -d# 关闭应用docker-compose down# 关闭应用，并删除Redis容器内数据docker-compose down --volumes# 查看容器docker-compose ps# 查看web服务的环境变量docker-compose run web env
 
+Docker-Compose网络问题docker-compose up的时候，会自动创建一个网桥，占用一个网段，并且添加路由规则。如果这个网段和现有网段发生了冲突，就会导致一些非预期的网络问题，比如主机突然访问不通了。解决办法是指定网段，详情参考docker-compose up使用自定义的网段的两种方式
+查看路由：
+ip routeroute -n
+
+查看docker网段使用情况：
+docker network listdocker network inspect xxx
+
 书签Overview of Docker Compose
 Docker 入门教程
 docker/compose
@@ -5413,8 +5518,10 @@ docker/compose
         <category>专业</category>
         <category>运维</category>
         <category>docker</category>
+        <category>网络</category>
       </categories>
       <tags>
+        <tag>网络</tag>
         <tag>docker</tag>
       </tags>
   </entry>
@@ -5910,7 +6017,10 @@ spec:  nodeSelector:    key1: value1
 添加affinitynode添加label后，pod想要指定调度到这个node，也可以在spec下添加affinity字段
 spec:  affinity:    nodeAffinity:      requiredDuringSchedulingIgnoredDuringExecution:        nodeSelectorTerms:        - matchExpressions:          - key: key1            operator: In            values:            - value1            - valuex      preferredDuringSchedulingIgnoredDuringExecution:      - weight: 1        preference:          matchExpressions:          - key: key2            operator: In            values:            - value2            - valuey
 
-pod亲和性pod反亲和性Pod 拓扑分布约束污点和容忍添加taintkubectl taint nodes node1 key1=value1:NoSchedulekubectl taint nodes node1 key2=value2:PreferNoSchedulekubectl taint nodes node1 key3=value3:NoExecute
+pod亲和性pod反亲和性配置相同服务的pod尽量打散
+spec:  affinity:    podAntiAffinity:      preferredDuringSchedulingIgnoredDuringExecution:        - weight: 100          podAffinityTerm:            labelSelector:              matchExpressions:              - key: app.kubernetes.io/name                operator: In                values:                - ingress-nginx
+
+Pod 拓扑分布约束污点和容忍添加taintkubectl taint nodes node1 key1=value1:NoSchedulekubectl taint nodes node1 key2=value2:PreferNoSchedulekubectl taint nodes node1 key3=value3:NoExecute
 
 添加tolerationsnode添加taint后，pod想要调度到这个node，需要在spec下添加tolerations字段：
 spec:  tolerations:  - key: "key1"    operator: "Equal"    value: "value1"    effect: "NoSchedule"  - key: "key2"    operator: "Exists"    effect: "PreferNoSchedule"  - key: "key3"    operator: "Equal"    value: "value3"    effect: "NoExecute"
@@ -6035,6 +6145,19 @@ kubectl delete deployment deployment-name
 kubectl scale --replicas=2 deployment deployment-name
 
 方法二：更新yaml文件。
+重启/重建pod参考文档Using Kubectl to Restart a Kubernetes Pod
+1、不删除pod，重启
+kubectl get pod &lt;pod_name&gt; -n &lt;namespace&gt; -o yaml | kubectl replace --force -f -
+
+2、通过删除实现重建pod（前提是有replicaset）
+kubectl delete pod &lt;pod_name&gt; -n &lt;namespace&gt;
+
+3、通过扩缩实现重建pod
+kubectl scale deployment &lt;deployment_name&gt; --replicas=0 -n &lt;namespace&gt;kubectl scale deployment &lt;deployment_name&gt; --replicas=2 -n &lt;namespace&gt;
+
+4、通过回滚实现重建pod
+kubectl rollout restart deployment &lt;deployment_name&gt; -n &lt;namespace&gt;
+
 创建service/暴露服务命令式指令为deployment创建clusterip，暴露clusterip的80端口，对应pod的80端口kubectl expose deployment deployment-name --port=80 --name svc-name
 为deployment创建clusterip，暴露clusterip的6789端口，对应pod的80端口
 kubectl expose deployment deployment-name --target-port=80 --port=6789kubectl expose -f vk-deploy.yaml --target-port=80 --port=6789
@@ -6068,7 +6191,27 @@ kubectl apply -f .kubectl apply -f .
 方法四：添加编号
 mv ns.yaml 00-ns.yamlmv cm.yaml 01-cm.yamlmv deploy.yaml 02-deploy.yamlkubectl apply -f .
 
-资源拼接参考 Kustomize。
+KustomizeKustomize简介Kustomize是一个独立的工具，用来通过kustomization文件定制Kubernetes对象。从 1.14 版本开始，kubectl 也开始支持使用 kustomization 文件来管理 Kubernetes 对象。 要查看包含 kustomization 文件的目录中的资源，执行下面的命令：kubectl kustomize &lt;kustomization_directory&gt;
+要应用这些资源，使用 –kustomize 或 -k 参数来执行 kubectl apply：kubectl apply -k &lt;kustomization_directory&gt;
+Kustomize作用生成资源ConfigMap 和 Secret 包含其他 Kubernetes 对象（如 Pod）所需要的配置或敏感数据。 ConfigMap 或 Secret 中数据的来源往往是集群外部，例如某个 .properties 文件或者 SSH 密钥文件。 Kustomize 提供 secretGenerator 和 configMapGenerator，可以基于文件或字面值来生成 Secret 和 ConfigMap。
+设置贯穿性字段在项目中为所有 Kubernetes 对象设置贯穿性字段是一种常见操作。 贯穿性字段的一些使用场景如下：
+
+为所有资源设置相同的名字空间
+为所有对象添加相同的前缀或后缀
+为对象添加相同的标签集合
+为对象添加相同的注解集合
+
+组织和定制资源一种常见的做法是在项目中构造资源集合并将其放到同一个文件或目录中管理。Kustomize提供基于不同文件来组织资源并向其应用补丁或者其他定制的能力。
+Kustomize 支持组合不同的资源。kustomization.yaml 文件的 resources 字段定义配置中要包含的资源列表。 我们可以将 resources 列表中的路径设置为资源配置文件的路径。
+补丁文件（Patches）可以用来对资源执行不同的定制。 Kustomize 通过 patchesStrategicMerge 和 patchesJson6902 支持不同的打补丁机制。 patchesStrategicMerge 的内容是一个文件路径的列表，其中每个文件都应可解析为 策略性合并补丁（Strategic Merge Patch）。 补丁文件中的名称必须与已经加载的资源的名称匹配。 建议构造规模较小的、仅做一件事情的补丁。 例如，构造一个补丁来增加 Deployment 的副本个数；构造另外一个补丁来设置内存限制。
+参考文档
+Kustomize
+使用 Kustomize 对 Kubernetes 对象进行声明式管理
+kustomize - kustomization
+kustomize - PatchesJson6902
+kustomize - Examples
+YAML | 竖线 &gt; 大于号等特殊符号的作用
+
 ]]></content>
       <categories>
         <category>专业</category>
@@ -6119,6 +6262,9 @@ kubeconfig获取方式：
 多个配置整合成一个配置KUBECONFIG=~/.kube/config:~/Downloads/new-config kubectl config view --merge --flatten &gt; ~/.kube/newconfigexport KUBECONFIG=~/.kube/newconfig
 
 查看和使用配置kubectl config get-contextskubectl config use-context voidking@kubenertes
+
+删除某个集群配置kubectl config delete-context xxxkubectl config delete-user xxxkubectl config delete-cluster xxx
+
 
 命令自动补全linux系统配置yum install -y bash-completionsource /usr/share/bash-completion/bash_completionsource &lt;(kubectl completion bash)echo "source /usr/share/bash-completion/bash_completion" &gt;&gt; ~/.bash_profileecho "source &lt;(kubectl completion bash)" &gt;&gt; ~/.bash_profile
 
@@ -6263,6 +6409,7 @@ Kubernetes 学习路径
         <category>专业</category>
         <category>运维</category>
         <category>k8s</category>
+        <category>virtualbox</category>
       </categories>
       <tags>
         <tag>k8s</tag>
@@ -6702,12 +6849,12 @@ Least Load
         <category>centos</category>
       </categories>
       <tags>
-        <tag>git</tag>
         <tag>tomcat</tag>
         <tag>java</tag>
         <tag>maven</tag>
         <tag>centos</tag>
         <tag>mysql</tag>
+        <tag>git</tag>
       </tags>
   </entry>
   <entry>
@@ -6796,9 +6943,9 @@ Https原理及流程
         <category>centos</category>
       </categories>
       <tags>
-        <tag>git</tag>
         <tag>linux</tag>
         <tag>centos</tag>
+        <tag>git</tag>
         <tag>https</tag>
       </tags>
   </entry>
@@ -7767,8 +7914,8 @@ TPC-W安装与配置（威斯康星大学Java版）
         <category>ubuntu</category>
       </categories>
       <tags>
-        <tag>linux</tag>
         <tag>apache</tag>
+        <tag>linux</tag>
         <tag>mysql</tag>
         <tag>ubuntu</tag>
       </tags>
@@ -7878,8 +8025,8 @@ ab -g t0.dat -t 100 -n 1000000 http://172.16.0.19/mediawiki/index.php/Main_Page
       </categories>
       <tags>
         <tag>docker</tag>
-        <tag>linux</tag>
         <tag>apache</tag>
+        <tag>linux</tag>
         <tag>ubuntu</tag>
         <tag>测试</tag>
         <tag>openstack</tag>
@@ -8004,8 +8151,8 @@ chmod a+x pt10.sh./pt10.sh
         <category>ubuntu</category>
       </categories>
       <tags>
-        <tag>linux</tag>
         <tag>apache</tag>
+        <tag>linux</tag>
         <tag>ubuntu</tag>
       </tags>
   </entry>
@@ -8582,7 +8729,7 @@ virt-install --connect=qemu:///system --name=cirros --ram=512 --vcpus=1 --disk p
 3、显示实例列表virsh list
 4、查看实例详情virsh dominfo cirros
 问题来了，怎么访问这个实例呢？最简单的方法是使用virsh console cirros命令打开控制台，使用ctrl+]关闭控制台，另外就是通过ssh或者vnc。
-5、查看实例网络参考Find the IP address of a virtual machine，使用arp -an命令查看实例IP。然后，挨个ping一下192.168.122.0网段的IP，即可找到实例的IP，本次找到的IP为192.168.122.49。
+5、查看实例网络查看实例mac地址：virsh dumpxml frontend1 | grep mac查看mac地址对应的IP：arp -an本次找到的IP为192.168.122.49
 6、访问实例ssh cirros@192.168.122.49输入默认密码gocubsgo，即可登录实例。
 7、测试网络ping 8.8.8.8 -c3至此，大功告成，创建实例成功。
 8、销毁实例（可选）
@@ -8712,8 +8859,8 @@ gv重选刚才选择的选区，o在选择区两端跳动。ctrl+v、3j垂直下
       <categories>
         <category>专业</category>
         <category>运维</category>
-        <category>工具</category>
         <category>linux</category>
+        <category>工具</category>
         <category>编辑器</category>
       </categories>
       <tags>
@@ -9049,6 +9196,7 @@ df -hfdisk -l
         <category>运维</category>
         <category>ubuntu</category>
         <category>linux</category>
+        <category>virtualbox</category>
       </categories>
       <tags>
         <tag>ubuntu</tag>
@@ -9828,8 +9976,9 @@ Playbooks可以包含多个戏剧。您可能有一个首先针对Web服务器�
 4、在客户机测试chronyc sources
 角色如果需要将一个大文件拆分为各个小文件，我们经常使用的就是include，这也是原先ansible拆分文件的做法。如今ansible使用roles来拆分文件，将nginx、mysql等分为各个角色，在各个角色内定义具体的小任务，方便管理。另一方面，类似于php类的自动加载，roles基于一个已知的文件结构，可以自动去加载某些vars_files、tasks、handlers等。
 目标：使用角色的方式，编写配置playbook，在客户机上安装chrony，然后检查启动情况。
-1、创建chrony角色目录mkdir -p roles/chrony/tasks
-mkdir -p roles/chrony/handlers
+1、创建chrony角色目录
+mkdir -p roles/chrony/tasksmkdir -p roles/chrony/handlers
+
 2、创建总的入口文件site.yml，内容为：
 ---- hosts: commonservers  roles:    - chrony
 
@@ -9845,6 +9994,7 @@ vim roles/chrony/handlers/main.yml，内容为：
 5、在客户机测试chronyc sources
 简单编程变量---- hosts: commonservers  vars:    pre1: all info is     pre2: hostname is  tasks:  - name: register vars    shell: hostname    register: info  - name: display info    debug: msg="&#123;&#123;pre1&#125;&#125; &#123;&#123;info&#125;&#125;"  - name: display hostname    debug: msg="&#123;&#123;pre2&#125;&#125; &#123;&#123;info.stdout&#125;&#125;"
 
+这里涉及到一个知识点：使用ansible-playbook执行命令（使用shell/command模块），默认不显示标准输出/标准失败，只能看到执行成功还是失败。如果想要显示标准输出/标准失败，必须要使用变量，就像上面的这个例子一样。
 基本循环---- hosts: commonservers  tasks:  - name: loops demo    debug: msg="&#123;&#123;item&#125;&#125;"    with_items:      - one      - two      - three
 
 
@@ -9907,11 +10057,14 @@ ansible的基本架构：
 上述简介摘自ansible基础。
 
 
-实验环境两台主机，都是ubuntu14.04.4 server版，用户都是voidking。一台作为管理机，IP为192.168.56.101，一台作为被管理机（以下称为客户机），IP为192.168.56.102。
+实验环境准备两台主机，都是ubuntu14.04.4 server版，用户都是voidking。一台作为管理机，IP为192.168.56.101，一台作为被管理机（以下称为客户机），IP为192.168.56.102。
 在管理机上安装ansible，一条命令搞定：sudo apt install ansible。不过，安装的ansible版本很低，默认1.5.4。这里我们通过添加源来安装最新版ansible：
 sudo apt remove ansiblesudo apt-get install software-properties-commonsudo apt-add-repository ppa:ansible/ansiblesudo apt-get updatesudo apt-get install ansible
 
-这样，就能安装好最新版的ansible。
+或者，使用pip安装指定版本的ansible，本文选择安装 2.6.11
+sudo pip install ansible==2.6.11 -i https://pypi.tuna.tsinghua.edu.cn/simple
+想要知道都有哪些版本，可以查看ansible版本列表
+PS：如果是centos系统，还可以下载ansible rpm包，通过rmp命令安装 rpm -ivh ansible-2.6.11-1.el7.ans.noarch.rpm
 连接准备1、在管理机生成密钥ssh-keygen，连续回车即可。
 2、将公钥写入客户机ssh-copy-id -i .ssh/id_rsa.pub -p 22 voidking@192.168.56.102
 3、在管理机添加客户机到hostssudo vim /etc/ansible/hosts，在文档最后添加：
@@ -9984,16 +10137,24 @@ shell比command更强大，command比shell更安全。因为command不支持重�
 1、参考ansible.cfg，创建ansible.cfg文件，假设路径为 /home/voidking/ansible.cfg
 2、设置环境变量export ANSIBLE_CONFIG=/home/voidking/ansible.cfg
 3、查看配置ansible --version
+批量推送公钥在本文的一开始，我们通过ssh-copy-id命令把管理机的公钥推送给了客户机。如果客户机有几百个，肯定不能再手动搞了，这时可以使用ansible的authorized_key模块来实现推送。
+1、创建hosts文件，把所有客户机都添加进去
+[common]192.168.56.102192.168.56.103192.168.56.104[common:vars]ansible_ssh_user&#x3D;&quot;voidking&quot;ansible_ssh_pass&#x3D;&quot;123456&quot;
+
+2、配置忽略host_key_checkingvim /etc/ansible/ansible.cfg去掉 host_key_checking = False 的注释
+3、测试连通性ansible all -i hosts -m ping
+4、编写剧本 ssh-copy.yaml
+---- hosts: common      remote_user: voidking  tasks:  - authorized_key:     user: voidking     key: "&#123;&#123; lookup('file', '/home/voidking/.ssh/id_rsa.pub') &#125;&#125;"
+
+5、推送公钥ansible-playbook ssh-copy.yaml
+6、验证ssh voidking@192.168.56.102
 ssh-agentansible可能使用到ssh-agent，那就顺便学习一下，参考了解ssh代理：ssh-agent。
 ssh-agent是ssh代理程序，ssh-agent可以帮助我们管理私钥。
 那么什么时候需要ssh代理帮助我们管理私钥呢？当遇到如下情况时，我们会需要ssh代理。
 
 使用不同的密钥连接到不同的主机时，需要手动指定对应的密钥，ssh代理可以帮助我们选择对应的密钥进行认证，不用手动指定密钥即可进行连接。
-
 当私钥设置了密码，我们又需要频繁的使用私钥进行认证时，ssh代理可以帮助我们免去重复的输入密码的操作。
-
 管理机可以通过密钥连接到客户机A和客户机B，但是客户机A无法通过密钥连接到客户机B，ssh代理可以帮助我们在客户机A也能通过密钥连接到客户机B。
-
 
 我们以添加.ssh/id_rsa私钥给ssh代理为例，查看一下使用流程。
 1、启用ssh-agentssh-agent bash
@@ -12162,6 +12323,7 @@ Linux下VNC配置使用总结：开启+桌面配置+安全访问
         <category>专业</category>
         <category>运维</category>
         <category>ubuntu</category>
+        <category>virtualbox</category>
       </categories>
       <tags>
         <tag>linux</tag>
@@ -12680,20 +12842,46 @@ cron.*                         /var/log/cron.log
       </tags>
   </entry>
   <entry>
-    <title>Ubuntu更换源列表</title>
+    <title>Ubuntu/Debian替换软件安装源</title>
     <url>/dev-ubuntu-change-sources/</url>
-    <content><![CDATA[前言Ubuntu默认的安装源是http://archive.ubuntu.com/ubuntu/，在国内访问速度比较慢。最好是换成国内的安装源，能够节省很多时间。本文中，我们假设系统为Ubuntu14.04.5，打算换成Ubuntu官方中国的安装源（阿里、网易、搜狐等的更换方法类似）。Ubuntu14的源地址可以在模板:14.04source中找到，其他版本Ubuntu的源地址可以在源列表中找到。
+    <content><![CDATA[为什么要替换软件安装源？Ubuntu默认的软件安装源是 http://archive.ubuntu.com ，在国内访问速度很慢。Debian（Ubuntu是Debian的衍生品）的默认软件安装源是 http://deb.debian.org，在国内访问也很慢。
+如果换成国内的软件安装源，能够节省很多时间，因此安装Ubuntu/Debian系统后建议先进行软件安装源的替换。
+本文中，我们的系统为Ubuntu14.04.5（大版本别名trusty），计划换成Ubuntu官方中国的安装源。除了Ubuntu官方中国的安装源，可选的国内安装源还有中科大、清华、阿里、腾讯、网易等等。
+http:&#x2F;&#x2F;cn.archive.ubuntu.comhttps:&#x2F;&#x2F;mirrors.ustc.edu.cnhttps:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cnhttps:&#x2F;&#x2F;mirrors.aliyun.comhttps:&#x2F;&#x2F;mirrors.cloud.tencent.comhttps:&#x2F;&#x2F;mirrors.163.com
+更多安装源可以参考ubuntu 14.04source
+其他版本的Ubuntu修改方法类似，不同之处可以参考源列表。
+Debian和Ubuntu的国内安装源域名相同，只不过是域名后面的路径不同。
 
 
-配置步骤配置步骤参考如何修改Ubuntu的源列表(source list)，操作如下：
-1、备份源列表文件sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak
-2、编辑源列表文件sudo vim /etc/apt/sources.list
-修改为：
-deb http://cn.archive.ubuntu.com/ubuntu/ trusty main restricted universe multiversedeb http://cn.archive.ubuntu.com/ubuntu/ trusty-security main restricted universe multiversedeb http://cn.archive.ubuntu.com/ubuntu/ trusty-updates main restricted universe multiversedeb http://cn.archive.ubuntu.com/ubuntu/ trusty-backports main restricted universe multiverse##測試版源deb http://cn.archive.ubuntu.com/ubuntu/ trusty-proposed main restricted universe multiverse# 源碼deb-src http://cn.archive.ubuntu.com/ubuntu/ trusty main restricted universe multiversedeb-src http://cn.archive.ubuntu.com/ubuntu/ trusty-security main restricted universe multiversedeb-src http://cn.archive.ubuntu.com/ubuntu/ trusty-updates main restricted universe multiversedeb-src http://cn.archive.ubuntu.com/ubuntu/ trusty-backports main restricted universe multiverse##測試版源deb-src http://cn.archive.ubuntu.com/ubuntu/ trusty-proposed main restricted universe multiverse# Canonical 合作夥伴和附加# deb http://archive.canonical.com/ubuntu/ trusty partner# deb http://extras.ubuntu.com/ubuntu/ trusty main
+Ubuntu14操作更换安装源参考如何修改Ubuntu的源列表(source list)
+1、备份源列表文件
+sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak
 
-3、更新资源包sudo apt-get update
-如果报错Error connecting: Could not connect: Connection refused ，那么可以参考“Unable to connect” error with apt-get?和apt-get update Error connecting Could not connect Connection refused。
-4、更新软件sudo apt-get upgrade
+2、编辑源列表文件
+sudo sed -i 's#http://archive.ubuntu.com#http://cn.archive.ubuntu.com#g' /etc/apt/sources.list
+
+修改后的 sources.list 的内容为：
+deb http:&#x2F;&#x2F;cn.archive.ubuntu.com&#x2F;ubuntu&#x2F; trusty main restricted universe multiversedeb http:&#x2F;&#x2F;cn.archive.ubuntu.com&#x2F;ubuntu&#x2F; trusty-security main restricted universe multiversedeb http:&#x2F;&#x2F;cn.archive.ubuntu.com&#x2F;ubuntu&#x2F; trusty-updates main restricted universe multiversedeb http:&#x2F;&#x2F;cn.archive.ubuntu.com&#x2F;ubuntu&#x2F; trusty-backports main restricted universe multiverse##測試版源deb http:&#x2F;&#x2F;cn.archive.ubuntu.com&#x2F;ubuntu&#x2F; trusty-proposed main restricted universe multiverse# 源碼deb-src http:&#x2F;&#x2F;cn.archive.ubuntu.com&#x2F;ubuntu&#x2F; trusty main restricted universe multiversedeb-src http:&#x2F;&#x2F;cn.archive.ubuntu.com&#x2F;ubuntu&#x2F; trusty-security main restricted universe multiversedeb-src http:&#x2F;&#x2F;cn.archive.ubuntu.com&#x2F;ubuntu&#x2F; trusty-updates main restricted universe multiversedeb-src http:&#x2F;&#x2F;cn.archive.ubuntu.com&#x2F;ubuntu&#x2F; trusty-backports main restricted universe multiverse##測試版源deb-src http:&#x2F;&#x2F;cn.archive.ubuntu.com&#x2F;ubuntu&#x2F; trusty-proposed main restricted universe multiverse# Canonical 合作夥伴和附加# deb http:&#x2F;&#x2F;archive.canonical.com&#x2F;ubuntu&#x2F; trusty partner# deb http:&#x2F;&#x2F;extras.ubuntu.com&#x2F;ubuntu&#x2F; trusty main
+
+ubuntu14的别名是trusty，所以souces.list中出现了很多trusty，其他版本的ubuntu就不是trusty了。
+3、更新资源包
+sudo apt-get update
+
+如果报错Error connecting: Could not connect: Connection refused解决方法参考：
+
+“Unable to connect” error with apt-get?
+apt-get update Error connecting Could not connect Connection refused
+
+4、更新软件
+sudo apt-get upgrade
+
+Debian操作更换安装源Debian操作更换安装源，和Ubuntu操作更换安装源方法相同。
+sudo cp /etc/apt/sources.list /etc/apt/sources.list.baksudo sed -i 's#http://deb.debian.org#https://mirrors.tuna.tsinghua.edu.cn#g' /etc/apt/sources.listsudo apt-get updatesudo apt-get upgrade
+
+
+
+
+
 ]]></content>
       <categories>
         <category>专业</category>
@@ -13156,8 +13344,8 @@ server &#123;    listen 80;    listen 443 ssl;    server_name www.voidking.com; 
         <category>nginx</category>
       </categories>
       <tags>
-        <tag>hexo</tag>
         <tag>nginx</tag>
+        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -13679,8 +13867,8 @@ SSL的配置不要加 ssl on ，否则启动时会存在一个警告：
         <category>nginx</category>
       </categories>
       <tags>
-        <tag>hexo</tag>
         <tag>nginx</tag>
+        <tag>hexo</tag>
         <tag>https</tag>
         <tag>mathjax</tag>
       </tags>
@@ -13782,8 +13970,8 @@ server &#123;    server_name jupyter.voidking.com;     listen 80;    location / 
         <category>centos</category>
       </categories>
       <tags>
-        <tag>centos</tag>
         <tag>nginx</tag>
+        <tag>centos</tag>
         <tag>jupyter</tag>
       </tags>
   </entry>
@@ -14176,8 +14364,8 @@ systemctl start nginx
         <category>nginx</category>
       </categories>
       <tags>
-        <tag>centos</tag>
         <tag>nginx</tag>
+        <tag>centos</tag>
       </tags>
   </entry>
   <entry>
@@ -16203,8 +16391,8 @@ server &#123;    listen 80;    server_name enroll.voidking.com;    root /home/ww
         <category>php</category>
       </categories>
       <tags>
-        <tag>php</tag>
         <tag>nginx</tag>
+        <tag>php</tag>
         <tag>pathinfo</tag>
         <tag>框架</tag>
       </tags>
@@ -16482,8 +16670,8 @@ n2n内网穿透神器
         <category>网络</category>
       </categories>
       <tags>
-        <tag>apache</tag>
         <tag>nginx</tag>
+        <tag>apache</tag>
         <tag>内网穿透</tag>
       </tags>
   </entry>
@@ -16796,19 +16984,25 @@ curl ${nginx_server}时看到内容，就是index.html文件中的内容。
 使用以上配置，访问 www.voidking.com 时，实际上看到的是 192.168.56.101:8080 这个服务返回的内容。
 反向代理到upstreamupstream www_voidking_com&#123;    server 192.168.56.101:8080 weight=5;    server 192.168.56.102:8081 weight=2;    server 192.168.56.103:8000;&#125;server &#123;    listen 80;    server_name www.voidking.com;    charset utf-8;    location / &#123;        proxy_set_header   Host             $host;        proxy_set_header   X-Real-IP        $remote_addr;        proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;        proxy_pass http://www_voidking_com;    &#125;&#125;
 使用以上配置，访问 www.voidking.com 时，实际上看到的是upstream里的服务返回的内容。但是问题来了，upstream里有三个服务，到底是哪个服务返回的内容呢？答：不一定，这就要用到传说中的加权轮询算法了。三个服务的权值分别为 5、2、1（默认），从权值来看，最大可能打到第一个服务。有没有想到什么知识点？没错，负载均衡，使用了加权轮询算法的负载均衡。
+反向代理到websocket服务http &#123;    map $http_upgrade $connection_upgrade &#123;        default upgrade;        '' close;    &#125;    server &#123;        listen 80;        server_name www.voidking.com;        charset utf-8;        location ^~ /ws &#123;            proxy_set_header   Host             $host;            proxy_set_header   X-Real-IP        $remote_addr;            proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;            # websocket support            proxy_http_version 1.1;            proxy_set_header Upgrade $http_upgrade;            proxy_set_header Connection $connection_upgrade;            proxy_pass http://192.168.56.101:8080;        &#125;        location / &#123;            proxy_set_header   Host             $host;            proxy_set_header   X-Real-IP        $remote_addr;            proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;            proxy_pass http://192.168.56.101:8080;        &#125;    &#125;&#125;
+
+更多内容参考一篇带给你Nginx代理WebSocket方法和NGINX as a WebSocket Proxy
 基础规则location规则在常见配置中，我们看到了一个叫 location 的关键字。location规则为：
-location [ = | ~ | ~* | ^~ ] uri &#123; ... &#125;location @name &#123; ... &#125;
+location [ = | ~ | ~* | ^~ ] /uri/ &#123; ... &#125;
 
-紧跟在location后面的，是可选的修饰符，uri是要匹配的字符串。常见修饰符：
+紧跟在location后面的，是可选的修饰符，uri是要匹配的字符串。
+常见匹配：
 
-= 普通匹配。只有请求的url路径与后面的字符串完全相等时，才会命中。
-空 普通匹配。
-/ 普通匹配。
-^~ 普通匹配。匹配到了uri，则不再进行正则匹配。
-~ 正则匹配。区分大小写。
-~* 正则匹配。不区分大小写。
+location = /uri 精确匹配
+location ^~ /uri 前缀匹配，在正则匹配之前
+location ~ pattern 正则匹配，区分大小写
+location ~* pattern 正则匹配，不区分大小写
+location /uri 前缀匹配，在正则匹配之后
+location / 通用匹配，未匹配到其它location的请求会匹配到它
 
-匹配规则匹配过程：1、先普通匹配，再正则匹配。2、普通匹配：按最大前缀匹配。若=或^~匹配到了，则不再进行后续正则匹配。3、正则匹配：按配置顺序进行匹配，若匹配到了，则不再进行后续正则匹配。4、普通匹配和正则匹配都有结果，优先使用正则匹配结果。
+详情参考location 匹配规则
+匹配规则匹配过程：1、精确匹配2、前缀匹配（^~）3、正则匹配（按配置顺序）4、前缀匹配（/xxx）5、通用匹配
+其中前缀匹配如果有包含关系时，遵循最大匹配原则。
 proxy_pass规则如果nginx作为反向代理使用，那么必须要搞明白的就是proxy_pass的规则，这关系到请求能否打到正确的接口。proxy_pass规则：
 
 如果proxy_pass后面没有路径，那么转发时带上uri
@@ -16823,6 +17017,41 @@ proxy_pass规则如果nginx作为反向代理使用，那么必须要搞明白�
 location  /test &#123;    proxy_set_header Host   $host;    proxy_set_header X-Real-IP      $remote_addr;    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;    proxy_pass http://192.168.56.101:8080/qa;&#125;
 
 访问 www.voidking.com/test/index 会被代理到 http://192.168.56.101:8080/qaindex 这个url，/test/index 被替换成了 /qaindex，然后转发给了后端服务。
+常用命令测试配置nginx -t
+重新加载配置nginx -s reload
+map指令map 的作用是创建自定义变量。
+语法：
+map $var1 $var2 &#123;...&#125;
+map 的var1为源变量，通常是nginx的内置变量，var2 是自定义变量。 var2 的值取决于 var1 在对应表达式的匹配情况。如果一个都匹配不到则 var2 就是 default 对应的值。
+例子：
+map $args $foo &#123;    default 0;    debug   1;&#125;
+args 是nginx内置变量，就是获取的请求 url 的参数。 如果 args 匹配到 debug 那么 foo 的值会被设为 1 ，如果 args 一个都匹配不到 foo 就是 default 定义的值，在这里就是 0
+参考文档Nginx map 使用详解
+rewrite指令rewrite指令的作用是重定向。
+语法：
+rewrite regex replacement [flag];
+
+rewrite：该指令是实现URL重写的指令。
+regex：用于匹配URI的正则表达式。
+replacement：将regex正则匹配到的内容替换成 replacement。
+flag: flag标记。
+
+flag有如下值：
+
+last: 本条规则匹配完成后，继续向下匹配新的location URI 规则。(不常用)
+break: 本条规则匹配完成即终止，不再匹配后面的任何规则(不常用)。
+redirect: 返回302临时重定向，浏览器地址会显示跳转新的URL地址。
+permanent: 返回301永久重定向。浏览器地址会显示跳转新的URL地址。
+
+例子：
+rewrite ^/(.*) http://www.baidu.com/$1 permanent;
+
+rewrite 是固定关键字，表示开始进行rewrite匹配规则。
+regex 是 ^/(.*)，这是一个正则表达式，匹配完整的域名和后面的路径地址。
+replacement 是 http://www.baidu.com/$1，其中$1是取regex部分()里面的内容，如果匹配成功后跳转到的URL
+flag 是 permanent，代表永久重定向的含义，即跳转到 http://www.baidu.com/$1 
+
+参考文档Nginx中的Rewrite的重定向配置与实践
 状态码
 1xx:信息响应类，表示接收到请求并且继续处理
 2xx:处理成功响应类，表示动作被成功接收、理解和接受
@@ -16912,10 +17141,10 @@ client_max_body_size 500m
         <category>mysql</category>
       </categories>
       <tags>
+        <tag>nginx</tag>
         <tag>centos</tag>
         <tag>mysql</tag>
         <tag>phpmyadmin</tag>
-        <tag>nginx</tag>
       </tags>
   </entry>
   <entry>
@@ -17707,6 +17936,7 @@ Ubuntu14.04下载地址2
         <category>专业</category>
         <category>运维</category>
         <category>openstack</category>
+        <category>virtualbox</category>
       </categories>
       <tags>
         <tag>ubuntu</tag>
@@ -18007,6 +18237,45 @@ curl下载文件curl -o icon.png "https://www.python.org/static/opengraph-icon-2
       </tags>
   </entry>
   <entry>
+    <title>Shell脚本之安全删除</title>
+    <url>/dev-shell-saferm/</url>
+    <content><![CDATA[前言很多时候，我们会误删文件，那么一个回收站就很有必要了。看了一些回收站的实现，都比较复杂，干脆自己写一个。
+思路：使用mv替换rm，把想要删除的文件暂时移动到回收站。
+
+
+安全删除脚本1、编写安全删除脚本，saferm.sh
+#!/bin/bashTRASHDIR="$&#123;HOME&#125;/.saferm/trash"[[ ! -d $&#123;TRASHDIR&#125; ]] &amp;&amp; mkdir -p $&#123;TRASHDIR&#125;function usage()&#123;    echo -e "    Brief: move directory and files to ~/.local/trash    Usage: alias rm=/path/to/saferm.sh            rm &lt;dir&gt;            rm &lt;file&gt;            rm &lt;file1&gt; &lt;file2&gt;    "&#125;function main()&#123;    local now=$(date "+%Y%m%d%H%M%S")    local destdir="$&#123;TRASHDIR&#125;/$&#123;now&#125;"    mkdir $&#123;destdir&#125;    local opt    while getopts "h" opt    do      case $opt in        h)          usage &amp;&amp; exit 0 ;;        \?)          usage &amp;&amp; exit 0 ;;      esac    done    local files="$*"    local successfiles=""    for file in $&#123;files&#125;;do        mv $&#123;file&#125; $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file&#125;    done    if [[ -z "$&#123;successfiles&#125;" ]];then        echo -e "\033[31mNothing to do! Check the source filenames please!\033[0m"    else        echo -e "$&#123;successfiles&#125; have been moved to \033[31m$&#123;destdir&#125;\033[0m"    fi&#125;main "$@"
+
+2、使用方法编辑 .bash_profile ，添加内容
+# safermalias rm="/path/to/saferm.sh"
+添加内容完成， source .bash_profile ，rm命令就被替换为saferm脚本了。
+以上，安全删除的功能就完成了，自己偶尔手动清理下 TRASHDIR 中的文件。以下内容可选，是对该saferm脚本的补充。
+清理回收站脚本1、清理回收站脚本，cleartrash.sh
+#!/bin/bash# Clear files in trash that been removed 3 days ago.TRASHDIR="$&#123;HOME&#125;/.saferm/trash"CLEARLOG="$&#123;TRASHDIR&#125;/clear.log"[[ -d $&#123;TRASHDIR&#125; ]] \&amp;&amp; find $&#123;TRASHDIR&#125; -mindepth 1 -type d -mtime +2 \| xargs rm -rfv | tee -a $&#123;CLEARLOG&#125;
+
+2、使用方法编辑 .bash_profile ，添加内容
+# safermalias rm="/path/to/saferm.sh"alias cleartrash="/path/to/cleartrash.sh"
+添加内容完成， source .bash_profile ，然后就可以使用 cleartrash 命令清理回收站了。
+3、定时任务参考《Linux设置定时任务》，添加定时任务。
+crontab -e，添加定时任务，每天晚上执行一次：
+5 0 * * * /bin/bash /path/to/cleartrash.sh
+
+进阶saferm.sh 脚本存在一个严重bug：无法删除文件名带空格的文件，甚至会误删文件。因为Shell默认以空格、Tab、回车作为值与值之间的分隔符，而不是做为文件名的一部分。如果文件名中带空格，就会被认为是多个文件。
+修改 saferm.sh 如下：
+#!/bin/bashTRASHDIR="$&#123;HOME&#125;/.saferm/trash"[[ ! -d $&#123;TRASHDIR&#125; ]] &amp;&amp; mkdir -p $&#123;TRASHDIR&#125;function usage()&#123;    echo -e "    Brief: Move directories or files to ~/.local/trash           You can move 1-3 files with wildcard. More is unsupported.            If file name contains space, use quotation mark please.    Usage: alias rm=/path/to/saferm.sh            rm &lt;dir&gt;            rm &lt;file&gt;            rm *.&lt;filetype&gt;            rm &lt;file1&gt; &lt;file2&gt; &lt;file3&gt;    "&#125;function main()&#123;    local now=$(date "+%Y%m%d%H%M%S")    local destdir="$&#123;TRASHDIR&#125;/$&#123;now&#125;"    mkdir $&#123;destdir&#125;    local opt    while getopts "h" opt    do      case $opt in        h)          usage &amp;&amp; exit 0 ;;        \?)          usage &amp;&amp; exit 0 ;;      esac    done    local file1="$1"    local file2="$2"    local file3="$3"    local file4="$4"    local successfiles=""    [[ -n "$&#123;file1&#125;" ]] &amp;&amp; mv "$&#123;file1&#125;" $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file1&#125;    [[ -n "$&#123;file2&#125;" ]] &amp;&amp; mv "$&#123;file2&#125;" $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file2&#125;    [[ -n "$&#123;file3&#125;" ]] &amp;&amp; mv "$&#123;file3&#125;" $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file3&#125;    [[ -n "$&#123;file4&#125;" ]] &amp;&amp; echo -e "\033[31mYou can move 1-3 files with wildcard. More is unsupported.\033[0m"    if [[ -z "$&#123;successfiles&#125;" ]];then        echo -e "\033[31mNothing to do! Check the source filenames please!\033[0m"    else        echo -e "$&#123;successfiles&#125; have been moved to \033[31m$&#123;destdir&#125;\033[0m"    fi&#125;main "$@"
+
+]]></content>
+      <categories>
+        <category>专业</category>
+        <category>运维</category>
+        <category>shell</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>shell</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Shell脚本之循环读取文本</title>
     <url>/dev-shell-loop-read-file/</url>
     <content><![CDATA[需求已知mobile.txt为：
@@ -18055,45 +18324,6 @@ modify.sh内容为：
 或者使用for循环：
 #!/bin/bashfilename="applist.txt"lines=$(cat $&#123;filename&#125; | sed '/^$/d')linenum=$(echo "$&#123;lines&#125;" | wc -l)#echo -e "$&#123;lines&#125;"#echo -e "$&#123;linenum&#125;"for index in `seq 1 $&#123;lines&#125;`;do  #echo $&#123;index&#125;  line=$(echo "$&#123;lines&#125;" | sed -n "$&#123;index&#125;p")  app_id=$(echo $line | awk '&#123;print $1&#125;')  idc=$(echo $app_id | awk -F'.' '&#123;print $NF&#125;')  bash modify.sh $&#123;idc&#125; $&#123;app_id&#125;done
 
-
-]]></content>
-      <categories>
-        <category>专业</category>
-        <category>运维</category>
-        <category>shell</category>
-      </categories>
-      <tags>
-        <tag>linux</tag>
-        <tag>shell</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Shell脚本之安全删除</title>
-    <url>/dev-shell-saferm/</url>
-    <content><![CDATA[前言很多时候，我们会误删文件，那么一个回收站就很有必要了。看了一些回收站的实现，都比较复杂，干脆自己写一个。
-思路：使用mv替换rm，把想要删除的文件暂时移动到回收站。
-
-
-安全删除脚本1、编写安全删除脚本，saferm.sh
-#!/bin/bashTRASHDIR="$&#123;HOME&#125;/.saferm/trash"[[ ! -d $&#123;TRASHDIR&#125; ]] &amp;&amp; mkdir -p $&#123;TRASHDIR&#125;function usage()&#123;    echo -e "    Brief: move directory and files to ~/.local/trash    Usage: alias rm=/path/to/saferm.sh            rm &lt;dir&gt;            rm &lt;file&gt;            rm &lt;file1&gt; &lt;file2&gt;    "&#125;function main()&#123;    local now=$(date "+%Y%m%d%H%M%S")    local destdir="$&#123;TRASHDIR&#125;/$&#123;now&#125;"    mkdir $&#123;destdir&#125;    local opt    while getopts "h" opt    do      case $opt in        h)          usage &amp;&amp; exit 0 ;;        \?)          usage &amp;&amp; exit 0 ;;      esac    done    local files="$*"    local successfiles=""    for file in $&#123;files&#125;;do        mv $&#123;file&#125; $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file&#125;    done    if [[ -z "$&#123;successfiles&#125;" ]];then        echo -e "\033[31mNothing to do! Check the source filenames please!\033[0m"    else        echo -e "$&#123;successfiles&#125; have been moved to \033[31m$&#123;destdir&#125;\033[0m"    fi&#125;main "$@"
-
-2、使用方法编辑 .bash_profile ，添加内容
-# safermalias rm="/path/to/saferm.sh"
-添加内容完成， source .bash_profile ，rm命令就被替换为saferm脚本了。
-以上，安全删除的功能就完成了，自己偶尔手动清理下 TRASHDIR 中的文件。以下内容可选，是对该saferm脚本的补充。
-清理回收站脚本1、清理回收站脚本，cleartrash.sh
-#!/bin/bash# Clear files in trash that been removed 3 days ago.TRASHDIR="$&#123;HOME&#125;/.saferm/trash"CLEARLOG="$&#123;TRASHDIR&#125;/clear.log"[[ -d $&#123;TRASHDIR&#125; ]] \&amp;&amp; find $&#123;TRASHDIR&#125; -mindepth 1 -type d -mtime +2 \| xargs rm -rfv | tee -a $&#123;CLEARLOG&#125;
-
-2、使用方法编辑 .bash_profile ，添加内容
-# safermalias rm="/path/to/saferm.sh"alias cleartrash="/path/to/cleartrash.sh"
-添加内容完成， source .bash_profile ，然后就可以使用 cleartrash 命令清理回收站了。
-3、定时任务参考《Linux设置定时任务》，添加定时任务。
-crontab -e，添加定时任务，每天晚上执行一次：
-5 0 * * * /bin/bash /path/to/cleartrash.sh
-
-进阶saferm.sh 脚本存在一个严重bug：无法删除文件名带空格的文件，甚至会误删文件。因为Shell默认以空格、Tab、回车作为值与值之间的分隔符，而不是做为文件名的一部分。如果文件名中带空格，就会被认为是多个文件。
-修改 saferm.sh 如下：
-#!/bin/bashTRASHDIR="$&#123;HOME&#125;/.saferm/trash"[[ ! -d $&#123;TRASHDIR&#125; ]] &amp;&amp; mkdir -p $&#123;TRASHDIR&#125;function usage()&#123;    echo -e "    Brief: Move directories or files to ~/.local/trash           You can move 1-3 files with wildcard. More is unsupported.            If file name contains space, use quotation mark please.    Usage: alias rm=/path/to/saferm.sh            rm &lt;dir&gt;            rm &lt;file&gt;            rm *.&lt;filetype&gt;            rm &lt;file1&gt; &lt;file2&gt; &lt;file3&gt;    "&#125;function main()&#123;    local now=$(date "+%Y%m%d%H%M%S")    local destdir="$&#123;TRASHDIR&#125;/$&#123;now&#125;"    mkdir $&#123;destdir&#125;    local opt    while getopts "h" opt    do      case $opt in        h)          usage &amp;&amp; exit 0 ;;        \?)          usage &amp;&amp; exit 0 ;;      esac    done    local file1="$1"    local file2="$2"    local file3="$3"    local file4="$4"    local successfiles=""    [[ -n "$&#123;file1&#125;" ]] &amp;&amp; mv "$&#123;file1&#125;" $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file1&#125;    [[ -n "$&#123;file2&#125;" ]] &amp;&amp; mv "$&#123;file2&#125;" $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file2&#125;    [[ -n "$&#123;file3&#125;" ]] &amp;&amp; mv "$&#123;file3&#125;" $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file3&#125;    [[ -n "$&#123;file4&#125;" ]] &amp;&amp; echo -e "\033[31mYou can move 1-3 files with wildcard. More is unsupported.\033[0m"    if [[ -z "$&#123;successfiles&#125;" ]];then        echo -e "\033[31mNothing to do! Check the source filenames please!\033[0m"    else        echo -e "$&#123;successfiles&#125; have been moved to \033[31m$&#123;destdir&#125;\033[0m"    fi&#125;main "$@"
 
 ]]></content>
       <categories>
@@ -18166,13 +18396,19 @@ main.sh 脚本内容为：
       </tags>
   </entry>
   <entry>
-    <title>shell实用脚本</title>
+    <title>shell实用命令和脚本</title>
     <url>/dev-shell-script-collection/</url>
-    <content><![CDATA[前言好多shell脚本，写过就扔了，感觉很可惜。本文会不断更新，用于记录自我感觉良好的脚本。以后再遇到相似的需求，方便进行参考查找。
+    <content><![CDATA[前言好多shell命令和脚本，写过就扔了，感觉很可惜。本文持续更新，用于记录实用的常用的命令和脚本。以后再遇到相似的需求，方便进行参考查找。
 如果想要系统学习shell脚本编程，推荐学习阮一峰前辈的《Bash 脚本教程》。shell小技巧，可以参考《Linux shell 的实用小技巧》。
 
 
-短脚本查看系统版本lsb_release -a
+shell命令查看硬件配置cat /proc/cpuinfo | grep "cpu cores"free -hfree -mcat /proc/meminfolsblkdf -hlspci | grep -i vga # 最前面的序号是显卡代号lspci | grep -i nvidialspci -v -s 00:02.0
+
+查看系统版本lsb_release -acat /etc/issuecat /etc/os-releasecat /etc/centos-release
+
+查看是否是物理机dmidecode -s system-product-name
+
+查看系统日志dmesg -T
 
 查看命令属于哪个包1、centos
 yum makecache fastyum whatprovides lsb_release
@@ -18194,11 +18430,13 @@ tar -czvf filename.tar.gz filenametar -xzvf filename.tar.gz
 zip filename.zip filenameunzip filename.zip
 
 加密压缩和解压zip文件：
-zip -e filename.zip filenameunzip -P xxxxxx filename.zipfor i in *.zip;do unzip -P xxxxxx $i;done
+zip -er filename.zip filenamezip -er -P xxxxxx filename.zip filenamefor i in `ls`;do zip -er -P xxxxxx $i.zip $i;doneunzip -P xxxxxx filename.zipfor i in *.zip;do unzip -P xxxxxx $i;done
 
 解压中文名zip文件：
-brew updatebrew install unarunar -e GBK 中文名.zipunar -e GBK -p xxxxxx 中文名.zipfor i in *.zip;do unar -e GBK -p xxxxxx $i;done
+yum install unarunar -e GBK 中文名.zipunar -e GBK -p xxxxxx 中文名.zipfor i in *.zip;do unar -e GBK -p xxxxxx $i;done
 
+awk注意事项awk命令格式：awk [选项参数] &#39;script&#39; var=value file(s)
+这里需要特别注意的是，包裹script的是单引号，单引号，单引号！参考文档Linux awk 命令
 删除空行过滤hostlist.txt中的空行：
 cat hostlist.txt |tr -s '\n'cat hostlist.txt |sed '/^$/d'cat hostlist.txt |awk '&#123;if($0!="")print&#125;'cat hostlist.txt |awk '&#123;if(length!=0) print $0&#125;'grep -v "^$" hostlist.txt# 终极方法（linux和windows空行都适用）grep -v -e '^[[:space:]]*$' hostlist.txt
 
@@ -18320,9 +18558,23 @@ ping -c 3 -s 1472 -M do www.baidu.comping -c 3 -s 1473 -M do www.baidu.com
 
 时间和时间戳# 输出时间date# 输出时间并格式化date "+%Y-%m-%d %H:%M:%S"# 时间转时间戳（秒）date "+%s"# 时间转时间戳（微秒）microsecond=$(($(date "+%s%N")/1000000))# 时间戳（秒）转时间date -d @1612351314 "+%Y-%m-%d %H:%M:%S"
 
+查看进程和线程1、查看所有进程ps -ef 或者 ps aux
+2、查看所有进程，并且显示进程启动的全部命令ps auxww
+3、查看所有进程，并且显示进程的线程ps -efL
+4、查看某个进程的线程ps -T -p 12345
 根据端口找进程已知某进程监听22端口，怎样找到该进程的pid？怎样找到该进程启动命令？
-lsof -i:22netstat -npt | grep ":22"netstat -nlpt | grep ":22"ps -ef |grep $pid
+lsof -i:22netstat -npt | grep ":22"netstat -nlpt | grep ":22"ps -ef |grep 12345
 
+查看进程资源占用1、查看进程的实时资源占用top -p 12234或者 cat /proc/12345/status
+2、查看进程从启动到此刻的资源占用平均值ps aux | grep 12345
+参考文档：
+
+纠结ps和top的cpu占用率不一致问题
+/proc/pid/status简要分析
+Linux下进程信息/proc/pid/status的深入分析
+
+查看本机IP地址1、查看本机当前namespace所有IP地址ifconfig 或者 ip address
+2、获取某个网卡的IP地址ifconfig eth0 | awk &#39;NR==2{print $2}&#39;
 查看外网出口IPcurl myip.ipip.net
 cp须知unalias cp #避免cp命令被aliascp -f #强制覆盖cp -R #递归拷贝所有文件。对特殊文件（管道文件、块设备文件、字符设备文件）会进行创建而不是拷贝。cp -r #递归拷贝所有文件。所有source文件当做普通文件。cp -rf public/* voidking #递归拷贝所有文件，不包括隐藏文件cp -rf public/. voidking #递归拷贝所有文件，包括隐藏文件
 
@@ -18354,7 +18606,13 @@ rsync -P source destination
 –partial：保留部分传输的文件，也就是实现断点续传功能
 –progress：显示进度
 
-长脚本文件拆分需求1：大文件拆分成小文件，每50行拆分成一个文件。脚本1：
+查看局域网所有IP需求：查看当前局域网已经分配的IP，已知局域网为192.168.56.0/241、通过扫描获取最新的arp信息nmap -sP 192.168.56.0/24
+2、查看本地arp缓存cat /proc/net/arp | awk &#39;{print $1}&#39; | grep &#39;192.168&#39; | sort或者arp -a | awk &#39;{print $2}&#39; | grep &#39;192.168&#39; | sort
+根据IP排序需求：/proc/net/arp中的内容，根据IP进行排序
+cat /proc/net/arp | grep 192.168.56 | sort -t'.' -k1n,1 -k2n,2 -k3n,3 -k4n,4
+
+
+shell脚本文件拆分需求1：大文件拆分成小文件，每50行拆分成一个文件。脚本1：
 #!/bin/bashlinenum="50"bigfile="bigfile.txt"datadir="files"prefix="smallfile."mkdir -p $&#123;datadir&#125;split -l $&#123;linenum&#125; $&#123;bigfile&#125; -d -a 2 $&#123;datadir&#125;/$&#123;prefix&#125;
 
 需求2：大文件拆分成小文件，方便按比例进行变更。脚本2：
@@ -18372,15 +18630,22 @@ rsync -P source destination
 脚本：
 #!/bin/bashget_all_name="select name from app where app.deleted=0;"all_name=$(mysql -h192.168.56.100 -uroot -pmypassword -s -e "use vk;$&#123;get_all_name&#125;")echo "$&#123;all_name&#125;" &gt; name.txt
 
+
+
+
 ]]></content>
       <categories>
         <category>专业</category>
         <category>运维</category>
         <category>shell</category>
+        <category>网络</category>
+        <category>问题排查</category>
       </categories>
       <tags>
+        <tag>网络</tag>
         <tag>linux</tag>
         <tag>shell</tag>
+        <tag>问题排查</tag>
       </tags>
   </entry>
   <entry>
@@ -18721,6 +18986,11 @@ PS：构建并运行镜像
 docker build -t ubuntu-jq:16.04 .docker run ubuntu-jq:16.04
 
 从镜像还原DockerfileDockerImage="busybox-echo:1.25"docker history --format &#123;&#123;.CreatedBy&#125;&#125; --no-trunc=true $DockerImage |sed "s/\/bin\/sh\ -c\ \#(nop)\ //g"|sed "s/\/bin\/sh\ -c/RUN/g" | tac
+
+删除Dockerfile缓存docker build失败后，会产生缓存，可以通过下面的命令清除缓存
+docker rm $(docker ps -qf status=exited)docker rmi $(docker images -q -f dangling=true)
+
+
 
 ]]></content>
       <categories>
@@ -19127,10 +19397,10 @@ ifconfig docker0 down
         <category>centos</category>
       </categories>
       <tags>
+        <tag>nginx</tag>
         <tag>docker</tag>
         <tag>tomcat</tag>
         <tag>centos</tag>
-        <tag>nginx</tag>
         <tag>ubuntu</tag>
         <tag>jdk</tag>
       </tags>
@@ -19389,41 +19659,53 @@ docker hub上面的镜像命名方式为：&lt;username&gt;/&lt;imagename&gt;:&l
 1、查找镜像方法一：在docker hub上查找镜像，直接搜索即可方法二：使用命令行的工具搜索，例如搜索 busybox 镜像  
 docker search busyboxcurl -s "https://registry.hub.docker.com/v1/repositories/busybox/tags" | jq -r .[].name
 
-2、通过docker命令下载镜像，例如下载 busybox 镜像docker pull busybox:1.25
-3、查看本地镜像docker images
-创建/启动容器怎样创建/启动一个容器，并让它保持运行呢？答：在启动容器时，指定一个长期运行的前台进程作为1号进程。例如：docker run --name vk-busybox -d busybox:1.25 sleep 3600以上命令的含义： 
+2、通过docker命令下载镜像，例如下载 busybox 镜像  
+docker pull busybox:1.25
 
-docker run 表示启动一个容器
-–name 指定容器名为 vk-busybox
--d 表示后台运行容器，并返回容器id
-busybox:1.25 是镜像名
-sleep 是1号进程，3600是sleep的参数
+3、查看本地镜像  
+docker images
 
-启停容器1、怎样停止一个正在运行的容器？docker stop vk-busybox
-2、怎样再次运行一个已经停止的容器？docker start vk-busybox
-开机启动容器通过 systemctl enable docker ，我们已经设置了docker程序的开机自启动。怎样让我们的容器也开机自启动呢？答：使用restart参数。
+镜像选择如果一个软件有很多版本的镜像，该怎么选择？1、如果对软件版本有要求，那么按照版本要求下载。2、如果对软件版本没有要求，那么选择下载3到6个月前的版本，最好是大版本的最后一个小版本。因为如果版本太新，就容易当小白鼠，可能有很多未知的坑。而老一点的版本，遇到问题一般也能搜索到解决办法。
+创建/启动容器怎样创建/启动一个容器，并让它保持运行呢？答：在启动容器时，指定一个长期运行的前台进程作为1号进程。例如：  
+docker run --name vk-busybox -d busybox:1.25 sleep 3600```  以上命令的含义： - docker run 表示启动一个容器- --name 指定容器名为 vk-busybox- -d 表示后台运行容器，并返回容器id- busybox:1.25 是镜像名- sleep 是1号进程，3600是sleep的参数## 启停容器1、怎样停止一个正在运行的容器？```bashdocker stop vk-busybox
+
+2、怎样再次运行一个已经停止的容器？
+docker start vk-busybox
+
+开机启动容器1、开机启动docker
+systemctl enable docker
+
+2、开机启动容器
 docker run --restart=always vk-busyboxdocker update --restart=always vk-busybox
 
 查看容器容器启动后，怎么查看这些容器？答：使用docker ps命令或者docker inspect命令。  
-1、查看运行中的容器docker ps
-2、查看历史容器docker ps -l
-3、查看所有容器docker ps -a
-4、查看容器启动命令docker ps --no-trunc
-5、查看容器详细信息  
+查看运行中的容器  
+docker ps
+
+查看历史容器  
+docker ps -l
+
+查看所有容器  
+docker ps -a
+
+查看容器启动命令  
+docker ps --no-trunc
+
+查看容器详细信息  
 docker inspect &lt;container_name&gt;docker inspect &lt;container_id&gt;
 
 查看容器日志1、查看容器日志
 docker logs &lt;container_name&gt;docker logs --tail=100 &lt;container_name&gt;
 
-2、查找容器日志docker logs --tail=100 vk-busybox | grep xxx
-管道符只对stdout有效，如果容器日志输出到了stderr，就会发现grep无效，这时就需要重定向。docker logs --tail=100 vk-busybox 2&gt;&amp;1 | grep xxx
-进入容器容器启动后，怎样进入一个容器？答：使用docker exec命令。docker exec -it vk-busybox /bin/sh
+2、查找容器日志
+docker logs --tail=100 vk-busybox | grep xxxdocker logs --tail=100 vk-busybox 2&gt;&amp;1 | grep xxx
+
+管道符只对stdout有效，如果容器日志输出到了stderr，就会发现grep无效，这时就需要重定向。
+进入容器容器启动后，怎样进入一个容器？   
+docker exec -it vk-busybox /bin/sh
+
 修改容器并保存进入容器后，我们对容器进行了修改，比如创建了一个文件 /tmp/test.txt 。现在想要把这个容器保存成镜像，方便以后复用，该怎么操作？答：使用docker commit命令，类似于git commit。  
-docker commit vk-busybox voidking/vk-busybox:v1.0以上命令，把修改后的 vk-busybox 容器保存成了镜像 voidking/vk-busybox:v1.0 。docker commit时，除了使用容器名称，也可以使用容器id。
-分享镜像我们在本地保存了 voidking/vk-busybox:v1.0 镜像，怎样把它分享出去？答：使用docker push命令，类似于git push。docker push voidking/vk-busybox:v1.0该命令把 voidking/vk-busybox:v1.0 镜像推送到 docker hub，所属账户为 voidking 。  
-记得push前，需要docker login，进行登录鉴权。
-修改镜像名修改镜像名，上传到自己的镜像仓库
-docker tag voidking/vk-busybox:v1.0 harbor.voidking.com/voidking/vk-busybox:v1.0docker login harbor.voidking.comdocekr push harbor.voidking.com/voidking/vk-busybox:v1.0
+docker commit vk-busybox voidking/vk-busybox:v1.0```  以上命令，把修改后的 vk-busybox 容器保存成了镜像 voidking/vk-busybox:v1.0 。  docker commit时，除了使用容器名称，也可以使用容器id。## 分享镜像我们在本地保存了 voidking/vk-busybox:v1.0 镜像，怎样把它分享出去？  答：使用docker push命令，类似于git push。  ```bashdocker push voidking/vk-busybox:v1.0```  该命令把 voidking/vk-busybox:v1.0 镜像推送到 docker hub，所属账户为 voidking 。  记得push前，需要docker login，进行登录鉴权。## 修改镜像名修改镜像名，上传到自己的镜像仓库```bashdocker tag voidking/vk-busybox:v1.0 harbor.voidking.com/voidking/vk-busybox:v1.0docker login harbor.voidking.comdocekr push harbor.voidking.com/voidking/vk-busybox:v1.0
 
 如果报错：Get https://harbor.voidking.com:80/v2/: http: server gave HTTP response to HTTPS client那么可以通过修改docker配置解决：1、修改/etc/docker/daemon.json，添加
 &#123;    "insecure-registries": ["harbor.voidking.com:80"]&#125;
@@ -19461,6 +19743,16 @@ ll /proc/$$/nsll /proc/&lt;pid&gt;/ns
 
 在容器net namespace执行命令（需要宿主机上有route命令）  
 nsenter -t &lt;pid&gt; -n ip addnsenter -t &lt;pid&gt; -n route -nnsenter -t &lt;pid&gt; -n iptables -A OUTPUT -p tcp --dport 7535 -j DROP
+
+查找占用某个端口的容器以查找占用80端口的容器为例。
+1、查找进程ID
+netstat -nlp | grep 80
+看到进程为 10538/docker-proxy
+2、容器IP
+ps -Af | grep 10538
+看到容器启动信息为 /usr/bin/docker-proxy -proto tcp -host-ip 0.0.0.0 -host-port 80 -container-ip  -container-port 8000
+3、找到容器
+docker inspect &lt;container_id&gt; | grep IPAddressdocker inspect &lt;container_id&gt; | grep 172.23.0.4
 
 书签什么是Docker?
 docker入门教程
@@ -19599,8 +19891,8 @@ SpringMVC+Spring4+Mybatis3集成，开发简单Web项目+源码下载
       <categories>
         <category>专业</category>
         <category>开发</category>
-        <category>工具</category>
         <category>java</category>
+        <category>工具</category>
         <category>编辑器</category>
       </categories>
       <tags>
@@ -19699,8 +19991,8 @@ Working directory：$FileDir$
         <category>专业</category>
         <category>开发</category>
         <category>python</category>
-        <category>工具</category>
         <category>java</category>
+        <category>工具</category>
         <category>编辑器</category>
       </categories>
       <tags>
@@ -20670,8 +20962,8 @@ confluence语言包下载页https://translations.atlassian.com/dashboard/downloa
       <categories>
         <category>专业</category>
         <category>运维</category>
-        <category>工具</category>
         <category>centos</category>
+        <category>工具</category>
         <category>wiki</category>
       </categories>
       <tags>
@@ -23112,8 +23404,8 @@ nginx指定404 No input file specifiedhttp://coolnull.com/238.html
         <category>php</category>
       </categories>
       <tags>
-        <tag>centos</tag>
         <tag>nginx</tag>
+        <tag>centos</tag>
         <tag>thinkphp</tag>
         <tag>pathinfo</tag>
       </tags>
@@ -24182,9 +24474,9 @@ PS：渲染文档同样由后端负责编写。后端渲染虽然不便于前后
         <category>专业</category>
       </categories>
       <tags>
-        <tag>git</tag>
         <tag>jira</tag>
         <tag>wiki</tag>
+        <tag>git</tag>
       </tags>
   </entry>
   <entry>
@@ -24339,12 +24631,14 @@ virtualbox中ubuntu硬盘扩展，Gparted无法进入图形界面http://blog.sin
         <category>centos</category>
         <category>网络</category>
         <category>ubuntu</category>
+        <category>virtualbox</category>
       </categories>
       <tags>
         <tag>网络</tag>
         <tag>centos</tag>
         <tag>ubuntu</tag>
         <tag>ssh</tag>
+        <tag>virtualbox</tag>
         <tag>xshell</tag>
         <tag>xftp</tag>
       </tags>
@@ -27881,8 +28175,8 @@ Git与svn的区别http://blog.csdn.net/huacuilaifa/article/details/19124635
         <category>android</category>
       </categories>
       <tags>
-        <tag>git</tag>
         <tag>android</tag>
+        <tag>git</tag>
       </tags>
   </entry>
   <entry>
@@ -28777,10 +29071,14 @@ Ubuntu内核的重新编译安装http://www.linuxidc.com/Linux/2009-12/23721.htm
   <entry>
     <title>VirtualBox Ubuntu共享文件夹</title>
     <url>/dev-virtualbox-ubuntu-share/</url>
-    <content><![CDATA[设置步骤1、设置，共享文件夹，添加，选择共享文件夹路径（假设为E:\VirtualBoxShare，对应共享文件夹名称为VirtualBoxShare），注意此时不要勾选自动挂载。2、启动Ubuntu，打开Terminal。3、cd /mnt/4、sudo mkdir shared5、sudo mount -t vboxsf VirtualBoxShare /mnt/shared/6、cd shared，ll
+    <content><![CDATA[挂载共享文件夹1、设置，共享文件夹，添加，选择共享文件夹路径（假设为E:\VirtualBoxShare，对应共享文件夹名称为VirtualBoxShare），注意此时不要勾选自动挂载。
+2、启动Ubuntu，打开Terminal。
+3、挂载共享文件夹
+cd /mnt/sudo mkdir sharedsudo mount -t vboxsf VirtualBoxShare /mnt/shared/cd sharedll
 
 
-卸载如果想卸载，可运行命令：sudo umount -f /mnt/shared
+
+共享文件夹如果想卸载，可运行命令：sudo umount -f /mnt/shared
 参考文档virtualbox+ubuntu设置共享文件夹
 virtualbox中ubuntu和windows共享文件夹设置
 ]]></content>
@@ -28789,6 +29087,7 @@ virtualbox中ubuntu和windows共享文件夹设置
         <category>运维</category>
         <category>ubuntu</category>
         <category>linux</category>
+        <category>virtualbox</category>
       </categories>
       <tags>
         <tag>linux</tag>
@@ -29050,8 +29349,8 @@ git-scmhttp://git-scm.com/
         <category>hexo</category>
       </categories>
       <tags>
-        <tag>git</tag>
         <tag>hexo</tag>
+        <tag>git</tag>
         <tag>ssh</tag>
       </tags>
   </entry>
@@ -29999,6 +30298,25 @@ alter table userbase add constraint fk_username foreign key(username) references
       </tags>
   </entry>
   <entry>
+    <title>坐功入静</title>
+    <url>/hobby-dhyana-meditation/</url>
+    <content><![CDATA[作者：那秋生
+
+坐功是静功里最要紧的一个环节，坐功是入静的第一步。坐功有静坐功和动静兼修两种。
+
+李渔《闲情偶寄·颐养》曰：“益寿之方，全凭导引；安生之计，惟赖坐功。”儒家提倡“静坐”。王阳明说：“静坐要省察克治，静坐能使心清静收敛，从而克服自我私欲产生，通过静坐能顿悟明心见性，得道成真。”
+道家主张“坐忘”。《庄子·大宗师》：“堕肢体，黜聪明，离形去知，同于大通，此谓坐忘。”即摆脱现实形体的束缚，与自然融为一体，两两相忘。佛家的功夫是“坐禅”。音译“禅那”，简称“禅”，意谓思维修或静虑，就是趺坐而修禅，是佛教修持的主要方法之一。
+现代人就是坐不住，成天跑东跑西、忙这忙那，就像丢了魂似的，悲乎！
+]]></content>
+      <categories>
+        <category>爱好</category>
+        <category>读书</category>
+      </categories>
+      <tags>
+        <tag>笔记</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>自由与理想</title>
     <url>/hobby-freedom-and-ideal/</url>
     <content><![CDATA[作者：吴晓波
@@ -30037,25 +30355,6 @@ alter table userbase add constraint fk_username foreign key(username) references
       </categories>
       <tags>
         <tag>读者</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>坐功入静</title>
-    <url>/hobby-dhyana-meditation/</url>
-    <content><![CDATA[作者：那秋生
-
-坐功是静功里最要紧的一个环节，坐功是入静的第一步。坐功有静坐功和动静兼修两种。
-
-李渔《闲情偶寄·颐养》曰：“益寿之方，全凭导引；安生之计，惟赖坐功。”儒家提倡“静坐”。王阳明说：“静坐要省察克治，静坐能使心清静收敛，从而克服自我私欲产生，通过静坐能顿悟明心见性，得道成真。”
-道家主张“坐忘”。《庄子·大宗师》：“堕肢体，黜聪明，离形去知，同于大通，此谓坐忘。”即摆脱现实形体的束缚，与自然融为一体，两两相忘。佛家的功夫是“坐禅”。音译“禅那”，简称“禅”，意谓思维修或静虑，就是趺坐而修禅，是佛教修持的主要方法之一。
-现代人就是坐不住，成天跑东跑西、忙这忙那，就像丢了魂似的，悲乎！
-]]></content>
-      <categories>
-        <category>爱好</category>
-        <category>读书</category>
-      </categories>
-      <tags>
-        <tag>笔记</tag>
       </tags>
   </entry>
   <entry>
