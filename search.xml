@@ -30,7 +30,7 @@ Mumshad Mannambeth Courses
 身份检测：考官查看考生证件，比如护照（身份证不行，需要有照片和Latin字母写的全名）。
 环境检测：考官通过摄像头检查房间，要求房间只有考生一个人，桌子只能放电脑，没有其他东西。
 软件检测：考官要求打开任务管理器，确认除浏览器之外的没有其他任务，确认无误后考试开始。
-要求Chrome浏览器当前只能有一个tab页（就是考试系统），考试过程中可以再打开一个tap页用于访问Kubernetes文档，就是说考试全程最多两个tab页。
+要求Chrome浏览器当前只能有一个tab页（就是考试系统），考试过程中可以再打开一个tab页用于访问Kubernetes文档，就是说考试全程最多两个tab页。
 CKA一共180分钟，25道题；CKAD一共120分钟，20道题。
 考试的网页一半是试题，一半是GateOne的终端界面。
 考试中不能喝水、吃东西，可以申请休息。
@@ -342,91 +342,6 @@ curl http://8.136.13.58curl http://8.136.13.58 -L
       </tags>
   </entry>
   <entry>
-    <title>rsync命令的安装使用</title>
-    <url>/dev-rsync-command/</url>
-    <content><![CDATA[rsync命令简介
-rsync is an open source utility that provides fast incremental file transfer. rsync is freely available under the GNU General Public License and is currently being maintained by Wayne Davison.
-
-
-rsync是一个开源的提供快速增量文件传输的工具。rsync使用GNU协议，当前维护者是Wayne Davison。
-
-rsync是开源的增量传输工具，速度很快。基本原理是文件分块检查md5，相同就不再传输，不同就增量传输。rsync可以代替本地拷贝命令cp，也可以代替远程拷贝命令scp。
-参考文档：
-
-rsync官网
-rsync文档
-archlinux - rsync
-rsync 文件同步
-详解rsync算法–如何减少同步文件时的网络传输量
-
-
-
-安装rsynccentosyum install -y rsync
-
-rsync命令说明命令格式#Local:    rsync [OPTION...] SRC... [DEST]#Access via remote shell:    #Pull:        rsync [OPTION...] [USER@]HOST:SRC... [DEST]    #Push:        rsync [OPTION...] SRC... [USER@]HOST:DEST#Access via rsync daemon:    #Pull:        rsync [OPTION...] [USER@]HOST::SRC... [DEST]        rsync [OPTION...] rsync://[USER@]HOST[:PORT]/SRC... [DEST]    #Push:        rsync [OPTION...] SRC... [USER@]HOST::DEST        rsync [OPTION...] SRC... rsync://[USER@]HOST[:PORT]/DEST)
-
-特别注意：
-
-SRC目录后面加/，表示拷贝SRC中的内容到DEST目录中
-SRC目录后面不加/，表示在DEST目录中新建一个SRC目录，然后SRC中的内容到DEST/SRC
-DEST目录后加不加/不做区别
-
-常用参数
--v：显示传输的过程，-vvvv可以获取更详细信息
-–partial：保留部分传输的文件，也就是实现断点续传功能
-–progress：显示进度
--P：–partial 和 –progress的集合
--r：–recursive 对子目录以递归模式处理
--t：–times，保持mtime属性。
--o：–owner，保持owner属性
--p：–perms：保持perms属性（权限）
--g：–group：保持group属性（所属组）
-–device：拷贝设备文件
-–specials：拷贝特殊文件
--D：–device和–specials的集合
--l：–links 拷贝软链接，而非软链接指向的对象
--L：拷贝软链接，以及软链接指向的对象
--a：–archive 归档模式，对子目录以递归模式处理，并且保持文件属性。等同于-rtopgDl
--z：传输时进行压缩提高传输效率
-–exclude：排除不需要传输的文件
-–include：指定必须要传输的文件
--b：–backup 对目标上已存在的文件做一个备份，备份的文件名默认使用~做后缀
-–backup-dir：指定备份文件的保存路径
--u：–update 仅在源mtime比目标mtime新时才拷贝
-–delete：以SRC为主，对DEST进行同步。多则删，少则补。
-–dry-run：模拟运行rsync，而不真正传输
-e：指定要使用的远程shell程序，默认是ssh
-existing：只更新目标端已存在的文件，目标端不存在的文件不传输
-ignore-existing：只更新目标端不存在的文件，目标端存在的文件不传输
-W：–whole-file 全量传输，而不是默认的增量传输
-
-特别注意：
-
-不加-t参数，如果两个文件的md5相同，mtime不同，传输时会更改目标文件的mtime为当前时间，增量修改。
-加上-t参数，如果两个文件的md5相同，mtime不同，传输时会更改目标文件的mtime和源文件相同，增量修改。
-
-更多内容参考 rsync文档
-使用rsync本地拷贝断点续传需求：本地拷贝/opt/nginx目录中的所有文件，到/opt/nginx.bak，断点续传
-rsync -P -avz /opt/nginx/ /opt/nginx.bak/
-
-远程拷贝断点续传需求：拷贝本地/opt/nginx目录中的所有文件，到远程服务器192.168.56.102:/opt/nginx目录中，断点续传
-rsync -P -avz /opt/nginx/ 192.168.56.102:/opt/nginx/
-
-
-
-
-
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>devops</category>
-      </categories>
-      <tags>
-        <tag>linux</tag>
-        <tag>shell</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>K8S配置使用imagePullSecrets</title>
     <url>/dev-k8s-imagepullsecrets/</url>
     <content><![CDATA[前言《Harbor入门篇》一文中，我们已经安装配置好了Harbor。本文中，我们来学习一下怎样在K8S中配置使用imagePullSecrets，从Harbor或者其他私有镜像仓库拉取镜像。
@@ -694,6 +609,106 @@ TODOtutorial.py详解、传参、接口调用airflow + django
       </tags>
   </entry>
   <entry>
+    <title>Python操作MySQL</title>
+    <url>/dev-python-mysql/</url>
+    <content><![CDATA[前言python操作mysql数据库进行增删查改，是经常遇到的需求，下面整理一下具体操作方法。
+数据库准备1、安装配置好mysql参考《使用Docker安装配置Mysql》
+2、创建一个测试用的数据库
+create database vkphp default character set utf8 collate utf8_general_ci;use vkphp;CREATE TABLE IF NOT EXISTS `user` (  `id` int(8) NOT NULL AUTO_INCREMENT,  `name` varchar(32) NOT NULL,  `password` varchar(32) NOT NULL DEFAULT '',  PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+更多命令参考 《MySQL常用命令》
+
+
+安装依赖pip3 install mysqlclient==1.3.13
+插入数据#!/usr/bin/python3# -*- coding: UTF-8 -*-import MySQLdb# 打开数据库连接db = MySQLdb.connect(host="localhost",                     port="3306",                    user="root",                     password="voidking",                     database="vkphp",                     charset='utf8')# 使用cursor()方法获取操作游标 cursor = db.cursor()# SQL 插入语句sql = "insert into `user` (`name`,`password`) values('haojin','voidking');"try:   # 执行sql语句   cursor.execute(sql)   # 提交到数据库执行   db.commit()except:   # 发生错误时回滚   db.rollback()# 关闭数据库连接db.close()
+
+其他操作参考Python 操作 MySQL 数据库。
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>python</category>
+        <category>database</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>mysql</tag>
+        <tag>测试</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Python重试</title>
+    <url>/dev-python-retry/</url>
+    <content><![CDATA[为什么需要重试？典型场景：程序的实现需要调用第三方的API，但是我们并不能保证第三方API一直好用，也不能保证网络一直畅通，所以在调用第三方API时需要加上错误重试。  
+通用场景：程序的运行不符合预期，我们知道再次调用大概率可以使之符合预期，这时就需要重试。  
+而重试逻辑我们可以通过循环多次调用实现，也可以使用封装好的重试模块。本文我们就学习一下Python中比较流行的 retrying 模块，实现一些重试Demo。
+
+
+安装retryingpip install retrying
+任意异常重试from retrying import retry@retry(stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrorif __name__ == '__main__':    run()
+
+当函数run抛出任意异常时，则进行重试。
+
+stop_max_attempt_number：最大重试次数
+wait_random_min：最小重试间隔
+wait_random_max：最大重试间隔
+
+注意函数内不要使用try except，否则异常就被函数自己捕获处理了，不会抛给retry。
+指定异常重试from retrying import retryimport randomdef if_value_error(exception):    return isinstance(exception, ValueError)@retry(retry_on_exception=if_value_error, stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    value = random.randint(0, 10)    msg = f'value is &#123;value&#125;'    print(msg)    if value &lt;= 5:        raise ValueError('value is too small!')    else:        raise Exception('value is too large!')if __name__ == '__main__':    run()
+
+当函数run抛出ValueError异常时，则进行重试；抛出Exception异常时，不会重试。
+指定返回值重试from retrying import retryimport randomdef if_return_small(value):    return value &lt;= 5@retry(retry_on_result=if_return_small, stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    value = random.randint(0, 10)    msg = f'value is &#123;value&#125;'    print(msg)    return valueif __name__ == '__main__':    run()
+
+当函数run返回值小于5时，进行重试。
+多次重试后容忍异常from retrying import retry@retry(stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrordef run2():    print('run2')if __name__ == '__main__':    run()    run2()
+
+当函数run抛出任意异常时，则进行重试。重试指定次数后，程序就异常结束了。这时，如果我们想要容忍异常，让run2可以正常运行，该怎么办呢？很简单，给run函数包裹一个try except即可。
+from retrying import retry@retry(wrap_exception=True,stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrordef wrap_run():    try:        run()    except:        passdef run2():    print('run2')if __name__ == '__main__':    wrap_run()    run2()
+
+
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>python</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Python单元测试</title>
+    <url>/dev-python-unittest/</url>
+    <content><![CDATA[unittest简介unittest是一个Python单元测试框架。它受到 JUnit 的启发，与其他语言中的主流单元测试框架有着相似的风格。其支持测试自动化，配置共享和关机代码测试。支持将测试样例聚合到测试集中，并将测试与报告框架独立。
+主要参考 unittest - 单元测试框架。
+
+
+脚本编写新建一个 tests/test_demo.py 脚本，内容如下：
+import unittestclass TestStringMethods(unittest.TestCase):    def test_upper(self):        self.assertEqual('foo'.upper(), 'FOO')    def test_isupper(self):        self.assertTrue('FOO'.isupper())        self.assertFalse('Foo'.isupper())    def test_split(self):        s = 'hello world'        self.assertEqual(s.split(), ['hello', 'world'])        # check that s.split fails when the separator is not a string        with self.assertRaises(TypeError):            s.split(2)if __name__ == '__main__':    unittest.main()
+
+继承 unittest.TestCase 就创建了一个测试样例。上述三个独立的测试是三个类的方法，这些方法的命名都以 test 开头。 这个命名约定告诉测试运行者类的哪些方法表示测试。
+每个测试的关键是：调用 assertEqual() 来检查预期的输出； 调用 assertTrue() 或 assertFalse() 来验证一个条件；调用 assertRaises() 来验证抛出了一个特定的异常。
+通过 setUp() 和 tearDown() 方法，可以设置测试开始前与完成后需要执行的指令。
+最后的代码块中，演示了运行测试的一个简单的方法。 unittest.main() 提供了一个测试脚本的命令行接口。
+执行测试方法一：脚本级别调用（直接运行脚本）
+python tests/test_demo.pypython tests/test_demo.py -vpython -m unittest tests/test_demo.py
+
+方法二：包、模块、类和方法级别调用
+# 包级别调用（进入tests目录查找所有test_*.py文件并运行）python -m unittest discover -s tests -p "test_*.py"# 模块级别调用python -m unittest tests.test_demo# 类级别调用python -m unittest tests.test_demo.TestStringMethods# 方法级别调用python -m unittest tests.test_demo.TestStringMethods.test_upper
+
+单元测试之mock单元测试时，如果涉及网络请求，建议使用mock模块来模拟。
+import jsonimport unittestfrom unittest import mockimport requestsdef request_system(method: str, url: str, data=&#123;&#125;):    headers = &#123;        'Content-Type': 'application/json'    &#125;    response = requests.request(method=method, url=url, headers=headers, data=json.dumps(data))    return responsedef login(username: str, password: str):    # 以下接口暂时访问不通    LOGIN_URL='http://127.0.0.1/login'    data = &#123;        'username': username,        'password': password    &#125;    response = request_system('POST', LOGIN_URL)    if response.status == 200:        return json.loads(response.text)    else:        return Noneclass TestMockMethods(unittest.TestCase):    def test_request_system(self):        mock_response = mock.Mock()        mock_response.status_code = 200        mock_response.text = json.dumps(&#123;"code": 0, "msg":"success"&#125;)        request_system = mock.Mock(return_value=mock_response)        response = request_system(method='POST',url='http://127.0.0.1/')        print(response.status_code)        print(response.text)        self.assertEqual(200, response.status_code)    def test_login(self):        login = mock.Mock(return_value=&#123;"code": 0, "msg":"success"&#125;)        data = login(username='voidking',password='voidking')        print(data)        self.assertEqual(0, data.get('code'))if __name__ == '__main__':    unittest.main()
+
+这种模拟测试方式很巧妙，适合测试访问第三方接口，但是并不会真正发出请求。另一个问题来了，Python怎么测试自己的接口？不知道。想到以前使用Beego框架进行开发，它的单元测试就很巧妙，先在测试数据库插入数据，然后通过beego.BeeApp.Handlers.ServeHTTP(w, r)把自己临时启动起来，最后自己的单元测试调用自己的接口。其中的关键在于把自己启动起来，理论上Python也能做到。
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>python</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>测试</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Python小技巧</title>
     <url>/dev-python-tricks/</url>
     <content><![CDATA[语法检查pylint 是一个能够检查Python编码质量、编码规范的工具。它分析 Python 代码中的错误，查找不符合代码风格标准（Pylint 默认使用的代码风格是 PEP 8）和有潜在问题的代码。
@@ -741,67 +756,6 @@ Google Python风格指南
       </categories>
       <tags>
         <tag>python</tag>
-        <tag>测试</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Python单元测试</title>
-    <url>/dev-python-unittest/</url>
-    <content><![CDATA[unittest简介unittest是一个Python单元测试框架。它受到 JUnit 的启发，与其他语言中的主流单元测试框架有着相似的风格。其支持测试自动化，配置共享和关机代码测试。支持将测试样例聚合到测试集中，并将测试与报告框架独立。
-主要参考 unittest - 单元测试框架。
-
-
-脚本编写新建一个 tests/test_demo.py 脚本，内容如下：
-import unittestclass TestStringMethods(unittest.TestCase):    def test_upper(self):        self.assertEqual('foo'.upper(), 'FOO')    def test_isupper(self):        self.assertTrue('FOO'.isupper())        self.assertFalse('Foo'.isupper())    def test_split(self):        s = 'hello world'        self.assertEqual(s.split(), ['hello', 'world'])        # check that s.split fails when the separator is not a string        with self.assertRaises(TypeError):            s.split(2)if __name__ == '__main__':    unittest.main()
-
-继承 unittest.TestCase 就创建了一个测试样例。上述三个独立的测试是三个类的方法，这些方法的命名都以 test 开头。 这个命名约定告诉测试运行者类的哪些方法表示测试。
-每个测试的关键是：调用 assertEqual() 来检查预期的输出； 调用 assertTrue() 或 assertFalse() 来验证一个条件；调用 assertRaises() 来验证抛出了一个特定的异常。
-通过 setUp() 和 tearDown() 方法，可以设置测试开始前与完成后需要执行的指令。
-最后的代码块中，演示了运行测试的一个简单的方法。 unittest.main() 提供了一个测试脚本的命令行接口。
-执行测试方法一：脚本级别调用（直接运行脚本）
-python tests/test_demo.pypython tests/test_demo.py -vpython -m unittest tests/test_demo.py
-
-方法二：包、模块、类和方法级别调用
-# 包级别调用（进入tests目录查找所有test_*.py文件并运行）python -m unittest discover -s tests -p "test_*.py"# 模块级别调用python -m unittest tests.test_demo# 类级别调用python -m unittest tests.test_demo.TestStringMethods# 方法级别调用python -m unittest tests.test_demo.TestStringMethods.test_upper
-
-单元测试之mock单元测试时，如果涉及网络请求，建议使用mock模块来模拟。
-import jsonimport unittestfrom unittest import mockimport requestsdef request_system(method: str, url: str, data=&#123;&#125;):    headers = &#123;        'Content-Type': 'application/json'    &#125;    response = requests.request(method=method, url=url, headers=headers, data=json.dumps(data))    return responsedef login(username: str, password: str):    # 以下接口暂时访问不通    LOGIN_URL='http://127.0.0.1/login'    data = &#123;        'username': username,        'password': password    &#125;    response = request_system('POST', LOGIN_URL)    if response.status == 200:        return json.loads(response.text)    else:        return Noneclass TestMockMethods(unittest.TestCase):    def test_request_system(self):        mock_response = mock.Mock()        mock_response.status_code = 200        mock_response.text = json.dumps(&#123;"code": 0, "msg":"success"&#125;)        request_system = mock.Mock(return_value=mock_response)        response = request_system(method='POST',url='http://127.0.0.1/')        print(response.status_code)        print(response.text)        self.assertEqual(200, response.status_code)    def test_login(self):        login = mock.Mock(return_value=&#123;"code": 0, "msg":"success"&#125;)        data = login(username='voidking',password='voidking')        print(data)        self.assertEqual(0, data.get('code'))if __name__ == '__main__':    unittest.main()
-
-这种模拟测试方式很巧妙，适合测试访问第三方接口，但是并不会真正发出请求。另一个问题来了，Python怎么测试自己的接口？不知道。想到以前使用Beego框架进行开发，它的单元测试就很巧妙，先在测试数据库插入数据，然后通过beego.BeeApp.Handlers.ServeHTTP(w, r)把自己临时启动起来，最后自己的单元测试调用自己的接口。其中的关键在于把自己启动起来，理论上Python也能做到。
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>python</category>
-      </categories>
-      <tags>
-        <tag>python</tag>
-        <tag>测试</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Python操作MySQL</title>
-    <url>/dev-python-mysql/</url>
-    <content><![CDATA[前言python操作mysql数据库进行增删查改，是经常遇到的需求，下面整理一下具体操作方法。
-数据库准备1、安装配置好mysql参考《使用Docker安装配置Mysql》
-2、创建一个测试用的数据库
-create database vkphp default character set utf8 collate utf8_general_ci;use vkphp;CREATE TABLE IF NOT EXISTS `user` (  `id` int(8) NOT NULL AUTO_INCREMENT,  `name` varchar(32) NOT NULL,  `password` varchar(32) NOT NULL DEFAULT '',  PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-更多命令参考 《MySQL常用命令》
-
-
-安装依赖pip3 install mysqlclient==1.3.13
-插入数据#!/usr/bin/python3# -*- coding: UTF-8 -*-import MySQLdb# 打开数据库连接db = MySQLdb.connect(host="localhost",                     port="3306",                    user="root",                     password="voidking",                     database="vkphp",                     charset='utf8')# 使用cursor()方法获取操作游标 cursor = db.cursor()# SQL 插入语句sql = "insert into `user` (`name`,`password`) values('haojin','voidking');"try:   # 执行sql语句   cursor.execute(sql)   # 提交到数据库执行   db.commit()except:   # 发生错误时回滚   db.rollback()# 关闭数据库连接db.close()
-
-其他操作参考Python 操作 MySQL 数据库。
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>python</category>
-        <category>database</category>
-      </categories>
-      <tags>
-        <tag>python</tag>
-        <tag>mysql</tag>
         <tag>测试</tag>
       </tags>
   </entry>
@@ -869,45 +823,6 @@ Python黑魔法手册
 Python Cookbook 3rd Edition Documentation
 Google Python风格指南
 unittest - 单元测试框架
-
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>python</category>
-      </categories>
-      <tags>
-        <tag>python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Python重试</title>
-    <url>/dev-python-retry/</url>
-    <content><![CDATA[为什么需要重试？典型场景：程序的实现需要调用第三方的API，但是我们并不能保证第三方API一直好用，也不能保证网络一直畅通，所以在调用第三方API时需要加上错误重试。  
-通用场景：程序的运行不符合预期，我们知道再次调用大概率可以使之符合预期，这时就需要重试。  
-而重试逻辑我们可以通过循环多次调用实现，也可以使用封装好的重试模块。本文我们就学习一下Python中比较流行的 retrying 模块，实现一些重试Demo。
-
-
-安装retryingpip install retrying
-任意异常重试from retrying import retry@retry(stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrorif __name__ == '__main__':    run()
-
-当函数run抛出任意异常时，则进行重试。
-
-stop_max_attempt_number：最大重试次数
-wait_random_min：最小重试间隔
-wait_random_max：最大重试间隔
-
-注意函数内不要使用try except，否则异常就被函数自己捕获处理了，不会抛给retry。
-指定异常重试from retrying import retryimport randomdef if_value_error(exception):    return isinstance(exception, ValueError)@retry(retry_on_exception=if_value_error, stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    value = random.randint(0, 10)    msg = f'value is &#123;value&#125;'    print(msg)    if value &lt;= 5:        raise ValueError('value is too small!')    else:        raise Exception('value is too large!')if __name__ == '__main__':    run()
-
-当函数run抛出ValueError异常时，则进行重试；抛出Exception异常时，不会重试。
-指定返回值重试from retrying import retryimport randomdef if_return_small(value):    return value &lt;= 5@retry(retry_on_result=if_return_small, stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    value = random.randint(0, 10)    msg = f'value is &#123;value&#125;'    print(msg)    return valueif __name__ == '__main__':    run()
-
-当函数run返回值小于5时，进行重试。
-多次重试后容忍异常from retrying import retry@retry(stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrordef run2():    print('run2')if __name__ == '__main__':    run()    run2()
-
-当函数run抛出任意异常时，则进行重试。重试指定次数后，程序就异常结束了。这时，如果我们想要容忍异常，让run2可以正常运行，该怎么办呢？很简单，给run函数包裹一个try except即可。
-from retrying import retry@retry(wrap_exception=True,stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrordef wrap_run():    try:        run()    except:        passdef run2():    print('run2')if __name__ == '__main__':    wrap_run()    run2()
-
 
 ]]></content>
       <categories>
@@ -1219,8 +1134,8 @@ def modify_id3(audio_path, title, artist ,img_path):    audio = eyed3.load(audio
         <category>hexo</category>
       </categories>
       <tags>
-        <tag>shell</tag>
         <tag>hexo</tag>
+        <tag>shell</tag>
       </tags>
   </entry>
   <entry>
@@ -2726,6 +2641,8 @@ Helm常用命令使用条件helm命令使用条件：
 helm和kubectl一样，可以在一台机器上管理多个k8s集群，使用kubectl config use-context xxx切换一下集群即可。
 查看帮助helm -hhelm get -h
 
+查看k8s中安装的charthelm listhelm status mysql
+
 添加chart仓库# helm repo add stable https://kubernetes-charts.storage.googleapis.com/# helm repo add stable https://charts.helm.sh/stable# helm repo remove stablehelm repo add stable https://kubernetes.oss-cn-hangzhou.aliyuncs.com/chartshelm repo updatehelm repo list
 
 查看chart列表helm search repo stablehelm search repo stable/mysqlhelm search repo stable/mysql -l
@@ -2762,6 +2679,8 @@ cd mysqlvim values.yaml
 配置项改为我们需要的配置。
 3、执行安装在values所在目录下，执行命令
 kubectl create ns mysqlhelm install mysql -f values.yaml . -n mysql
+
+修改配置后更新helm upgrade mysql stable/mysql -f mysql-values.yaml -n mysql
 
 创建chart并打包1、创建chart
 helm create wecms
@@ -3641,6 +3560,9 @@ source .bash_profilenvm
 4、安装使用指定版本
 export NVM_NODEJS_ORG_MIRROR=https://npm.taobao.org/mirrors/nodenvm -hnvm ls-remotenvm install v10.16.3nvm listnvm use v10.16.3nvm alias default v10.16.3
 
+wscatwscat是用来测试websocket接口的工具，参考文档websockets/wscat
+npm install -g wscat wscat -c ws://websocket-echo.com
+
 tldrtldr项目是社区维护的命令行工具帮助页面的集合，旨在成为对传统帮助的更简单的补充。
 1、安装b
 pip3 install tldr
@@ -3812,6 +3734,8 @@ Wireshark，抓包工具
 Turbo Boost Switcher，CPU温度监测工具
 openconnect，anyconnect替代工具
 QuickFTP Server，macos启动ftp服务器
+AppCleaner，macos软件卸载工具
+Apache Directory Studio，ldap client
 
 ]]></content>
       <categories>
@@ -4039,17 +3963,35 @@ cd ~wget https://github.com/goharbor/harbor/releases/download/v1.10.1/harbor-off
 2、解压
 tar -xzvf harbor-offline-installer-v1.10.1.tgzmv harbor /optcd /opt/harbor
 
-3、配置harbor.yml安装前修改harbor.yaml，参考Configure the Harbor YML File，按需要修改如下几个字段：
+3、配置harbor.yml
 # The IP address or hostname to access admin UI and registry service.# DO NOT use localhost or 127.0.0.1, because Harbor needs to be accessed by external clients.hostname: harbor.voidking.com# http related confighttp:  # port for http, default is 80. If https enabled, this port will redirect to https port  port: 80# https related config# https:  # https port for harbor, default is 443  #port: 443  # The path of cert and key files for nginx  #certificate: /your/certificate/path  #private_key: /your/private/key/path# The initial password of Harbor admin# It only works in first time to install harbor# Remember Change the admin password from UI after launching Harbor.harbor_admin_password: Harbor12345# The default data volumedata_volume: /opt/harbor_data# Harbor DB configurationdatabase:  # The password for the root user of Harbor DB. Change this before any production use.  password: root123  # The maximum number of connections in the idle connection pool. If it &lt;=0, no idle connections are retained.  max_idle_conns: 50  # The maximum number of open connections to the database. If it &lt;= 0, then there is no limit on the number of open connections.  # Note: the default number of connections is 100 for postgres.  max_open_conns: 100# Log configurationslog:  # options are debug, info, warning, error, fatal  level: info  # configs for logs in local storage  local:    # Log files are rotated log_rotate_count times before being removed. If count is 0, old versions are removed rather than rotated.    rotate_count: 50    # Log files are rotated only if they grow bigger than log_rotate_size bytes. If size is followed by k, the size is assumed to be in kilobytes.    # If the M is used, the size is in megabytes, and if G is used, the size is in gigabytes. So size 100, size 100k, size 100M and size 100G    # are all valid.    rotate_size: 200M    # The directory on your host that store log    location: /var/log/harbor
 
+配置说明：
+
+hostname: 指定harbor域名，这个域名的作用有两个：1）这是用来鉴权的域名，我们可以给harbor配置多个域名，但是在鉴权时只会请求这个域名；2）从页面拷贝docker pull命令时会使用这个域名作为前缀。
+https：建议注释掉，不要在这里配置证书，而是配置到nginx层。
+harbor_admin_password：harbor的admin用户密码。
+data_volume：存储镜像数据的路径。
+
+更多配置内容，参考Configure the Harbor YML File
 4、执行安装
 ./install.sh
 如果安装完成发现配置错误，可以修改配置后再次执行脚本。如果报错 ERROR: Failed to Setup IP tables: Unable to enable SKIP DNAT rule ，那么重启docker后再次执行脚本。
 至此，harbor安装完成，没有配置https。
-验证安装浏览器验证浏览器访问 http://192.168.56.200 ，可以看到harbor登录页面。输入用户名密码，admin和Harbor12345，登录harbor控制台。
+修改Harbor配置1、停止
+docker-compose down -v
+
+2、修改配置修改harbor.yml后，执行
+./prepare
+
+3、启动
+docker-compose up -d
+
+注意：如果是修改harbor的hostname，harbor重新启动后，数据库内容和镜像内容是依然存在的，可以放心修改。
+验证Harbor安装浏览器验证浏览器访问 http://192.168.56.200 ，可以看到harbor登录页面。输入用户名密码，admin和Harbor12345，登录harbor控制台。
 登录验证docker psdocker login 192.168.56.200docker login harbor.voidking.com
 输入用户名密码，admin和Harbor12345，登录报错。
-报错connection refusedError response from daemon: Get https://192.168.56.200/v2/: dial tcp 192.168.56.200:443: connect: connection refused
+登录验证报错处理报错connection refusedError response from daemon: Get https://192.168.56.200/v2/: dial tcp 192.168.56.200:443: connect: connection refused
 这是因为，docker1.3.x之后与registry交互，默认使用https协议。
 1、修改/etc/docker/daemon.json，添加insecure-registries参数
 &#123;  "registry-mirrors": [    "https://mirror.ccs.tencentyun.com"  ],  "insecure-registries": [    "http://192.168.56.200",    "http://harbor.voidking.com"  ]&#125;
@@ -4070,21 +4012,12 @@ systemctl daemon-reloadsystemctl restart dockerdocker infocd harbordocker-compos
 harbor.voidking.com 192.168.56.200
 
 重新登录，成功。
-使用启动和停止参考文档Reconfigure Harbor and Manage the Harbor Lifecycle
+使用Harbor启动和停止Harbor参考文档Reconfigure Harbor and Manage the Harbor Lifecycle
 cd /opt/harbor# 查看容器状态docker-compose ps -a# 停止harbordocker-compose stop# 启动harbordocker-compose start
-
-修改配置1、停止
-docker-compose down -v
-
-2、修改配置修改harbor.yml后，执行
-./prepare
-
-3、启动
-docker-compose up -d
 
 上传镜像docker pull busybox:1.31docker tag busybox:1.31 harbor.voidking.com/voidking/busybox:1.31docker tag busybox:1.31 harbor.voidking.com/voidking/subpath/busybox:1.31docker push harbor.voidking.com/voidking/busybox:1.31
 
-报错denieddocker push如果报错：The push refers to repository [harbor.voidking.com/voidking/busybox]a6d503001157: Preparingdenied: requested access to the resource is denied这是因为，需要先创建项目。在web控制台创建项目 voidking，再次上传，成功。带有subpath的镜像，同样可以上传成功。
+docker push如果报错：The push refers to repository [harbor.voidking.com/voidking/busybox]a6d503001157: Preparingdenied: requested access to the resource is denied这是因为，需要先创建项目。在web控制台创建项目 voidking，再次上传，成功。带有subpath的镜像，同样可以上传成功。
 下载镜像docker pull harbor.voidking.com/voidking/busybox:1.31
 
 查找docker-compose.yml如果不知道harbor docker-compose.yml的目录，就没有办法对harbor服务进行启停。查找docker-compose.yml最好使用locate命令，速度快。
@@ -4092,7 +4025,7 @@ locate docker-compose.yml
 
 错误排查cd /var/log/harbor/ls -ltail -n 100 core.log
 
-Harbor自动启动当docker发生了重启之后，需要手动执行docker-compose start启动harbor，比较麻烦，因此最好配置上harbor的自动启动。详情参考Docker 笔记 - 将 Harbor 设置为系统服务
+配置Harbor自动启动当docker发生了重启之后，需要手动执行docker-compose start启动harbor，比较麻烦，因此最好配置上harbor的自动启动。详情参考Docker 笔记 - 将 Harbor 设置为系统服务
 1、准备systemd配置文件
 vim /etc/systemd/system/harbor.service
 
@@ -5918,6 +5851,216 @@ wget https://pypi.python.org/packages/source/d/distribute/distribute-0.6.10.tar.
       </tags>
   </entry>
   <entry>
+    <title>Redis入门篇</title>
+    <url>/dev-redis-start/</url>
+    <content><![CDATA[Redis简介
+Redis: The open source, in-memory data store used by millions of developers as a database, cache, streaming engine, and message broker.
+
+Redis是被数百万开发人员用作数据库、缓存、流引擎和消息代理的开源内存数据存储。
+Redis特点：
+
+Redis支持数据的持久化，可以将内存中的数据保存在磁盘中，重启的时候可以再次加载进行使用。
+Redis不仅仅支持简单的key-value类型的数据，同时还提供list，set，zset，hash等数据结构的存储。
+Redis支持数据的备份，即master-slave模式的数据备份。
+
+Redis优势：
+
+性能极高 – Redis能读的速度是110000次/s，写的速度是81000次/s 。
+丰富的数据类型 – Redis支持二进制案例的 Strings， Lists， Hashes， Sets 及 Ordered Sets 数据类型操作。
+原子 – Redis的所有操作都是原子性的，意思就是要么成功执行要么失败完全不执行。单个操作是原子性的。多个操作也支持事务，即原子性，通过MULTI和EXEC指令包起来。
+丰富的特性 – Redis还支持 publish/subscribe， 通知， key 过期等等特性。
+
+参考文档：
+
+Redis官网
+Redis源码
+Redis在线测试
+Redis命令参考
+Redis教程
+
+
+
+安装Redis本节中，我们使用docker安装一个redis节点。
+1、下载redis镜像，这里选择版本 redis:5.0.14-alpine3.15
+docker pull redis:5.0.14-alpine3.15
+
+2、启动redis
+docker run --name redis -d \-p 6379:6379 \redis:5.0.14-alpine3.15
+
+参考文档：
+
+Installing Redis
+《K8S中安装Redis》
+
+自定义redis配置1、准备redis5.0的配置文件 
+mkdir -p /opt/redis/vim /opt/redis/redis.conf
+
+配置内容参考github redis.conf，按需修改
+2、使用配置文件
+docker run --name redis -d \-p 6379:6379 \-v /opt/redis/redis.conf:/etc/redis/redis.conf \redis:5.0.14-alpine3.15 \redis-server /etc/redis/redis.conf
+
+测试Redis容器内测试docker exec -it redis /bin/shredis-cli&gt; ping
+
+宿主机测试1、启动测试容器
+docker run --name redis-client -d \redis:5.0.14-alpine3.15
+
+2、测试
+docker exec -it redis-client redis-cli -h 192.168.56.102 -p 6379&gt; ping
+
+重启Redisdocker redisdocker restart redis
+
+bin redis方法一：
+/usr/local/bin/redis-server stop/usr/local/bin/redis-server start /opt/redis/redis.conf# /usr/local/bin/redis-server restart
+
+方法二：
+redis-cli -h 127.0.0.1 -p 6379 shutdownredis-server
+
+方法三：
+ps -ef | grep rediskill -9 xxxredis-server
+
+Redis常用命令参考文档：Redis命令参考
+特别注意：redis命令不区分大小写。
+ping使用客户端向 Redis 服务器发送一个 PING ，如果服务器运作正常的话，会返回一个 PONG 。通常用于测试与服务器的连接是否仍然生效，或者用于测量延迟值。
+echo打印一个特定的信息 message ，测试时使用。
+echo "test"
+
+select切换到指定的数据库，数据库索引号 index 用数字值指定，以 0 作为起始索引值。
+SET db_number 0SELECT 1 GET db_numberSET db_number 1GET db_number
+
+quit请求服务器关闭与当前客户端的连接。一旦所有等待中的回复(如果有的话)顺利写入到客户端，连接就会被关闭。
+auth通过设置配置文件中 requirepass 项的值(使用命令 CONFIG SET requirepass password )，可以使用密码来保护 Redis 服务器。
+如果开启了密码保护的话，在每次连接 Redis 服务器之后，就要使用 AUTH 命令解锁，解锁之后才能使用其他 Redis 命令。
+如果 AUTH 命令给定的密码 password 和配置文件中的密码相符的话，服务器会返回 OK 并开始接受命令输入。
+另一方面，假如密码不匹配的话，服务器将返回一个错误，并要求客户端需重新输入密码。
+1、设置密码
+config set requirepass secret_password   # 将密码设置为 secret_passwordquit
+
+2、使用密码
+pingauth secret_password                     # 输入正确的密码ping
+
+设置了密码保护之后，如果想要直接通过redis-cli直接执行redis命令，可以加上-a参数。
+docker exec -it redis-client redis-cli -h 192.168.56.102 -p 6379 -a 'secret_password' ping
+
+设置keyselect 3set key_name key_value
+
+查询keyselect 3get key_namekeys *
+
+info以一种易于解释（parse）且易于阅读的格式，返回关于 Redis 服务器的各种信息和统计数值。通过给定可选的参数 section ，可以让命令只返回某一部分的信息：
+
+server: 一般 Redis 服务器信息
+clients: 已连接客户端信息
+memory: 内存信息
+persistence : RDB 和 AOF 的相关信息
+persistence : RDB 和 AOF 的相关信息
+stats : 一般统计信息
+replication : 主/从复制信息
+cpu : CPU 计算量统计信息
+commandstats : Redis 命令统计信息
+cluster : Redis 集群信息
+keyspace : 数据库相关的统计信息
+all : 返回所有信息
+default : 返回默认选择的信息
+
+当不带参数直接调用 INFO 命令时，使用 default 作为默认参数。
+info memoryinfo stats
+
+内存碎片率使用info memory可以查看内存碎片率，内存碎片率计算方法为：mem_fragmentation_ratio = used_memory_rss / used_memory
+内存碎片率大小说明：
+
+mem_fragmentation_ratio &lt; 1 表示Redis内存分配超出了物理内存，操作系统正在进行内存交换，内存交换会引起非常明显的响应延迟；
+mem_fragmentation_ratio &gt; 1 是合理的；
+mem_fragmentation_ratio &gt; 1.5 说明Redis消耗了实际需要物理内存的150%以上，其中50%是内存碎片率，可能是操作系统或Redis实例中内存管理变差的表现
+
+手动清理内存碎片方法：
+memory purge
+
+但是，对于redis5.0.14，这个内存碎片率的说明并不适用，经测试查看到的内存碎片率为13-15，远大于1。参考文档Redis 5.0.11 high memory fragmentation ratio可知：
+
+you are looking at mem_fragmentation_ratio which is not actually fragmentation. It’s the ratio of used memory to RSS (resident physical memory), We don’t rename if for the sake of backwards compatibility.RSS includes shared libraries, code, stack and other things, so while this metric is useful, it’s not actually fragmentation (which has risk of rising to high values).If you wanna look at fragmentation, you should look at allocator_frag_ratio instead.But another point is that your db is nearly empty, so although the ratio seems high, it’s not actually a lot of memory.allocator_frag_bytes shows just about 400kb.You only wanna be concerned if that number is high, and in that case you can enable activedefrag
+
+因此，对于redis5.0.14，内存碎片率应该查看 allocator_frag_ratio 而不是 mem_fragmentation_ratio。
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>database</category>
+        <category>docker</category>
+        <category>cloudnative</category>
+        <category>devops</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>数据库</tag>
+        <tag>redis</tag>
+        <tag>缓存</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ldap入门篇</title>
+    <url>/dev-ldap-start/</url>
+    <content><![CDATA[ldap简介
+The LDAP(Lightweight Directory Access Protocol) is an open, vendor-neutral, industry standard application protocol for accessing and maintaining distributed directory information services over an Internet Protocol (IP) network. Directory services play an important role in developing intranet and Internet applications by allowing the sharing of information about users, systems, networks, services, and applications throughout the network. As examples, directory services may provide any organized set of records, often with a hierarchical structure, such as a corporate email directory. Similarly, a telephone directory is a list of subscribers with an address and a phone number.
+
+简单来说，LDAP（轻量目录访问协议）是一个协议，用来解决多个系统的统一权限管理问题。
+参考文档：
+
+Lightweight Directory Access Protocol
+LDAP 协议入门（轻量目录访问协议）
+
+
+
+ldap结构ldap的核心是目录树，准确来说，是DIT（Directory Information Tree 目录信息树）。
+
+LDAP directory servers present data arranged in tree-like hierarchies in which each entry may have zero or more subordinate entries. This structure is called the Directory Information Tree, or DIT.
+
+LDAP 目录服务器将信息以树形的方式组织，每一项都可以包含 0 个或多个子项。这样的结构叫做目录信息树。
+目录信息树和文件系统目录树有什么差别？答：目录信息树是信息存储的组织结构，文件系统目录树是文件存储的组织结构。
+Entry在目录信息树中，每一行，都可以叫做一项（Entry），不论是叶子节点还是中间的节点。项包含一个 DN，一些属性，一些对象类。
+Root DSE每个 LDAP 服务器必须对外暴露一个特殊的项，叫做 Root DSE（Root DSA-specific Entry），这个项的 DN 是空字符串。这个项是根节点，描述了 LDAP 服务器自身的信息和能力。例如 LDAP 服务器支持的功能，LDAP 协议版本等信息。
+DNDN（Distinguished Name 分辨名）是用于唯一标识一个项，类似于关系型数据库中的主键。DN也表示项在目录信息树中的位置，DN字符串从左向右，各组成部分依次向树根靠近。
+RDNRDN（Relative Distinguished Name 相对分辨名）就是键值对。DN 由若干个 RDN 组成，以逗号分隔。
+DCDC（Domain Component 域名组成）http://example.com 这样的域名，拆成 dc=example,dc=com 这样的形式。
+OO（Organization 组织机构、公司），在 DN 中可能会包含 O=公司 这样的组成部分，这里的 O 指代组织机构。
+OUOU（Organization Unit 组织单元、部门），在 DN 中可能会包含 OU=某某部门 这样的组成部分，这里的 OU 指代组织单元。
+Object Classes每个项里面包含若干个 Object Classes，Object Class指定了本项中必须、可能包含的属性，相当于 MySQL 中的建表语句。包含某个 Object Class 的项，必须满足 Object Class 中约定的规范，例如规定哪些属性必须存在。
+部署ldap serverLDAP是一个协议，约定了 Client 与 Server 之间的信息交互格式、使用的端口号、认证方式等内容。而 LDAP 协议的实现，有着众多版本。例如微软的 Active Directory 是 LDAP 在 Windows 上的实现，AD 实现了 LDAP 所需的树形数据库、具体如何解析请求数据并到数据库查询然后返回结果等功能。再例如 OpenLDAP 是可以运行在 Linux 上的 LDAP 协议的开源实现。而我们平常说的 LDAP Server，一般指的是安装并配置了 Active Directory、OpenLDAP 这些程序的服务器。
+本节中，我们使用OpenLDAP安装部署一个ldap server。
+参考文档：
+
+openldap官网
+Quickly Setup LDAP User Directory for Jira
+docker下快速部署openldap与PHPLdapAdmin
+docker下快速部署openldap与self-service-password
+
+1、下载ldap镜像
+docker pull bitnami/openldap:2.5.12-debian-10-r29
+
+网上推荐较多的是osixia/openldap，这里我们选择的是bitnami/openldap。因为bitnami很靠谱，使命就是让开源软件的使用更加简单。
+2、启动ldap
+mkdir -p /opt/openldapchmod a+w /opt/openldapdocker run --name openldap -d \  -p 1389:1389 \  -p 1636:1636 \  -v /opt/openldap:/bitnami/openldap \  --env LDAP_ROOT=dc=voidking,dc=com \  --env LDAP_ADMIN_USERNAME=admin \  --env LDAP_ADMIN_PASSWORD=adminpassword \  --env LDAP_USERS=customuser \  --env LDAP_PASSWORDS=custompassword \  bitnami/openldap:2.5.12-debian-10-r29
+
+admin用户对应的DN为cn=admin,dc=voidking,dc=com。
+如果不指定LDAP_ROOT，那么默认为dc=example,dc=org，admin用户对应的DN为cn=admin,dc=example,dc=org。
+3、查看ldap
+docker ps | grep openldapdocker logs openldap
+
+ldap clientldap client也有很多，本文中选择Apache Directory Studio。安装过程比较简单不再展开，这里重点说一下它的使用方法。
+1、新建LDAP Connection
+2、填写网络参数主机名填写openldap所在主机IP，端口填写1389，Check Network Parameter，没问题的话点击Next
+3、填写鉴权参数Bind DN or user填入DN cn=admin,dc=voidking,dc=com，密码填入 adminpassword ，Check Authentication，没问题的话点击Finish
+4、查看目录信息树数据
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>database</category>
+        <category>devops</category>
+      </categories>
+      <tags>
+        <tag>数据库</tag>
+        <tag>ldap</tag>
+        <tag>bitnami</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Docker-Compose入门篇</title>
     <url>/dev-docker-compose/</url>
     <content><![CDATA[Docker-Compose简介Compose是用于定义和运行多容器Docker应用程序的工具。通过Compose，可以使用YAML文件来配置应用程序的服务。然后使用一个命令，就可以从配置中创建并启动所有服务。Compose可在所有环境中工作：生产、模拟、开发、测试以及CI工作流。
@@ -7429,10 +7572,10 @@ Least Load
       </categories>
       <tags>
         <tag>tomcat</tag>
-        <tag>java</tag>
-        <tag>maven</tag>
         <tag>centos</tag>
         <tag>mysql</tag>
+        <tag>java</tag>
+        <tag>maven</tag>
         <tag>git</tag>
       </tags>
   </entry>
@@ -9178,7 +9321,7 @@ import cv2image = cv2.imread('image/test.jpg')grayimage = cv2.imread('image/test
 本文，我们来使用Libvirt进行虚拟机在线迁移，如果downtime在毫秒级，那么说明问题出在OpenStack上。参考An analysis of the performance of live migration in Openstack的评论部分，可以发现有人遇到的同样的问题，downtime远大于1s。作者的猜测是libvirt的设置引起的，也可能是由于迁移后网络适应速度较慢造成的。
 
 
-实验环境使用《使用Libvirt创建虚拟机》一文中搭建的环境，已经有了node0和node1两个节点，IP分别为192.168.56.200和192.168.56.201。
+实验环境参考《使用Libvirt创建虚拟机》一文，在node0和node1两个节点上安装libvirt和qemu，IP分别为192.168.56.200和192.168.56.201。
 NFS要想进行虚拟机的迁移，首先迁出主机（node0）和迁入主机（node1）存放虚拟机磁盘的目录结构要相同。参考OpenStack中共享存储的虚拟机在线迁移的NFS部分，进行NFS配置。
 1、在node0安装nfs服务端apt install nfs-kernel-server
 2、编写配置文件vim /etc/exports添加如下内容：
@@ -9223,26 +9366,33 @@ vim /etc/init/libvirt-bin.conf，如下修改：
       <categories>
         <category>engineering</category>
         <category>devops</category>
+        <category>network</category>
+        <category>storage</category>
       </categories>
       <tags>
         <tag>linux</tag>
         <tag>ubuntu</tag>
         <tag>libvirt</tag>
+        <tag>virsh</tag>
+        <tag>存储</tag>
       </tags>
   </entry>
   <entry>
     <title>Libvirt虚拟机网络配置</title>
     <url>/dev-libvirt-vm-network/</url>
-    <content><![CDATA[前言通过《使用Libvirt创建虚拟机》一文，我们已经学会使用Libvirt创建虚拟机的方法，而且学会了虚拟机的一些基本配置方法。但是，文中创建的虚拟机只能在node0上访问，node1就无法访问，也就是说无法对外网提供服务。
-本文，就来研究一下虚拟机网络配置的方法，使得node1也可以访问到node0中的虚拟机。最简单的实现方法，就是VM要有一个对外提供服务的IP，这个IP不依赖于宿主机，而是和宿主机的IP同级。
+    <content><![CDATA[前言《使用Libvirt创建虚拟机》一文中，我们学会了使用Libvirt创建虚拟机的方法。但是，文中创建的虚拟机只能在宿主机node0上访问，node1就无法访问，也就是说虚拟机和宿主机外部的网络还没有打通。
+本文，就来研究一下虚拟机网络配置的方法，使得node1也可以访问到node0中的虚拟机。
 
 
-网络配置1参考KVM 以及桥接网络配置和libvirt kvm 虚拟机上网 – Bridge桥接进行配置。
+网络配置1最简单的实现方法，就是VM要有一个对外提供服务的IP，这个IP不依赖于宿主机，而是和宿主机的IP同级。
+参考KVM 以及桥接网络配置和libvirt kvm 虚拟机上网 – Bridge桥接进行配置。
 1、在node0的网络配置中进行修改：
 #auto eth0#iface eth0 inet static#address 192.168.56.200#netmask 255.255.255.0auto eth0iface eth0 inet manualup ifconfig $IFACE 0.0.0.0 upup ifconfig $IFACE promiscauto br0iface br0 inet staticaddress 192.168.56.200netmask 255.255.255.0gateway 192.168.56.1bridge_ports eth0bridge_stp offbridge_fd 0bridge_maxwait 0
 
 使用br0替代eth0，eth0做流量转发。
-2、重启网络/etc/init.d/networking restart
+2、重启网络
+/etc/init.d/networking restart
+
 3、修改路由（可选）
 route -nroute del -net 192.168.56.0/24 dev eth0route add -net 192.168.56.0/24 dev br0
 
@@ -9257,32 +9407,51 @@ virsh dumpxml cirros &gt;/etc/libvirt/qemu/cirros.xml virsh define /etc/libvirt/
 PS：删除网卡
 virsh detach-interface cirros --type bridge --mac 52:54:00:09:36:ad
 
-6、登录实例后，配置新网卡的IPsudo vi /etc/network/interfaces，添加eth1的配置：
+6、登录实例后，配置新网卡的IP
+sudo vi /etc/network/interfaces
+
+添加eth1的配置：
 auto eth1iface eth1 inet staticaddress 192.168.56.202netmask 255.255.255.0
 
-7、重启实例sudo reboot至此，实例桥接网络配置完成。
+7、重启实例
+sudo reboot
+至此，实例桥接网络配置完成。
 8、测试网络在node0上ping 192.168.56.202 -c2，正常。在node1上ping 192.168.56.202 -c2，不通。在virtualbox宿主机上ping 192.168.56.202 -c2，不通。
 以上，我们的配置失败了，因为除了node0，其他机器无法访问实例。下面我们来分析一下当前网络，如下图：经过测试，node0到switch0是通的，node0到vm0是通的，但是vm0到switch0不通。诡异，理论上应该是通的啊！
 网络配置2那么，怎么打通vm0到switch0呢？最容易想到的，是把vm0直接连接到eth0上，而br0单纯作为node0的管理网络。修改后的方案如下图：
-1、修改cirros配置virsh edit cirros，找到：
+1、修改cirros配置
+virsh edit cirros
+
+找到：
 &lt;interface type='bridge'&gt;  &lt;mac address='52:54:00:09:36:ad'/&gt;  &lt;source bridge='br0'/&gt;  &lt;model type='rtl8139'/&gt;  &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/&gt;&lt;/interface&gt;
 把source中的br0改为eth0。
 2、重启实例
 virsh shutdown cirrosvirsh start cirros
+
 报错：
 error: Failed to start domain cirroserror: Unable to add bridge eth0 port vnet1: Operation not supported
-想法是美好的，但是行不通啊！参考Attaching a Virtual NIC Directly to a Physical Interface进行修改，但是又报出了其他错误：
+想法是美好的，但是行不通啊！
+参考Attaching a Virtual NIC Directly to a Physical Interface进行修改，但是又报出了其他错误：
 error: Failed to start domain cirroserror: error creating macvtap interface macvtap0@eth0 (52:54:00:c8:33:b3): Device or resource busy
 参考Using KVM with Libvirt and macvtap Interfaces也许可以解决，但是感觉好麻烦，所以决定放弃这个方案。
 网络配置3如果，再创建一个网桥，这个网桥不指定IP呢？如下图：
-1、创建新网桥br1vim /etc/network/interfaces，添加：
+1、创建新网桥br1
+vim /etc/network/interfaces
+
+添加：
 auto br1iface br1 inet dhcpbridge_ports eth0bridge_stp offbridge_fd 0bridge_maxwait 0
 
-2、启动br1ifup br1，报错：
-device eth0 is already a member of a bridge; can't enslave it to bridge br1.Internet Systems Consortium DHCP Client 4.3.3......
+2、启动br1
+ifup br1
+
+报错：
+device eth0 is already a member of a bridge; can&#39;t enslave it to bridge br1.Internet Systems Consortium DHCP Client 4.3.3......
 由上可知，一个物理网卡，只能绑定到一个网桥上。所以，这个想法也是行不通的。
 网络配置4那么，把br1绑定到eth2（eth1是上网网卡）上面呢？如下图：
-1、修改br1配置vim /etc/network/interfaces，如下修改：
+1、修改br1配置
+vim /etc/network/interfaces
+
+如下修改：
 auto eth2iface eth2 inet manualup ifconfig $IFACE 0.0.0.0 upup ifconfig $IFACE promiscauto br1iface br1 inet dhcpbridge_ports eth2bridge_stp offbridge_fd 0bridge_maxwait 0
 
 2、启动br1
@@ -9291,82 +9460,123 @@ ifup eth2ifup br1
 3、编辑cirros配置，修改br0为br1，重启cirros。结果，vm0到switch0依然不通。证明这个方案也不行。
 网络配置5网络配置2、3、4都不行，看来拍脑门想出来的方法不太靠谱。实际上网络配置1应该是可以的，但是，却无法连通，问题出在哪里呢？莫非，是因为virtualbox？virtualbox有多种网络模式，node1和node2使用的是Host-only Adapter，如果换成Bridged Adapter呢？那就试试吧！结果，依然失败。
 后记还能不能愉快地玩耍了？明明很简单的桥接，为啥就不通呢？诡异，实在诡异。郝同学表示已经无能为力，留个坑吧！
-书签KVM/Networking
+书签
+KVM/Networking
 Networking
 VirtualNetworking
 KVM and OVS on Ubuntu 16.04
 ubuntu16.04 配置kvm openvswitch 桥接环境
 Open vSwitch + libvirt 搭建vlan网络
 How to Put a KVM Guest Domain on a Bridged Network
+
 ]]></content>
       <categories>
         <category>engineering</category>
         <category>devops</category>
+        <category>network</category>
       </categories>
       <tags>
         <tag>网络</tag>
         <tag>linux</tag>
         <tag>ubuntu</tag>
         <tag>libvirt</tag>
+        <tag>virsh</tag>
       </tags>
   </entry>
   <entry>
     <title>使用Libvirt创建虚拟机</title>
     <url>/dev-libvirt-create-vm/</url>
-    <content><![CDATA[libvirt简介KVM（Kernel-based Virtual Machine）实现对CPU的底层虚拟化和内存的虚拟化，使Linux内核成为虚拟化层，需要x86架构的，支持虚拟化功能的硬件支持（比如Intel VT，AMD-V），是一种全虚拟化架构。QEMU是一套由Fabrice Bellard编写的模拟处理器的自由软件，它是一个完整的可以单独运行的软件，可以独立模拟出整台计算机，包括CPU，内存，IO设备，通过一个特殊的“重编译器”对特定的处理器的二进制代码进行翻译，从而具有了跨平台的通用性。
-总的来说，QEMU是一个独立的虚拟化解决方案，并不依赖KVM，它本身自己可以做CPU和内存的模拟，只不过效率较低。而KVM是另一套虚拟化解决方案，对CPU进行虚拟效率较高（采用了硬件辅助虚拟化），但本身不提供其他设备的虚拟化，借用了QEMU的代码进行了定制，所以KVM方案一定要依赖QEMU。
-而Libvirt是用于管理虚拟化平台的开源的API，后台程序和管理工具。它可以用于管理KVM、Xen、VMware ESX，QEMU和其他虚拟化技术。
+    <content><![CDATA[前言本文中，我们学习一下qemu和libvirt，分别使用它们创建一个cirros虚拟机，并配置好网络。
+宿主机node0的系统为ubuntu16，IP为192.168.56.200。
+
+
+qemu和libvirt简介QEMU是一套由Fabrice Bellard编写的模拟处理器的自由软件，它是一个完整的可以单独运行的软件，可以独立模拟出整台计算机，包括CPU，内存，IO设备，通过一个特殊的“重编译器”对特定的处理器的二进制代码进行翻译，从而具有了跨平台的通用性。
+总的来说，QEMU是一个独立的虚拟化解决方案，并不依赖KVM，它本身自己可以做CPU和内存的模拟，只不过效率较低。
+KVM（Kernel-based Virtual Machine）是另一套虚拟化解决方案，实现对CPU的底层虚拟化和内存的虚拟化，使Linux内核成为虚拟化层，需要x86架构的、支持虚拟化功能的硬件支持（比如Intel VT，AMD-V），所以虚拟效率较高，是一种全虚拟化架构。
+但是KVM本身不提供其他设备的虚拟化，借用了QEMU的代码进行了定制，所以KVM方案一定要依赖QEMU。
+而Libvirt是用于管理虚拟化平台的开源的API，后台程序和管理工具。它可以用于管理KVM、Xen、VMware ESX、QEMU和其他虚拟化技术。
 Libvirt主要由三个部分组成：API库，一个守护进程libvirtd和一个默认命令行管理工具 virsh。
-更多内容参考QEMU和QEMU-KVM的关系和libvirt 介绍。
+参考文档：
+
+QEMU和QEMU-KVM的关系
+libvirt 介绍
+
+安装qemu和libvirt参考Ubuntu16.04安装QEMU与libvirt，安装QEMU和libvirt。
+1、切换到root用户
+sudo -i#orsudo su
+
+2、查看主机是否支持硬件虚拟化
+egrep -c '(vmx|svm)' /proc/cpuinfo
+
+因为我们的实验本身是在虚拟机中进行的，所以输出0，表示不支持硬件虚拟化。
+3、安装QEMU和libvirt
+apt install -y qemu libvirt-bin bridge-utils virt-manager virt-viewer# 如果是支持硬件虚拟化，那么执行安装apt install -y kvm qemu-kvm libvirt-bin bridge-utils virt-manager virt-viewer
 
 
-实验环境不能直接在OpenStack环境中实验，因为这样会破坏OpenStack。而且，使用kolla安装的OpenStack，没有virsh命令，libvirt是运行在容器中的。
-所以，我们搭建一个新的实验环境：两个节点分别为node0和node1，ubuntu16系统，IP分别为192.168.56.200和192.168.56.201。
-安装libvirt参考Ubuntu16.04安装QEMU与libvirt，安装QEMU和libvirt。
-1、切换到root用户sudo -i
-2、查看主机是否支持硬件虚拟化egrep -c &#39;(vmx|svm)&#39; /proc/cpuinfo因为我们的实验本身是在虚拟机中进行的，所以输出0，表示不支持硬件虚拟化。
-3、安装QEMU和libvirtapt install -y qemu libvirt-bin bridge-utils virt-manager virt-viewer
-如果是支持硬件虚拟化，那么执行安装：apt install -y kvm qemu-kvm libvirt-bin bridge-utils virt-manager virt-viewer
-bridge-utils是网桥管理工具。virt-manager是一个通用的桌面管理工具。virt-viewer是一个用于显示虚拟机的图形控制台的最小工具。
+bridge-utils是网桥管理工具。
+virt-manager是一个通用的桌面管理工具。
+virt-viewer是一个用于显示虚拟机的图形控制台的最小工具。
+
 4、检查安装
 virsh --versionvirt-manager --versionvirt-viewer --version
 
 5、查看网络
 ip abrctl showvirsh net-list
 安装完成以后，默认是启用了桥接网络virbr0，IP为192.168.122.1/24。如果没有启用，那么参考ubuntu16.04环境安装KVM进行启用。
-6、安装vncserverapt-get install vnc4server
-qemu创建虚拟机参考嵌套虚拟化—VMware+QEMU/KVM、ubuntu下使用qemu安装虚拟机并配置桥接网络和使用qemu安装虚拟机，进行虚拟机的创建。
-1、创建磁盘
-mkdir /opt/qemucd /opt/qemuqemu-img create -f qcow2 cirros0.img 5g
+安装vncserver安装vncserver，方便远程查看虚拟机的安装过程
+apt-get install vnc4server
 
-qcow2是qemu最常使用的格式，该格式下可以采用来写时复制技术来优化性能；cirros0.img是磁盘名称；5g是指磁盘文件大小。
-2、下载cirros系统
+qemu创建虚拟机参考文档：
+
+嵌套虚拟化—VMware+QEMU/KVM
+ubuntu下使用qemu安装虚拟机并配置桥接网络
+使用qemu安装虚拟机
+
+下载系统镜像下载cirros系统镜像
 wget http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img
 
-3、安装cirros到磁盘
-qemu-system-x86_64 -hda cirros0.img -boot d -cdrom ./cirros-0.4.0-x86_64-disk.img -m 512 -vnc :1
+创建磁盘mkdir /opt/qemucd /opt/qemuqemu-img create -f qcow2 cirros0.img 5g
 
-如果是支持硬件虚拟化，那么执行安装：
-qemu-system-x86_64 -enable-kvm -hda cirros0.img -boot d -cdrom ./cirros-0.4.0-x86_64-disk.img -m 512 -vnc :1
+参数说明：
 
-enable-kvm使用KVM进行加速；hda指定要使用的虚拟磁盘；boot d指定启动位置，d表示从光盘启动；cdrom指定镜像文件；m指定虚拟机内存大小，默认单位是MB；vnc:1通过vnc创建虚拟桌面。
-出现警告：warning: TCG doesn’t support requested feature: CPUID.01H:ECX.vmx [bit 5]没啥影响，不去管它。但是另外一个问题来了？怎么进行交互安装？
-4、本地打开vncviewer client，输入ip:5901进行连接，即可看到安装过程。卡在了安装界面：
+qcow2是qemu最常使用的磁盘格式，该格式下可以采用写时复制技术来优化性能
+cirros0.img是磁盘名称
+5g是指磁盘文件大小
+
+安装系统到磁盘qemu-system-x86_64 -hda cirros0.img -boot d -cdrom ./cirros-0.4.0-x86_64-disk.img -m 512 -vnc :1# 如果是支持硬件虚拟化，那么执行安装qemu-system-x86_64 -enable-kvm -hda cirros0.img -boot d -cdrom ./cirros-0.4.0-x86_64-disk.img -m 512 -vnc :1
+
+参数说明：
+
+enable-kvm使用KVM进行加速；
+hda指定要使用的虚拟磁盘；
+boot d指定启动位置，d表示从光盘启动；
+cdrom指定镜像文件；
+m指定虚拟机内存大小，默认单位是MB；
+vnc:1通过vnc创建虚拟桌面。
+
+出现警告：warning: TCG doesn’t support requested feature: CPUID.01H:ECX.vmx [bit 5]没啥影响，不去管它。
+查看安装过程怎样查看安装过程？怎样在安装时进行配置？答：使用VNC。本地打开vncviewer client，输入ip:5901进行连接，即可看到安装过程。
+安装卡在了安装界面：
 Boot failed: could not read the boot diskNo more network devicesNo bootable device
 
 参考Play with Libvirt/KVM发现，cirros-0.4.0-x86_64-disk.img本身就是一个磁盘，尴尬。。。
-5、启动虚拟机
-qemu-system-x86_64 -m 512 -smp 4 \-drive file=cirros-0.4.0-x86_64-disk.img \-vnc :1
+启动虚拟机qemu-system-x86_64 -m 512 -smp 4 \-drive file=cirros-0.4.0-x86_64-disk.img \-vnc :1
 本地打开vncviewer client，输入ip:5901进行连接，即可看到启动过程。因为没有enable-kvm，所以启动很慢，请耐心等待。
-6、查看虚拟机IP登录cirros，然后查看IP、内存和硬盘
+IP配置1、查看虚拟机IP登录cirros（默认用户名cirros，密码gocubsgo），然后查看IP、内存和硬盘
 ip addfree -mdf -h
 IP默认为10.0.2.15；内存512M，是指定的；硬盘默认256M。
 当ctrl+c结束qemu-system-x86_64命令后，虚拟机就被关闭了。再次使用qemu-system-x86_64命令启动虚拟机，登录虚拟机后使用history命令，发现之前的命令记录都还在，说明两次使用的都是同一块磁盘，也就是cirros-0.4.0-x86_64-disk.img。
-7、设置IPsudo vi /etc/network/interfaces，eth0的配置修改为：
+2、设置IP
+vim /etc/network/interfaces
+
+eth0的配置修改为：
 auto eth0iface eth0 inet staticaddress 192.168.122.100netmask 255.255.255.0
 
-然后重启网卡，sudo ifdown eth0，sudo ifup eth0。但是，无法ping通192.168.122.1，说明虚拟机的网卡并没有和virbr0进行连接。
-创建网络虚拟机有了，但是还不能连接外部网络。参考访问qemu虚拟机的五种姿势，创建网络，重新启动虚拟机。
+3、重启网卡
+ifdown eth0ifup eth0
+
+但是，无法ping通192.168.122.1，说明虚拟机的网卡并没有和virbr0进行连接。
+创建网络虚拟机有了，但是还不能连接外部网络。我们需要创建网络，重新启动虚拟机，详情参考访问qemu虚拟机的五种姿势。
 1、创建网桥
 brctl add virbr0ifconfig virbr0 192.168.122.1 net mask 255.255.255.0 up
 网桥已经存在，所以这一步不需要了。
@@ -9376,27 +9586,51 @@ apt install uml-utilitiestunctl -t tap0ifconfig tap0 0.0.0.0 upbrctl addif virbr
 3、让虚拟机使用tap0作为网络设备启动
 qemu-system-x86_64 -m 512 -smp 4 \-drive file=cirros-0.4.0-x86_64-disk.img \-netdev tap,id=tapnet,ifname=tap0,script=no \-device rtl8139,netdev=tapnet \-vnc :1
 
-4、测试网络登录虚拟机，ping 192.168.122.1，此时网络已经通了。
-libvirt创建虚拟机以上创建虚拟机的过程，其实并没有用到libvirt。下面参考Play with Libvirt/KVM，使用libvirt进行虚拟机的创建。
+4、登录虚拟机，测试网络
+ping 192.168.122.1
+此时网络已经通了。
+libvirt创建虚拟机以上创建虚拟机的过程，其实并没有用到libvirt，下面使用下面使用libvirt进行虚拟机的创建。参考文档Play with Libvirt/KVM
 1、创建虚拟机
 virt-install --connect=qemu:///system --name=cirros --ram=512 --vcpus=1 --disk path=cirros-0.4.0-x86_64-disk.img,format=qcow2 --import --network network:default --vnc
 
 无法使用vncviwer进行连接，然后卡在上图的界面，最后ctrl+c强制结束。配置文件位于/etc/libvirt/qemu/cirros.xml，如果要编辑它，使用virsh edit cirros命令。
-2、显示vnc portvirsh vncdisplay cirros
-3、显示虚拟机列表virsh list
-4、查看虚拟机详情virsh dominfo cirros
-问题来了，怎么访问这个虚拟机呢？最简单的方法是使用virsh console cirros命令打开控制台，使用ctrl+]关闭控制台，另外就是通过ssh或者vnc。
-5、查看虚拟机网络查看虚拟机mac地址：virsh dumpxml frontend1 | grep mac查看mac地址对应的IP：arp -an本次找到的IP为192.168.122.49
-6、访问虚拟机ssh cirros@192.168.122.49输入默认密码gocubsgo，即可登录虚拟机。
-7、测试网络ping 8.8.8.8 -c3至此，大功告成，创建虚拟机成功。
-8、关闭虚拟机（可选）
-virsh destroy cirrosrm /etc/libvirt/qemu/cirros.xmlvirsh# undefine cirros# quit
+2、显示vnc port
+virsh vncdisplay cirros
 
-libvirt配置网络以上我们知道，可以使用arp -an命令查看虚拟机IP，如果查看到的IP都不能访问呢？这时就需要我们来手动配置，参考给libvirt创建的虚拟机指定固定IP。
-1、查看libvirt网络virsh net-list --all
-2、查看虚拟机的网络virsh domiflist cirros查看到mac地址为52:54:00:7f:0e:77。
-3、修改libvirt网络配置virsh net-edit default，如下修改：
+3、显示虚拟机列表
+virsh list
+
+4、查看虚拟机详情 
+virsh dominfo cirrosvirsh domstate cirros
+
+问题来了，怎么访问这个虚拟机呢？最简单的方法是使用virsh console cirros命令打开控制台，使用ctrl+]关闭控制台，另外就是通过ssh或者vnc。
+5、查看虚拟机网络（mac地址和ip地址） 
+virsh dumpxml frontend1 | grep macarp -an
+本次找到的IP为192.168.122.49
+6、访问虚拟机
+ssh cirros@192.168.122.49
+输入默认密码gocubsgo，即可登录虚拟机。
+7、测试网络
+ping 8.8.8.8 -c3
+至此，大功告成，创建虚拟机成功。
+libvirt配置网络以上我们知道，可以使用arp -an命令查看虚拟机IP，如果查看到的IP都不能访问呢？这时就需要我们来手动配置。参考文档：
+
+给libvirt创建的虚拟机指定固定IP
+linux初学者-网络桥接篇
+Documentation/Networking
+
+1、查看libvirt网络
+virsh net-list --all
+
+2、查看虚拟机的网络
+virsh domiflist cirros
+查看到mac地址为52:54:00:7f:0e:77。
+3、修改libvirt网络配置
+virsh net-edit default
+
+如下修改：
 &lt;network&gt;  &lt;name&gt;default&lt;/name&gt;  &lt;uuid&gt;cc522162-7487-41dc-82ee-63df0df4003e&lt;/uuid&gt;  &lt;forward mode='nat'/&gt;  &lt;bridge name='virbr0' stp='on' delay='0'/&gt;  &lt;mac address='52:54:00:d6:65:fb'/&gt;  &lt;ip address='192.168.122.1' netmask='255.255.255.0'&gt;    &lt;dhcp&gt;      &lt;range start='192.168.122.2' end='192.168.122.254'/&gt;      &lt;!--line 10, add--&gt;      &lt;host mac='52:54:00:7f:0e:77' name='cirros' ip='192.168.122.100'/&gt;    &lt;/dhcp&gt;  &lt;/ip&gt;&lt;/network&gt;
+
 以上，给cirros虚拟机配置了静态IP为192.168.122.100。
 4、重启网络
 virsh net-destroy defaultvirsh net-start default#virsh --connect qemu:///system net-destroy default#virsh --connect qemu:///system net-start default
@@ -9404,10 +9638,13 @@ virsh net-destroy defaultvirsh net-start default#virsh --connect qemu:///system 
 5、重启虚拟机
 virsh shutdown cirrosvirsh start cirros
 
+libvirt配置VNC某些情况下，无法通过IP访问虚拟机，这时就需要配置vnc，详情参考kvm虚拟机VNC的配置。
+1、配置vnc
+virsh edit cirros
 
-libvirt配置VNC某些情况下，无法通过IP访问虚拟机，这时就需要配置vnc，参考kvm虚拟机VNC的配置。
-1、配置vncvirsh edit cirros，找到
+找到
 &lt;graphics type='vnc' port='-1' autoport='yes'/&gt;
+
 修改为：
 &lt;graphics type='vnc' port='5901' autoport='no' listen='0.0.0.0'&gt;         &lt;listen type='address' address='0.0.0.0'/&gt;        &lt;/graphics&gt;
 
@@ -9415,30 +9652,17 @@ libvirt配置VNC某些情况下，无法通过IP访问虚拟机，这时就需�
 virsh shutdown cirrosvirsh start cirros
 
 3、vnc访问本地打开vncviewer client，输入ip:5901进行连接。登录虚拟机后，也可以设置静态IP，这样就不用通过virsh net-edit default修改了。
-libvirt常用命令参考文档：
+后记其实，虚拟机中安装的虚拟机，也可以支持KVM了，开启嵌套虚拟化即可。详情参考：
 
-virsh常用命令篇
-KVM虚拟机磁盘在线扩容
+KVM嵌套虚拟化 – 在虚拟机中创建虚拟机
+Nested KVM
 
-克隆虚拟机virt-clone -o vm_name -n new_vm_name -f /path/to/vm/new_vm_name.qcow2
-
-虚拟机扩容磁盘virsh dominfo new_vm_namevirsh domstate new_vm_namevirsh domblklist new_vm_nameqemu-img info /path/to/vm/new_vm_name.qcow2qemu-img resize /path/to/vm/new_vm_name.qcow2 +20G
-
-fdisk -list
-未完待续
-虚拟机增加磁盘virsh destroy new_vm_nameqemu-img create -f qcow2 /path/to/vm/new_vm_name_ext.qcow2 100Gvirsh edit new_vm_name
-
-disk部分添加：
-&lt;disk type='file' device='disk'&gt;  &lt;driver name='qemu' type='qcow2'/&gt;  &lt;source file='/path/to/vm/new_vm_name_ext.qcow2'/&gt;  &lt;target dev='vdb' bus='virtio'/&gt;&lt;/disk&gt;
-
-格式化和挂载参考《VirtualBox中Ubuntu扩容》
-彻底删除虚拟机virsh list --allvirsh destroy new_vm_namevirsh undefine new_vm_namerm -f /path/to/vm/new_vm_name.qcow2
-
-后记其实，虚拟机中安装的虚拟机，也可以支持KVM了，参考KVM嵌套虚拟化 – 在虚拟机中创建虚拟机和Nested KVM，开启嵌套虚拟化即可。
-1、查看宿主机是否开启嵌套虚拟化cat /sys/module/kvm_intel/parameters/nestedN代表没有开启。
-2、开启嵌套虚拟化echo &#39;options kvm_intel nested=1&#39; &gt;&gt; /etc/modprobe.d/qemu-system-x86.conf然后重启系统。
-书签linux初学者-网络桥接篇
-Documentation/Networking
+1、查看宿主机是否开启嵌套虚拟化
+cat /sys/module/kvm_intel/parameters/nested
+N代表没有开启。
+2、开启嵌套虚拟化
+echo 'options kvm_intel nested=1' &gt;&gt; /etc/modprobe.d/qemu-system-x86.conf
+然后重启系统。
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -9448,6 +9672,145 @@ Documentation/Networking
         <tag>linux</tag>
         <tag>ubuntu</tag>
         <tag>libvirt</tag>
+        <tag>virsh</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>virsh常用命令</title>
+    <url>/dev-virsh-command/</url>
+    <content><![CDATA[前言本文中会整理一些工作学习中常用的virsh命令，备忘。
+参考文档：
+
+virsh常用命令篇
+KVM 虚拟机 XML 配置文件详解
+libvirt
+libguestfs
+virt-builder
+
+
+
+创建虚拟机本节以创建ubuntu18.04.6的虚拟机为例，ubuntu镜像下载地址为Ubuntu Release
+常规创建1、下载镜像
+cd /opt/iso/wget https://releases.ubuntu.com/18.04.6/ubuntu-18.04.6-live-server-amd64.iso
+
+2、创建虚拟机
+virt-install \    --virt-type=kvm \    --name=ubuntu18.04 \    --vcpus=2 \    --ram=4096 \    --cdrom=/opt/iso/ubuntu-18.04.6-live-server-amd64.iso \    --disk path=/opt/kvm/ubuntu18.04.qcow2,device=disk,format=qcow2,bus=virtio,cache=writeback,size=100 \    --network default,model=virtio \    --os-type=linux \    --os-variant=ubuntu18.04 \    --graphics vnc,listen=0.0.0.0 \    --noautoconsole \    --accelerate
+
+model=virtio 可以换成 model=e1000或者model=rtl8139。但是这里建议使用virtio，因为使用virtio要比使用e1000或者rtl8139网络吞吐性能要高出2倍左右。
+详情参考：
+
+QEMU新的-nic选项
+KVM总结-KVM性能优化之网络性能优化
+
+3、查看虚拟机
+virsh listvirsh list --all
+
+4、查看vnc端口
+virsh vncdisplay ubuntu18.04
+
+使用vnc client连接虚拟机完成安装。
+单独创建磁盘qemu-img create -f qcow2 /opt/kvm/ubuntu18.04.qcow2  100Gvirt-install --disk path=/opt/kvm/ubuntu18.04.qcow2 ...
+
+使用桥接ifconfigip avirt-install --network bridge=br0,model=virtio ...
+
+查看虚拟机IP方法一：通过VNC登录虚拟机后查看
+方法二：通过mac地址查看
+nmap -sP 192.168.56.0/24virsh dumpxml ubuntu18.04 | grep "mac a"arp -a | grep grep "52:54:00:46:98:a7"cat /proc/net/arp | grep "52:54:00:46:98:a7"
+
+网络优化vhost-net是对virtio的优化，在内核中加入了vhost-net.ko模块，使得对网络数据可以在内核态得到处理。数据包从虚拟网卡出来后，直接跳到内核那一层中。这里要注意的是，如果要使用vhost-net那么，虚拟机的网卡类型必须是virtio。
+virsh destroy ubuntu18.04virsh edit ubuntu18.04
+
+添加dirver配置：
+&lt;interface type='bridge'&gt;  &lt;mac address='52:54:00:46:98:a7'/&gt;  &lt;source bridge='br0'/&gt;  &lt;model type='virtio'/&gt;  &lt;driver name='vhost'/&gt;  &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/&gt;&lt;/interface&gt;
+
+修改虚拟机配置安装virt-customizeyum -y install libguestfs-tools
+
+关闭虚拟机virsh shutdown ubuntu18.04
+
+在使用virt-customize修改虚拟机配置之前，需要先关闭虚拟机，否则修改不会生效，还可能发生非预期问题。
+修改主机名virt-customize -a /opt/kvm/ubuntu18.04.qcow2 --hostname node01
+
+启用root ssh登录virt-customize -a /opt/kvm/ubuntu18.04.qcow2 --run-command 'echo "PermitRootLogin yes" &gt;&gt; /etc/ssh/sshd_config'
+
+修改root密码virt-customize -a /opt/kvm/ubuntu18.04.qcow2 --root-password password:voidking# orvirt-customize -a /opt/kvm/ubuntu18.04.qcow2 --password root:voidking
+
+添加authorized_keysvirt-customize -a /opt/kvm/ubuntu18.04.qcow2 --ssh-inject root:string:"ssh-rsa xxx vk@macpro.lan"
+
+安装软件包virt-customize -a /opt/kvm/ubuntu18.04.qcow2 --install vim,wget,curl,unzipvirt-customize -v -x -a /opt/kvm/ubuntu18.04.qcow2 --install vim,wget,curl,unzip
+
+手动配置静态IPubuntu18之前在/etc/network/interfaces进行配置，ubuntu18及之后版本在/etc/netplan/*.yaml中进行配置。
+提前手动配置好一台虚拟机的静态IP，然后，其他的克隆出来的主机可以使用virt-customize调用sed命令修改IP。
+1、查看当前网关
+route -nip routenetstat -rn
+
+2、配置静态IP配置 /etc/netplan/00-installer-config.yaml 内容为：
+# This is the network config written by 'subiquity'network:  version: 2  ethernets:    ens3:      dhcp4: false                         # 禁止动态IP      addresses: [192.168.56.200/24]       # IP地址和掩码      gateway4: 192.168.56.1               # 网关      nameservers:        addresses: [192.168.56.1,114.114.114.114]   #DNS服务器
+
+3、使配置生效
+netplan applyip a
+
+手动配置静态IP2.01、提前准备 00-installer-config.yaml 内容为：
+# This is the network config written by 'subiquity'network:  version: 2  ethernets:    ens3:      dhcp4: false                         # 禁止动态IP      addresses: [192.168.56.200/24]       # IP地址和掩码      gateway4: 192.168.56.1               # 网关      nameservers:        addresses: [192.168.56.1,114.114.114.114]   #DNS服务器
+
+2、拷贝到宿主机
+virt-customize -a /opt/kvm/ubuntu18.04.qcow2 --copy-in 00-installer-config.yaml:/etc/netplan/00-installer-config.yaml
+
+自动配置静态IPvirt-customize -a /opt/kvm/ubuntu18.04.qcow2 --run-command "sed -i \"s#addresses: \[.*/24\]#addresses: \[192.168.56.201/24\]#\" /etc/netplan/00-installer-config.yaml"
+
+启停虚拟机1、停止虚拟机
+# smooth shutdownvirsh shutdown ubuntu18.04# forced shutdownvirsh destroy ubuntu18.04
+
+2、开启虚拟机
+virsh start ubuntu18.04
+
+销毁虚拟机virsh list --allvirsh destroy ubuntu18.04virsh undefine ubuntu18.04#rm /etc/libvirt/qemu/ubuntu18.04.xmlrm /opt/kvm/ubuntu18.04.qcow2
+
+开机自动启动virsh autostart ubuntu18.04virsh autostart --disable ubuntu18.04
+
+调整虚拟机CPU和内存virsh destroy ubuntu18.04virsh edit ubuntu18.04
+
+调整相关配置：
+&lt;memory unit='KiB'&gt;4194304&lt;/memory&gt;&lt;currentMemory unit='KiB'&gt;4194304&lt;/currentMemory&gt;&lt;vcpu placement='static'&gt;2&lt;/vcpu&gt;
+
+根据xml导出创建虚拟机的命令virsh list --allvirsh dumpxml ubuntu18.04 &gt; ubuntu18.04.xml
+
+克隆虚拟机virt-clone -o ubuntu18.04 -n ubuntu18.04-tmp -f /opt/kvm/ubuntu18.04-tmp.qcow2virsh dominfo ubuntu18.04-tmpvirsh domstate ubuntu18.04-tmp
+
+拷贝虚拟机到其他宿主机1、拷贝虚拟机磁盘文件和配置文件
+scp /opt/kvm/ubuntu18.04.qcow2 192.168.56.102:/opt/kvm/ubuntu18.04.qcow2scp /etc/libvirt/qemu/ubuntu18.04.xml 192.168.56.102:/etc/libvirt/qemu/ubuntu18.04.xml
+
+2、拉起虚拟机
+ssh 192.168.56.102virsh define /etc/libvirt/qemu/ubuntu18.04.xmlvirsh list --allvirsh start ubuntu18.04
+
+PS：临时拉起虚拟机
+virsh create /etc/libvirt/qemu/ubuntu18.04.xml
+
+虚拟机迁移参考文档《使用Libvirt进行虚拟机在线迁移》
+虚拟机扩容磁盘1、给虚拟机增加磁盘
+virsh domblklist ubuntu18.04-tmpqemu-img info /opt/kvm/ubuntu18.04-tmp.qcow2qemu-img resize /opt/kvm/ubuntu18.04-tmp.qcow2
+
+2、虚拟机内部扩展分区
+yum install -y cloud-utils-growpartLANG=en_US.UTF-8fdisk -lgrowpart /dev/vda 2
+
+3、虚拟机内部扩容
+# ext2/ext3/ext4resize2fs /dev/vda2# xfsxfs_growfs /dev/vda2
+
+虚拟机增加磁盘virsh destroy ubuntu18.04-tmpqemu-img create -f qcow2 /opt/kvm/ubuntu18.04-tmp_ext.qcow2 100Gvirsh edit ubuntu18.04-tmp
+
+disk部分添加：
+&lt;disk type='file' device='disk'&gt;  &lt;driver name='qemu' type='qcow2'/&gt;  &lt;source file='/opt/kvm/ubuntu18.04-tmp_ext.qcow2'/&gt;  &lt;target dev='vdb' bus='virtio'/&gt;&lt;/disk&gt;
+
+磁盘格式化和挂载参考《VirtualBox中Ubuntu扩容》
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>devops</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>ubuntu</tag>
+        <tag>libvirt</tag>
+        <tag>virsh</tag>
       </tags>
   </entry>
   <entry>
@@ -9823,19 +10186,7 @@ Performance analysis of “post-copy” live migration in Openstack
 
 添加磁盘VirtualBox配置1、Settings，Storage，Controller: SATA，Adds hard disk。
 2、Create new disk，VDI，Dynamically allocated，命名为sdb，大小选择512GB，Create。
-分区挂载参考《Linux的一些技巧》的硬盘挂载部分。
-1、查看磁盘
-df -hfdisk -l
-
-2、硬盘分区fdisk /dev/sdb
-按照提示，依次输入p，n，回车（Partition number），回车（First sector），回车（Last sector），w。
-3、格式化mkfs -t ext4 /dev/sdb1或者：mkfs.ext4 /dev/sdb1
-4、挂载
-mkdir /sdbmount /dev/sdb1 /sdbdf -h
-
-5、自动挂载vi /etc/fstab添加：
-/dev/sdb1 /sdb ext4 defaults 0 0
-
+分区挂载参考《Linux挂载文件系统》一文。
 扩展卷组在硬盘分区、格式化之后，不要进行挂载。参考VirtualBox下Linux虚机扩容，进行如下操作：
 1、创建物理卷pvcreate /dev/sdb1
 2、查看物理卷pvdisplay
@@ -13036,13 +13387,13 @@ sed -i "s/专业,开发,nginx/engineering,devops/g" `grep '专业,开发,nginx' 
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>shell</category>
         <category>hexo</category>
+        <category>shell</category>
       </categories>
       <tags>
+        <tag>hexo</tag>
         <tag>linux</tag>
         <tag>shell</tag>
-        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -17333,6 +17684,9 @@ select user.name, user_detail.telephonefrom user inner join user_detailon user.i
 联合查询3张表例子：查询用户表（user）中的用户名（name）、用户角色表（role）中的角色名（name）、用户详细表（user_detail）中的用户手机号码（telephone）。
 select user.name, user_detail.telephone, role.namefrom user left join roleon user.role_id=role.idleft join user_detailon user.id=user_detail.user_idwhere user.id=1;
 
+查询重复记录需求：查询user表中的重名记录
+select * from user where name in (select name from user group by name having count(name) &gt; 1);
+
 替换字符串需求：用户表（user）的个性签名字段（info）是字符串，字符串中都包含“my name is haojin”，现在需要把“my name is haojin”都替换成“my name is voidking”。
 update user set info=replace(info,"my name is haojin","my name is voidking") where info like "%my name is haojin%";
 
@@ -18600,6 +18954,139 @@ curl下载文件curl -o icon.png "https://www.python.org/static/opengraph-icon-2
       </tags>
   </entry>
   <entry>
+    <title>rsync命令的安装使用</title>
+    <url>/dev-rsync-command/</url>
+    <content><![CDATA[rsync命令简介
+rsync is an open source utility that provides fast incremental file transfer. rsync is freely available under the GNU General Public License and is currently being maintained by Wayne Davison.
+
+
+rsync是一个开源的提供快速增量文件传输的工具。rsync使用GNU协议，当前维护者是Wayne Davison。
+
+rsync是开源的增量传输工具，速度很快。基本原理是文件分块检查md5，相同就不再传输，不同就增量传输。rsync可以代替本地拷贝命令cp，也可以代替远程拷贝命令scp。
+参考文档：
+
+rsync官网
+rsync文档
+archlinux - rsync
+rsync 文件同步
+详解rsync算法–如何减少同步文件时的网络传输量
+
+
+
+安装rsynccentosyum install -y rsync
+
+rsync命令说明命令格式#Local:    rsync [OPTION...] SRC... [DEST]#Access via remote shell:    #Pull:        rsync [OPTION...] [USER@]HOST:SRC... [DEST]    #Push:        rsync [OPTION...] SRC... [USER@]HOST:DEST#Access via rsync daemon:    #Pull:        rsync [OPTION...] [USER@]HOST::SRC... [DEST]        rsync [OPTION...] rsync://[USER@]HOST[:PORT]/SRC... [DEST]    #Push:        rsync [OPTION...] SRC... [USER@]HOST::DEST        rsync [OPTION...] SRC... rsync://[USER@]HOST[:PORT]/DEST)
+
+特别注意：
+
+SRC目录后面加/，表示拷贝SRC中的内容到DEST目录中
+SRC目录后面不加/，表示在DEST目录中新建一个SRC目录，然后SRC中的内容到DEST/SRC
+DEST目录后加不加/不做区别
+
+常用参数
+-v：显示传输的过程，-vvvv可以获取更详细信息
+–partial：保留部分传输的文件，也就是实现断点续传功能
+–progress：显示进度
+-P：–partial 和 –progress的集合
+-r：–recursive 对子目录以递归模式处理
+-t：–times，保持mtime属性。
+-o：–owner，保持owner属性
+-p：–perms：保持perms属性（权限）
+-g：–group：保持group属性（所属组）
+–device：拷贝设备文件
+–specials：拷贝特殊文件
+-D：–device和–specials的集合
+-l：–links 拷贝软链接，而非软链接指向的对象
+-L：拷贝软链接，以及软链接指向的对象
+-a：–archive 归档模式，对子目录以递归模式处理，并且保持文件属性。等同于-rtopgDl
+-z：传输时进行压缩提高传输效率
+–exclude：排除不需要传输的文件
+–include：指定必须要传输的文件
+-b：–backup 对目标上已存在的文件做一个备份，备份的文件名默认使用~做后缀
+–backup-dir：指定备份文件的保存路径
+-u：–update 仅在源mtime比目标mtime新时才拷贝
+–delete：以SRC为主，对DEST进行同步。多则删，少则补。
+–dry-run：模拟运行rsync，而不真正传输
+e：指定要使用的远程shell程序，默认是ssh
+existing：只更新目标端已存在的文件，目标端不存在的文件不传输
+ignore-existing：只更新目标端不存在的文件，目标端存在的文件不传输
+W：–whole-file 全量传输，而不是默认的增量传输
+
+特别注意：
+
+不加-t参数，如果两个文件的md5相同，mtime不同，传输时会更改目标文件的mtime为当前时间，增量修改。
+加上-t参数，如果两个文件的md5相同，mtime不同，传输时会更改目标文件的mtime和源文件相同，增量修改。
+
+更多内容参考 rsync文档
+使用rsync本地拷贝断点续传需求：本地拷贝/opt/nginx目录中的所有文件，到/opt/nginx.bak，断点续传
+rsync -P -avz /opt/nginx/ /opt/nginx.bak/
+
+远程拷贝断点续传需求：拷贝本地/opt/nginx目录中的所有文件，到远程服务器192.168.56.102:/opt/nginx目录中，断点续传
+rsync -P -avz /opt/nginx/ 192.168.56.102:/opt/nginx/
+
+
+
+
+
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>devops</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>shell</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Shell脚本之安全删除</title>
+    <url>/dev-shell-saferm/</url>
+    <content><![CDATA[前言很多时候，我们会误删文件，那么一个回收站就很有必要了。看了一些回收站的实现，都比较复杂，干脆自己写一个。
+思路：使用mv替换rm，把想要删除的文件暂时移动到回收站。
+
+
+安全删除脚本1、编写安全删除脚本，saferm.sh
+#!/bin/bashTRASHDIR="$&#123;HOME&#125;/.saferm/trash"[[ ! -d $&#123;TRASHDIR&#125; ]] &amp;&amp; mkdir -p $&#123;TRASHDIR&#125;function usage()&#123;    echo -e "    Brief: move directory and files to ~/.local/trash    Usage: alias rm=/path/to/saferm.sh            rm &lt;dir&gt;            rm &lt;file&gt;            rm &lt;file1&gt; &lt;file2&gt;    "&#125;function main()&#123;    local now=$(date "+%Y%m%d%H%M%S")    local destdir="$&#123;TRASHDIR&#125;/$&#123;now&#125;"    mkdir $&#123;destdir&#125;    local opt    while getopts "h" opt    do      case $opt in        h)          usage &amp;&amp; exit 0 ;;        \?)          usage &amp;&amp; exit 0 ;;      esac    done    local files="$*"    local successfiles=""    for file in $&#123;files&#125;;do        mv $&#123;file&#125; $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file&#125;    done    if [[ -z "$&#123;successfiles&#125;" ]];then        echo -e "\033[31mNothing to do! Check the source filenames please!\033[0m"    else        echo -e "$&#123;successfiles&#125; have been moved to \033[31m$&#123;destdir&#125;\033[0m"    fi&#125;main "$@"
+
+2、使用方法编辑 .bash_profile ，添加内容
+# safermalias rm="/path/to/saferm.sh"
+添加内容完成， source .bash_profile ，rm命令就被替换为saferm脚本了。
+以上，安全删除的功能就完成了，自己偶尔手动清理下 TRASHDIR 中的文件。以下内容可选，是对该saferm脚本的补充。
+清理回收站脚本1、清理回收站脚本，cleartrash.sh
+#!/bin/bash# Clear files in trash that been removed 3 days ago.TRASHDIR="$&#123;HOME&#125;/.saferm/trash"CLEARLOG="$&#123;TRASHDIR&#125;/clear.log"[[ -d $&#123;TRASHDIR&#125; ]] \&amp;&amp; find $&#123;TRASHDIR&#125; -mindepth 1 -type d -mtime +2 \| xargs rm -rfv | tee -a $&#123;CLEARLOG&#125;
+
+2、使用方法编辑 .bash_profile ，添加内容
+# safermalias rm="/path/to/saferm.sh"alias cleartrash="/path/to/cleartrash.sh"
+添加内容完成， source .bash_profile ，然后就可以使用 cleartrash 命令清理回收站了。
+3、定时任务参考《Linux设置定时任务》，添加定时任务。
+crontab -e，添加定时任务，每天晚上执行一次：
+5 0 * * * /bin/bash /path/to/cleartrash.sh
+
+进阶saferm.sh 脚本存在一个严重bug：无法删除文件名带空格的文件，甚至会误删文件。因为Shell默认以空格、Tab、回车作为值与值之间的分隔符，而不是做为文件名的一部分。如果文件名中带空格，就会被认为是多个文件。
+修改 saferm.sh 如下：
+#!/bin/bashTRASHDIR="$&#123;HOME&#125;/.saferm/trash"[[ ! -d $&#123;TRASHDIR&#125; ]] &amp;&amp; mkdir -p $&#123;TRASHDIR&#125;function usage()&#123;    echo -e "    Brief: Move directories or files to ~/.local/trash           You can move 1-3 files with wildcard. More is unsupported.            If file name contains space, use quotation mark please.    Usage: alias rm=/path/to/saferm.sh            rm &lt;dir&gt;            rm &lt;file&gt;            rm *.&lt;filetype&gt;            rm &lt;file1&gt; &lt;file2&gt; &lt;file3&gt;    "&#125;function main()&#123;    local now=$(date "+%Y%m%d%H%M%S")    local destdir="$&#123;TRASHDIR&#125;/$&#123;now&#125;"    mkdir $&#123;destdir&#125;    local opt    while getopts "h" opt    do      case $opt in        h)          usage &amp;&amp; exit 0 ;;        \?)          usage &amp;&amp; exit 0 ;;      esac    done    local file1="$1"    local file2="$2"    local file3="$3"    local file4="$4"    local successfiles=""    [[ -n "$&#123;file1&#125;" ]] &amp;&amp; mv "$&#123;file1&#125;" $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file1&#125;    [[ -n "$&#123;file2&#125;" ]] &amp;&amp; mv "$&#123;file2&#125;" $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file2&#125;    [[ -n "$&#123;file3&#125;" ]] &amp;&amp; mv "$&#123;file3&#125;" $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file3&#125;    [[ -n "$&#123;file4&#125;" ]] &amp;&amp; echo -e "\033[31mYou can move 1-3 files with wildcard. More is unsupported.\033[0m"    if [[ -z "$&#123;successfiles&#125;" ]];then        echo -e "\033[31mNothing to do! Check the source filenames please!\033[0m"    else        echo -e "$&#123;successfiles&#125; have been moved to \033[31m$&#123;destdir&#125;\033[0m"    fi&#125;main "$@"
+
+别人家的saferm1、下载安装saferm.sh
+git clone https://github.com/lagerspetz/linux-stuffsudo mv linux-stuff/scripts/saferm.sh /binrm -Rf linux-stuff
+
+2、编辑.bashrc文件，末尾添加
+alias rm=saferm.shalias sudo='sudo '
+
+3、使环境生效
+source .bashrc
+之后，再使用rm或者sudo rm命令，实际上执行的是mv操作，移动文件到Trash目录。
+参考文档：Make “rm” Command To Move The Files To “Trash Can”
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>shell</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>shell</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Shell脚本之循环读取文本</title>
     <url>/dev-shell-loop-read-file/</url>
     <content><![CDATA[需求已知mobile.txt为：
@@ -18649,54 +19136,6 @@ modify.sh内容为：
 #!/bin/bashfilename="applist.txt"lines=$(cat $&#123;filename&#125; | sed '/^$/d')linenum=$(echo "$&#123;lines&#125;" | wc -l)#echo -e "$&#123;lines&#125;"#echo -e "$&#123;linenum&#125;"for index in `seq 1 $&#123;lines&#125;`;do  #echo $&#123;index&#125;  line=$(echo "$&#123;lines&#125;" | sed -n "$&#123;index&#125;p")  app_id=$(echo $line | awk '&#123;print $1&#125;')  idc=$(echo $app_id | awk -F'.' '&#123;print $NF&#125;')  bash modify.sh $&#123;idc&#125; $&#123;app_id&#125;done
 
 
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>shell</category>
-      </categories>
-      <tags>
-        <tag>linux</tag>
-        <tag>shell</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Shell脚本之安全删除</title>
-    <url>/dev-shell-saferm/</url>
-    <content><![CDATA[前言很多时候，我们会误删文件，那么一个回收站就很有必要了。看了一些回收站的实现，都比较复杂，干脆自己写一个。
-思路：使用mv替换rm，把想要删除的文件暂时移动到回收站。
-
-
-安全删除脚本1、编写安全删除脚本，saferm.sh
-#!/bin/bashTRASHDIR="$&#123;HOME&#125;/.saferm/trash"[[ ! -d $&#123;TRASHDIR&#125; ]] &amp;&amp; mkdir -p $&#123;TRASHDIR&#125;function usage()&#123;    echo -e "    Brief: move directory and files to ~/.local/trash    Usage: alias rm=/path/to/saferm.sh            rm &lt;dir&gt;            rm &lt;file&gt;            rm &lt;file1&gt; &lt;file2&gt;    "&#125;function main()&#123;    local now=$(date "+%Y%m%d%H%M%S")    local destdir="$&#123;TRASHDIR&#125;/$&#123;now&#125;"    mkdir $&#123;destdir&#125;    local opt    while getopts "h" opt    do      case $opt in        h)          usage &amp;&amp; exit 0 ;;        \?)          usage &amp;&amp; exit 0 ;;      esac    done    local files="$*"    local successfiles=""    for file in $&#123;files&#125;;do        mv $&#123;file&#125; $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file&#125;    done    if [[ -z "$&#123;successfiles&#125;" ]];then        echo -e "\033[31mNothing to do! Check the source filenames please!\033[0m"    else        echo -e "$&#123;successfiles&#125; have been moved to \033[31m$&#123;destdir&#125;\033[0m"    fi&#125;main "$@"
-
-2、使用方法编辑 .bash_profile ，添加内容
-# safermalias rm="/path/to/saferm.sh"
-添加内容完成， source .bash_profile ，rm命令就被替换为saferm脚本了。
-以上，安全删除的功能就完成了，自己偶尔手动清理下 TRASHDIR 中的文件。以下内容可选，是对该saferm脚本的补充。
-清理回收站脚本1、清理回收站脚本，cleartrash.sh
-#!/bin/bash# Clear files in trash that been removed 3 days ago.TRASHDIR="$&#123;HOME&#125;/.saferm/trash"CLEARLOG="$&#123;TRASHDIR&#125;/clear.log"[[ -d $&#123;TRASHDIR&#125; ]] \&amp;&amp; find $&#123;TRASHDIR&#125; -mindepth 1 -type d -mtime +2 \| xargs rm -rfv | tee -a $&#123;CLEARLOG&#125;
-
-2、使用方法编辑 .bash_profile ，添加内容
-# safermalias rm="/path/to/saferm.sh"alias cleartrash="/path/to/cleartrash.sh"
-添加内容完成， source .bash_profile ，然后就可以使用 cleartrash 命令清理回收站了。
-3、定时任务参考《Linux设置定时任务》，添加定时任务。
-crontab -e，添加定时任务，每天晚上执行一次：
-5 0 * * * /bin/bash /path/to/cleartrash.sh
-
-进阶saferm.sh 脚本存在一个严重bug：无法删除文件名带空格的文件，甚至会误删文件。因为Shell默认以空格、Tab、回车作为值与值之间的分隔符，而不是做为文件名的一部分。如果文件名中带空格，就会被认为是多个文件。
-修改 saferm.sh 如下：
-#!/bin/bashTRASHDIR="$&#123;HOME&#125;/.saferm/trash"[[ ! -d $&#123;TRASHDIR&#125; ]] &amp;&amp; mkdir -p $&#123;TRASHDIR&#125;function usage()&#123;    echo -e "    Brief: Move directories or files to ~/.local/trash           You can move 1-3 files with wildcard. More is unsupported.            If file name contains space, use quotation mark please.    Usage: alias rm=/path/to/saferm.sh            rm &lt;dir&gt;            rm &lt;file&gt;            rm *.&lt;filetype&gt;            rm &lt;file1&gt; &lt;file2&gt; &lt;file3&gt;    "&#125;function main()&#123;    local now=$(date "+%Y%m%d%H%M%S")    local destdir="$&#123;TRASHDIR&#125;/$&#123;now&#125;"    mkdir $&#123;destdir&#125;    local opt    while getopts "h" opt    do      case $opt in        h)          usage &amp;&amp; exit 0 ;;        \?)          usage &amp;&amp; exit 0 ;;      esac    done    local file1="$1"    local file2="$2"    local file3="$3"    local file4="$4"    local successfiles=""    [[ -n "$&#123;file1&#125;" ]] &amp;&amp; mv "$&#123;file1&#125;" $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file1&#125;    [[ -n "$&#123;file2&#125;" ]] &amp;&amp; mv "$&#123;file2&#125;" $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file2&#125;    [[ -n "$&#123;file3&#125;" ]] &amp;&amp; mv "$&#123;file3&#125;" $&#123;destdir&#125; &amp;&amp; successfiles=$&#123;successfiles&#125;" "$&#123;file3&#125;    [[ -n "$&#123;file4&#125;" ]] &amp;&amp; echo -e "\033[31mYou can move 1-3 files with wildcard. More is unsupported.\033[0m"    if [[ -z "$&#123;successfiles&#125;" ]];then        echo -e "\033[31mNothing to do! Check the source filenames please!\033[0m"    else        echo -e "$&#123;successfiles&#125; have been moved to \033[31m$&#123;destdir&#125;\033[0m"    fi&#125;main "$@"
-
-别人家的saferm1、下载安装saferm.sh
-git clone https://github.com/lagerspetz/linux-stuffsudo mv linux-stuff/scripts/saferm.sh /binrm -Rf linux-stuff
-
-2、编辑.bashrc文件，末尾添加
-alias rm=saferm.shalias sudo='sudo '
-
-3、使环境生效
-source .bashrc
-之后，再使用rm或者sudo rm命令，实际上执行的是mv操作，移动文件到Trash目录。
-参考文档：Make “rm” Command To Move The Files To “Trash Can”
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -18765,35 +19204,42 @@ main.sh 脚本内容为：
       </tags>
   </entry>
   <entry>
-    <title>iotop命令</title>
-    <url>/dev-iotop/</url>
-    <content><![CDATA[哪个程序占用了磁盘IO？查看一台主机的监控，有时候我们会发现磁盘IO被打满了，这时候怎样定位出是哪个程序大量占用了磁盘IO？答：使用磁盘IO分析工具。比如iotop，可以监控到读写磁盘的线程和读写速度。
+    <title>iftop命令</title>
+    <url>/dev-iftop/</url>
+    <content><![CDATA[哪个程序占用了带宽？查看一台主机的监控，有时候我们会发现网络带宽被打满了，这时候怎样定位出是哪个程序大量占用了带宽？答：使用网络数据包分析工具。比如iftop，可以监控到进出网卡的带宽用量。
 参考文档：
 
-在 Linux 中如何使用 iotop 和 iostat 监控磁盘 I/O 活动？
-Linux性能监控命令系列之 iotop
-Monitor Disk I/O with iotop in Linux
-Iotop
+How do I find out which process is eating up my bandwidth?
+iftop: display bandwidth usage on an interface
+网络流量监控工具iftop
+iftop简介
+从零开始学习iftop流量监控
 
 
 
-安装iotopyum install iotop
-使用iotop显示当前主机的IO情况iotop
-输出内容说明
+安装iftopyum install iftop
+使用iftop显示当前主机的流量和端口。iftop -P
+这里比较坑的是，有的统计项并不会显示端口。原因未知，解决方法未知。。。
+输出内容说明iftop的输出从上到下可以分为三部分：流量刻度，详细信息和统计信息。
+流量刻度是iftop输出中最上面的一行。此行信息是流量刻度，用于显示网卡带宽流量。
+详细信息是iftop输出中最大的一个部分，此部分又分为左、中、右三列。
 
-Thread ID (TID).
-I/O Priority class/level (PRIO).
-the owner of the thread with TID (USER).
-the disk read per second (DISK READ).
-the disk write per second (DISK WRITE).
-the percentage of time the thread spent while swapping in (SWAPIN).
-the percentage of time the thread spent waiting on I/O (IO&gt;).
-the command the thread is running (COMMAND).
+左边显示本机的主机名/IP和端口
+中间显示正在和本机通信的主机名/IP和端口，=&gt;代表发送数据，反之&lt;=是接受数据。
+右边表示2s内，10s内，40s内的一个平均流量值，显示不同时间段的流量值。
 
-根据线程号查找进程已知线程号（例如34567），怎样查找对应的进程号？
-方法一：直接查找线程号ps -efL | grep 34567
-方法二：根据COMMAND关键字（例如nginx）查找进程号，然后查看进程包含的线程号，最后和要查找的线程号进行对比。
-ps -ef | grep nginxps -T -p 12345
+统计信息位于iftop输出的最下面。TX表示发送流量，RX表示接收流量，TOTAL表示发送和接收的全部流量。
+
+cumm：从运行iftop到当前时刻，发送和接收的总流量。
+peak：流量的峰值。
+rate：在过去2s，10s，40s，平均的流量的值。
+
+根据端口号查找进程已知端口号（例如8080），怎样查找对应的进程？
+方法一：使用lsof
+lsof -i :8080ps -ef | grep 12345
+
+方法二：使用netstat
+netstat -nlp | grep 8080ps -ef | grep 12345
 
 
 
@@ -18811,6 +19257,7 @@ ps -ef | grep nginxps -T -p 12345
         <category>troubleshooting</category>
       </categories>
       <tags>
+        <tag>网络</tag>
         <tag>问题排查</tag>
       </tags>
   </entry>
@@ -18880,6 +19327,56 @@ journalctl# 查看引导信息journalctl -b# 实时跟踪系统日志journalctl 
       </categories>
       <tags>
         <tag>shell</tag>
+        <tag>问题排查</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>iotop命令</title>
+    <url>/dev-iotop/</url>
+    <content><![CDATA[哪个程序占用了磁盘IO？查看一台主机的监控，有时候我们会发现磁盘IO被打满了，这时候怎样定位出是哪个程序大量占用了磁盘IO？答：使用磁盘IO分析工具。比如iotop，可以监控到读写磁盘的线程和读写速度。
+参考文档：
+
+在 Linux 中如何使用 iotop 和 iostat 监控磁盘 I/O 活动？
+Linux性能监控命令系列之 iotop
+Monitor Disk I/O with iotop in Linux
+Iotop
+
+
+
+安装iotopyum install iotop
+使用iotop显示当前主机的IO情况iotop
+输出内容说明
+
+Thread ID (TID).
+I/O Priority class/level (PRIO).
+the owner of the thread with TID (USER).
+the disk read per second (DISK READ).
+the disk write per second (DISK WRITE).
+the percentage of time the thread spent while swapping in (SWAPIN).
+the percentage of time the thread spent waiting on I/O (IO&gt;).
+the command the thread is running (COMMAND).
+
+根据线程号查找进程已知线程号（例如34567），怎样查找对应的进程号？
+方法一：直接查找线程号ps -efL | grep 34567
+方法二：根据COMMAND关键字（例如nginx）查找进程号，然后查看进程包含的线程号，最后和要查找的线程号进行对比。
+ps -ef | grep nginxps -T -p 12345
+
+
+
+
+
+
+
+
+
+
+
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>troubleshooting</category>
+      </categories>
+      <tags>
         <tag>问题排查</tag>
       </tags>
   </entry>
@@ -19164,64 +19661,6 @@ shell脚本文件拆分需求1：大文件拆分成小文件，每50行拆分成
         <tag>网络</tag>
         <tag>linux</tag>
         <tag>shell</tag>
-        <tag>问题排查</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>iftop命令</title>
-    <url>/dev-iftop/</url>
-    <content><![CDATA[哪个程序占用了带宽？查看一台主机的监控，有时候我们会发现网络带宽被打满了，这时候怎样定位出是哪个程序大量占用了带宽？答：使用网络数据包分析工具。比如iftop，可以监控到进出网卡的带宽用量。
-参考文档：
-
-How do I find out which process is eating up my bandwidth?
-iftop: display bandwidth usage on an interface
-网络流量监控工具iftop
-iftop简介
-从零开始学习iftop流量监控
-
-
-
-安装iftopyum install iftop
-使用iftop显示当前主机的流量和端口。iftop -P
-这里比较坑的是，有的统计项并不会显示端口。原因未知，解决方法未知。。。
-输出内容说明iftop的输出从上到下可以分为三部分：流量刻度，详细信息和统计信息。
-流量刻度是iftop输出中最上面的一行。此行信息是流量刻度，用于显示网卡带宽流量。
-详细信息是iftop输出中最大的一个部分，此部分又分为左、中、右三列。
-
-左边显示本机的主机名/IP和端口
-中间显示正在和本机通信的主机名/IP和端口，=&gt;代表发送数据，反之&lt;=是接受数据。
-右边表示2s内，10s内，40s内的一个平均流量值，显示不同时间段的流量值。
-
-统计信息位于iftop输出的最下面。TX表示发送流量，RX表示接收流量，TOTAL表示发送和接收的全部流量。
-
-cumm：从运行iftop到当前时刻，发送和接收的总流量。
-peak：流量的峰值。
-rate：在过去2s，10s，40s，平均的流量的值。
-
-根据端口号查找进程已知端口号（例如8080），怎样查找对应的进程？
-方法一：使用lsof
-lsof -i :8080ps -ef | grep 12345
-
-方法二：使用netstat
-netstat -nlp | grep 8080ps -ef | grep 12345
-
-
-
-
-
-
-
-
-
-
-
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>troubleshooting</category>
-      </categories>
-      <tags>
-        <tag>网络</tag>
         <tag>问题排查</tag>
       </tags>
   </entry>
@@ -20232,9 +20671,10 @@ DIGEST可以在dockerhub的镜像页面找到，以busybox为例，对于同一�
 docker pull busybox@sha256:e02e811dd08fd49e7f6032625495118e63f597eb150403d02e3238af1df240ba
 
 镜像选择如果一个软件有很多版本的镜像，该怎么选择？1、如果对软件版本有要求，那么按照版本要求下载。2、如果对软件版本没有要求，那么选择下载3到6个月前的版本，最好是大版本的最后一个小版本。因为如果版本太新，就容易当小白鼠，可能有很多未知的坑。而老一点的版本，遇到问题一般也能搜索到解决办法。
-容器操作创建/启动容器怎样创建/启动一个容器，并让它保持运行呢？答：在启动容器时，指定一个长期运行的前台进程作为1号进程。    
-docker run --name vk-busybox -d busybox:1.25 sleep 3600
-以上命令的含义： 
+容器操作创建&amp;启动容器怎样创建&amp;启动一个容器，并让它保持运行呢？答：在启动容器时，指定一个长期运行的前台进程作为1号进程。    
+docker run --name vk-busybox -d \busybox:1.25 sleep 3600
+
+命令说明： 
 
 docker run 表示启动一个容器
 –name 指定容器名为 vk-busybox
@@ -20242,6 +20682,15 @@ docker run 表示启动一个容器
 busybox:1.25 是镜像名
 sleep 是1号进程，3600是sleep的参数
 
+映射端口和挂载目录docker run --name vk-nginx -d --privileged=true \-p 80:80 \-v /etc/localtime:/etc/localtime \nginx:1.17.7
+
+参数说明：
+
+-p 表示宿主机端口（冒号前的端口）映射给容器端口（冒号后的端口）
+-v 表示宿主机目录（冒号前目录）挂载给容器目录（容器目录）
+
+详情参考《使用Docker安装配置Nginx》
+这里有一个比较有意思的问题：如果指定端口81:81，通过nc探测宿主机81端口是否是通的？答：也是通的。这个应该是docker的机制，docker占用了宿主机的81端口，因此nc是通的。但是通过veth pair把流量转发给容器后，因为容器内的81端口并不提供服务，所以通过curl访问宿主机81端口，最终并不能获得服务。
 启停容器# 停止一个正在运行的容器docker stop vk-busybox# 启动一个已经停止的容器docker start vk-busybox
 
 开机启动容器# 开机启动dockersystemctl enable docker# 开机启动容器docker run --restart=always vk-busyboxdocker update --restart=always vk-busybox
