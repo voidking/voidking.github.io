@@ -21,15 +21,17 @@ GitHub Actions
 
 
 Quickstart for GitHub Actions参考文档：Quickstart for GitHub Actions
-
-创建新的分支（因为原分支是适用于travis ci的）
+1、 创建新的分支（因为原分支是适用于travis ci的）
 git checkout -b github-actiongit push origin HEAD:github-action
-创建 github-actions-demo.yml 文件voidking/hexo-deploy项目中执行
+
+2、 创建 github-actions-demo.yml 文件voidking/hexo-deploy项目中执行
 mkdir -p .github/workflowsvim .github/workflows/github-actions-demo.yml
 
-github-actions-demo.yml 文件内容详情，参考 github-actions-demo.yml
+github-actions-demo.yml 文件内容如下：
+name: GitHub Actions Demorun-name: $&#123;&#123; github.actor &#125;&#125; is testing out GitHub Actions 🚀on: [push]jobs:  Explore-GitHub-Actions:    runs-on: ubuntu-latest    steps:      - run: echo &quot;🎉 The job was automatically triggered by a $&#123;&#123; github.event_name &#125;&#125; event.&quot;      - run: echo &quot;🐧 This job is now running on a $&#123;&#123; runner.os &#125;&#125; server hosted by GitHub!&quot;      - run: echo &quot;🔎 The name of your branch is $&#123;&#123; github.ref &#125;&#125; and your repository is $&#123;&#123; github.repository &#125;&#125;.&quot;      - name: Check out repository code        uses: actions/checkout@v3      - run: echo &quot;💡 The $&#123;&#123; github.repository &#125;&#125; repository has been cloned to the runner.&quot;      - run: echo &quot;🖥️ The workflow is now ready to test your code on the runner.&quot;      - name: List files in the repository        run: |          ls $&#123;&#123; github.workspace &#125;&#125;      - run: echo &quot;🍏 This job&#x27;s status is $&#123;&#123; job.status &#125;&#125;.&quot;
 
-上传代码git add .git commit -m &quot;github action test&quot;git push
+3、 上传代码
+git add .git commit -m &quot;github action test&quot;git push
 
 报错：refusing to allow a Personal Access Token to create or update workflow .github/workflows/github-actions-demo.yml without workflow scope
 这是因为我们的Access Token需要具有create or update workflow的权限，因此需要重新创建一个Access Token。具体操作方法：访问Personal access tokens (classic)页面，Generate new token，生成token时一定要勾选repo和workflow。
@@ -54,7 +56,9 @@ hexo-backup中的文档放到hexo可以构建（编译）的位置
 上传编译后的html等静态文件到两个pages repoa. github pages是国外流量的源站b. aliyun server是国内流量的源站c. aliyun server从gitee pages拉取最新版本d. gitee pages本身不对外提供服务，只是作为一个git仓库
 aliyun server从gitee pages拉取最新版本
 
-准备github-actions.ymlgithub-actions.yml内容，请访问 voidking/hexo-deploy github-actions.yml 进行查看。
+准备github-actions.ymlgithub-actions.yml内容如下：
+name: Hexo CICDrun-name: $&#123;&#123; github.actor &#125;&#125; build and deploy hexo!on:  push:    branches:      - master      - github-actionsenv:  GIT_USER: voidking  HEXO_BACKUP_REPO: voidking/hexo-backup  HEXO_BACKUP_REPO_BRANCH: master  HEXO_THEME_REPO: voidking/hexo-theme-next  HEXO_THEME_REPO_BRANCH: root  GITHUB_PAGES_REPO: github.com/voidking/voidking.github.io.git  GITEE_PAGES_REPO: gitee.com/voidking/voidking.git  GITHUB_PAGES_URL: &quot;https://$&#123;GIT_USER&#125;:$&#123;&#123; secrets.GH_TOKEN &#125;&#125;@$&#123;GITHUB_PAGES_REPO&#125;&quot;  GITEE_PAGES_URL: &quot;https://$&#123;GIT_USER&#125;:$&#123;&#123; secrets.GITEE_TOKEN &#125;&#125;@$&#123;GITEE_PAGES_REPO&#125;&quot;  ALI_IP: 8.136.13.58  ALI_USER: voidking  jobs:  build:    name: Build on node $&#123;&#123; matrix.node_version &#125;&#125; and $&#123;&#123; matrix.os &#125;&#125;    runs-on: ubuntu-latest    strategy:      matrix:        os: [ubuntu-latest]        node_version: [12.22.5]    steps:    - name: Checkout repo      uses: actions/checkout@v2    - name: Checkout theme repo      uses: actions/checkout@v2      with:        repository: $&#123;&#123; env.HEXO_THEME_REPO &#125;&#125;        ref: $&#123;&#123; env.HEXO_THEME_REPO_BRANCH &#125;&#125;        path: themes/next    - name: Checkout hexo-backup repo      uses: actions/checkout@v2      with:        repository: $&#123;&#123; env.HEXO_BACKUP_REPO &#125;&#125;        ref: $&#123;&#123; env.HEXO_BACKUP_REPO_BRANCH &#125;&#125;        path: hexo-backup        token: $&#123;&#123; secrets.GH_TOKEN &#125;&#125;    - name: Move markdown articles to current directory      run: mv hexo-backup/source . &amp;&amp; rm -rf source/private    - name: Install nodejs $&#123;&#123; matrix.node_version &#125;&#125;      uses: actions/setup-node@v3      with:        node-version: $&#123;&#123; matrix.node_version &#125;&#125;    - name: Install nodejs dependencies      run: npm install    - name: Build nodejs project      run: npm run build    - name: Push to voidking.github.io and gitee      run: |        git config --global user.name &quot;voidking&quot;        git config --global user.email &quot;voidking@qq.com&quot;        git clone https://$&#123;&#123; secrets.GH_TOKEN &#125;&#125;@$&#123;&#123; env.GITHUB_PAGES_REPO &#125;&#125; voidking        cd voidking        rm -rfv `ls -a | grep -vw &#x27;\.&#x27; | grep -vw &#x27;\.git&#x27; | xargs`        ls -al        # unalias cp         cp -rf ../public/. .        cp ../source/.travis.yml .        git add . &amp;&amp; git commit -m &quot;GitHub Actions Auto Builder&quot;        git push --force --quiet $&#123;&#123; env.GITHUB_PAGES_URL &#125;&#125; master:master        git push --force --quiet $&#123;&#123; env.GITEE_PAGES_URL &#125;&#125; master:master    deploy:    name: Deploy to Aliyun Server    needs: build    runs-on: ubuntu-latest    steps:    - name: Configure id_rsa      run: |        mkdir -p ~/.ssh/        echo $&#123;&#123; secrets.ID_RSA &#125;&#125; | base64 -d &gt; ~/.ssh/id_rsa        chmod 600 ~/.ssh/id_rsa    - name: Execute ssh command      run: |        ssh -o StrictHostKeyChecking=no \        -o PubkeyAcceptedKeyTypes=ssh-rsa \        $&#123;&#123; env.ALI_USER &#125;&#125;@$&#123;&#123; env.ALI_IP &#125;&#125; \        &quot;cd /opt/nginx/work/voidking/ &amp;&amp; git pull --force --quiet $&#123;&#123; env.GITEE_PAGES_URL &#125;&#125; master:master&quot;
+
 说明：
 
 github action中定义变量有三种方式：vars、secrets和env。
@@ -63,7 +67,8 @@ $&#123;&#123;&#125;&#125;双花括号表示上下文引用，详情参考Context
 $&#123;&#125;单花括号表示shell方式使用中env变量。
 使用env中的变量有两种方式：上下文引用和shell方式使用。
 
-配置加密变量上面的workflow配置中，用到了一些敏感变量，比如GH_TOKEN，这些变量需要加密。配置加密变量的方法：
+配置加密变量上面的workflow配置中，用到了一些敏感变量，GH_TOKEN、GITEE_TOKEN和ID_RSA，这些变量需要加密。
+配置加密变量的方法：
 
 repository级别变量：Project -&gt; Settings -&gt; Actions secrets and variables -&gt; New repository secret
 environments级别变量：Project -&gt; Settings -&gt; Actions secrets and variables -&gt; Manage enviroments -&gt; New enviroment -&gt; Environment secrets -&gt; Add secret
@@ -71,6 +76,10 @@ environments级别变量：Project -&gt; Settings -&gt; Actions secrets and vari
 其中ID_RSA的获取方法为：
 ssh-keygenALI_IP=&quot;8.136.13.58&quot;ssh-copy-id -i ~/.ssh/id_rsa.pub voidking@$&#123;ALI_IP&#125;cat .ssh/id_rsa | base64 | tr -d &#x27;\n&#x27;
 
+CICD测试git add .git commit -m &quot;github action test&quot;git push
+
+访问voidking/hexo-deploy Actions页面，即可看到最新的workflow。最开始难免出错，根据报错进行调整即可。
+最终，实现了和travis ci上一样的功能，nice。
 踩坑记录env不能用在job:if当使用job:if时，如下定义：
 env:  BUILD: &quot;false&quot;jobs:  build:    name: Build    if: $&#123;&#123; env.BUILD == &quot;true&quot; &#125;&#125;    runs-on: ubuntu-latest
 
@@ -9066,7 +9075,7 @@ gomod实践篇安装client-go假设一个项目依赖client-go，那么参考官
 失败了，返回404，猜测是12.0版本在代理服务器不存在，使用另外一种下载方式。
 go get k8s.io/client-go@kubernetes-1.15.0
 此处下载了两个版本的client-go，我们使用v0.0.0版本。
-4、安装client-go相关依赖client-go默认下载到$GOPATH/pkg/mod/k8s.io目录下，把k8s.io目录移动到$GOPATH/src目录下。然后把&#x63;&#108;&#x69;&#x65;&#x6e;&#116;&#x2d;&#x67;&#x6f;&#64;&#118;&#48;&#x2e;&#48;&#x2e;&#48;重命名为client-go，然后在client-go目录下执行安装依赖的命令：
+4、安装client-go相关依赖client-go默认下载到$GOPATH/pkg/mod/k8s.io目录下，把k8s.io目录移动到$GOPATH/src目录下。然后把&#99;&#108;&#x69;&#x65;&#x6e;&#116;&#45;&#103;&#111;&#x40;&#118;&#x30;&#46;&#x30;&#x2e;&#x30;重命名为client-go，然后在client-go目录下执行安装依赖的命令：
 export GOPROXY=https://goproxy.ioexport GO111MODULE=ongo mod vendor
 完成之后，所有的依赖都下载到了client-go/vendor目录下，一个完整的client-go依赖库就准备好了。
 依赖库版本管理client-go依赖库准备好了，但是另一个问题来了：假设项目vk-project依赖client-go和库A，client-go依赖库A，两个依赖库A版本不一致，那么vk-project在编译时，会同时依赖两个不同的库A，导致编译出的二进制包有问题。
@@ -16980,11 +16989,11 @@ mkdir -p /root/.certs/echo -n | openssl s_client -connect smtp.163.com:465 | sed
 5、测试发送邮件echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com查看邮箱，正常的话应该已经收到邮件了。如果没有收到邮件，可以查看日志进行排查：tail /var/log/maillog
 macos参考《MacOS上软件配置》中的命令行发邮件部分
 mail命令命令格式mail [OPTION...] [address...]常用到的选项，一个是s，代表主题；一个是A，代表附件。其他的需要时查看help。
-发送普通邮件目标：给邮箱 &#118;&#x6f;&#x69;&#100;&#x6b;&#105;&#110;&#x67;&#x40;&#x71;&#x71;&#46;&#x63;&#x6f;&#109; 发送邮件，主题为“Hello VoidKing”，内容为“Welcome to mail world！”
+发送普通邮件目标：给邮箱 &#x76;&#111;&#x69;&#100;&#x6b;&#x69;&#x6e;&#x67;&#x40;&#113;&#113;&#46;&#99;&#x6f;&#109; 发送邮件，主题为“Hello VoidKing”，内容为“Welcome to mail world！”
 echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com
 但是，等待了几分钟，并没有收到邮件，垃圾箱也没有。mail，查看email的发送状态为Undelivered Mail Returned，原来没有投递出去。
 查看邮件系统日志：tail -n 50 /var/spool/mail/test提示host mx3.qq.com[183.57.48.35] said: 550 Mail content denied。看来qq邮箱的垃圾邮件防御机制做的不错，那就换个163邮箱，没想到依然失败。
-换一台服务器？发送给 &#x76;&#111;&#x69;&#100;&#107;&#105;&#x6e;&#x67;&#64;&#x71;&#x71;&#x2e;&#99;&#111;&#x6d; ，成功！很尴尬。。。就这么着吧
+换一台服务器？发送给 &#118;&#x6f;&#x69;&#x64;&#107;&#x69;&#x6e;&#x67;&#x40;&#113;&#113;&#x2e;&#99;&#x6f;&#x6d; ，成功！很尴尬。。。就这么着吧
 发送高级邮件1、从文本读入内容发送邮件mail -s &#39;Error report&#39; voidking@qq.com &lt; /tmp/log/ganglia/error-20180524.log
 2、发送附件mail -s &#39;Error report&#39; voidking@qq.com -A /tmp/log/ganglia/ganglia-20180524.log &lt; /tmp/log/ganglia/error-20180524.log
 3、指定发件人echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com -aFrom:haojin@qq.com
@@ -19957,7 +19966,7 @@ linux下载好数据集后，把数据集下载到win10中nmt目录中，路径�
 训练model在根目录（nmt目录）下运行：
 python -m nmt.nmt --src=vi --tgt=en --vocab_prefix=./tmp/nmt_data/vocab  --train_prefix=./tmp/nmt_data/train --dev_prefix=./tmp/nmt_data/tst2012  --test_prefix=./tmp/nmt_data/tst2013 --out_dir=./tmp/nmt_model --num_train_steps=12000 --steps_per_stats=100 --num_layers=2 --num_units=128 --dropout=0.2 --metrics=bleu
 
-郝同学i5-3337U &#x43;&#x50;&#85;&#x40;&#49;&#46;&#x38;&#48;&#x47;&#72;&#122;，8G内存，训练了将近两个小时才训练完成。下文我们要学习使用一下UCloud提供的免费GPU。
+郝同学i5-3337U &#67;&#80;&#x55;&#64;&#x31;&#x2e;&#56;&#48;&#71;&#x48;&#x7a;，8G内存，训练了将近两个小时才训练完成。下文我们要学习使用一下UCloud提供的免费GPU。
 我们可以使用 Tensorboard 在训练过程中查看模型的总结：
 tensorboard --port 22222 --logdir ./tmp/nmt_model/
 通过以下简单的变化，就能逆向完成英语到越南语的翻译。
@@ -23215,7 +23224,7 @@ useradd -m voidking -s /bin/bashpasswd voidkingadduser voidking sudo
 
 
 生成密钥ssh-keygenssh-keygen -C &quot;voidking@qq.com&quot; -f ./voidking_rsa
-第一条命令执行完之后，.ssh目录下生成了 id_rsa 和 id_rsa.pub。第二条命令执行完之后，当前目录下生成了 voidking_rsa 和 voidking_rsa.pub，注释内容为 &#118;&#111;&#105;&#x64;&#107;&#105;&#x6e;&#103;&#x40;&#113;&#x71;&#x2e;&#99;&#111;&#x6d; 。
+第一条命令执行完之后，.ssh目录下生成了 id_rsa 和 id_rsa.pub。第二条命令执行完之后，当前目录下生成了 voidking_rsa 和 voidking_rsa.pub，注释内容为 &#118;&#111;&#105;&#100;&#107;&#x69;&#110;&#x67;&#64;&#113;&#x71;&#x2e;&#x63;&#x6f;&#x6d; 。
 使密钥生效ssh-copy-id -i ~/.ssh/id_rsa.pub voidking@hostnamessh-copy-id -i ~/.ssh/id_rsa.pub voidking@hostname -p 22ssh voidking@hostname
 ssh-copy-id 这个命令做的事情，是把 id_rsa.pub 中的内容，追加到 hostname:/home/voidking/.ssh/authorized_keys 文件中。authorized_keys文件权限为600。如果配置好了sshd，但是无法使用密钥登录机器，请检查authorized_keys文件权限。
 密钥添加失败问题如果ssh-copy-id报错cannot create .ssh/authorized_keys: Operation not permitted或者手动编辑authorized_keys后无法保存，chmod也无法改变authorized_keys文件的权限。
@@ -26688,7 +26697,7 @@ t0 = time()&lt; 你的 clf.fit() 代码行 &gt;print &#x27;training time:&#x27;,
 代码运行说明文件。纯文本或markdown格式，写明运行你的代码所需要的库，他们的安装方法和运行方法
 预测结果: 纯文本或CSV文件。
 
-对项目要求有疑问请致信 &#x73;&#x75;&#112;&#x70;&#x6f;&#x72;&#116;&#64;&#x79;&#111;&#x75;&#x64;&#x61;&#x78;&#x75;&#101;&#x2e;&#99;&#111;&#109;
+对项目要求有疑问请致信 &#x73;&#117;&#112;&#x70;&#111;&#x72;&#116;&#64;&#121;&#111;&#117;&#x64;&#97;&#x78;&#117;&#x65;&#x2e;&#x63;&#x6f;&#x6d;
 准备好提交项目后，请点击下一项，在“项目提交”小节中提交。
 ]]></content>
       <categories>
@@ -26729,7 +26738,7 @@ Resume Builder
 项目导师会根据该评估准则（与你制作简历时遵循的清单相符）对你的简历项目进行审核。
 提交准备好提交求职信后，你需要：
 1、删除/匿名化你的求职信上的所有个人联系人信息，以防泄漏隐私。2、创建 PDF 格式的简历，这样你的简历在不同操作系统/软件/屏幕中有一致的版面样式。3、点击下方的“提交项目”按钮，并根据说明操作。4、在“告知审核员”中，请包括任何有关你的职业目标（如申请的工作或领域），或任何有意偏离评估准则情况的详细信息。
-注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#x73;&#x75;&#112;&#x70;&#111;&#114;&#116;&#64;&#x79;&#111;&#x75;&#100;&#97;&#x78;&#x75;&#101;&#46;&#x63;&#111;&#109;。
+注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#115;&#117;&#112;&#x70;&#x6f;&#x72;&#116;&#x40;&#x79;&#x6f;&#117;&#x64;&#x61;&#x78;&#x75;&#101;&#46;&#99;&#x6f;&#109;。
 GitHub个人资料项目你的GitHub个人资料展示你创建的项目，并让他人了解你的工作风格和提交频率。通过展示你对 GitHub 的熟悉程度，其他开发人员和招聘经理能够知道你拥有他们需要能力，你就是他们正在寻找的人。你的代码库应表明你认真对待项目，并且能够编写干净、格式正确的代码。请查看 GitHub 上的这篇出色的博客文章，了解如何用 GitHub 帮助你持续学习，发展职业生涯。
 为何要完成此 GitHub 个人资料项目？GitHub 越来越多地被用作招聘平台以及潜在雇主查看你的作品的方式。它还是与其他开发人员建立联系和展示你的技能的好地方。
 我应该做什么？你应该以招聘人员或用人部门经理的眼光查看你的 GitHub 个人资料，重点关注你的个人资料、项目和代码如何将你描绘成公司的潜在候选人或项目的协作者。
@@ -26758,7 +26767,7 @@ GitHub项目提交你的 GitHub 主页是呈现给潜在雇主的“关键证据
 反馈优达学城项目导师会根据该标准（与你制作领英简介时遵循的清单相符）对你的领英简介项目进行审核。
 提交准备好提交领英个人资料后：
 1、若要提交，请点击下方的“提交项目”按钮，并根据说明操作。2、在“告知评审员”中，请包括任何有关你的职业目标（如预期工作领域）的详细信息。
-注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#115;&#117;&#x70;&#x70;&#x6f;&#114;&#116;&#x40;&#x79;&#111;&#x75;&#100;&#97;&#x78;&#x75;&#x65;&#x2e;&#99;&#x6f;&#109;。
+注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#115;&#117;&#112;&#112;&#x6f;&#x72;&#x74;&#x40;&#x79;&#x6f;&#117;&#x64;&#97;&#120;&#117;&#101;&#46;&#x63;&#111;&#x6d;。
 技术面试项目对于此实战项目，你需要回答五个技术面试问题，这些问题涉及的是技术面试课程中讨论的各种主题。你应该用 Python 写出清晰高效的答案，并用文字解释代码的效率和设计理由。我们将安排合格的审核者检查你的答案，并针对任何精彩之处或欠缺的方面做出反馈：你的解决方案是最高效的吗？你很好地解释了你的想法吗？你的代码简洁易懂吗？
 请回答以下问题：
 问题 1: 假设有两个字符串 s 和 t，请判断 t 的变形词是否是 s 的子字符串。例如：如果 s = “udacity”，t = “ad”，则函数返回 True。你的函数定义应该为：“question1(s, t)”，并返回布尔值 True 或 False。 
@@ -26824,7 +26833,7 @@ Dice
 问题 5 - 通过一个情景举例说明正则化对学习好的模型的必要性，以及提供一个正则化没有意义的情景。
 问题 6 -你附近的杂货店想向顾客有针对性地发放对他们来说有用的优惠券。假设你可以访问每位顾客的购买历史和店铺商品目录，你将设计怎样一个系统，来决定发放哪些优惠券？你如何衡量这个系统的性能？
 问题 7 - 选择一个公司，然后描述你想应聘的该公司内的机器学习工程师职位（假设有）。现在，如果你已成功应聘，并从今天开始任职，在你看来，你的职位在下一年会有怎样的发展？你的长期职业目标是什么，这个职位如何帮助你实现长期目标？
-提交当你准备提交项目，点击下方“提交项目”，上传一份 PDF 文件。如果有任何与提交项目相关的疑问，或想查看提交状态，请向我们发送电子邮件询问（&#x73;&#x75;&#x70;&#x70;&#x6f;&#114;&#116;&#64;&#121;&#x6f;&#117;&#100;&#x61;&#x78;&#117;&#x65;&#x2e;&#x63;&#x6f;&#x6d;）。
+提交当你准备提交项目，点击下方“提交项目”，上传一份 PDF 文件。如果有任何与提交项目相关的疑问，或想查看提交状态，请向我们发送电子邮件询问（&#115;&#x75;&#x70;&#x70;&#111;&#x72;&#x74;&#64;&#x79;&#x6f;&#x75;&#100;&#97;&#120;&#117;&#101;&#46;&#99;&#x6f;&#109;）。
 项目资源项目评审标准。优达学城的项目导师会依据此评审标准审阅你的项目。你可以在提交前自行检查自己是否已达到所有标准。职业资源中心。你可以在这里找到更多有关准备面试的资源和贴士。
 接下来面试练习并不是只在你求职时才需要做的事情， 在你的整个职业生涯中，你都需要继续提高自己的面试技巧。抓住每一个机会，思考和与人交流你的职业目标。在申请一个职位之前，请思考清楚自己为什么要申请——这将极大地帮助你为面试做好准备。
 书签Interview Guide: Machine Learninghttps://career-resource-center.udacity.com/interview-courses-and-guides/machine-learning
@@ -27198,7 +27207,7 @@ notebook 项目导出的 HTML 文件，命名为 report.html。
 
 注意：所提交文件的文件名名，包括zip压缩包内的文件名，都不能含有中文及任何ASCII之外的字符，否则会造成提交失败。
 如何导出HTML的说明在 notebook 的最下方。 你也许需要先在命令后通过 pip install mistune 命令安装 mistune 。当你准备好所有这些文件，并且依照项目要求核对过之后，就可以在下面的项目提交页面提交你的项目了。
-如果你是第一次在优达学城提交项目，点击提交之后，要等1分钟左右才能打开提交页面。如果长时间打不开，可以刷新。如果依然无法打开项目提交页面，可以联系客服微信或者邮件至 &#115;&#117;&#x70;&#x70;&#x6f;&#114;&#x74;&#x40;&#x79;&#x6f;&#x75;&#100;&#97;&#x78;&#117;&#101;&#46;&#x63;&#x6f;&#x6d;
+如果你是第一次在优达学城提交项目，点击提交之后，要等1分钟左右才能打开提交页面。如果长时间打不开，可以刷新。如果依然无法打开项目提交页面，可以联系客服微信或者邮件至 &#115;&#x75;&#112;&#x70;&#111;&#x72;&#x74;&#x40;&#x79;&#111;&#117;&#100;&#97;&#120;&#117;&#101;&#x2e;&#99;&#111;&#109;
 后记这个项目，是优达学城《机器学习工程师》课程提供的第一个实战项目。摘录了全文，方便查看。郝同学的项目地址：https://github.com/voidking/udaciyty-machine-learning/tree/master/projects/titanic_survival_exploration
 书签机器学习工程师（中/英）https://cn.udacity.com/course/machine-learning-engineer-nanodegree--nd009
 数据科学入门https://cn.udacity.com/course/intro-to-data-science--ud359
@@ -30177,7 +30186,7 @@ Node端源码https://github.com/voidking/nodebase/blob/master/controllers/weixin
 
 
 nodebasea node framework designed for myselfversion: v1.0.0url: https://github.com/voidking/nodebase.git  
-作者相关author: haojin(voidking)e-mail: &#118;&#x6f;&#105;&#100;&#x6b;&#x69;&#x6e;&#x67;&#x40;&#113;&#x71;&#46;&#x63;&#x6f;&#109;site: http://www.voidking.com   
+作者相关author: haojin(voidking)e-mail: &#118;&#x6f;&#105;&#100;&#107;&#105;&#x6e;&#103;&#64;&#113;&#113;&#x2e;&#99;&#111;&#109;site: http://www.voidking.com   
 开发环境说明1、安装5.6.0以上Node2、安装mongodb，不要配置密码3、安装sass4、全局安装bower5、全局安装supervisor6、全局安装node-inspector7、全局安装puer8、运行前执行命令
 npm installbower install
 
@@ -36046,7 +36055,7 @@ XMPP网络任何XMPP网络都是由若干角色组成的，这些角色可以分
 
 插件许多XMPP服务器支持插件扩展，这些插件通常使用与服务器自身相同的语言编写，并在服务器的进程内运行。他们的作用很大程度上与外部组件重叠，但插件还能够访问内部服务器数据结构并改变核心服务器行为。
 XMPP寻址XMPP网络上每个实体都有一个或多个地址（JID，jabber identifier）。JID有多种不同形式，但它们通常看上去就像是电子邮件。
-JID有两种类型，裸JID和完整JID，而裸JID是完整JID去除资源部分后的地址。例如，某个客户端的完整JID是&#118;&#111;&#x69;&#x64;&#107;&#105;&#110;&#x67;&#x40;&#118;&#111;&#105;&#100;&#x6b;&#x69;&#x6e;&#103;&#x2e;&#x6c;&#x69;&#x74;/library，那么它的裸JID就是&#118;&#111;&#x69;&#100;&#x6b;&#x69;&#110;&#103;&#64;&#118;&#111;&#105;&#x64;&#x6b;&#x69;&#x6e;&#x67;&#46;&#108;&#x69;&#x74;。
+JID有两种类型，裸JID和完整JID，而裸JID是完整JID去除资源部分后的地址。例如，某个客户端的完整JID是&#118;&#x6f;&#x69;&#100;&#107;&#x69;&#110;&#103;&#64;&#118;&#111;&#x69;&#x64;&#107;&#x69;&#x6e;&#x67;&#46;&#x6c;&#x69;&#x74;/library，那么它的裸JID就是&#118;&#x6f;&#105;&#100;&#107;&#105;&#x6e;&#103;&#x40;&#x76;&#111;&#x69;&#100;&#107;&#105;&#110;&#103;&#x2e;&#108;&#105;&#x74;。
 节在XMPP中，各项工作都是通过在一个XMPP流上发送和接收XMPP节来完成的。核心XMPP工具集由三种基本节组成，这三种节分别为&lt;presence&gt;、&lt;message&gt;、&lt;iq&gt;。
 XMPP流由两份XML文档组成，通信的每个方向均有一份文档。这份文档有一个根元素&lt;stream:stream&gt;，这个根元素的子元素由可路由的节以及与流相关的顶级子元素构成。下面给出一段简短的XMPP会话：
 &lt;stream:stream&gt;	&lt;iq type=&#x27;get&#x27;&gt;		&lt;query xmlns=&#x27;jabber:iq:roster&#x27;/&gt;	&lt;/iq&gt;		&lt;presence/&gt;		&lt;message to=&#x27;voidking@voidking.lit&#x27; from=&#x27;haojin@gmail.com/ballroom&#x27; type=&#x27;chat&#x27;&gt;		&lt;body&gt;I cannot talk of books in a ball-room; my head is always full of something else.&lt;/body&gt;	&lt;/message&gt;		&lt;presence type=&#x27;unavailable&#x27;/&gt;&lt;/stream:stream&gt;
@@ -42125,7 +42134,7 @@ mtools，显示所有支持MSDOS文件系统的命令。
 mutt
 mutt: mail user agent，文字界面的邮件工具
 
-mutt -s &quot;A test mail&quot; josfeng@gmail.com，将邮件寄给 &#106;&#x6f;&#x73;&#x66;&#101;&#x6e;&#x67;&#64;&#x67;&#109;&#97;&#105;&#x6c;&#x2e;&#99;&#111;&#109;，信件主题为A test mail。
+mutt -s &quot;A test mail&quot; josfeng@gmail.com，将邮件寄给 &#x6a;&#111;&#x73;&#102;&#x65;&#x6e;&#103;&#64;&#x67;&#x6d;&#97;&#x69;&#x6c;&#46;&#x63;&#x6f;&#x6d;，信件主题为A test mail。
 mv
 mv: move，移动或重命名文件或目录
 
