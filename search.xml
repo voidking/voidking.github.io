@@ -217,145 +217,6 @@ yum clean allyum makecache
       </tags>
   </entry>
   <entry>
-    <title>GitLab CI问题记录</title>
-    <url>/dev-gitlab-ci-problems/</url>
-    <content><![CDATA[Job is stuckShell Runner跑CI任务，报错：
-Job is stuck. Check runners. allowed to fail
-
-解决办法：经查是因为gitlab-runner版本比较高（15.5.0），新版本的runner，要求.gitlab-ci.yml必须要配置tags，指定runner。
-
-
-setting GIT_CLONE_PATH is not allowedShell Runner跑CI任务，报错：
-ERROR: Job failed: setting GIT_CLONE_PATH is not allowed, enable &#96;custom_build_dir&#96; feature
-
-解决办法：启用custom_build_dir
-vim /etc/gitlab-runner/config.toml
-
-添加custom_build_dir配置
-[[runners]]  [runners.custom_build_dir]    enabled = true
-
-重启gitlab-runner
-gitlab-runner restart
-
-fatal: git fetch-packShell Runner跑CI任务，报错：
-fatal: git fetch-pack: expected shallow listfatal: The remote end hung up unexpectedly
-
-解决办法：git版本问题，升级git
-rpm -ivh http://opensource.wandisco.com/centos/7/git/x86_64/wandisco-git-release-7-1.noarch.rpmyum install -y git
-
-不能锁定配置文件Shell Runner跑CI任务，报错：error: 不能锁定配置文件 /home/gitlab-runner/builds/builds/xxx/main.tmp/git-template/config: 没有那个文件或目录
-解决办法：没有检索到找到解决办法，尝试降级到14.5.0，问题解决。降级方法参考【Linux环境安装runner】一节。
-No such file or directoryShell Runner跑CI任务，报错：
-Skipping Git checkoutSkipping Git submodules setup...$ pip3 install -r requirements.txtERROR: Could not open requirements file: [Errno 2] No such file or directory: &#39;requirements.txt&#39;
-
-解决办法：.gitlab-ci.yml文件中添加GIT_CHECKOUT变量
-variables:  GIT_CHECKOUT: "true"
-
-下载镜像报错Docker Machine Runner跑CI任务，一直正常。Docker Machine Runner没有任何变动，突然有一天，执行docker build的时候，下载基础镜像报错：ERROR: failed to do request: Head https://192.168.56.101:5000/v2/library/python/manifests/3.8: http: server gave HTTP response to HTTPS client
-重启gitlab-runner问题依旧，重启机器问题依旧。
-解决办法：runner配置里，指定docker image的版本为docker:19.03，而不要使用docker，否则一直会拉取最新版的docker，而最新版的docker不支持发送http请求镜像仓库。
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>devops</category>
-        <category>troubleshooting</category>
-        <category>git</category>
-      </categories>
-      <tags>
-        <tag>问题排查</tag>
-        <tag>cicd</tag>
-        <tag>git</tag>
-        <tag>gitlab</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>GitLab Runner入门篇</title>
-    <url>/dev-gitlab-runner-start/</url>
-    <content><![CDATA[GitLab Runner简介GitLab Runner 是一个开源软件，它与 GitLab CI/CD 配合，在管道流中运行作业。GitLab Runner 是用Go编写，几乎可以直接运行在任何操作系统（个别系统需要自行编译）。GitLab Runner 也可以在 Docker 容器内运行或部署到 Kubernetes 集群中。
-GitLab Runner能不能替换成其他的Runner？可以，但是没有必要，毕竟Gitlab Runner是开源的，有什么个性化需求就自己改一改。而且，也没有找到合适的替代产品。
-参考文档：
-
-GitLab Runner 
-GitLab CI/CD中文文档
-GitLab CI/CD文档
-GitLab Runner
-Executors
-The Shell executor
-《GitLab CI/CD入门篇》
-
-
-
-GitLab、Runner和Executor关于GitLab、Runner和Executor的关系，有一个比喻很恰当：GitLab是老板，会去查看需求单（.gitlab-ci.yml），建立一张又一张有先后顺序的工单（CI Pipeline）。GitLab Runner 是执行 CI Job 的工人，定期去询问老板（GitLab）现在有分配给自己的工作（CI Job）吗？如果拿到工作，就开始执行，并在执行过程中将进度即时写在工单上。Executor 是工人（Runner）执行 CI Job 的工作环境，例如一个 CI Job 是打印出”hello”，那么Runner可以在本地Shell环境中执行，可以在虚拟机环境中执行，还可以在Docker环境中执行；而如果一个CI Job需要在基础镜像上进行构建，那么就需要Docker环境或者K8S环境了。
-Runner通常在安装Runner的同一台机器上处理作业。但是，我们也可以让Runner在容器、k8s 集群、或者云上的自动缩放实例中处理作业。
-安装Runner后，想要使用它，需要在GitLab平台进行注册，注册做的工作就是建立Gitlab与Runner之间的通信。注册完成后，Runner就可以运行来自 GitLab 的 CI/CD 作业了。
-当我们注册一个Runner时，必须选择一个Executor。Executor决定了每个作业运行的环境。
-Gitlab Runner的安装环境包括Linux、MacOS、Windows、Docker和Kubernetes。而不同安装环境的Runner，支持不同的Executors。根据Executor的不同，同一个Runner程序，可以注册为不同Executor类型的Runner，例如SSH、Shell、Parallels、VirtualBox、Docker、Docker Machine (auto-scaling)、Kubernetes、Custom。
-例如：
-
-如果我们希望 CI/CD 作业运行 PowerShell 命令，那么可以在 Windows 服务器上安装 GitLab Runner，然后注册一个使用 Shell Executor的Runner。
-如果我们希望 CI/CD 作业在自定义 Docker 容器中运行命令，那么可以在 Linux 服务器上安装 GitLab Runner 并注册一个使用 Docker Executor 的 Runner。
-我们还可以在虚拟机上安装 GitLab Runner，并让它使用另一个虚拟机作为Executor。
-
-最常用的Executor：Shell、Docker、Docker Machine、Kubernetes。
-参考文档：
-
-GitLab Runner 
-Executors
-GitLab CI 之 Runner 的 Executor 該如何選擇？
-
-Executor简介ShellShell 是最简单的配置执行器。构建所需的所有依赖项都需要手动安装在安装 GitLab Runner 的同一台机器上。
-Docker executor一个很好的选择是使用 Docker，因为它允许一个干净的构建环境，并且具有简单的依赖项管理（构建项目的所有依赖项都可以放在 Docker 映像中）。 Docker 执行器允许您轻松创建具有依赖服务的构建环境，例如 MySQL。
-当我们在 Docker 容器中安装 GitLab Runner 并选择 Docker executor来运行作业时，它有时被称为 Docker-in-Docker （dind）配置。
-注意：有些Docker容器中，默认的shell并不是bash，shell选择逻辑如下
-if [ -x /usr/local/bin/bash ]; then    exec /usr/local/bin/bash $@elif [ -x /usr/bin/bash ]; then    exec /usr/bin/bash $@elif [ -x /bin/bash ]; then    exec /bin/bash $@elif [ -x /usr/local/bin/sh ]; then    exec /usr/local/bin/sh $@elif [ -x /usr/bin/sh ]; then    exec /usr/bin/sh $@elif [ -x /bin/sh ]; then    exec /bin/sh $@else    echo shell not found    exit 1fi
-
-参考文档：
-
-How To Run Docker in Docker
-How To Run Docker in Docker Container
-Docker-in-Docker in Gitlab Runners
-shell in docker executor isn’t bash
-
-Docker Machine executorDocker Machine 是 Docker 执行器的特殊版本，支持自动缩放。它像普通的 Docker 执行器一样工作，但使用 Docker Machine 按需创建的构建主机。
-Docker官方已经废弃了Docker Machine，GitLab Runner使用的是自己维护的Docker Machine。
-Docker Machine executor原理：
-
-安装Runner并配置gitlab-runner用户具有启动虚拟机的权限
-Runner调用驱动启动Docker Machine VM，VM系统为Boot2Docker
-当VM中开始跑CI Job时，会启动一个Docker容器作为执行容器，在容器中跑CI Job
-CI Job中可以包含docker build等命令，此时会共享调用VM的Docker，是Docker in Docker模式的一种
-
-参考文档：
-
-Install and register GitLab Runner for autoscaling with Docker Machine
-Docker Machine Executor autoscale configuration
-
-Kubernetes executorKubernetes 执行器允许您使用现有的 Kubernetes 集群进行构建。执行器将调用 Kubernetes 集群 API 并为每个 GitLab CI 作业创建一个新的 Pod（带有构建容器和服务容器）。
-Kubernetes executor也是支持 Docker-in-Docker 的。
-参考文档：
-
-The Kubernetes executor for GitLab Runner
-The Kubernetes executor for GitLab Runner - Using Docker in your builds
-Cannot access docker daemon in gitlab runner using Kubernetes executor
-
-SSH executorSSH 执行器是为了完整性而添加的，但它是所有执行器中受支持最少的。它使 GitLab Runner 连接到外部服务器并在那里运行构建。我们有一些来自使用此执行器的组织的成功案例，但通常我们建议使用其他类型之一。
-Virtual Machine executor这种类型的执行器允许您使用已创建的虚拟机，该虚拟机被克隆并用于运行您的构建。我们提供两个完整的系统虚拟化选项：VirtualBox 和 Parallels。如果您想在不同的操作系统上运行构建，它们可能会很有用，因为它允许在 Windows、Linux、macOS 或 FreeBSD 上创建虚拟机，然后 GitLab Runner 连接到虚拟机并在其上运行构建。它的使用也有助于降低基础设施成本。
-Custom executor自定义执行器允许您指定自己的执行环境。当 GitLab Runner 不提供执行器（例如，LXC 容器）时，您可以向 GitLab Runner 提供自己的可执行文件，以配置和清理您想要使用的任何环境。
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>k8s</category>
-        <category>cloudnative</category>
-        <category>devops</category>
-        <category>git</category>
-      </categories>
-      <tags>
-        <tag>cicd</tag>
-        <tag>git</tag>
-        <tag>gitlab</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>GitLab Runner安装实践</title>
     <url>/dev-gitlab-runner-install/</url>
     <content><![CDATA[GitLab Runner版本说明出于兼容性原因，GitLab Runner major.minor 版本应与 GitLab major.minor 版本保持同步。较旧的runner可能仍然可以使用较新的 GitLab 版本，反之亦然。但是，如果存在版本差异，功能可能无法使用或无法正常工作。minor版本更新时，会保障向后兼容性。但是，有时 GitLab 的minor版本更新会引入新功能，这些新功能需要 GitLab Runner 在同一minor版本上。
@@ -559,6 +420,145 @@ gitlab-runner restart
         <tag>gitlab</tag>
         <tag>helm</tag>
         <tag>virtualbox</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>GitLab Runner入门篇</title>
+    <url>/dev-gitlab-runner-start/</url>
+    <content><![CDATA[GitLab Runner简介GitLab Runner 是一个开源软件，它与 GitLab CI/CD 配合，在管道流中运行作业。GitLab Runner 是用Go编写，几乎可以直接运行在任何操作系统（个别系统需要自行编译）。GitLab Runner 也可以在 Docker 容器内运行或部署到 Kubernetes 集群中。
+GitLab Runner能不能替换成其他的Runner？可以，但是没有必要，毕竟Gitlab Runner是开源的，有什么个性化需求就自己改一改。而且，也没有找到合适的替代产品。
+参考文档：
+
+GitLab Runner 
+GitLab CI/CD中文文档
+GitLab CI/CD文档
+GitLab Runner
+Executors
+The Shell executor
+《GitLab CI/CD入门篇》
+
+
+
+GitLab、Runner和Executor关于GitLab、Runner和Executor的关系，有一个比喻很恰当：GitLab是老板，会去查看需求单（.gitlab-ci.yml），建立一张又一张有先后顺序的工单（CI Pipeline）。GitLab Runner 是执行 CI Job 的工人，定期去询问老板（GitLab）现在有分配给自己的工作（CI Job）吗？如果拿到工作，就开始执行，并在执行过程中将进度即时写在工单上。Executor 是工人（Runner）执行 CI Job 的工作环境，例如一个 CI Job 是打印出”hello”，那么Runner可以在本地Shell环境中执行，可以在虚拟机环境中执行，还可以在Docker环境中执行；而如果一个CI Job需要在基础镜像上进行构建，那么就需要Docker环境或者K8S环境了。
+Runner通常在安装Runner的同一台机器上处理作业。但是，我们也可以让Runner在容器、k8s 集群、或者云上的自动缩放实例中处理作业。
+安装Runner后，想要使用它，需要在GitLab平台进行注册，注册做的工作就是建立Gitlab与Runner之间的通信。注册完成后，Runner就可以运行来自 GitLab 的 CI/CD 作业了。
+当我们注册一个Runner时，必须选择一个Executor。Executor决定了每个作业运行的环境。
+Gitlab Runner的安装环境包括Linux、MacOS、Windows、Docker和Kubernetes。而不同安装环境的Runner，支持不同的Executors。根据Executor的不同，同一个Runner程序，可以注册为不同Executor类型的Runner，例如SSH、Shell、Parallels、VirtualBox、Docker、Docker Machine (auto-scaling)、Kubernetes、Custom。
+例如：
+
+如果我们希望 CI/CD 作业运行 PowerShell 命令，那么可以在 Windows 服务器上安装 GitLab Runner，然后注册一个使用 Shell Executor的Runner。
+如果我们希望 CI/CD 作业在自定义 Docker 容器中运行命令，那么可以在 Linux 服务器上安装 GitLab Runner 并注册一个使用 Docker Executor 的 Runner。
+我们还可以在虚拟机上安装 GitLab Runner，并让它使用另一个虚拟机作为Executor。
+
+最常用的Executor：Shell、Docker、Docker Machine、Kubernetes。
+参考文档：
+
+GitLab Runner 
+Executors
+GitLab CI 之 Runner 的 Executor 該如何選擇？
+
+Executor简介ShellShell 是最简单的配置执行器。构建所需的所有依赖项都需要手动安装在安装 GitLab Runner 的同一台机器上。
+Docker executor一个很好的选择是使用 Docker，因为它允许一个干净的构建环境，并且具有简单的依赖项管理（构建项目的所有依赖项都可以放在 Docker 映像中）。 Docker 执行器允许您轻松创建具有依赖服务的构建环境，例如 MySQL。
+当我们在 Docker 容器中安装 GitLab Runner 并选择 Docker executor来运行作业时，它有时被称为 Docker-in-Docker （dind）配置。
+注意：有些Docker容器中，默认的shell并不是bash，shell选择逻辑如下
+if [ -x /usr/local/bin/bash ]; then    exec /usr/local/bin/bash $@elif [ -x /usr/bin/bash ]; then    exec /usr/bin/bash $@elif [ -x /bin/bash ]; then    exec /bin/bash $@elif [ -x /usr/local/bin/sh ]; then    exec /usr/local/bin/sh $@elif [ -x /usr/bin/sh ]; then    exec /usr/bin/sh $@elif [ -x /bin/sh ]; then    exec /bin/sh $@else    echo shell not found    exit 1fi
+
+参考文档：
+
+How To Run Docker in Docker
+How To Run Docker in Docker Container
+Docker-in-Docker in Gitlab Runners
+shell in docker executor isn’t bash
+
+Docker Machine executorDocker Machine 是 Docker 执行器的特殊版本，支持自动缩放。它像普通的 Docker 执行器一样工作，但使用 Docker Machine 按需创建的构建主机。
+Docker官方已经废弃了Docker Machine，GitLab Runner使用的是自己维护的Docker Machine。
+Docker Machine executor原理：
+
+安装Runner并配置gitlab-runner用户具有启动虚拟机的权限
+Runner调用驱动启动Docker Machine VM，VM系统为Boot2Docker
+当VM中开始跑CI Job时，会启动一个Docker容器作为执行容器，在容器中跑CI Job
+CI Job中可以包含docker build等命令，此时会共享调用VM的Docker，是Docker in Docker模式的一种
+
+参考文档：
+
+Install and register GitLab Runner for autoscaling with Docker Machine
+Docker Machine Executor autoscale configuration
+
+Kubernetes executorKubernetes 执行器允许您使用现有的 Kubernetes 集群进行构建。执行器将调用 Kubernetes 集群 API 并为每个 GitLab CI 作业创建一个新的 Pod（带有构建容器和服务容器）。
+Kubernetes executor也是支持 Docker-in-Docker 的。
+参考文档：
+
+The Kubernetes executor for GitLab Runner
+The Kubernetes executor for GitLab Runner - Using Docker in your builds
+Cannot access docker daemon in gitlab runner using Kubernetes executor
+
+SSH executorSSH 执行器是为了完整性而添加的，但它是所有执行器中受支持最少的。它使 GitLab Runner 连接到外部服务器并在那里运行构建。我们有一些来自使用此执行器的组织的成功案例，但通常我们建议使用其他类型之一。
+Virtual Machine executor这种类型的执行器允许您使用已创建的虚拟机，该虚拟机被克隆并用于运行您的构建。我们提供两个完整的系统虚拟化选项：VirtualBox 和 Parallels。如果您想在不同的操作系统上运行构建，它们可能会很有用，因为它允许在 Windows、Linux、macOS 或 FreeBSD 上创建虚拟机，然后 GitLab Runner 连接到虚拟机并在其上运行构建。它的使用也有助于降低基础设施成本。
+Custom executor自定义执行器允许您指定自己的执行环境。当 GitLab Runner 不提供执行器（例如，LXC 容器）时，您可以向 GitLab Runner 提供自己的可执行文件，以配置和清理您想要使用的任何环境。
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>k8s</category>
+        <category>cloudnative</category>
+        <category>devops</category>
+        <category>git</category>
+      </categories>
+      <tags>
+        <tag>cicd</tag>
+        <tag>git</tag>
+        <tag>gitlab</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>GitLab CI问题记录</title>
+    <url>/dev-gitlab-ci-problems/</url>
+    <content><![CDATA[Job is stuckShell Runner跑CI任务，报错：
+Job is stuck. Check runners. allowed to fail
+
+解决办法：经查是因为gitlab-runner版本比较高（15.5.0），新版本的runner，要求.gitlab-ci.yml必须要配置tags，指定runner。
+
+
+setting GIT_CLONE_PATH is not allowedShell Runner跑CI任务，报错：
+ERROR: Job failed: setting GIT_CLONE_PATH is not allowed, enable &#96;custom_build_dir&#96; feature
+
+解决办法：启用custom_build_dir
+vim /etc/gitlab-runner/config.toml
+
+添加custom_build_dir配置
+[[runners]]  [runners.custom_build_dir]    enabled = true
+
+重启gitlab-runner
+gitlab-runner restart
+
+fatal: git fetch-packShell Runner跑CI任务，报错：
+fatal: git fetch-pack: expected shallow listfatal: The remote end hung up unexpectedly
+
+解决办法：git版本问题，升级git
+rpm -ivh http://opensource.wandisco.com/centos/7/git/x86_64/wandisco-git-release-7-1.noarch.rpmyum install -y git
+
+不能锁定配置文件Shell Runner跑CI任务，报错：error: 不能锁定配置文件 /home/gitlab-runner/builds/builds/xxx/main.tmp/git-template/config: 没有那个文件或目录
+解决办法：没有检索到找到解决办法，尝试降级到14.5.0，问题解决。降级方法参考【Linux环境安装runner】一节。
+No such file or directoryShell Runner跑CI任务，报错：
+Skipping Git checkoutSkipping Git submodules setup...$ pip3 install -r requirements.txtERROR: Could not open requirements file: [Errno 2] No such file or directory: &#39;requirements.txt&#39;
+
+解决办法：.gitlab-ci.yml文件中添加GIT_CHECKOUT变量
+variables:  GIT_CHECKOUT: "true"
+
+下载镜像报错Docker Machine Runner跑CI任务，一直正常。Docker Machine Runner没有任何变动，突然有一天，执行docker build的时候，下载基础镜像报错：ERROR: failed to do request: Head https://192.168.56.101:5000/v2/library/python/manifests/3.8: http: server gave HTTP response to HTTPS client
+重启gitlab-runner问题依旧，重启机器问题依旧。
+解决办法：runner配置里，指定docker image的版本为docker:19.03，而不要使用docker，否则一直会拉取最新版的docker，而最新版的docker不支持发送http请求镜像仓库。
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>devops</category>
+        <category>troubleshooting</category>
+        <category>git</category>
+      </categories>
+      <tags>
+        <tag>问题排查</tag>
+        <tag>cicd</tag>
+        <tag>git</tag>
+        <tag>gitlab</tag>
       </tags>
   </entry>
   <entry>
@@ -774,99 +774,6 @@ INDEX=$(kubectl get sa default -n imagepullsecret-patcher -o json | jq '.imagePu
       </tags>
   </entry>
   <entry>
-    <title>KubeSphere登录后报错Session Timeout</title>
-    <url>/dev-kubesphere-session-timeout/</url>
-    <content><![CDATA[问题描述大部分用户能够正常登录和使用ks，但是个别用户（voidking01）登录ks后报错。用户登录ks，正常；登录后查看工作台，正常；查看host集群和只包含host集群的企业空间，正常。
-但是，选择一个非host集群或者选择一个包含非host集群的企业空间后，页面就会弹出错误提示：Session timeout or this account is logged in elsewhere, please login again
-然后转到登录页面，再次登录，继续弹出上面的错误提示。循环往复。
-
-权限问题？更改用户权限为admin，问题依旧。
-重新给用户授权，问题依旧。
-ks版本问题？ks版本从3.2.1升级到了3.3.1，问题依旧。
-kube-events组件问题？参考文档登录成功后，总是提示会话超时或此账户在其他登录地方登录，请重新登录
-经检查，并没有kube-events失败日志，不是它的问题。
-ks配置问题？参考文档：
-
-Session Timeout
-Set Up External Authentication
-
-阅读ks文档，怀疑是ks配置不对引起的。那就按照官方文档重新配置一下试试。
-host集群1、编辑ks-installer配置文件
-kubectl -n kubesphere-system edit cc ks-installer
-
-2、修改authentication部分配置
-spec:  authentication:    jwtSecret: ''    authenticateRateLimiterMaxTries: 10    authenticateRateLimiterDuration: 10m0s    loginHistoryRetentionPeriod: 168h    maximumClockSkew: 10s    multipleLogin: true    oauthOptions:      accessTokenMaxAge: 1h      accessTokenInactivityTimeout: 30m      identityProviders:      - name: LDAP        type: LDAPIdentityProvider        mappingMethod: auto        provider:          host: 192.168.0.2:389          managerDN: uid=root,cn=users,dc=nas          managerPassword: ********          userSearchBase: cn=users,dc=nas          loginAttribute: uid          mailAttribute: mail
-
-member集群member集群只要配置jwtSecret即可，和host集群保持一致。详情参考Direct Connection
-修改完成，ks pod重建后，问题依旧。
-删除用户重建？删除用户，用户重新登录，重新授权，问题依旧。
-时钟问题？参考Session Timeout文档，还有一种可能是节点时钟偏差。
-
-The node clock skew affects time-sensitive operations such as validating the expiration time of a user token. You can configure the server time synchronization with an NTP server. MaximumClockSkew can also be set, which defaults to 10 seconds.
-
-分别登录host集群和member集群的apiserver pod，执行date命令查看时间。发现不同集群的时区配置不同，啊哈，大概率是这个问题了！！！
-sudo cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-
-统一所有集群节点时区为Asia/Shanghai，然后重建ks pod。问题依旧。
-把maximumClockSkew也调大一些，默认10s，调整到60s试试。问题依旧。
-查看日志参考文档恢复主集群对成员集群的访问权限，查看member集群的api-server日志。
-kubectl -n kubesphere-system logs ks-apiserver-7c9c9456bd-qv6bs
-
-出现报错信息：
-W1104 11:13:28.432457       1 clusterroles.go:117] invalid aggregation role found: cluster-admin, role-template-manage-configmapsW1104 11:13:28.432464       1 clusterroles.go:117] invalid aggregation role found: cluster-admin, role-template-view-secretsW1104 11:13:28.432469       1 clusterroles.go:117] invalid aggregation role found: cluster-admin, role-template-manage-secretsW1104 11:13:28.432475       1 clusterroles.go:117] invalid aggregation role found: cluster-admin, role-template-view-service-accountsW1104 11:13:28.432484       1 clusterroles.go:117] invalid aggregation role found: cluster-admin, role-template-manage-service-accountsE1104 11:13:51.879574       1 upgradeaware.go:401] Error proxying data from backend to client: readfrom tcp 10.244.161.166:9090-&gt;192.168.50.74:34540: write tcp 10.244.161.166:9090-&gt;192.168.50.74:34540: write: connection reset by peer
-
-顺着这个日志，在kubesphere社区找到了一个相同的问题kubesphere使用子账户…会跳转到登录界面
-
-看起来是多集群同步出问题了，看下 host 集群 kube-federation-system 这个 namespace 下的 pod 是否都正常
-
-根据论坛大佬的提示，检查kube-federation-system 这个 namespace 下的pod信息。
-kubectl get pod -n kube-federation-systemkubectl logs --tail=100 kubefed-admission-webhook-657959d4d6-2sx5f -n kube-federation-systemkubectl logs --tail=100 kubefed-controller-manager-54fbd87f7f-6t7jq -n kube-federation-systemkubectl logs --tail=100 kubefed-controller-manager-54fbd87f7f-fh9pk -n kube-federation-system
-
-看着也没有什么明显的报错信息。
-根据论坛的提示，有两个解决办法：一个是替换kubeconfig，一个是升级kubefed controller。
-
-Update the version of kubefed controller 
-fix: controller-manager panic when kubeconfig set filed insecure-skip-tls-verify
-
-这里我们选择升级kubefed controller。
-升级kubefed controller1、查看当前kubefed controller版本
-kubectl get deployment.apps/kubefed-controller-manager -n kube-federation-system -oyaml| grep image
-查看到当前版本v0.8.1
-2、查看kubefed controller最新版本访问dockerhub - kubesphere/kubefed找到当前最新版本，也是v0.8.1
-莫非不是版本问题？再对比本地镜像和线上镜像的DIGEST，发现它们是不同的。看来是修复bug后，使用了原来的镜像tag。
-docker inspect kubesphere/kubefed:v0.8.1 | grep -i id
-
-3、缩容kubefed controller
-kubectl scale --replicas=0 deployment.apps/kubefed-controller-manager -n kube-federation-system
-
-4、删除宿主机本地镜像&amp;拉取最新镜像
-docker rmi kubesphere/kubefed:v0.8.1 docker pull kubesphere/kubefed:v0.8.1
-
-5、重新拉起kubefed controller
-kubectl scale --replicas=1 deployment.apps/kubefed-controller-manager -n kube-federation-system
-
-问题依旧。。。
-废弃集群的问题？再次查看kubefed-controller-manager的日志，感觉像是废弃集群引起的问题。
-E1104 08:10:15.107249       1 controller.go:512] failed to delete FederatedGlobalRoleBinding &quot;voidking01-platform-regular&quot;: the following clusters were not ready: vk-dev, edge-clusterI1104 08:10:15.702028       1 controller.go:471] Ensuring deletion of FederatedGlobalRoleBinding &quot;voidking01-platform-admin&quot;I1104 08:10:15.702064       1 controller.go:500] Deserializing delete options of FederatedGlobalRoleBinding &quot;voidking01-platform-admin&quot;I1104 08:10:15.702072       1 controller.go:508] Deleting resources managed by FederatedGlobalRoleBinding &quot;voidking01-platform-admin&quot; from member clusters.E1104 08:10:15.702117       1 controller.go:512] failed to delete FederatedGlobalRoleBinding &quot;voidking01-platform-admin&quot;: the following clusters were not ready: vk-dev, edge-cluster
-
-删除废弃的集群后（未就绪的集群），问题解决。
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>k8s</category>
-        <category>cloudnative</category>
-        <category>troubleshooting</category>
-        <category>storage</category>
-      </categories>
-      <tags>
-        <tag>k8s</tag>
-        <tag>问题排查</tag>
-        <tag>kubesphere</tag>
-        <tag>storageclass</tag>
-        <tag>存储</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>K8S中安装配置KubeSphere</title>
     <url>/dev-k8s-kubesphere/</url>
     <content><![CDATA[KubeSphere简介
@@ -966,6 +873,99 @@ KubeSphere 中的多租户
 3、创建部门，针对部门精细化授权
 4、添加用户到部门
 5、通知ks入口都使用企业空间，不要使用集群管理
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>k8s</category>
+        <category>cloudnative</category>
+        <category>troubleshooting</category>
+        <category>storage</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
+        <tag>问题排查</tag>
+        <tag>kubesphere</tag>
+        <tag>storageclass</tag>
+        <tag>存储</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>KubeSphere登录后报错Session Timeout</title>
+    <url>/dev-kubesphere-session-timeout/</url>
+    <content><![CDATA[问题描述大部分用户能够正常登录和使用ks，但是个别用户（voidking01）登录ks后报错。用户登录ks，正常；登录后查看工作台，正常；查看host集群和只包含host集群的企业空间，正常。
+但是，选择一个非host集群或者选择一个包含非host集群的企业空间后，页面就会弹出错误提示：Session timeout or this account is logged in elsewhere, please login again
+然后转到登录页面，再次登录，继续弹出上面的错误提示。循环往复。
+
+权限问题？更改用户权限为admin，问题依旧。
+重新给用户授权，问题依旧。
+ks版本问题？ks版本从3.2.1升级到了3.3.1，问题依旧。
+kube-events组件问题？参考文档登录成功后，总是提示会话超时或此账户在其他登录地方登录，请重新登录
+经检查，并没有kube-events失败日志，不是它的问题。
+ks配置问题？参考文档：
+
+Session Timeout
+Set Up External Authentication
+
+阅读ks文档，怀疑是ks配置不对引起的。那就按照官方文档重新配置一下试试。
+host集群1、编辑ks-installer配置文件
+kubectl -n kubesphere-system edit cc ks-installer
+
+2、修改authentication部分配置
+spec:  authentication:    jwtSecret: ''    authenticateRateLimiterMaxTries: 10    authenticateRateLimiterDuration: 10m0s    loginHistoryRetentionPeriod: 168h    maximumClockSkew: 10s    multipleLogin: true    oauthOptions:      accessTokenMaxAge: 1h      accessTokenInactivityTimeout: 30m      identityProviders:      - name: LDAP        type: LDAPIdentityProvider        mappingMethod: auto        provider:          host: 192.168.0.2:389          managerDN: uid=root,cn=users,dc=nas          managerPassword: ********          userSearchBase: cn=users,dc=nas          loginAttribute: uid          mailAttribute: mail
+
+member集群member集群只要配置jwtSecret即可，和host集群保持一致。详情参考Direct Connection
+修改完成，ks pod重建后，问题依旧。
+删除用户重建？删除用户，用户重新登录，重新授权，问题依旧。
+时钟问题？参考Session Timeout文档，还有一种可能是节点时钟偏差。
+
+The node clock skew affects time-sensitive operations such as validating the expiration time of a user token. You can configure the server time synchronization with an NTP server. MaximumClockSkew can also be set, which defaults to 10 seconds.
+
+分别登录host集群和member集群的apiserver pod，执行date命令查看时间。发现不同集群的时区配置不同，啊哈，大概率是这个问题了！！！
+sudo cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+
+统一所有集群节点时区为Asia/Shanghai，然后重建ks pod。问题依旧。
+把maximumClockSkew也调大一些，默认10s，调整到60s试试。问题依旧。
+查看日志参考文档恢复主集群对成员集群的访问权限，查看member集群的api-server日志。
+kubectl -n kubesphere-system logs ks-apiserver-7c9c9456bd-qv6bs
+
+出现报错信息：
+W1104 11:13:28.432457       1 clusterroles.go:117] invalid aggregation role found: cluster-admin, role-template-manage-configmapsW1104 11:13:28.432464       1 clusterroles.go:117] invalid aggregation role found: cluster-admin, role-template-view-secretsW1104 11:13:28.432469       1 clusterroles.go:117] invalid aggregation role found: cluster-admin, role-template-manage-secretsW1104 11:13:28.432475       1 clusterroles.go:117] invalid aggregation role found: cluster-admin, role-template-view-service-accountsW1104 11:13:28.432484       1 clusterroles.go:117] invalid aggregation role found: cluster-admin, role-template-manage-service-accountsE1104 11:13:51.879574       1 upgradeaware.go:401] Error proxying data from backend to client: readfrom tcp 10.244.161.166:9090-&gt;192.168.50.74:34540: write tcp 10.244.161.166:9090-&gt;192.168.50.74:34540: write: connection reset by peer
+
+顺着这个日志，在kubesphere社区找到了一个相同的问题kubesphere使用子账户…会跳转到登录界面
+
+看起来是多集群同步出问题了，看下 host 集群 kube-federation-system 这个 namespace 下的 pod 是否都正常
+
+根据论坛大佬的提示，检查kube-federation-system 这个 namespace 下的pod信息。
+kubectl get pod -n kube-federation-systemkubectl logs --tail=100 kubefed-admission-webhook-657959d4d6-2sx5f -n kube-federation-systemkubectl logs --tail=100 kubefed-controller-manager-54fbd87f7f-6t7jq -n kube-federation-systemkubectl logs --tail=100 kubefed-controller-manager-54fbd87f7f-fh9pk -n kube-federation-system
+
+看着也没有什么明显的报错信息。
+根据论坛的提示，有两个解决办法：一个是替换kubeconfig，一个是升级kubefed controller。
+
+Update the version of kubefed controller 
+fix: controller-manager panic when kubeconfig set filed insecure-skip-tls-verify
+
+这里我们选择升级kubefed controller。
+升级kubefed controller1、查看当前kubefed controller版本
+kubectl get deployment.apps/kubefed-controller-manager -n kube-federation-system -oyaml| grep image
+查看到当前版本v0.8.1
+2、查看kubefed controller最新版本访问dockerhub - kubesphere/kubefed找到当前最新版本，也是v0.8.1
+莫非不是版本问题？再对比本地镜像和线上镜像的DIGEST，发现它们是不同的。看来是修复bug后，使用了原来的镜像tag。
+docker inspect kubesphere/kubefed:v0.8.1 | grep -i id
+
+3、缩容kubefed controller
+kubectl scale --replicas=0 deployment.apps/kubefed-controller-manager -n kube-federation-system
+
+4、删除宿主机本地镜像&amp;拉取最新镜像
+docker rmi kubesphere/kubefed:v0.8.1 docker pull kubesphere/kubefed:v0.8.1
+
+5、重新拉起kubefed controller
+kubectl scale --replicas=1 deployment.apps/kubefed-controller-manager -n kube-federation-system
+
+问题依旧。。。
+废弃集群的问题？再次查看kubefed-controller-manager的日志，感觉像是废弃集群引起的问题。
+E1104 08:10:15.107249       1 controller.go:512] failed to delete FederatedGlobalRoleBinding &quot;voidking01-platform-regular&quot;: the following clusters were not ready: vk-dev, edge-clusterI1104 08:10:15.702028       1 controller.go:471] Ensuring deletion of FederatedGlobalRoleBinding &quot;voidking01-platform-admin&quot;I1104 08:10:15.702064       1 controller.go:500] Deserializing delete options of FederatedGlobalRoleBinding &quot;voidking01-platform-admin&quot;I1104 08:10:15.702072       1 controller.go:508] Deleting resources managed by FederatedGlobalRoleBinding &quot;voidking01-platform-admin&quot; from member clusters.E1104 08:10:15.702117       1 controller.go:512] failed to delete FederatedGlobalRoleBinding &quot;voidking01-platform-admin&quot;: the following clusters were not ready: vk-dev, edge-cluster
+
+删除废弃的集群后（未就绪的集群），问题解决。
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -1399,6 +1399,59 @@ pip install xxx --proxy http://192.168.56.1:7890
         <tag>linux</tag>
         <tag>centos</tag>
         <tag>网络</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>GitLab CI报错no space left on device</title>
+    <url>/dev-gitlab-ci-no-space-left-on-device/</url>
+    <content><![CDATA[问题描述gitlab CI任务，拉基础镜像的时候报错no space left on device：
+failed to register layer: Error processing tar file(exit status 1): write &#x2F;root&#x2F;miniconda3&#x2F;envs&#x2F;cv&#x2F;lib&#x2F;python3.7&#x2F;site-packages&#x2F;xxx.so: no space left on device
+
+
+
+排查思路问题原因猜测：
+
+偶发问题？确认是否能稳定复现
+磁盘空间问题？确认runner所在主机的磁盘空间
+CICD配置问题？确认CICD配置，检查用法是否正确
+runner问题？重启runner，再次尝试复现
+
+排查确认：
+
+问题偶发复现，都是在同一个runner所在主机
+runner所在主机的磁盘空间充足
+CICD配置正确
+重启runner后无法复现，问题解决了，说明是runner问题。但是过几天会再次复现，需要继续定位根因。
+
+runner问题排查出问题的runner，使用的执行器是 docker machine executordocker machine类型的执行器，特点是先创建VM，然后在VM中执行作业。了解了这个特点，我们就能知道报错磁盘满的并不是runner所在宿主机，而是实际执行作业的VM。
+1、登录到执行作业的VM进行确认
+docker-machine lsdocker-machine ssh xxxdf -h
+经确认，确实是执行作业的VM磁盘满了。因为runner所在宿主机磁盘充足，因此解决办法是给VM扩磁盘。
+2、VM磁盘扩容因此VM是受runner管理的，所以最好不要通过docker-machine命令手动扩容，而是通过修改runner配置来修改。
+sudo vim /etc/gitlab-runner/config.toml
+
+config.toml中的virtualbox-disk-size修改到期望的值：
+...  [runners.machine]    IdleCount &#x3D; 5    MaxGrowthRate &#x3D; 1    IdleTime &#x3D; 1800    MachineDriver &#x3D; &quot;virtualbox&quot;    MachineName &#x3D; &quot;auto-scale-%s&quot;    MachineOptions &#x3D; [      &quot;engine-registry-mirror&#x3D;http:&#x2F;&#x2F;xxxxxx:5000&quot;,      &quot;virtualbox-memory&#x3D;4048&quot;,      &quot;virtualbox-disk-size&#x3D;204800&quot;,      &quot;virtualbox-cpu-count&#x3D;2&quot;    ]
+
+3、重启runner
+gitlab-runner restartdocker-machine ls
+重启runner后，我们可以看到VM被重建了。
+4、确认磁盘大小
+docker-machine ssh xxxdf -h
+
+以上，问题解决。
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>devops</category>
+        <category>troubleshooting</category>
+        <category>git</category>
+      </categories>
+      <tags>
+        <tag>问题排查</tag>
+        <tag>cicd</tag>
+        <tag>git</tag>
+        <tag>gitlab</tag>
       </tags>
   </entry>
   <entry>
@@ -1836,59 +1889,6 @@ TODO
       </tags>
   </entry>
   <entry>
-    <title>GitLab CI报错no space left on device</title>
-    <url>/dev-gitlab-ci-no-space-left-on-device/</url>
-    <content><![CDATA[问题描述gitlab CI任务，拉基础镜像的时候报错no space left on device：
-failed to register layer: Error processing tar file(exit status 1): write &#x2F;root&#x2F;miniconda3&#x2F;envs&#x2F;cv&#x2F;lib&#x2F;python3.7&#x2F;site-packages&#x2F;xxx.so: no space left on device
-
-
-
-排查思路问题原因猜测：
-
-偶发问题？确认是否能稳定复现
-磁盘空间问题？确认runner所在主机的磁盘空间
-CICD配置问题？确认CICD配置，检查用法是否正确
-runner问题？重启runner，再次尝试复现
-
-排查确认：
-
-问题偶发复现，都是在同一个runner所在主机
-runner所在主机的磁盘空间充足
-CICD配置正确
-重启runner后无法复现，问题解决了，说明是runner问题。但是过几天会再次复现，需要继续定位根因。
-
-runner问题排查出问题的runner，使用的执行器是 docker machine executordocker machine类型的执行器，特点是先创建VM，然后在VM中执行作业。了解了这个特点，我们就能知道报错磁盘满的并不是runner所在宿主机，而是实际执行作业的VM。
-1、登录到执行作业的VM进行确认
-docker-machine lsdocker-machine ssh xxxdf -h
-经确认，确实是执行作业的VM磁盘满了。因为runner所在宿主机磁盘充足，因此解决办法是给VM扩磁盘。
-2、VM磁盘扩容因此VM是受runner管理的，所以最好不要通过docker-machine命令手动扩容，而是通过修改runner配置来修改。
-sudo vim /etc/gitlab-runner/config.toml
-
-config.toml中的virtualbox-disk-size修改到期望的值：
-...  [runners.machine]    IdleCount &#x3D; 5    MaxGrowthRate &#x3D; 1    IdleTime &#x3D; 1800    MachineDriver &#x3D; &quot;virtualbox&quot;    MachineName &#x3D; &quot;auto-scale-%s&quot;    MachineOptions &#x3D; [      &quot;engine-registry-mirror&#x3D;http:&#x2F;&#x2F;xxxxxx:5000&quot;,      &quot;virtualbox-memory&#x3D;4048&quot;,      &quot;virtualbox-disk-size&#x3D;204800&quot;,      &quot;virtualbox-cpu-count&#x3D;2&quot;    ]
-
-3、重启runner
-gitlab-runner restartdocker-machine ls
-重启runner后，我们可以看到VM被重建了。
-4、确认磁盘大小
-docker-machine ssh xxxdf -h
-
-以上，问题解决。
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>devops</category>
-        <category>troubleshooting</category>
-        <category>git</category>
-      </categories>
-      <tags>
-        <tag>问题排查</tag>
-        <tag>cicd</tag>
-        <tag>git</tag>
-        <tag>gitlab</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Argo CD入门篇</title>
     <url>/dev-argocd-start/</url>
     <content><![CDATA[Argo CD是啥？
@@ -1969,6 +1969,74 @@ SYNC OPTIONS：​- SKIP SCHEMA VALIDATION​​：是否执行资源规范格�
       </tags>
   </entry>
   <entry>
+    <title>K8S中安装配置Clickhouse</title>
+    <url>/dev-k8s-clickhouse/</url>
+    <content><![CDATA[RadonDB ClickHouse简介
+[RadonDB ClickHouse](RadonDB ClickHouse) 是基于 ClickHouse 的开源、高可用、云原生集群解决方案。RadonDB ClickHouse Kubernetes 致力于在 Kubernetes 上轻便快速创建 ClickHouse 集群。
+
+参考文档： 
+
+什么是 RadonDB ClickHouse
+
+
+
+Helm方式安装ClickHouse安装方式选择helm，参考文档Deploy Radondb ClickHouse On kubernetes。
+不要参考Deploy Radondb ClickHouse On kubernetes中文版，按照这个配置是有问题的。
+Step 1 : Add Helm Repository
+helm repo add ck https://radondb.github.io/radondb-clickhouse-kubernetes/
+
+Step 2 : Install to Kubernetes
+kubectl create ns clickhousehelm search repo ck/clickhouse-cluster -lhelm install clickhouse ck/clickhouse-cluster -n clickhouse --version v1.0
+
+上面的安装命令会使用默认的values，这里可以指定一些自定义配置。
+需要注意的是，clickhouse和zk依赖pv，如果没有指定，那么会使用集群中默认的storageclass创建pv。
+Step 3 : Verification
+kubectl get all -n clickhousekubectl get all --selector app.kubernetes.io/instance=clickhouse -n clickhouse
+
+访问ClickHouse使用pod执行命令测试执行一条query命令：
+kubectl exec -it clickhouse-s0-r0-0 -n clickhouse -- clickhouse-client -u default --password=C1ickh0use --query='select hostName()'
+
+通过service访问clickhouse执行命令kubectl get service -n clickhouse | grep clickhouseecho 'select hostname()' | curl 'http://default:C1ickh0use@10.96.71.193:8123/' --data-binary @-
+
+查看配置kubectl get cm clickhouse-configuration -n clickhouse -oyaml
+
+开放service给集群外机器1、导出service yaml
+kubectl get service -n clickhouse -oyaml &gt; ck.yaml
+
+2、修改spec部分为
+spec:  ports:  - name: native    port: 9000    protocol: TCP    targetPort: 9000    nodePort: 31000  - name: http    port: 8123    protocol: TCP    targetPort: 8123    nodePort: 30123  selector:    app.kubernetes.io/instance: clickhouse    app.kubernetes.io/name: clickhouse-cluster    clickhouse/component: clickhouse  sessionAffinity: None  type: NodePort
+
+3、修改service
+kubectl apply -f ck.yaml
+
+4、测试
+echo 'select hostname()' | curl 'http://default:C1ickh0use@192.168.56.112:30123/' --data-binary @-
+
+其中192.168.56.112是一个集群节点IP。
+使用ClickHouse参考文档《Clickhouse入门篇》
+其他清理clickhouse-operator除了使用helm安装ch之外，还可以使用kubesphere安装ch，但是安装失败了。参考在 KubeSphere 中部署 ClickHouse 集群，部署时卡在了教程中的步骤3，报错：Error: unable to build kubernetes objects from release manifest: unable to recognize “”: no matches for kind “clickhouseinstallation” in version “clickhouse.radondb.com/v1”
+缺少CRD clickhouseinstallation，理论上直接安装一下这个CRD就可以。但是最开始没有意识到这个问题，也没有检索到解决办法，因此选择了使用helm的方式进行重装，那就需要清理教程中步骤1安装的clickhouse-operator。
+预期结果中的资源需要全部删除，大都在kube-system空间。
+customresourcedefinition.apiextensions.k8s.io&#x2F;clickhouseinstallations.clickhouse.radondb.com createdcustomresourcedefinition.apiextensions.k8s.io&#x2F;clickhouseinstallationtemplates.clickhouse.radondb.com createdcustomresourcedefinition.apiextensions.k8s.io&#x2F;clickhouseoperatorconfigurations.clickhouse.radondb.com createdserviceaccount&#x2F;clickhouse-operator createdclusterrole.rbac.authorization.k8s.io&#x2F;clickhouse-operator-kube-system createdclusterrolebinding.rbac.authorization.k8s.io&#x2F;clickhouse-operator-kube-system createdconfigmap&#x2F;etc-clickhouse-operator-files createdconfigmap&#x2F;etc-clickhouse-operator-confd-files createdconfigmap&#x2F;etc-clickhouse-operator-configd-files createdconfigmap&#x2F;etc-clickhouse-operator-templatesd-files createdconfigmap&#x2F;etc-clickhouse-operator-usersd-files createddeployment.apps&#x2F;clickhouse-operator createdservice&#x2F;clickhouse-operator-metrics created
+
+
+
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>database</category>
+        <category>k8s</category>
+        <category>cloudnative</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
+        <tag>数据库</tag>
+        <tag>clickhouse</tag>
+        <tag>cloudnative</tag>
+        <tag>helm</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Clickhouse入门篇</title>
     <url>/dev-clickhouse-start/</url>
     <content><![CDATA[ClickHouse简介
@@ -2044,74 +2112,6 @@ CREATE TABLE tb_test_replacing(ts DateTime,uid String,biz String) ENGINE = Repla
       <tags>
         <tag>数据库</tag>
         <tag>clickhouse</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>K8S中安装配置Clickhouse</title>
-    <url>/dev-k8s-clickhouse/</url>
-    <content><![CDATA[RadonDB ClickHouse简介
-[RadonDB ClickHouse](RadonDB ClickHouse) 是基于 ClickHouse 的开源、高可用、云原生集群解决方案。RadonDB ClickHouse Kubernetes 致力于在 Kubernetes 上轻便快速创建 ClickHouse 集群。
-
-参考文档： 
-
-什么是 RadonDB ClickHouse
-
-
-
-Helm方式安装ClickHouse安装方式选择helm，参考文档Deploy Radondb ClickHouse On kubernetes。
-不要参考Deploy Radondb ClickHouse On kubernetes中文版，按照这个配置是有问题的。
-Step 1 : Add Helm Repository
-helm repo add ck https://radondb.github.io/radondb-clickhouse-kubernetes/
-
-Step 2 : Install to Kubernetes
-kubectl create ns clickhousehelm search repo ck/clickhouse-cluster -lhelm install clickhouse ck/clickhouse-cluster -n clickhouse --version v1.0
-
-上面的安装命令会使用默认的values，这里可以指定一些自定义配置。
-需要注意的是，clickhouse和zk依赖pv，如果没有指定，那么会使用集群中默认的storageclass创建pv。
-Step 3 : Verification
-kubectl get all -n clickhousekubectl get all --selector app.kubernetes.io/instance=clickhouse -n clickhouse
-
-访问ClickHouse使用pod执行命令测试执行一条query命令：
-kubectl exec -it clickhouse-s0-r0-0 -n clickhouse -- clickhouse-client -u default --password=C1ickh0use --query='select hostName()'
-
-通过service访问clickhouse执行命令kubectl get service -n clickhouse | grep clickhouseecho 'select hostname()' | curl 'http://default:C1ickh0use@10.96.71.193:8123/' --data-binary @-
-
-查看配置kubectl get cm clickhouse-configuration -n clickhouse -oyaml
-
-开放service给集群外机器1、导出service yaml
-kubectl get service -n clickhouse -oyaml &gt; ck.yaml
-
-2、修改spec部分为
-spec:  ports:  - name: native    port: 9000    protocol: TCP    targetPort: 9000    nodePort: 31000  - name: http    port: 8123    protocol: TCP    targetPort: 8123    nodePort: 30123  selector:    app.kubernetes.io/instance: clickhouse    app.kubernetes.io/name: clickhouse-cluster    clickhouse/component: clickhouse  sessionAffinity: None  type: NodePort
-
-3、修改service
-kubectl apply -f ck.yaml
-
-4、测试
-echo 'select hostname()' | curl 'http://default:C1ickh0use@192.168.56.112:30123/' --data-binary @-
-
-其中192.168.56.112是一个集群节点IP。
-使用ClickHouse参考文档《Clickhouse入门篇》
-其他清理clickhouse-operator除了使用helm安装ch之外，还可以使用kubesphere安装ch，但是安装失败了。参考在 KubeSphere 中部署 ClickHouse 集群，部署时卡在了教程中的步骤3，报错：Error: unable to build kubernetes objects from release manifest: unable to recognize “”: no matches for kind “clickhouseinstallation” in version “clickhouse.radondb.com/v1”
-缺少CRD clickhouseinstallation，理论上直接安装一下这个CRD就可以。但是最开始没有意识到这个问题，也没有检索到解决办法，因此选择了使用helm的方式进行重装，那就需要清理教程中步骤1安装的clickhouse-operator。
-预期结果中的资源需要全部删除，大都在kube-system空间。
-customresourcedefinition.apiextensions.k8s.io&#x2F;clickhouseinstallations.clickhouse.radondb.com createdcustomresourcedefinition.apiextensions.k8s.io&#x2F;clickhouseinstallationtemplates.clickhouse.radondb.com createdcustomresourcedefinition.apiextensions.k8s.io&#x2F;clickhouseoperatorconfigurations.clickhouse.radondb.com createdserviceaccount&#x2F;clickhouse-operator createdclusterrole.rbac.authorization.k8s.io&#x2F;clickhouse-operator-kube-system createdclusterrolebinding.rbac.authorization.k8s.io&#x2F;clickhouse-operator-kube-system createdconfigmap&#x2F;etc-clickhouse-operator-files createdconfigmap&#x2F;etc-clickhouse-operator-confd-files createdconfigmap&#x2F;etc-clickhouse-operator-configd-files createdconfigmap&#x2F;etc-clickhouse-operator-templatesd-files createdconfigmap&#x2F;etc-clickhouse-operator-usersd-files createddeployment.apps&#x2F;clickhouse-operator createdservice&#x2F;clickhouse-operator-metrics created
-
-
-
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>database</category>
-        <category>k8s</category>
-        <category>cloudnative</category>
-      </categories>
-      <tags>
-        <tag>k8s</tag>
-        <tag>数据库</tag>
-        <tag>clickhouse</tag>
-        <tag>cloudnative</tag>
-        <tag>helm</tag>
       </tags>
   </entry>
   <entry>
@@ -2341,32 +2341,29 @@ TODOtutorial.py详解、传参、接口调用airflow + django
       </tags>
   </entry>
   <entry>
-    <title>Python脚本路径</title>
-    <url>/dev-python-script-path/</url>
-    <content><![CDATA[怎样获取一个脚本的路径？怎样获取执行脚本的绝对路径？怎样获取执行脚本的父绝对路径？怎样获取入口脚本的绝对路径？。。。带着这些问题，我们进行一个简单的实验，获知这些问题的答案。
+    <title>Python单元测试</title>
+    <url>/dev-python-unittest/</url>
+    <content><![CDATA[unittest简介unittest是一个Python单元测试框架。它受到 JUnit 的启发，与其他语言中的主流单元测试框架有着相似的风格。其支持测试自动化，配置共享和关机代码测试。支持将测试样例聚合到测试集中，并将测试与报告框架独立。
+主要参考 unittest - 单元测试框架。
 
 
-路径实验路径设计path└── module_a    ├── getpath.py    └── module_b        └── getpath.py
+脚本编写新建一个 tests/test_demo.py 脚本，内容如下：
+import unittestclass TestStringMethods(unittest.TestCase):    def test_upper(self):        self.assertEqual('foo'.upper(), 'FOO')    def test_isupper(self):        self.assertTrue('FOO'.isupper())        self.assertFalse('Foo'.isupper())    def test_split(self):        s = 'hello world'        self.assertEqual(s.split(), ['hello', 'world'])        # check that s.split fails when the separator is not a string        with self.assertRaises(TypeError):            s.split(2)if __name__ == '__main__':    unittest.main()
 
-脚本内容getpath.py脚本内容为：
-import osimport sysfrom module_b import getpathdef print_path():    print(f'os.getcwd() is &#123;os.getcwd()&#125;')    print(f'sys.path[0] is &#123;sys.path[0]&#125;')    print(f'sys.argv[0] is &#123;sys.argv[0]&#125;')    print(f'__file__ is &#123;__file__&#125;')    print(f'os.path.dirname(__file__) is &#123;os.path.dirname(__file__)&#125;')    print(f'os.path.abspath(__file__) is &#123;os.path.abspath(__file__)&#125;')    print(f'os.path.realpath(__file__) is &#123;os.path.realpath(__file__)&#125;')    print(f'os.path.split(os.path.realpath(__file__))[0] is &#123;os.path.split(os.path.realpath(__file__))[0]&#125;')print('------ module_a/getpath.py ------')print_path()print('---------------------------------')print('------ module_a/module_b/getpath.py ------')getpath.print_path()print('------------------------------------------')
+继承 unittest.TestCase 就创建了一个测试样例。上述三个独立的测试是三个类的方法，这些方法的命名都以 test 开头。 这个命名约定告诉测试运行者类的哪些方法表示测试。
+每个测试的关键是：调用 assertEqual() 来检查预期的输出； 调用 assertTrue() 或 assertFalse() 来验证一个条件；调用 assertRaises() 来验证抛出了一个特定的异常。
+通过 setUp() 和 tearDown() 方法，可以设置测试开始前与完成后需要执行的指令。
+最后的代码块中，演示了运行测试的一个简单的方法。 unittest.main() 提供了一个测试脚本的命令行接口。
+执行测试方法一：脚本级别调用（直接运行脚本）
+python tests/test_demo.pypython tests/test_demo.py -vpython -m unittest tests/test_demo.py
 
-执行脚本在path目录中执行脚本python module_a/getpath.py ，得到结果为：
------- module_a/getpath.py ------os.getcwd() is /Users/vk/tmp/pathsys.path[0] is /Users/vk/tmp/path/module_asys.argv[0] is module_a/getpath.py__file__ is module_a/getpath.pyos.path.dirname(__file__) is module_aos.path.abspath(__file__) is /Users/vk/tmp/path/module_a/getpath.pyos.path.realpath(__file__) is /Users/vk/tmp/path/module_a/getpath.pyos.path.split(os.path.realpath(__file__))[0] is /Users/vk/tmp/path/module_a--------------------------------------- module_a/module_b/getpath.py ------os.getcwd() is /Users/vk/tmp/pathsys.path[0] is /Users/vk/tmp/path/module_asys.argv[0] is module_a/getpath.py__file__ is /Users/vk/tmp/path/module_a/module_b/getpath.pyos.path.dirname(__file__) is /Users/vk/tmp/path/module_a/module_bos.path.abspath(__file__) is /Users/vk/tmp/path/module_a/module_b/getpath.pyos.path.realpath(__file__) is /Users/vk/tmp/path/module_a/module_b/getpath.pyos.path.split(os.path.realpath(__file__))[0] is /Users/vk/tmp/path/module_a/module_b------------------------------------------
+方法二：包、模块、类和方法级别调用
+# 包级别调用（进入tests目录查找所有test_*.py文件并运行）python -m unittest discover -s tests -p "test_*.py"# 模块级别调用python -m unittest tests.test_demo# 类级别调用python -m unittest tests.test_demo.TestStringMethods# 方法级别调用python -m unittest tests.test_demo.TestStringMethods.test_upper
 
-实验结论由实验结果，可以得出如下结论。
-获取执行命令的绝对路径os.getcwd()
+单元测试之mock单元测试时，如果涉及网络请求，建议使用mock模块来模拟。
+import jsonimport unittestfrom unittest import mockimport requestsdef request_system(method: str, url: str, data=&#123;&#125;):    headers = &#123;        'Content-Type': 'application/json'    &#125;    response = requests.request(method=method, url=url, headers=headers, data=json.dumps(data))    return responsedef login(username: str, password: str):    # 以下接口暂时访问不通    LOGIN_URL='http://127.0.0.1/login'    data = &#123;        'username': username,        'password': password    &#125;    response = request_system('POST', LOGIN_URL)    if response.status == 200:        return json.loads(response.text)    else:        return Noneclass TestMockMethods(unittest.TestCase):    def test_request_system(self):        mock_response = mock.Mock()        mock_response.status_code = 200        mock_response.text = json.dumps(&#123;"code": 0, "msg":"success"&#125;)        request_system = mock.Mock(return_value=mock_response)        response = request_system(method='POST',url='http://127.0.0.1/')        print(response.status_code)        print(response.text)        self.assertEqual(200, response.status_code)    def test_login(self):        login = mock.Mock(return_value=&#123;"code": 0, "msg":"success"&#125;)        data = login(username='voidking',password='voidking')        print(data)        self.assertEqual(0, data.get('code'))if __name__ == '__main__':    unittest.main()
 
-获取入口脚本的父绝对路径sys.path[0]
-
-获取执行脚本的绝对路劲os.path.abspath(__file__)os.path.realpath(__file__)
-
-获取执行脚本的父绝对路径os.path.split(os.path.realpath(__file__))[0]
-
-获取文件/目录的父路径os.path.dirname(__file__)
-
-
-
+这种模拟测试方式很巧妙，适合测试访问第三方接口，但是并不会真正发出请求。另一个问题来了，Python怎么测试自己的接口？不知道。想到以前使用Beego框架进行开发，它的单元测试就很巧妙，先在测试数据库插入数据，然后通过beego.BeeApp.Handlers.ServeHTTP(w, r)把自己临时启动起来，最后自己的单元测试调用自己的接口。其中的关键在于把自己启动起来，理论上Python也能做到。
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -2374,6 +2371,7 @@ import osimport sysfrom module_b import getpathdef print_path():    print(f'os.g
       </categories>
       <tags>
         <tag>python</tag>
+        <tag>测试</tag>
       </tags>
   </entry>
   <entry>
@@ -2453,29 +2451,35 @@ Google Python风格指南
       </tags>
   </entry>
   <entry>
-    <title>Python单元测试</title>
-    <url>/dev-python-unittest/</url>
-    <content><![CDATA[unittest简介unittest是一个Python单元测试框架。它受到 JUnit 的启发，与其他语言中的主流单元测试框架有着相似的风格。其支持测试自动化，配置共享和关机代码测试。支持将测试样例聚合到测试集中，并将测试与报告框架独立。
-主要参考 unittest - 单元测试框架。
+    <title>Python重试</title>
+    <url>/dev-python-retry/</url>
+    <content><![CDATA[为什么需要重试？典型场景：程序的实现需要调用第三方的API，但是我们并不能保证第三方API一直好用，也不能保证网络一直畅通，所以在调用第三方API时需要加上错误重试。  
+通用场景：程序的运行不符合预期，我们知道再次调用大概率可以使之符合预期，这时就需要重试。  
+而重试逻辑我们可以通过循环多次调用实现，也可以使用封装好的重试模块。本文我们就学习一下Python中比较流行的 retrying 模块，实现一些重试Demo。
 
 
-脚本编写新建一个 tests/test_demo.py 脚本，内容如下：
-import unittestclass TestStringMethods(unittest.TestCase):    def test_upper(self):        self.assertEqual('foo'.upper(), 'FOO')    def test_isupper(self):        self.assertTrue('FOO'.isupper())        self.assertFalse('Foo'.isupper())    def test_split(self):        s = 'hello world'        self.assertEqual(s.split(), ['hello', 'world'])        # check that s.split fails when the separator is not a string        with self.assertRaises(TypeError):            s.split(2)if __name__ == '__main__':    unittest.main()
+安装retryingpip install retrying
+任意异常重试from retrying import retry@retry(stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrorif __name__ == '__main__':    run()
 
-继承 unittest.TestCase 就创建了一个测试样例。上述三个独立的测试是三个类的方法，这些方法的命名都以 test 开头。 这个命名约定告诉测试运行者类的哪些方法表示测试。
-每个测试的关键是：调用 assertEqual() 来检查预期的输出； 调用 assertTrue() 或 assertFalse() 来验证一个条件；调用 assertRaises() 来验证抛出了一个特定的异常。
-通过 setUp() 和 tearDown() 方法，可以设置测试开始前与完成后需要执行的指令。
-最后的代码块中，演示了运行测试的一个简单的方法。 unittest.main() 提供了一个测试脚本的命令行接口。
-执行测试方法一：脚本级别调用（直接运行脚本）
-python tests/test_demo.pypython tests/test_demo.py -vpython -m unittest tests/test_demo.py
+当函数run抛出任意异常时，则进行重试。
 
-方法二：包、模块、类和方法级别调用
-# 包级别调用（进入tests目录查找所有test_*.py文件并运行）python -m unittest discover -s tests -p "test_*.py"# 模块级别调用python -m unittest tests.test_demo# 类级别调用python -m unittest tests.test_demo.TestStringMethods# 方法级别调用python -m unittest tests.test_demo.TestStringMethods.test_upper
+stop_max_attempt_number：最大重试次数
+wait_random_min：最小重试间隔
+wait_random_max：最大重试间隔
 
-单元测试之mock单元测试时，如果涉及网络请求，建议使用mock模块来模拟。
-import jsonimport unittestfrom unittest import mockimport requestsdef request_system(method: str, url: str, data=&#123;&#125;):    headers = &#123;        'Content-Type': 'application/json'    &#125;    response = requests.request(method=method, url=url, headers=headers, data=json.dumps(data))    return responsedef login(username: str, password: str):    # 以下接口暂时访问不通    LOGIN_URL='http://127.0.0.1/login'    data = &#123;        'username': username,        'password': password    &#125;    response = request_system('POST', LOGIN_URL)    if response.status == 200:        return json.loads(response.text)    else:        return Noneclass TestMockMethods(unittest.TestCase):    def test_request_system(self):        mock_response = mock.Mock()        mock_response.status_code = 200        mock_response.text = json.dumps(&#123;"code": 0, "msg":"success"&#125;)        request_system = mock.Mock(return_value=mock_response)        response = request_system(method='POST',url='http://127.0.0.1/')        print(response.status_code)        print(response.text)        self.assertEqual(200, response.status_code)    def test_login(self):        login = mock.Mock(return_value=&#123;"code": 0, "msg":"success"&#125;)        data = login(username='voidking',password='voidking')        print(data)        self.assertEqual(0, data.get('code'))if __name__ == '__main__':    unittest.main()
+注意函数内不要使用try except，否则异常就被函数自己捕获处理了，不会抛给retry。
+指定异常重试from retrying import retryimport randomdef if_value_error(exception):    return isinstance(exception, ValueError)@retry(retry_on_exception=if_value_error, stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    value = random.randint(0, 10)    msg = f'value is &#123;value&#125;'    print(msg)    if value &lt;= 5:        raise ValueError('value is too small!')    else:        raise Exception('value is too large!')if __name__ == '__main__':    run()
 
-这种模拟测试方式很巧妙，适合测试访问第三方接口，但是并不会真正发出请求。另一个问题来了，Python怎么测试自己的接口？不知道。想到以前使用Beego框架进行开发，它的单元测试就很巧妙，先在测试数据库插入数据，然后通过beego.BeeApp.Handlers.ServeHTTP(w, r)把自己临时启动起来，最后自己的单元测试调用自己的接口。其中的关键在于把自己启动起来，理论上Python也能做到。
+当函数run抛出ValueError异常时，则进行重试；抛出Exception异常时，不会重试。
+指定返回值重试from retrying import retryimport randomdef if_return_small(value):    return value &lt;= 5@retry(retry_on_result=if_return_small, stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    value = random.randint(0, 10)    msg = f'value is &#123;value&#125;'    print(msg)    return valueif __name__ == '__main__':    run()
+
+当函数run返回值小于5时，进行重试。
+多次重试后容忍异常from retrying import retry@retry(stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrordef run2():    print('run2')if __name__ == '__main__':    run()    run2()
+
+当函数run抛出任意异常时，则进行重试。重试指定次数后，程序就异常结束了。这时，如果我们想要容忍异常，让run2可以正常运行，该怎么办呢？很简单，给run函数包裹一个try except即可。
+from retrying import retry@retry(wrap_exception=True,stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrordef wrap_run():    try:        run()    except:        passdef run2():    print('run2')if __name__ == '__main__':    wrap_run()    run2()
+
+
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -2483,6 +2487,32 @@ import jsonimport unittestfrom unittest import mockimport requestsdef request_sy
       </categories>
       <tags>
         <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Python操作MySQL</title>
+    <url>/dev-python-mysql/</url>
+    <content><![CDATA[前言python操作mysql数据库进行增删查改，是经常遇到的需求，下面整理一下具体操作方法。
+数据库准备1、安装配置好mysql参考《使用Docker安装配置Mysql》
+2、创建一个测试用的数据库
+create database vkphp default character set utf8 collate utf8_general_ci;use vkphp;CREATE TABLE IF NOT EXISTS `user` (  `id` int(8) NOT NULL AUTO_INCREMENT,  `name` varchar(32) NOT NULL,  `password` varchar(32) NOT NULL DEFAULT '',  PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+更多命令参考 《MySQL常用命令》
+
+
+安装依赖pip3 install mysqlclient==1.3.13
+插入数据#!/usr/bin/python3# -*- coding: UTF-8 -*-import MySQLdb# 打开数据库连接db = MySQLdb.connect(host="localhost",                     port="3306",                    user="root",                     password="voidking",                     database="vkphp",                     charset='utf8')# 使用cursor()方法获取操作游标 cursor = db.cursor()# SQL 插入语句sql = "insert into `user` (`name`,`password`) values('haojin','voidking');"try:   # 执行sql语句   cursor.execute(sql)   # 提交到数据库执行   db.commit()except:   # 发生错误时回滚   db.rollback()# 关闭数据库连接db.close()
+
+其他操作参考Python 操作 MySQL 数据库。
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>python</category>
+        <category>database</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>mysql</tag>
         <tag>测试</tag>
       </tags>
   </entry>
@@ -2525,60 +2555,30 @@ unittest - 单元测试框架
       </tags>
   </entry>
   <entry>
-    <title>Python操作MySQL</title>
-    <url>/dev-python-mysql/</url>
-    <content><![CDATA[前言python操作mysql数据库进行增删查改，是经常遇到的需求，下面整理一下具体操作方法。
-数据库准备1、安装配置好mysql参考《使用Docker安装配置Mysql》
-2、创建一个测试用的数据库
-create database vkphp default character set utf8 collate utf8_general_ci;use vkphp;CREATE TABLE IF NOT EXISTS `user` (  `id` int(8) NOT NULL AUTO_INCREMENT,  `name` varchar(32) NOT NULL,  `password` varchar(32) NOT NULL DEFAULT '',  PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-更多命令参考 《MySQL常用命令》
+    <title>Python脚本路径</title>
+    <url>/dev-python-script-path/</url>
+    <content><![CDATA[怎样获取一个脚本的路径？怎样获取执行脚本的绝对路径？怎样获取执行脚本的父绝对路径？怎样获取入口脚本的绝对路径？。。。带着这些问题，我们进行一个简单的实验，获知这些问题的答案。
 
 
-安装依赖pip3 install mysqlclient==1.3.13
-插入数据#!/usr/bin/python3# -*- coding: UTF-8 -*-import MySQLdb# 打开数据库连接db = MySQLdb.connect(host="localhost",                     port="3306",                    user="root",                     password="voidking",                     database="vkphp",                     charset='utf8')# 使用cursor()方法获取操作游标 cursor = db.cursor()# SQL 插入语句sql = "insert into `user` (`name`,`password`) values('haojin','voidking');"try:   # 执行sql语句   cursor.execute(sql)   # 提交到数据库执行   db.commit()except:   # 发生错误时回滚   db.rollback()# 关闭数据库连接db.close()
+路径实验路径设计path└── module_a    ├── getpath.py    └── module_b        └── getpath.py
 
-其他操作参考Python 操作 MySQL 数据库。
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>python</category>
-        <category>database</category>
-      </categories>
-      <tags>
-        <tag>python</tag>
-        <tag>mysql</tag>
-        <tag>测试</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Python重试</title>
-    <url>/dev-python-retry/</url>
-    <content><![CDATA[为什么需要重试？典型场景：程序的实现需要调用第三方的API，但是我们并不能保证第三方API一直好用，也不能保证网络一直畅通，所以在调用第三方API时需要加上错误重试。  
-通用场景：程序的运行不符合预期，我们知道再次调用大概率可以使之符合预期，这时就需要重试。  
-而重试逻辑我们可以通过循环多次调用实现，也可以使用封装好的重试模块。本文我们就学习一下Python中比较流行的 retrying 模块，实现一些重试Demo。
+脚本内容getpath.py脚本内容为：
+import osimport sysfrom module_b import getpathdef print_path():    print(f'os.getcwd() is &#123;os.getcwd()&#125;')    print(f'sys.path[0] is &#123;sys.path[0]&#125;')    print(f'sys.argv[0] is &#123;sys.argv[0]&#125;')    print(f'__file__ is &#123;__file__&#125;')    print(f'os.path.dirname(__file__) is &#123;os.path.dirname(__file__)&#125;')    print(f'os.path.abspath(__file__) is &#123;os.path.abspath(__file__)&#125;')    print(f'os.path.realpath(__file__) is &#123;os.path.realpath(__file__)&#125;')    print(f'os.path.split(os.path.realpath(__file__))[0] is &#123;os.path.split(os.path.realpath(__file__))[0]&#125;')print('------ module_a/getpath.py ------')print_path()print('---------------------------------')print('------ module_a/module_b/getpath.py ------')getpath.print_path()print('------------------------------------------')
 
+执行脚本在path目录中执行脚本python module_a/getpath.py ，得到结果为：
+------ module_a/getpath.py ------os.getcwd() is /Users/vk/tmp/pathsys.path[0] is /Users/vk/tmp/path/module_asys.argv[0] is module_a/getpath.py__file__ is module_a/getpath.pyos.path.dirname(__file__) is module_aos.path.abspath(__file__) is /Users/vk/tmp/path/module_a/getpath.pyos.path.realpath(__file__) is /Users/vk/tmp/path/module_a/getpath.pyos.path.split(os.path.realpath(__file__))[0] is /Users/vk/tmp/path/module_a--------------------------------------- module_a/module_b/getpath.py ------os.getcwd() is /Users/vk/tmp/pathsys.path[0] is /Users/vk/tmp/path/module_asys.argv[0] is module_a/getpath.py__file__ is /Users/vk/tmp/path/module_a/module_b/getpath.pyos.path.dirname(__file__) is /Users/vk/tmp/path/module_a/module_bos.path.abspath(__file__) is /Users/vk/tmp/path/module_a/module_b/getpath.pyos.path.realpath(__file__) is /Users/vk/tmp/path/module_a/module_b/getpath.pyos.path.split(os.path.realpath(__file__))[0] is /Users/vk/tmp/path/module_a/module_b------------------------------------------
 
-安装retryingpip install retrying
-任意异常重试from retrying import retry@retry(stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrorif __name__ == '__main__':    run()
+实验结论由实验结果，可以得出如下结论。
+获取执行命令的绝对路径os.getcwd()
 
-当函数run抛出任意异常时，则进行重试。
+获取入口脚本的父绝对路径sys.path[0]
 
-stop_max_attempt_number：最大重试次数
-wait_random_min：最小重试间隔
-wait_random_max：最大重试间隔
+获取执行脚本的绝对路劲os.path.abspath(__file__)os.path.realpath(__file__)
 
-注意函数内不要使用try except，否则异常就被函数自己捕获处理了，不会抛给retry。
-指定异常重试from retrying import retryimport randomdef if_value_error(exception):    return isinstance(exception, ValueError)@retry(retry_on_exception=if_value_error, stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    value = random.randint(0, 10)    msg = f'value is &#123;value&#125;'    print(msg)    if value &lt;= 5:        raise ValueError('value is too small!')    else:        raise Exception('value is too large!')if __name__ == '__main__':    run()
+获取执行脚本的父绝对路径os.path.split(os.path.realpath(__file__))[0]
 
-当函数run抛出ValueError异常时，则进行重试；抛出Exception异常时，不会重试。
-指定返回值重试from retrying import retryimport randomdef if_return_small(value):    return value &lt;= 5@retry(retry_on_result=if_return_small, stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    value = random.randint(0, 10)    msg = f'value is &#123;value&#125;'    print(msg)    return valueif __name__ == '__main__':    run()
+获取文件/目录的父路径os.path.dirname(__file__)
 
-当函数run返回值小于5时，进行重试。
-多次重试后容忍异常from retrying import retry@retry(stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrordef run2():    print('run2')if __name__ == '__main__':    run()    run2()
-
-当函数run抛出任意异常时，则进行重试。重试指定次数后，程序就异常结束了。这时，如果我们想要容忍异常，让run2可以正常运行，该怎么办呢？很简单，给run函数包裹一个try except即可。
-from retrying import retry@retry(wrap_exception=True,stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print('run')    raise ValueErrordef wrap_run():    try:        run()    except:        passdef run2():    print('run2')if __name__ == '__main__':    wrap_run()    run2()
 
 
 ]]></content>
@@ -8028,72 +8028,6 @@ wget https://pypi.python.org/packages/source/d/distribute/distribute-0.6.10.tar.
       </tags>
   </entry>
   <entry>
-    <title>ldap入门篇</title>
-    <url>/dev-ldap-start/</url>
-    <content><![CDATA[ldap简介
-The LDAP(Lightweight Directory Access Protocol) is an open, vendor-neutral, industry standard application protocol for accessing and maintaining distributed directory information services over an Internet Protocol (IP) network. Directory services play an important role in developing intranet and Internet applications by allowing the sharing of information about users, systems, networks, services, and applications throughout the network. As examples, directory services may provide any organized set of records, often with a hierarchical structure, such as a corporate email directory. Similarly, a telephone directory is a list of subscribers with an address and a phone number.
-
-简单来说，LDAP（轻量目录访问协议）是一个协议，用来解决多个系统的统一权限管理问题。
-参考文档：
-
-Lightweight Directory Access Protocol
-LDAP 协议入门（轻量目录访问协议）
-
-
-
-ldap结构ldap的核心是目录树，准确来说，是DIT（Directory Information Tree 目录信息树）。
-
-LDAP directory servers present data arranged in tree-like hierarchies in which each entry may have zero or more subordinate entries. This structure is called the Directory Information Tree, or DIT.
-
-LDAP 目录服务器将信息以树形的方式组织，每一项都可以包含 0 个或多个子项。这样的结构叫做目录信息树。
-目录信息树和文件系统目录树有什么差别？答：目录信息树是信息存储的组织结构，文件系统目录树是文件存储的组织结构。
-Entry在目录信息树中，每一行，都可以叫做一项（Entry），不论是叶子节点还是中间的节点。项包含一个 DN，一些属性，一些对象类。
-Root DSE每个 LDAP 服务器必须对外暴露一个特殊的项，叫做 Root DSE（Root DSA-specific Entry），这个项的 DN 是空字符串。这个项是根节点，描述了 LDAP 服务器自身的信息和能力。例如 LDAP 服务器支持的功能，LDAP 协议版本等信息。
-DNDN（Distinguished Name 分辨名）是用于唯一标识一个项，类似于关系型数据库中的主键。DN也表示项在目录信息树中的位置，DN字符串从左向右，各组成部分依次向树根靠近。
-RDNRDN（Relative Distinguished Name 相对分辨名）就是键值对。DN 由若干个 RDN 组成，以逗号分隔。
-DCDC（Domain Component 域名组成）http://example.com 这样的域名，拆成 dc=example,dc=com 这样的形式。
-OO（Organization 组织机构、公司），在 DN 中可能会包含 O=公司 这样的组成部分，这里的 O 指代组织机构。
-OUOU（Organization Unit 组织单元、部门），在 DN 中可能会包含 OU=某某部门 这样的组成部分，这里的 OU 指代组织单元。
-Object Classes每个项里面包含若干个 Object Classes，Object Class指定了本项中必须、可能包含的属性，相当于 MySQL 中的建表语句。包含某个 Object Class 的项，必须满足 Object Class 中约定的规范，例如规定哪些属性必须存在。
-部署ldap serverLDAP是一个协议，约定了 Client 与 Server 之间的信息交互格式、使用的端口号、认证方式等内容。而 LDAP 协议的实现，有着众多版本。例如微软的 Active Directory 是 LDAP 在 Windows 上的实现，AD 实现了 LDAP 所需的树形数据库、具体如何解析请求数据并到数据库查询然后返回结果等功能。再例如 OpenLDAP 是可以运行在 Linux 上的 LDAP 协议的开源实现。而我们平常说的 LDAP Server，一般指的是安装并配置了 Active Directory、OpenLDAP 这些程序的服务器。
-本节中，我们使用OpenLDAP安装部署一个ldap server。
-参考文档：
-
-openldap官网
-Quickly Setup LDAP User Directory for Jira
-docker下快速部署openldap与PHPLdapAdmin
-docker下快速部署openldap与self-service-password
-
-1、下载ldap镜像
-docker pull bitnami/openldap:2.5.12-debian-10-r29
-
-网上推荐较多的是osixia/openldap，这里我们选择的是bitnami/openldap。因为bitnami很靠谱，使命就是让开源软件的使用更加简单。
-2、启动ldap
-mkdir -p /opt/openldapchmod a+w /opt/openldapdocker run --name openldap -d \  -p 1389:1389 \  -p 1636:1636 \  -v /opt/openldap:/bitnami/openldap \  --env LDAP_ROOT=dc=voidking,dc=com \  --env LDAP_ADMIN_USERNAME=admin \  --env LDAP_ADMIN_PASSWORD=adminpassword \  --env LDAP_USERS=customuser \  --env LDAP_PASSWORDS=custompassword \  bitnami/openldap:2.5.12-debian-10-r29
-
-admin用户对应的DN为cn=admin,dc=voidking,dc=com。
-如果不指定LDAP_ROOT，那么默认为dc=example,dc=org，admin用户对应的DN为cn=admin,dc=example,dc=org。
-3、查看ldap
-docker ps | grep openldapdocker logs openldap
-
-ldap clientldap client也有很多，本文中选择Apache Directory Studio。安装过程比较简单不再展开，这里重点说一下它的使用方法。
-1、新建LDAP Connection
-2、填写网络参数主机名填写openldap所在主机IP，端口填写1389，Check Network Parameter，没问题的话点击Next
-3、填写鉴权参数Bind DN or user填入DN cn=admin,dc=voidking,dc=com，密码填入 adminpassword ，Check Authentication，没问题的话点击Finish
-4、查看目录信息树数据
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>database</category>
-        <category>devops</category>
-      </categories>
-      <tags>
-        <tag>数据库</tag>
-        <tag>bitnami</tag>
-        <tag>ldap</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Redis入门篇</title>
     <url>/dev-redis-start/</url>
     <content><![CDATA[Redis简介
@@ -8338,6 +8272,72 @@ redis-cli -c -h 192.168.56.101 -p 7002 -a 'xxx' shutdownredis-server /path/to/co
         <tag>数据库</tag>
         <tag>redis</tag>
         <tag>缓存</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ldap入门篇</title>
+    <url>/dev-ldap-start/</url>
+    <content><![CDATA[ldap简介
+The LDAP(Lightweight Directory Access Protocol) is an open, vendor-neutral, industry standard application protocol for accessing and maintaining distributed directory information services over an Internet Protocol (IP) network. Directory services play an important role in developing intranet and Internet applications by allowing the sharing of information about users, systems, networks, services, and applications throughout the network. As examples, directory services may provide any organized set of records, often with a hierarchical structure, such as a corporate email directory. Similarly, a telephone directory is a list of subscribers with an address and a phone number.
+
+简单来说，LDAP（轻量目录访问协议）是一个协议，用来解决多个系统的统一权限管理问题。
+参考文档：
+
+Lightweight Directory Access Protocol
+LDAP 协议入门（轻量目录访问协议）
+
+
+
+ldap结构ldap的核心是目录树，准确来说，是DIT（Directory Information Tree 目录信息树）。
+
+LDAP directory servers present data arranged in tree-like hierarchies in which each entry may have zero or more subordinate entries. This structure is called the Directory Information Tree, or DIT.
+
+LDAP 目录服务器将信息以树形的方式组织，每一项都可以包含 0 个或多个子项。这样的结构叫做目录信息树。
+目录信息树和文件系统目录树有什么差别？答：目录信息树是信息存储的组织结构，文件系统目录树是文件存储的组织结构。
+Entry在目录信息树中，每一行，都可以叫做一项（Entry），不论是叶子节点还是中间的节点。项包含一个 DN，一些属性，一些对象类。
+Root DSE每个 LDAP 服务器必须对外暴露一个特殊的项，叫做 Root DSE（Root DSA-specific Entry），这个项的 DN 是空字符串。这个项是根节点，描述了 LDAP 服务器自身的信息和能力。例如 LDAP 服务器支持的功能，LDAP 协议版本等信息。
+DNDN（Distinguished Name 分辨名）是用于唯一标识一个项，类似于关系型数据库中的主键。DN也表示项在目录信息树中的位置，DN字符串从左向右，各组成部分依次向树根靠近。
+RDNRDN（Relative Distinguished Name 相对分辨名）就是键值对。DN 由若干个 RDN 组成，以逗号分隔。
+DCDC（Domain Component 域名组成）http://example.com 这样的域名，拆成 dc=example,dc=com 这样的形式。
+OO（Organization 组织机构、公司），在 DN 中可能会包含 O=公司 这样的组成部分，这里的 O 指代组织机构。
+OUOU（Organization Unit 组织单元、部门），在 DN 中可能会包含 OU=某某部门 这样的组成部分，这里的 OU 指代组织单元。
+Object Classes每个项里面包含若干个 Object Classes，Object Class指定了本项中必须、可能包含的属性，相当于 MySQL 中的建表语句。包含某个 Object Class 的项，必须满足 Object Class 中约定的规范，例如规定哪些属性必须存在。
+部署ldap serverLDAP是一个协议，约定了 Client 与 Server 之间的信息交互格式、使用的端口号、认证方式等内容。而 LDAP 协议的实现，有着众多版本。例如微软的 Active Directory 是 LDAP 在 Windows 上的实现，AD 实现了 LDAP 所需的树形数据库、具体如何解析请求数据并到数据库查询然后返回结果等功能。再例如 OpenLDAP 是可以运行在 Linux 上的 LDAP 协议的开源实现。而我们平常说的 LDAP Server，一般指的是安装并配置了 Active Directory、OpenLDAP 这些程序的服务器。
+本节中，我们使用OpenLDAP安装部署一个ldap server。
+参考文档：
+
+openldap官网
+Quickly Setup LDAP User Directory for Jira
+docker下快速部署openldap与PHPLdapAdmin
+docker下快速部署openldap与self-service-password
+
+1、下载ldap镜像
+docker pull bitnami/openldap:2.5.12-debian-10-r29
+
+网上推荐较多的是osixia/openldap，这里我们选择的是bitnami/openldap。因为bitnami很靠谱，使命就是让开源软件的使用更加简单。
+2、启动ldap
+mkdir -p /opt/openldapchmod a+w /opt/openldapdocker run --name openldap -d \  -p 1389:1389 \  -p 1636:1636 \  -v /opt/openldap:/bitnami/openldap \  --env LDAP_ROOT=dc=voidking,dc=com \  --env LDAP_ADMIN_USERNAME=admin \  --env LDAP_ADMIN_PASSWORD=adminpassword \  --env LDAP_USERS=customuser \  --env LDAP_PASSWORDS=custompassword \  bitnami/openldap:2.5.12-debian-10-r29
+
+admin用户对应的DN为cn=admin,dc=voidking,dc=com。
+如果不指定LDAP_ROOT，那么默认为dc=example,dc=org，admin用户对应的DN为cn=admin,dc=example,dc=org。
+3、查看ldap
+docker ps | grep openldapdocker logs openldap
+
+ldap clientldap client也有很多，本文中选择Apache Directory Studio。安装过程比较简单不再展开，这里重点说一下它的使用方法。
+1、新建LDAP Connection
+2、填写网络参数主机名填写openldap所在主机IP，端口填写1389，Check Network Parameter，没问题的话点击Next
+3、填写鉴权参数Bind DN or user填入DN cn=admin,dc=voidking,dc=com，密码填入 adminpassword ，Check Authentication，没问题的话点击Finish
+4、查看目录信息树数据
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>database</category>
+        <category>devops</category>
+      </categories>
+      <tags>
+        <tag>数据库</tag>
+        <tag>bitnami</tag>
+        <tag>ldap</tag>
       </tags>
   </entry>
   <entry>
@@ -9357,6 +9357,44 @@ docker ps | grep weavedocker logs &lt;weave-container-id&gt; | grep ipalloc-rang
       </tags>
   </entry>
   <entry>
+    <title>K8S中镜像拉取卡住问题</title>
+    <url>/dev-k8s-image-pull-hang-up/</url>
+    <content><![CDATA[问题描述节点上已经存在某个镜像了，但是拉取镜像时卡住：Pulling image …
+
+
+问题原因kubelet的配置中，serializeImagePulls默认值true，被启用时会通知 kubelet 每次仅拉取一个镜像。如果有一个镜像拉取时卡住，那么其他镜像拉取时会等待前一个镜像完成，因此也会卡住。
+参考文档Kubelet 配置 (v1beta1)
+解决办法一（推荐）问题解决思路：找到拉取镜像卡住的pod，解决它
+# kubectl get pod -A -owide | grep nodenamekubectl get pod -A -o wide --field-selector spec.nodeName=nodenamekubectl get pod -A --field-selector spec.nodeName=slave8 | egrep -v "Completed|Running"
+
+解决办法二问题解决思路：拉取镜像改成并行。
+1、修改kubelet配置
+vim /var/lib/kubelet/config.yaml
+
+添加：
+serializeImagePulls: false
+
+2、重启kubelet
+systemctl restart kubelet
+
+
+
+
+
+
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>k8s</category>
+        <category>cloudnative</category>
+        <category>troubleshooting</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
+        <tag>问题排查</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>K8S节点异常问题排查</title>
     <url>/dev-k8s-node-problem/</url>
     <content><![CDATA[节点故障排查思路
@@ -9398,44 +9436,6 @@ PLEG is not healthyPod生命周期事件生成器PLEG（Pod Lifecycle Event Gene
         <tag>k8s</tag>
         <tag>问题排查</tag>
         <tag>kubectl</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>K8S中镜像拉取卡住问题</title>
-    <url>/dev-k8s-image-pull-hang-up/</url>
-    <content><![CDATA[问题描述节点上已经存在某个镜像了，但是拉取镜像时卡住：Pulling image …
-
-
-问题原因kubelet的配置中，serializeImagePulls默认值true，被启用时会通知 kubelet 每次仅拉取一个镜像。如果有一个镜像拉取时卡住，那么其他镜像拉取时会等待前一个镜像完成，因此也会卡住。
-参考文档Kubelet 配置 (v1beta1)
-解决办法一（推荐）问题解决思路：找到拉取镜像卡住的pod，解决它
-# kubectl get pod -A -owide | grep nodenamekubectl get pod -A -o wide --field-selector spec.nodeName=nodenamekubectl get pod -A --field-selector spec.nodeName=slave8 | egrep -v "Completed|Running"
-
-解决办法二问题解决思路：拉取镜像改成并行。
-1、修改kubelet配置
-vim /var/lib/kubelet/config.yaml
-
-添加：
-serializeImagePulls: false
-
-2、重启kubelet
-systemctl restart kubelet
-
-
-
-
-
-
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>k8s</category>
-        <category>cloudnative</category>
-        <category>troubleshooting</category>
-      </categories>
-      <tags>
-        <tag>k8s</tag>
-        <tag>问题排查</tag>
       </tags>
   </entry>
   <entry>
@@ -9490,6 +9490,69 @@ node封锁如果node存在问题，或者node需要升级维护，这时需要�
 封锁node，不允许分配podkubectl cordon nodename
 从指定node驱除podkubectl drain nodename --ignore-daemonsets
 解除node的封锁，允许分配podkubectl uncordon nodename
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>k8s</category>
+        <category>cloudnative</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
+        <tag>kubectl</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Kustomize工具</title>
+    <url>/dev-kubectl-kustomize/</url>
+    <content><![CDATA[Kustomize简介Kustomize是一个独立的工具，用来通过kustomization文件定制Kubernetes对象。从 1.14 版本开始，kubectl 也开始支持使用 kustomization 文件来管理 Kubernetes 对象。 要查看包含 kustomization 文件的目录中的资源，执行下面的命令：
+kubectl kustomize &lt;kustomization_directory&gt;
+
+要应用这些资源，使用 –kustomize 或 -k 参数来执行 kubectl apply：
+kubectl apply -k &lt;kustomization_directory&gt;
+
+参考文档：
+
+Kustomize
+使用 Kustomize 对 Kubernetes 对象进行声明式管理
+kustomize - kustomization
+kustomize - PatchesJson6902
+kubernetes-sigs/kustomize
+kustomize - Examples
+Demo: change image names and tags
+
+
+
+Kustomize作用生成资源ConfigMap 和 Secret 包含其他 Kubernetes 对象（如 Pod）所需要的配置或敏感数据。 ConfigMap 或 Secret 中数据的来源往往是集群外部，例如某个 .properties 文件或者 SSH 密钥文件。 Kustomize 提供 secretGenerator 和 configMapGenerator，可以基于文件或字面值来生成 Secret 和 ConfigMap。
+设置贯穿性字段在项目中为所有 Kubernetes 对象设置贯穿性字段是一种常见操作。 贯穿性字段的一些使用场景如下：
+
+为所有资源设置相同的名字空间
+为所有对象添加相同的前缀或后缀
+为对象添加相同的标签集合
+为对象添加相同的注解集合
+
+组织和定制资源一种常见的做法是在项目中构造资源集合并将其放到同一个文件或目录中管理。Kustomize提供基于不同文件来组织资源并向其应用补丁或者其他定制的能力。
+Kustomize 支持组合不同的资源。kustomization.yaml 文件的 resources 字段定义配置中要包含的资源列表。 我们可以将 resources 列表中的路径设置为资源配置文件的路径。
+补丁文件（Patches）可以用来对资源执行不同的定制。 Kustomize 通过 patchesStrategicMerge 和 patchesJson6902 支持不同的打补丁机制。 patchesStrategicMerge 的内容是一个文件路径的列表，其中每个文件都应可解析为 策略性合并补丁（Strategic Merge Patch）。 补丁文件中的名称必须与已经加载的资源的名称匹配。 建议构造规模较小的、仅做一件事情的补丁。 例如，构造一个补丁来增加 Deployment 的副本个数；构造另外一个补丁来设置内存限制。
+安装Kustomizekubectl中集成的kustomize功能不全，因此最好还是单独安装kustomize。
+brew install kustomize
+
+示例本示例中，使用补丁来对资源进行修改：修改pod中使用的镜像。
+cat &lt;&lt;EOF &gt;kustomization.yamlresources:- pod.yamlEOFcat &lt;&lt;EOF &gt;$DEMO_HOME/pod.yamlapiVersion: v1kind: Podmetadata:  name: myapp-pod  labels:    app: myappspec:  containers:  - name: myapp-container    image: busybox:1.29.0    command: ['sh', '-c', 'echo The app is running! &amp;&amp; sleep 3600']  initContainers:  - name: init-mydb    image: busybox:1.29.0    command: ['sh', '-c', 'until nslookup mydb; do echo waiting for mydb; sleep 2; done;']EOFkustomize build .kustomize edit set image busybox=alpine:3.6kustomize build .
+
+执行kustomize edit set image后，kustomization.yaml中会写入：
+images:- name: busybox  newName: alpine  newTag: 3.6
+
+
+
+
+
+
+
+
+
+
+
+
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -9717,69 +9780,6 @@ NAMESPACE=miniokubectl get ns $&#123;NAMESPACE&#125; -o json &gt; namespace.json
 2、编辑namespace配置编辑namespace.json，从 finalizers 字段中删除 kubernetes。
 3、提交namespace配置
 kubectl proxy --port=6880 &amp;curl -k -H "Content-Type: application/json" -X  PUT --data-binary @namespace.json http://127.0.0.1:6880/api/v1/namespaces/$&#123;NAMESPACE&#125;/finalizekubectl get ns
-
-
-
-
-
-
-
-
-
-
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>k8s</category>
-        <category>cloudnative</category>
-      </categories>
-      <tags>
-        <tag>k8s</tag>
-        <tag>kubectl</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Kustomize工具</title>
-    <url>/dev-kubectl-kustomize/</url>
-    <content><![CDATA[Kustomize简介Kustomize是一个独立的工具，用来通过kustomization文件定制Kubernetes对象。从 1.14 版本开始，kubectl 也开始支持使用 kustomization 文件来管理 Kubernetes 对象。 要查看包含 kustomization 文件的目录中的资源，执行下面的命令：
-kubectl kustomize &lt;kustomization_directory&gt;
-
-要应用这些资源，使用 –kustomize 或 -k 参数来执行 kubectl apply：
-kubectl apply -k &lt;kustomization_directory&gt;
-
-参考文档：
-
-Kustomize
-使用 Kustomize 对 Kubernetes 对象进行声明式管理
-kustomize - kustomization
-kustomize - PatchesJson6902
-kubernetes-sigs/kustomize
-kustomize - Examples
-Demo: change image names and tags
-
-
-
-Kustomize作用生成资源ConfigMap 和 Secret 包含其他 Kubernetes 对象（如 Pod）所需要的配置或敏感数据。 ConfigMap 或 Secret 中数据的来源往往是集群外部，例如某个 .properties 文件或者 SSH 密钥文件。 Kustomize 提供 secretGenerator 和 configMapGenerator，可以基于文件或字面值来生成 Secret 和 ConfigMap。
-设置贯穿性字段在项目中为所有 Kubernetes 对象设置贯穿性字段是一种常见操作。 贯穿性字段的一些使用场景如下：
-
-为所有资源设置相同的名字空间
-为所有对象添加相同的前缀或后缀
-为对象添加相同的标签集合
-为对象添加相同的注解集合
-
-组织和定制资源一种常见的做法是在项目中构造资源集合并将其放到同一个文件或目录中管理。Kustomize提供基于不同文件来组织资源并向其应用补丁或者其他定制的能力。
-Kustomize 支持组合不同的资源。kustomization.yaml 文件的 resources 字段定义配置中要包含的资源列表。 我们可以将 resources 列表中的路径设置为资源配置文件的路径。
-补丁文件（Patches）可以用来对资源执行不同的定制。 Kustomize 通过 patchesStrategicMerge 和 patchesJson6902 支持不同的打补丁机制。 patchesStrategicMerge 的内容是一个文件路径的列表，其中每个文件都应可解析为 策略性合并补丁（Strategic Merge Patch）。 补丁文件中的名称必须与已经加载的资源的名称匹配。 建议构造规模较小的、仅做一件事情的补丁。 例如，构造一个补丁来增加 Deployment 的副本个数；构造另外一个补丁来设置内存限制。
-安装Kustomizekubectl中集成的kustomize功能不全，因此最好还是单独安装kustomize。
-brew install kustomize
-
-示例本示例中，使用补丁来对资源进行修改：修改pod中使用的镜像。
-cat &lt;&lt;EOF &gt;kustomization.yamlresources:- pod.yamlEOFcat &lt;&lt;EOF &gt;$DEMO_HOME/pod.yamlapiVersion: v1kind: Podmetadata:  name: myapp-pod  labels:    app: myappspec:  containers:  - name: myapp-container    image: busybox:1.29.0    command: ['sh', '-c', 'echo The app is running! &amp;&amp; sleep 3600']  initContainers:  - name: init-mydb    image: busybox:1.29.0    command: ['sh', '-c', 'until nslookup mydb; do echo waiting for mydb; sleep 2; done;']EOFkustomize build .kustomize edit set image busybox=alpine:3.6kustomize build .
-
-执行kustomize edit set image后，kustomization.yaml中会写入：
-images:- name: busybox  newName: alpine  newTag: 3.6
-
-
 
 
 
@@ -12372,6 +12372,160 @@ How to Put a KVM Guest Domain on a Bridged Network
       </tags>
   </entry>
   <entry>
+    <title>virsh常用命令</title>
+    <url>/dev-virsh-command/</url>
+    <content><![CDATA[前言本文中会整理一些工作学习中常用的virsh命令，备忘。
+参考文档：
+
+libvirt
+Domain XML format
+libguestfs
+virt-builder
+virsh常用命令篇
+KVM 虚拟机 XML 配置文件详解
+
+
+
+创建虚拟机本节以创建ubuntu18.04.6的虚拟机为例，ubuntu镜像下载地址为Ubuntu Release
+常规创建1、下载镜像
+cd /opt/iso/wget https://releases.ubuntu.com/18.04.6/ubuntu-18.04.6-live-server-amd64.iso
+
+2、创建虚拟机
+virt-install \    --virt-type=kvm \    --name=ubuntu18.04 \    --vcpus=2 \    --ram=4096 \    --cdrom=/opt/iso/ubuntu-18.04.6-live-server-amd64.iso \    --disk path=/opt/kvm/ubuntu18.04.qcow2,device=disk,format=qcow2,bus=virtio,cache=writeback,size=100 \    --network default,model=virtio \    --os-type=linux \    --os-variant=ubuntu18.04 \    --graphics vnc,listen=0.0.0.0 \    --noautoconsole \    --accelerate
+
+model=virtio 可以换成 model=e1000或者model=rtl8139。但是这里建议使用virtio，因为使用virtio要比使用e1000或者rtl8139网络吞吐性能要高出2倍左右。
+详情参考：
+
+QEMU新的-nic选项
+KVM总结-KVM性能优化之网络性能优化
+
+3、查看虚拟机
+virsh listvirsh list --all
+
+4、查看vnc端口
+virsh vncdisplay ubuntu18.04
+
+使用vnc client连接虚拟机完成安装。
+单独创建磁盘qemu-img create -f qcow2 /opt/kvm/ubuntu18.04.qcow2  100Gvirt-install --disk path=/opt/kvm/ubuntu18.04.qcow2 ...
+
+使用桥接ifconfigip avirt-install --network bridge=br0,model=virtio ...
+
+查看虚拟机IP方法一：通过VNC登录虚拟机后查看
+方法二：通过mac地址查看
+nmap -sP 192.168.56.0/24virsh dumpxml ubuntu18.04 | grep "mac a"arp -a | grep grep "52:54:00:46:98:a7"cat /proc/net/arp | grep "52:54:00:46:98:a7"
+
+网络优化vhost-net是对virtio的优化，在内核中加入了vhost-net.ko模块，使得对网络数据可以在内核态得到处理。数据包从虚拟网卡出来后，直接跳到内核那一层中。这里要注意的是，如果要使用vhost-net那么，虚拟机的网卡类型必须是virtio。
+virsh destroy ubuntu18.04virsh edit ubuntu18.04
+
+添加dirver配置：
+&lt;interface type='bridge'&gt;  &lt;mac address='52:54:00:46:98:a7'/&gt;  &lt;source bridge='br0'/&gt;  &lt;model type='virtio'/&gt;  &lt;driver name='vhost'/&gt;  &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/&gt;&lt;/interface&gt;
+
+修改虚拟机配置安装virt-customizeyum -y install libguestfs-tools
+
+关闭虚拟机virsh shutdown ubuntu18.04
+
+在使用virt-customize修改虚拟机配置之前，需要先关闭虚拟机，否则修改不会生效，还可能发生非预期问题。
+修改主机名virt-customize -a /opt/kvm/ubuntu18.04.qcow2 --hostname node01
+
+启用root ssh登录virt-customize -a /opt/kvm/ubuntu18.04.qcow2 --run-command 'echo "PermitRootLogin yes" &gt;&gt; /etc/ssh/sshd_config'
+
+修改root密码virt-customize -a /opt/kvm/ubuntu18.04.qcow2 --root-password password:voidking# orvirt-customize -a /opt/kvm/ubuntu18.04.qcow2 --password root:voidking
+
+添加authorized_keysvirt-customize -a /opt/kvm/ubuntu18.04.qcow2 --ssh-inject root:string:"ssh-rsa xxx vk@macpro.lan"
+
+安装软件包virt-customize -a /opt/kvm/ubuntu18.04.qcow2 --install vim,wget,curl,unzipvirt-customize -v -x -a /opt/kvm/ubuntu18.04.qcow2 --install vim,wget,curl,unzip
+
+手动配置静态IPubuntu18之前在/etc/network/interfaces进行配置，ubuntu18及之后版本在/etc/netplan/*.yaml中进行配置。
+提前手动配置好一台虚拟机的静态IP，然后，其他的克隆出来的主机可以使用virt-customize调用sed命令修改IP。
+1、查看当前网关
+route -nip routenetstat -rn
+
+2、配置静态IP配置 /etc/netplan/00-installer-config.yaml 内容为：
+# This is the network config written by 'subiquity'network:  version: 2  ethernets:    ens3:      dhcp4: false                         # 禁止动态IP      addresses: [192.168.56.200/24]       # IP地址和掩码      gateway4: 192.168.56.1               # 网关      nameservers:        addresses: [192.168.56.1,114.114.114.114]   #DNS服务器
+
+3、使配置生效
+netplan applyip a
+
+手动配置静态IP2.01、提前准备 00-installer-config.yaml 内容为：
+# This is the network config written by 'subiquity'network:  version: 2  ethernets:    ens3:      dhcp4: false                         # 禁止动态IP      addresses: [192.168.56.200/24]       # IP地址和掩码      gateway4: 192.168.56.1               # 网关      nameservers:        addresses: [192.168.56.1,114.114.114.114]   #DNS服务器
+
+2、拷贝到宿主机
+virt-customize -a /opt/kvm/ubuntu18.04.qcow2 --copy-in 00-installer-config.yaml:/etc/netplan/00-installer-config.yaml
+
+自动配置静态IPvirt-customize -a /opt/kvm/ubuntu18.04.qcow2 --run-command "sed -i \"s#addresses: \[.*/24\]#addresses: \[192.168.56.201/24\]#\" /etc/netplan/00-installer-config.yaml"
+
+启停虚拟机1、停止虚拟机
+# smooth shutdownvirsh shutdown ubuntu18.04# forced shutdownvirsh destroy ubuntu18.04
+
+2、开启虚拟机
+virsh start ubuntu18.04
+
+销毁虚拟机virsh list --allvirsh destroy ubuntu18.04virsh snapshot-list ubuntu18.04virsh snapshot-delete ubuntu18.04 1627446728virsh undefine ubuntu18.04#rm /etc/libvirt/qemu/ubuntu18.04.xmlrm /opt/kvm/ubuntu18.04.qcow2
+
+开机自动启动virsh autostart ubuntu18.04virsh autostart --disable ubuntu18.04
+
+调整虚拟机CPU和内存virsh destroy ubuntu18.04virsh edit ubuntu18.04
+
+调整相关配置：
+&lt;memory unit='KiB'&gt;4194304&lt;/memory&gt;&lt;currentMemory unit='KiB'&gt;4194304&lt;/currentMemory&gt;&lt;vcpu placement='static'&gt;2&lt;/vcpu&gt;
+
+这里需要注意的是，vcpu的最小值是1，详情参考CPU Allocation
+根据xml导出创建虚拟机的命令virsh list --allvirsh dumpxml ubuntu18.04 &gt; ubuntu18.04.xml
+
+克隆虚拟机virt-clone -o ubuntu18.04 -n ubuntu18.04-tmp -f /opt/kvm/ubuntu18.04-tmp.qcow2virsh dominfo ubuntu18.04-tmpvirsh domstate ubuntu18.04-tmp
+
+拷贝虚拟机到其他宿主机1、拷贝虚拟机磁盘文件和配置文件
+scp /opt/kvm/ubuntu18.04.qcow2 192.168.56.102:/opt/kvm/ubuntu18.04.qcow2scp /etc/libvirt/qemu/ubuntu18.04.xml 192.168.56.102:/etc/libvirt/qemu/ubuntu18.04.xml
+
+2、拉起虚拟机
+ssh 192.168.56.102virsh define /etc/libvirt/qemu/ubuntu18.04.xmlvirsh list --allvirsh start ubuntu18.04
+
+PS：临时拉起虚拟机
+virsh create /etc/libvirt/qemu/ubuntu18.04.xml
+
+虚拟机迁移参考文档《使用Libvirt进行虚拟机在线迁移》
+虚拟机扩容磁盘参考文档：
+
+裸数据盘扩展文件系统
+在线扩展数据盘分区及文件系统
+
+给虚拟机增加磁盘virsh shutdown ubuntu18.04-tmpvirsh domblklist ubuntu18.04-tmpqemu-img info /opt/kvm/ubuntu18.04-tmp.qcow2qemu-img resize /opt/kvm/ubuntu18.04-tmp.qcow2 +20G
+
+PS：qcow2镜像不支持缩容。
+如果给虚拟机增加磁盘后，虚拟机启动时报错：qcow2: Image is corrupt; cannot be opened read/write
+那么说明磁盘出现问题，修复方法如下
+qemu-img check /opt/kvm/ubuntu18.04-tmp.qcow2qemu-img check -r all /opt/kvm/ubuntu18.04-tmp.qcow2
+
+扩容分区和文件系统扩容分区1、安装扩容分区工具
+# centosyum install -y cloud-utils-growpart# ubuntuapt-get install -y cloud-guest-utils
+
+2、虚拟机内部执行扩容分区
+fdisk -lLANG=en_US.UTF-8growpart /dev/vda 2fdisk -l
+
+扩容文件系统df -hdf -ihT# ext2/ext3/ext4resize2fs /dev/vda2# xfsxfs_growfs /dev/vda2df -h
+
+裸数据盘扩容文件系统所谓裸数据盘，就是没有分区的数据盘。
+df -hdf -ihT# ext2/ext3/ext4resize2fs /dev/vdb# xfsxfs_growfs /dev/vdcdf -h
+
+虚拟机增加磁盘virsh destroy ubuntu18.04-tmpqemu-img create -f qcow2 /opt/kvm/ubuntu18.04-tmp_ext.qcow2 100Gvirsh edit ubuntu18.04-tmp
+
+disk部分添加：
+&lt;disk type='file' device='disk'&gt;  &lt;driver name='qemu' type='qcow2'/&gt;  &lt;source file='/opt/kvm/ubuntu18.04-tmp_ext.qcow2'/&gt;  &lt;target dev='vdb' bus='virtio'/&gt;&lt;/disk&gt;
+
+磁盘格式化和挂载参考《VirtualBox中Ubuntu扩容》
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>devops</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>ubuntu</tag>
+        <tag>libvirt</tag>
+        <tag>virsh</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>使用Libvirt创建虚拟机</title>
     <url>/dev-libvirt-create-vm/</url>
     <content><![CDATA[前言本文中，我们学习一下qemu和libvirt，分别使用它们创建一个cirros虚拟机，并配置好网络。
@@ -12551,160 +12705,6 @@ N代表没有开启。
 2、开启嵌套虚拟化
 echo 'options kvm_intel nested=1' &gt;&gt; /etc/modprobe.d/qemu-system-x86.conf
 然后重启系统。
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>devops</category>
-      </categories>
-      <tags>
-        <tag>linux</tag>
-        <tag>ubuntu</tag>
-        <tag>libvirt</tag>
-        <tag>virsh</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>virsh常用命令</title>
-    <url>/dev-virsh-command/</url>
-    <content><![CDATA[前言本文中会整理一些工作学习中常用的virsh命令，备忘。
-参考文档：
-
-libvirt
-Domain XML format
-libguestfs
-virt-builder
-virsh常用命令篇
-KVM 虚拟机 XML 配置文件详解
-
-
-
-创建虚拟机本节以创建ubuntu18.04.6的虚拟机为例，ubuntu镜像下载地址为Ubuntu Release
-常规创建1、下载镜像
-cd /opt/iso/wget https://releases.ubuntu.com/18.04.6/ubuntu-18.04.6-live-server-amd64.iso
-
-2、创建虚拟机
-virt-install \    --virt-type=kvm \    --name=ubuntu18.04 \    --vcpus=2 \    --ram=4096 \    --cdrom=/opt/iso/ubuntu-18.04.6-live-server-amd64.iso \    --disk path=/opt/kvm/ubuntu18.04.qcow2,device=disk,format=qcow2,bus=virtio,cache=writeback,size=100 \    --network default,model=virtio \    --os-type=linux \    --os-variant=ubuntu18.04 \    --graphics vnc,listen=0.0.0.0 \    --noautoconsole \    --accelerate
-
-model=virtio 可以换成 model=e1000或者model=rtl8139。但是这里建议使用virtio，因为使用virtio要比使用e1000或者rtl8139网络吞吐性能要高出2倍左右。
-详情参考：
-
-QEMU新的-nic选项
-KVM总结-KVM性能优化之网络性能优化
-
-3、查看虚拟机
-virsh listvirsh list --all
-
-4、查看vnc端口
-virsh vncdisplay ubuntu18.04
-
-使用vnc client连接虚拟机完成安装。
-单独创建磁盘qemu-img create -f qcow2 /opt/kvm/ubuntu18.04.qcow2  100Gvirt-install --disk path=/opt/kvm/ubuntu18.04.qcow2 ...
-
-使用桥接ifconfigip avirt-install --network bridge=br0,model=virtio ...
-
-查看虚拟机IP方法一：通过VNC登录虚拟机后查看
-方法二：通过mac地址查看
-nmap -sP 192.168.56.0/24virsh dumpxml ubuntu18.04 | grep "mac a"arp -a | grep grep "52:54:00:46:98:a7"cat /proc/net/arp | grep "52:54:00:46:98:a7"
-
-网络优化vhost-net是对virtio的优化，在内核中加入了vhost-net.ko模块，使得对网络数据可以在内核态得到处理。数据包从虚拟网卡出来后，直接跳到内核那一层中。这里要注意的是，如果要使用vhost-net那么，虚拟机的网卡类型必须是virtio。
-virsh destroy ubuntu18.04virsh edit ubuntu18.04
-
-添加dirver配置：
-&lt;interface type='bridge'&gt;  &lt;mac address='52:54:00:46:98:a7'/&gt;  &lt;source bridge='br0'/&gt;  &lt;model type='virtio'/&gt;  &lt;driver name='vhost'/&gt;  &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/&gt;&lt;/interface&gt;
-
-修改虚拟机配置安装virt-customizeyum -y install libguestfs-tools
-
-关闭虚拟机virsh shutdown ubuntu18.04
-
-在使用virt-customize修改虚拟机配置之前，需要先关闭虚拟机，否则修改不会生效，还可能发生非预期问题。
-修改主机名virt-customize -a /opt/kvm/ubuntu18.04.qcow2 --hostname node01
-
-启用root ssh登录virt-customize -a /opt/kvm/ubuntu18.04.qcow2 --run-command 'echo "PermitRootLogin yes" &gt;&gt; /etc/ssh/sshd_config'
-
-修改root密码virt-customize -a /opt/kvm/ubuntu18.04.qcow2 --root-password password:voidking# orvirt-customize -a /opt/kvm/ubuntu18.04.qcow2 --password root:voidking
-
-添加authorized_keysvirt-customize -a /opt/kvm/ubuntu18.04.qcow2 --ssh-inject root:string:"ssh-rsa xxx vk@macpro.lan"
-
-安装软件包virt-customize -a /opt/kvm/ubuntu18.04.qcow2 --install vim,wget,curl,unzipvirt-customize -v -x -a /opt/kvm/ubuntu18.04.qcow2 --install vim,wget,curl,unzip
-
-手动配置静态IPubuntu18之前在/etc/network/interfaces进行配置，ubuntu18及之后版本在/etc/netplan/*.yaml中进行配置。
-提前手动配置好一台虚拟机的静态IP，然后，其他的克隆出来的主机可以使用virt-customize调用sed命令修改IP。
-1、查看当前网关
-route -nip routenetstat -rn
-
-2、配置静态IP配置 /etc/netplan/00-installer-config.yaml 内容为：
-# This is the network config written by 'subiquity'network:  version: 2  ethernets:    ens3:      dhcp4: false                         # 禁止动态IP      addresses: [192.168.56.200/24]       # IP地址和掩码      gateway4: 192.168.56.1               # 网关      nameservers:        addresses: [192.168.56.1,114.114.114.114]   #DNS服务器
-
-3、使配置生效
-netplan applyip a
-
-手动配置静态IP2.01、提前准备 00-installer-config.yaml 内容为：
-# This is the network config written by 'subiquity'network:  version: 2  ethernets:    ens3:      dhcp4: false                         # 禁止动态IP      addresses: [192.168.56.200/24]       # IP地址和掩码      gateway4: 192.168.56.1               # 网关      nameservers:        addresses: [192.168.56.1,114.114.114.114]   #DNS服务器
-
-2、拷贝到宿主机
-virt-customize -a /opt/kvm/ubuntu18.04.qcow2 --copy-in 00-installer-config.yaml:/etc/netplan/00-installer-config.yaml
-
-自动配置静态IPvirt-customize -a /opt/kvm/ubuntu18.04.qcow2 --run-command "sed -i \"s#addresses: \[.*/24\]#addresses: \[192.168.56.201/24\]#\" /etc/netplan/00-installer-config.yaml"
-
-启停虚拟机1、停止虚拟机
-# smooth shutdownvirsh shutdown ubuntu18.04# forced shutdownvirsh destroy ubuntu18.04
-
-2、开启虚拟机
-virsh start ubuntu18.04
-
-销毁虚拟机virsh list --allvirsh destroy ubuntu18.04virsh snapshot-list ubuntu18.04virsh snapshot-delete ubuntu18.04 1627446728virsh undefine ubuntu18.04#rm /etc/libvirt/qemu/ubuntu18.04.xmlrm /opt/kvm/ubuntu18.04.qcow2
-
-开机自动启动virsh autostart ubuntu18.04virsh autostart --disable ubuntu18.04
-
-调整虚拟机CPU和内存virsh destroy ubuntu18.04virsh edit ubuntu18.04
-
-调整相关配置：
-&lt;memory unit='KiB'&gt;4194304&lt;/memory&gt;&lt;currentMemory unit='KiB'&gt;4194304&lt;/currentMemory&gt;&lt;vcpu placement='static'&gt;2&lt;/vcpu&gt;
-
-这里需要注意的是，vcpu的最小值是1，详情参考CPU Allocation
-根据xml导出创建虚拟机的命令virsh list --allvirsh dumpxml ubuntu18.04 &gt; ubuntu18.04.xml
-
-克隆虚拟机virt-clone -o ubuntu18.04 -n ubuntu18.04-tmp -f /opt/kvm/ubuntu18.04-tmp.qcow2virsh dominfo ubuntu18.04-tmpvirsh domstate ubuntu18.04-tmp
-
-拷贝虚拟机到其他宿主机1、拷贝虚拟机磁盘文件和配置文件
-scp /opt/kvm/ubuntu18.04.qcow2 192.168.56.102:/opt/kvm/ubuntu18.04.qcow2scp /etc/libvirt/qemu/ubuntu18.04.xml 192.168.56.102:/etc/libvirt/qemu/ubuntu18.04.xml
-
-2、拉起虚拟机
-ssh 192.168.56.102virsh define /etc/libvirt/qemu/ubuntu18.04.xmlvirsh list --allvirsh start ubuntu18.04
-
-PS：临时拉起虚拟机
-virsh create /etc/libvirt/qemu/ubuntu18.04.xml
-
-虚拟机迁移参考文档《使用Libvirt进行虚拟机在线迁移》
-虚拟机扩容磁盘参考文档：
-
-裸数据盘扩展文件系统
-在线扩展数据盘分区及文件系统
-
-给虚拟机增加磁盘virsh shutdown ubuntu18.04-tmpvirsh domblklist ubuntu18.04-tmpqemu-img info /opt/kvm/ubuntu18.04-tmp.qcow2qemu-img resize /opt/kvm/ubuntu18.04-tmp.qcow2 +20G
-
-PS：qcow2镜像不支持缩容。
-如果给虚拟机增加磁盘后，虚拟机启动时报错：qcow2: Image is corrupt; cannot be opened read/write
-那么说明磁盘出现问题，修复方法如下
-qemu-img check /opt/kvm/ubuntu18.04-tmp.qcow2qemu-img check -r all /opt/kvm/ubuntu18.04-tmp.qcow2
-
-扩容分区和文件系统扩容分区1、安装扩容分区工具
-# centosyum install -y cloud-utils-growpart# ubuntuapt-get install -y cloud-guest-utils
-
-2、虚拟机内部执行扩容分区
-fdisk -lLANG=en_US.UTF-8growpart /dev/vda 2fdisk -l
-
-扩容文件系统df -hdf -ihT# ext2/ext3/ext4resize2fs /dev/vda2# xfsxfs_growfs /dev/vda2df -h
-
-裸数据盘扩容文件系统所谓裸数据盘，就是没有分区的数据盘。
-df -hdf -ihT# ext2/ext3/ext4resize2fs /dev/vdb# xfsxfs_growfs /dev/vdcdf -h
-
-虚拟机增加磁盘virsh destroy ubuntu18.04-tmpqemu-img create -f qcow2 /opt/kvm/ubuntu18.04-tmp_ext.qcow2 100Gvirsh edit ubuntu18.04-tmp
-
-disk部分添加：
-&lt;disk type='file' device='disk'&gt;  &lt;driver name='qemu' type='qcow2'/&gt;  &lt;source file='/opt/kvm/ubuntu18.04-tmp_ext.qcow2'/&gt;  &lt;target dev='vdb' bus='virtio'/&gt;&lt;/disk&gt;
-
-磁盘格式化和挂载参考《VirtualBox中Ubuntu扩容》
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -22583,6 +22583,52 @@ main.sh 脚本内容为：
       </tags>
   </entry>
   <entry>
+    <title>shell命令之ssh</title>
+    <url>/dev-shell-ssh/</url>
+    <content><![CDATA[创建用户创建voidking用户，并添加sudo权限：
+useradd -m voidking -s /bin/bashpasswd voidkingadduser voidking sudo
+
+
+
+生成密钥ssh-keygenssh-keygen -C "voidking@qq.com" -f ./voidking_rsa
+第一条命令执行完之后，.ssh目录下生成了 id_rsa 和 id_rsa.pub。第二条命令执行完之后，当前目录下生成了 voidking_rsa 和 voidking_rsa.pub，注释内容为 voidking@qq.com 。
+使密钥生效ssh-copy-id -i ~/.ssh/id_rsa.pub voidking@hostnamessh-copy-id -i ~/.ssh/id_rsa.pub voidking@hostname -p 22ssh voidking@hostname
+ssh-copy-id 这个命令做的事情，是把 id_rsa.pub 中的内容，追加到 hostname:/home/voidking/.ssh/authorized_keys 文件中。authorized_keys文件权限为600。如果配置好了sshd，但是无法使用密钥登录机器，请检查authorized_keys文件权限。
+密钥添加失败问题如果ssh-copy-id报错cannot create .ssh/authorized_keys: Operation not permitted或者手动编辑authorized_keys后无法保存，chmod也无法改变authorized_keys文件的权限。
+那么可能是因为authorized_keys被加锁了，防止误删，需要先进行解锁。
+chattr -i ~/.ssh/authorized_keys
+参考文档chattr命令 – 更改文件隐藏属性
+ssh执行远程命令执行远程命令很简单，直接ssh后面跟着命令就可以了。
+ssh root@192.168.56.100 "echo helloworld"
+
+那如果远程命令里面包含双引号怎么办？变成单引号，或者添加转义。
+ssh root@192.168.56.100 "echo 'helloworld'"ssh root@192.168.56.100 "echo \"helloworld\""
+
+那如果需要远程命令里使用变量怎么办？添加转义。
+ssh root@192.168.56.100 "host=\$(hostname);echo \"\$&#123;host&#125;\""
+
+批量添加开机启动命令已知主机列表hosts.txt内容为：
+192.168.56.101192.168.56.102
+
+需求：给主机列表中的机器添加开机启动命令
+脚本：
+for i in `cat hosts.txt`; do ssh $i "echo '/home/voidking/start.sh' | sudo tee -a /etc/rc.local";done
+
+
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>shell</category>
+        <category>troubleshooting</category>
+        <category>network</category>
+      </categories>
+      <tags>
+        <tag>问题排查</tag>
+        <tag>linux</tag>
+        <tag>shell</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>systemctl命令</title>
     <url>/dev-systemctl-command/</url>
     <content><![CDATA[systemctl命令简介
@@ -22648,128 +22694,6 @@ journalctl# 查看引导信息journalctl -b# 实时跟踪系统日志journalctl 
       </categories>
       <tags>
         <tag>问题排查</tag>
-        <tag>shell</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>shell命令之文件管理</title>
-    <url>/dev-shell-file/</url>
-    <content><![CDATA[cp须知unalias cp #避免cp命令被aliascp -f #强制覆盖cp -R #递归拷贝所有文件。对特殊文件（管道文件、块设备文件、字符设备文件）会进行创建而不是拷贝。cp -r #递归拷贝所有文件。所有source文件当做普通文件。cp -rf public/* voidking #递归拷贝所有文件，不包括隐藏文件cp -rf public/. voidking #递归拷贝所有文件，包括隐藏文件
-
-
-
-匹配排除.和..当前目录下，一定存在两个目录：.和..。有一些操作我们需要排除这两个目录，怎样匹配排除它们呢？
-ls -als -a | xargsls -a | wc -lls -a | grep -vw '\.'ls -a | grep -vw '[.]'ls -a | grep -v '^.$' | grep -v '^..$'
-
-cp排除目录需求：源目录为dirA，目标目录dirB，复制dirA下所有目录&amp;文件到dirB，排除目录log方法一：不包含隐藏文件
-cd dirAls | grep -v log | xargscp -r `ls | grep -v log | xargs` pathto/dirB
-
-方法二：包含隐藏文件
-cd dirAls -a | grep -vw '\.' | grep -v log | xargscp -r `ls -a | grep -vw '\.' | grep -v log | xargs` pathto/dirB
-
-rm排除目录需求：想要删除dirA目录下的所有目录和文件，除了.git目录
-cd dirAls -a | grep -vw '\.' | grep -vw '\.git' | xargsrm -rf `ls -a | grep -vw '\.' | grep -vw '\.git' | xargs`
-
-删除特殊字符名称的文件ls -ifind . -inum 83661618# 删除文件find . -inum 83661618 -delete# 删除非空目录find . -inum 83661619 -exec rm &#123;&#125; \;
-
-压缩与解压tar.gz文件压缩与解压tar.gz文件
-tar -czvf filename.tar.gz filenametar -xzvf filename.tar.gz
-
-zip文件压缩与解压zip文件
-zip filename.zip filenameunzip filename.zip
-
-解压zip文件到指定目录
-unzip -d filename filename.zip
-
-加密压缩和解压zip文件
-zip -er filename.zip filenamezip -er -P xxxxxx filename.zip filenameunzip -P xxxxxx filename.zip
-
-批量加密压缩和解压zip文件
-for i in `ls`;do zip -er -P xxxxxx $i.zip $i;donefor i in *.zip;do unzip -P xxxxxx $i;done
-
-解压中文名zip文件
-yum install unarunar -e GBK 中文名.zipunar -e GBK -p xxxxxx 中文名.zipfor i in *.zip;do unar -e GBK -p xxxxxx $i;done
-
-tar排除目录需求：打包目录dirA下所有目录&amp;文件，排除目录dirA/log和dirA/data
-tar -czvf dirA.tar.gz dirA --exclude dirA/log --exclude dirA/data
-
-tar文件拆分与合并使用sz传输大文件，有时候会被中断。这时我们可以把文件进行拆分，下载后再进行合并。
-tar -czf - bigfile.tar.gz | split -b 50m -d - bigfile.tar.gz.cat bigfile.tar.gz.* | tar -xzf -md5sum bigfile.tar.gz
-
-删除10天前的日志需求：找出10天前的日志并删除。脚本：
-find /usr/local/tomcat/logs/ -type f -mtime +10 -exec rm -rfv &#123;&#125; \;find /usr/local/tomcat/logs/ -type f -mtime +10 | xargs rm -rfv
-
-文件拆分需求1：大文件拆分成小文件，每50行拆分成一个文件。脚本1：
-#!/bin/bashlinenum="50"bigfile="bigfile.txt"datadir="files"prefix="smallfile."mkdir -p $&#123;datadir&#125;split -l $&#123;linenum&#125; $&#123;bigfile&#125; -d -a 2 $&#123;datadir&#125;/$&#123;prefix&#125;
-
-需求2：大文件拆分成小文件，方便按比例进行变更。脚本2：
-#!/bin/bashpercent="50"#percent="34"bigfile="bigfile.txt"datadir="file"prefix="smallfile."rm -rf $&#123;datadir&#125;/$&#123;prefix&#125;*mkdir -p $&#123;datadir&#125;content=$(cat $&#123;bigfile&#125;)sum=$(echo "$&#123;content&#125;" | wc -l)linenum=$(($&#123;sum&#125;*$&#123;percent&#125;/100))split -l $&#123;linenum&#125; $&#123;bigfile&#125; -d -a 2 $&#123;datadir&#125;/$&#123;prefix&#125;
-
-文件软链创建文件软链
-ln -s source_file link_file
-
-修改文件软链
-ln -sfn new_source_file link_file
-
-显示文件的绝对路径realpath filename
-
-
-
-
-
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>shell</category>
-      </categories>
-      <tags>
-        <tag>linux</tag>
-        <tag>shell</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>shell命令之ssh</title>
-    <url>/dev-shell-ssh/</url>
-    <content><![CDATA[创建用户创建voidking用户，并添加sudo权限：
-useradd -m voidking -s /bin/bashpasswd voidkingadduser voidking sudo
-
-
-
-生成密钥ssh-keygenssh-keygen -C "voidking@qq.com" -f ./voidking_rsa
-第一条命令执行完之后，.ssh目录下生成了 id_rsa 和 id_rsa.pub。第二条命令执行完之后，当前目录下生成了 voidking_rsa 和 voidking_rsa.pub，注释内容为 voidking@qq.com 。
-使密钥生效ssh-copy-id -i ~/.ssh/id_rsa.pub voidking@hostnamessh-copy-id -i ~/.ssh/id_rsa.pub voidking@hostname -p 22ssh voidking@hostname
-ssh-copy-id 这个命令做的事情，是把 id_rsa.pub 中的内容，追加到 hostname:/home/voidking/.ssh/authorized_keys 文件中。authorized_keys文件权限为600。如果配置好了sshd，但是无法使用密钥登录机器，请检查authorized_keys文件权限。
-密钥添加失败问题如果ssh-copy-id报错cannot create .ssh/authorized_keys: Operation not permitted或者手动编辑authorized_keys后无法保存，chmod也无法改变authorized_keys文件的权限。
-那么可能是因为authorized_keys被加锁了，防止误删，需要先进行解锁。
-chattr -i ~/.ssh/authorized_keys
-参考文档chattr命令 – 更改文件隐藏属性
-ssh执行远程命令执行远程命令很简单，直接ssh后面跟着命令就可以了。
-ssh root@192.168.56.100 "echo helloworld"
-
-那如果远程命令里面包含双引号怎么办？变成单引号，或者添加转义。
-ssh root@192.168.56.100 "echo 'helloworld'"ssh root@192.168.56.100 "echo \"helloworld\""
-
-那如果需要远程命令里使用变量怎么办？添加转义。
-ssh root@192.168.56.100 "host=\$(hostname);echo \"\$&#123;host&#125;\""
-
-批量添加开机启动命令已知主机列表hosts.txt内容为：
-192.168.56.101192.168.56.102
-
-需求：给主机列表中的机器添加开机启动命令
-脚本：
-for i in `cat hosts.txt`; do ssh $i "echo '/home/voidking/start.sh' | sudo tee -a /etc/rc.local";done
-
-
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>shell</category>
-        <category>troubleshooting</category>
-        <category>network</category>
-      </categories>
-      <tags>
-        <tag>问题排查</tag>
-        <tag>linux</tag>
         <tag>shell</tag>
       </tags>
   </entry>
@@ -22879,6 +22803,140 @@ grep筛选出的日志，包含18:00:00-18:00:59内的日志。sed筛选出的�
       </tags>
   </entry>
   <entry>
+    <title>Linux后台运行脚本或程序</title>
+    <url>/dev-nohup-and-screen/</url>
+    <content><![CDATA[前言经常遇到的一个需求，是需要Linux后台运行脚本或程序。对于这个需求，有两个最常用的工具：nohup和screen。
+
+nohup - run a command immune to hangups, with output to a non-ttyscreen - screen manager with VT100/ANSI terminal emulation
+
+nohup启动一个后台进程，进程的输出输出到非终端。screen可以在终端中创建和管理多个子终端窗口，通过在子终端窗口中运行程序，实现后台运行的效果。
+这两个工具能够实现的功能基本相同。本文中，我们就来学习一下这两个工具的使用方法。
+顺便说一下，TTY是电传打字机的缩写，后来发展为虚拟的电子TTY，也就是我们现在说的终端模拟器（terminal emulator）。
+参考文档：
+
+Linux 黑话解释：TTY 是什么？
+
+
+
+nohup后台执行脚本nohup /root/test.sh &amp;nohup /root/test.sh &gt; test.log 2&gt;&amp;1 &amp;
+
+查看后台脚本jobs
+
+调到前台fg %2
+
+当执行 fg 将后台的命令调到前台来继续执行时，由于此时系统正处于执行该命令的前台运行状态，此时不能直接再调回到后台执行。需要先把前台运行的命令挂起，再用 bg 命令恢复执行，命令才会调至后台继续执行。
+放回后台并继续执行ctrl+Zjobsbg %2
+
+
+停止后台脚本方法一：
+jobsfg %2ctrl+C
+
+方法二：
+ps -ef | grep test.shkill -9 $PID
+
+定时任务通过crontab设置定时任务时，nohup命令可以省略。例如：
+#0 12 * * * nohup &#x2F;home&#x2F;voidking&#x2F;restart.sh &gt; &#x2F;home&#x2F;voidking&#x2F;log&#x2F;daily-&#96;date +\%Y\%m\%d\%H\%M\%S&#96;.log 2&gt;&amp;1 &amp;0 12 * * * &#x2F;home&#x2F;voidking&#x2F;restart.sh &gt; &#x2F;home&#x2F;voidking&#x2F;log&#x2F;daily-&#96;date +\%Y\%m\%d\%H\%M\%S&#96;.log 2&gt;&amp;1 &amp;
+
+screen使用新的screen运行脚本screen ./main.sh
+
+把当前screen放入后台ctrl+A+D
+查看screenscreen -ls
+
+返回screenscreen -r 23500.ttys005.B000000349215A
+
+
+
+
+
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>shell</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>shell</tag>
+        <tag>nohup</tag>
+        <tag>screen</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>shell命令之文件管理</title>
+    <url>/dev-shell-file/</url>
+    <content><![CDATA[cp须知unalias cp #避免cp命令被aliascp -f #强制覆盖cp -R #递归拷贝所有文件。对特殊文件（管道文件、块设备文件、字符设备文件）会进行创建而不是拷贝。cp -r #递归拷贝所有文件。所有source文件当做普通文件。cp -rf public/* voidking #递归拷贝所有文件，不包括隐藏文件cp -rf public/. voidking #递归拷贝所有文件，包括隐藏文件
+
+
+
+匹配排除.和..当前目录下，一定存在两个目录：.和..。有一些操作我们需要排除这两个目录，怎样匹配排除它们呢？
+ls -als -a | xargsls -a | wc -lls -a | grep -vw '\.'ls -a | grep -vw '[.]'ls -a | grep -v '^.$' | grep -v '^..$'
+
+cp排除目录需求：源目录为dirA，目标目录dirB，复制dirA下所有目录&amp;文件到dirB，排除目录log方法一：不包含隐藏文件
+cd dirAls | grep -v log | xargscp -r `ls | grep -v log | xargs` pathto/dirB
+
+方法二：包含隐藏文件
+cd dirAls -a | grep -vw '\.' | grep -v log | xargscp -r `ls -a | grep -vw '\.' | grep -v log | xargs` pathto/dirB
+
+rm排除目录需求：想要删除dirA目录下的所有目录和文件，除了.git目录
+cd dirAls -a | grep -vw '\.' | grep -vw '\.git' | xargsrm -rf `ls -a | grep -vw '\.' | grep -vw '\.git' | xargs`
+
+删除特殊字符名称的文件ls -ifind . -inum 83661618# 删除文件find . -inum 83661618 -delete# 删除非空目录find . -inum 83661619 -exec rm &#123;&#125; \;
+
+压缩与解压tar.gz文件压缩与解压tar.gz文件
+tar -czvf filename.tar.gz filenametar -xzvf filename.tar.gz
+
+zip文件压缩与解压zip文件
+zip filename.zip filenameunzip filename.zip
+
+解压zip文件到指定目录
+unzip -d filename filename.zip
+
+加密压缩和解压zip文件
+zip -er filename.zip filenamezip -er -P xxxxxx filename.zip filenameunzip -P xxxxxx filename.zip
+
+批量加密压缩和解压zip文件
+for i in `ls`;do zip -er -P xxxxxx $i.zip $i;donefor i in *.zip;do unzip -P xxxxxx $i;done
+
+解压中文名zip文件
+yum install unarunar -e GBK 中文名.zipunar -e GBK -p xxxxxx 中文名.zipfor i in *.zip;do unar -e GBK -p xxxxxx $i;done
+
+tar排除目录需求：打包目录dirA下所有目录&amp;文件，排除目录dirA/log和dirA/data
+tar -czvf dirA.tar.gz dirA --exclude dirA/log --exclude dirA/data
+
+tar文件拆分与合并使用sz传输大文件，有时候会被中断。这时我们可以把文件进行拆分，下载后再进行合并。
+tar -czf - bigfile.tar.gz | split -b 50m -d - bigfile.tar.gz.cat bigfile.tar.gz.* | tar -xzf -md5sum bigfile.tar.gz
+
+删除10天前的日志需求：找出10天前的日志并删除。脚本：
+find /usr/local/tomcat/logs/ -type f -mtime +10 -exec rm -rfv &#123;&#125; \;find /usr/local/tomcat/logs/ -type f -mtime +10 | xargs rm -rfv
+
+文件拆分需求1：大文件拆分成小文件，每50行拆分成一个文件。脚本1：
+#!/bin/bashlinenum="50"bigfile="bigfile.txt"datadir="files"prefix="smallfile."mkdir -p $&#123;datadir&#125;split -l $&#123;linenum&#125; $&#123;bigfile&#125; -d -a 2 $&#123;datadir&#125;/$&#123;prefix&#125;
+
+需求2：大文件拆分成小文件，方便按比例进行变更。脚本2：
+#!/bin/bashpercent="50"#percent="34"bigfile="bigfile.txt"datadir="file"prefix="smallfile."rm -rf $&#123;datadir&#125;/$&#123;prefix&#125;*mkdir -p $&#123;datadir&#125;content=$(cat $&#123;bigfile&#125;)sum=$(echo "$&#123;content&#125;" | wc -l)linenum=$(($&#123;sum&#125;*$&#123;percent&#125;/100))split -l $&#123;linenum&#125; $&#123;bigfile&#125; -d -a 2 $&#123;datadir&#125;/$&#123;prefix&#125;
+
+文件软链创建文件软链
+ln -s source_file link_file
+
+修改文件软链
+ln -sfn new_source_file link_file
+
+显示文件的绝对路径realpath filename
+
+
+
+
+
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>shell</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>shell</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>iotop命令</title>
     <url>/dev-iotop/</url>
     <content><![CDATA[哪个程序占用了磁盘IO？查看一台主机的监控，有时候我们会发现磁盘IO被打满了，这时候怎样定位出是哪个程序大量占用了磁盘IO？答：使用磁盘IO分析工具。比如iotop，可以监控到读写磁盘的线程和读写速度。
@@ -22963,6 +23021,9 @@ dmesg 日志文件中保存的是本次重启后的日志，而 dmesg.0 是这�
 journalctl -k -b -1journalctl -r -k -b -1
 
 系统配置修改默认shellecho $SHELLcat /etc/shellswhich bashchsh -s /bin/bash
+
+禁止检查邮件系统经常提示：您在 /var/spool/mail/root 中有新邮件
+echo "unset MAILCHECK" &gt;&gt; /etc/profilesource /etc/profile
 
 添加用户创建用户，并添加sudo权限
 useradd -m voidking -s /bin/bashpasswd voidkingadduser voidking sudo
@@ -23127,38 +23188,6 @@ rate：在过去2s，10s，40s，平均的流量的值。
       </tags>
   </entry>
   <entry>
-    <title>shell命令之重定向</title>
-    <url>/dev-shell-redirect/</url>
-    <content><![CDATA[重定向0 标准输入1 标准输出，默认指向屏幕2 错误输出，默认指向屏幕/dev/null 黑洞
-# 标准输出重定向到文件ls &gt;out.txtcat out.txt# 等同于ls 1&gt;out.txtcat out.txt# 错误输出重定向到文件ls 2&gt;out.txtcat out.txtls xxx 2&gt;out.txtcat out.txt# 标准输出和错误输出都重定向到文件(ls xxx || ls) &gt;out.txt 2&gt;&amp;1cat out.txt# 等同于(ls xxx || ls) &amp;&gt;out.txtcat out.txt# 标准输出和错误输出都丢弃(ls xxx || ls) &amp;&gt;/dev/null# 等同于(ls xxx; ls) &amp;&gt;/dev/null
-
-
-
-输出到屏幕和文件输出内容同时到屏幕和文件：
-echo "hello" | tee test.log
-
-清空文件内容需求：清空test.txt文件中的内容脚本：
-echo "" &gt; test.txtecho -n "" &gt; test.txtcat /dev/null &gt; test.txt:&gt; test.txt
-
-cat写入文件新建文件：
-cat &lt;&lt;EOF &gt; test.txthello worldwelcome to python world!EOFcat &lt;&lt;EOF | tee test.txthello worldwelcome to python world!EOF
-
-追加内容：
-cat &lt;&lt;EOF &gt;&gt; test.txthello worldwelcome to python world!EOFcat &lt;&lt;EOF | tee -a test.txthello worldwelcome to python world!EOF
-
-
-
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>shell</category>
-      </categories>
-      <tags>
-        <tag>linux</tag>
-        <tag>shell</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>shell命令之编码格式转换</title>
     <url>/dev-shell-encoding/</url>
     <content><![CDATA[编码格式修改执行sh脚本时报错：/bin/sh^M: bad interpreter: No such file or directory
@@ -23195,48 +23224,24 @@ iconv -f GBK -t UTF-8 inputfile &gt; outputfile
       </tags>
   </entry>
   <entry>
-    <title>Linux后台运行脚本或程序</title>
-    <url>/dev-nohup-and-screen/</url>
-    <content><![CDATA[前言经常遇到的一个需求，是需要Linux后台运行脚本或程序。对于这个需求，有两个最常用的工具：nohup和screen。
-
-nohup - run a command immune to hangups, with output to a non-ttyscreen - screen manager with VT100/ANSI terminal emulation
-
-nohup启动一个后台进程，进程的输出输出到非终端。screen可以在终端中创建和管理多个子终端窗口，通过在子终端窗口中运行程序，实现后台运行的效果。
-这两个工具能够实现的功能基本相同。本文中，我们就来学习一下这两个工具的使用方法。
-顺便说一下，TTY是电传打字机的缩写，后来发展为虚拟的电子TTY，也就是我们现在说的终端模拟器（terminal emulator）。
-参考文档：
-
-Linux 黑话解释：TTY 是什么？
+    <title>shell命令之重定向</title>
+    <url>/dev-shell-redirect/</url>
+    <content><![CDATA[重定向0 标准输入1 标准输出，默认指向屏幕2 错误输出，默认指向屏幕/dev/null 黑洞
+# 标准输出重定向到文件ls &gt;out.txtcat out.txt# 等同于ls 1&gt;out.txtcat out.txt# 错误输出重定向到文件ls 2&gt;out.txtcat out.txtls xxx 2&gt;out.txtcat out.txt# 标准输出和错误输出都重定向到文件(ls xxx || ls) &gt;out.txt 2&gt;&amp;1cat out.txt# 等同于(ls xxx || ls) &amp;&gt;out.txtcat out.txt# 标准输出和错误输出都丢弃(ls xxx || ls) &amp;&gt;/dev/null# 等同于(ls xxx; ls) &amp;&gt;/dev/null
 
 
 
-nohup后台执行脚本nohup /root/test.sh &amp;nohup /root/test.sh &gt; test.log 2&gt;&amp;1 &amp;
+输出到屏幕和文件输出内容同时到屏幕和文件：
+echo "hello" | tee test.log
 
-查看后台脚本jobs
+清空文件内容需求：清空test.txt文件中的内容脚本：
+echo "" &gt; test.txtecho -n "" &gt; test.txtcat /dev/null &gt; test.txt:&gt; test.txt
 
-调到前台fg %2
+cat写入文件新建文件：
+cat &lt;&lt;EOF &gt; test.txthello worldwelcome to python world!EOFcat &lt;&lt;EOF | tee test.txthello worldwelcome to python world!EOF
 
-当执行 fg 将后台的命令调到前台来继续执行时，由于此时系统正处于执行该命令的前台运行状态，此时不能直接再调回到后台执行。需要先把前台运行的命令挂起，再用 bg 命令恢复执行，命令才会调至后台继续执行。
-放回后台并继续执行ctrl+Zjobsbg %2
-
-
-停止后台脚本方法一：
-jobsfg %2ctrl+C
-
-方法二：
-ps -ef | grep test.shkill -9 $PID
-
-定时任务通过crontab设置定时任务时，nohup命令可以省略。例如：
-#0 12 * * * nohup &#x2F;home&#x2F;voidking&#x2F;restart.sh &gt; &#x2F;home&#x2F;voidking&#x2F;log&#x2F;daily-&#96;date +\%Y\%m\%d\%H\%M\%S&#96;.log 2&gt;&amp;1 &amp;0 12 * * * &#x2F;home&#x2F;voidking&#x2F;restart.sh &gt; &#x2F;home&#x2F;voidking&#x2F;log&#x2F;daily-&#96;date +\%Y\%m\%d\%H\%M\%S&#96;.log 2&gt;&amp;1 &amp;
-
-screen使用新的screen运行脚本screen ./main.sh
-
-把当前screen放入后台ctrl+A+D
-查看screenscreen -ls
-
-返回screenscreen -r 23500.ttys005.B000000349215A
-
-
+追加内容：
+cat &lt;&lt;EOF &gt;&gt; test.txthello worldwelcome to python world!EOFcat &lt;&lt;EOF | tee -a test.txthello worldwelcome to python world!EOF
 
 
 
@@ -23248,8 +23253,6 @@ screen使用新的screen运行脚本screen ./main.sh
       <tags>
         <tag>linux</tag>
         <tag>shell</tag>
-        <tag>nohup</tag>
-        <tag>screen</tag>
       </tags>
   </entry>
   <entry>
@@ -32332,29 +32335,6 @@ Git忽略规则
       </tags>
   </entry>
   <entry>
-    <title>github下载加速</title>
-    <url>/dev-github-download-speedup/</url>
-    <content><![CDATA[替换加速网址1、github.com 替换为 hub.fastgit.org2、raw.githubusercontent.com 替换为 raw.staticdn.net
-以macos安装brew为例：
-curl -L https://raw.staticdn.net/Homebrew/install/HEAD/install.sh -o brew.shsed -i 's#https://github.com/#https://hub.fastgit.org/#g' brew.shsh brew.sh
-
-
-
-使用gitee加速使用gitee导入github上的项目，然后从gitee下载。
-以下载kubernetes项目为例：登录gitee-&gt; 新建仓库-&gt; 点击导入-&gt; 输入github上kubernetes Git仓库URL，https://github.com/kubernetes/kubernetes-&gt; 输入仓库名称，kubernetes-&gt; 导入-&gt; 从gitee下载kubernetes，git clone https://gitee.com/voidking/kubernetes
-使用镜像站加速github.com域名替换为gitcode.net/mirrors
-例如：源站为 https://github.com/kubernetes/kubernetes对应镜像站 https://gitcode.net/mirrors/kubernetes/kubernetes
-科学上网终极解决办法。
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>git</category>
-      </categories>
-      <tags>
-        <tag>git</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>git tag使用说明</title>
     <url>/dev-git-tag/</url>
     <content><![CDATA[打标签所谓打标签，就是对某一时间点上的版本打上标签。Git使用的标签有两种类型：轻量级的（lightweight）和含附注的（annotated）。轻量级标签就像是个不会变化的分支，实际上它就是个指向特定提交对象的引用。而含附注标签，实际上是存储在仓库中的一个独立对象，它有自身的校验和信息，包含着标签的名字，电子邮件地址和日期，以及标签说明，标签本身也允许使用 GNU Privacy Guard (GPG) 来签署或验证。一般我们都建议使用含附注型的标签，以便保留相关信息；当然，如果只是临时性加注标签，或者不需要旁注额外信息，用轻量级标签也没问题。
@@ -32383,6 +32363,29 @@ git命令之git tag 给当前分支打标签http://blog.csdn.net/wangjia55/artic
 git tag简介http://blog.csdn.net/hudashi/article/details/7664468
 tag打标签http://blog.csdn.net/wh_19910525/article/details/7470850
 git tag操作教程http://blog.csdn.net/waterforest_pang/article/details/9762863
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>git</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>github下载加速</title>
+    <url>/dev-github-download-speedup/</url>
+    <content><![CDATA[替换加速网址1、github.com 替换为 hub.fastgit.org2、raw.githubusercontent.com 替换为 raw.staticdn.net
+以macos安装brew为例：
+curl -L https://raw.staticdn.net/Homebrew/install/HEAD/install.sh -o brew.shsed -i 's#https://github.com/#https://hub.fastgit.org/#g' brew.shsh brew.sh
+
+
+
+使用gitee加速使用gitee导入github上的项目，然后从gitee下载。
+以下载kubernetes项目为例：登录gitee-&gt; 新建仓库-&gt; 点击导入-&gt; 输入github上kubernetes Git仓库URL，https://github.com/kubernetes/kubernetes-&gt; 输入仓库名称，kubernetes-&gt; 导入-&gt; 从gitee下载kubernetes，git clone https://gitee.com/voidking/kubernetes
+使用镜像站加速github.com域名替换为gitcode.net/mirrors
+例如：源站为 https://github.com/kubernetes/kubernetes对应镜像站 https://gitcode.net/mirrors/kubernetes/kubernetes
+科学上网终极解决办法。
 ]]></content>
       <categories>
         <category>engineering</category>
