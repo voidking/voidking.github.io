@@ -3,7 +3,7 @@
   <entry>
     <title>Hexo配置GitHub Actions自动构建发布</title>
     <url>/dev-hexo-github-actions/</url>
-    <content><![CDATA[travis ci必须付费了2023年2月25日，使用travis ci部署hexo项目，发现并没有触发任务。
+    <content><![CDATA[Travis CI必须付费了2023年2月25日，使用travis ci部署hexo项目，发现并没有触发任务。
 登录travis ci，发现提示：
 
 Builds have been temporarily disabled for public repositories due to a negative credit balance. Please go to the Plan page to replenish your credit balance or alter your Consume paid credits for OSS setting.
@@ -13,11 +13,7 @@ Builds have been temporarily disabled for public repositories due to a negative 
 Builds have been temporarily disabled for private and public repositories due to a negative credit balance. Please go to the Plan page to replenish your credit balance.
 
 点击Change plan，发现已经没有免费的plan了，而最便宜的plan，也要$69/monthly，太贵了，放弃。不过可以理解，毕竟跑CI是需要服务器的，服务器是需要花钱的。
-那就换成GitHub Actions吧，有付费版，也有免费版，我喜欢。
-参考文档：
-
-GitHub Actions
-
+那就换成GitHub Actions吧，有付费版，也有免费版。
 
 
 Quickstart for GitHub Actions参考文档：Quickstart for GitHub Actions
@@ -46,7 +42,7 @@ Hexo Action
 GitHub Actions 教程：定时发送天气邮件
 
 CICD思路
-拉取负责部署的hexo-deploy repo，里面是hexo的配置文件（关于站点配置和构建配置等）
+拉取负责部署的hexo-deploy repo，里面是hexo的配置文件（关于站点配置和构建配置等，详情参考《Hexo配置Travis CI自动构建发布》）
 拉取hexo theme repo，里面是站点主题
 拉取hexo-backup repo，里面是markdown文档
 hexo-backup中的文档放到hexo可以构建（编译）的位置
@@ -63,7 +59,7 @@ name: Hexo CICDrun-name: $&#123;&#123; github.actor &#125;&#125; build and deplo
 
 github action中定义变量有三种方式：vars、secrets和env。
 vars/secrets在workflow触发前定义，env在workflow触发后定义。
-$&#123;&#123;&#125;&#125;双花括号表示上下文引用，详情参考Context availability](https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability)。
+$&#123;&#123;&#125;&#125;双花括号表示上下文引用，详情参考Context availability。
 $&#123;&#125;单花括号表示shell方式使用中env变量。
 使用env中的变量有两种方式：上下文引用和shell方式使用。
 
@@ -827,8 +823,8 @@ INDEX=$(kubectl get sa default -n imagepullsecret-patcher -o json | jq &#x27;.im
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>k8s</category>
+        <category>docker</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -1084,8 +1080,8 @@ worker节点操作以worker-0为例，方便进行描述。
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>k8s</category>
+        <category>docker</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -1455,14 +1451,14 @@ pip install xxx --proxy http://192.168.56.1:7890
       <categories>
         <category>engineering</category>
         <category>docker</category>
-        <category>devops</category>
         <category>network</category>
+        <category>devops</category>
       </categories>
       <tags>
+        <tag>网络</tag>
         <tag>docker</tag>
         <tag>linux</tag>
         <tag>centos</tag>
-        <tag>网络</tag>
       </tags>
   </entry>
   <entry>
@@ -2033,7 +2029,7 @@ TODO
       </tags>
   </entry>
   <entry>
-    <title>Clickhouse入门篇</title>
+    <title>ClickHouse入门篇</title>
     <url>/dev-clickhouse-start/</url>
     <content><![CDATA[ClickHouse简介
 ClickHouse 是一个用于联机分析(OLAP)的列式数据库管理系统(DBMS)。
@@ -2070,7 +2066,7 @@ clickhouse单机的增删查询实现方案和clickhouse分布式部署的增删
 ClickHouse - Data Replication
 clickhouse删除ReplicatedMergeTree复制表后，新建同名表失败原因分析
 
-安装Clickhouse参考文档《K8S中安装配置Clickhouse》
+安装ClickHouse参考文档《K8S中安装配置Clickhouse》
 使用ClickHouse客户端使用dbeaver，可以图形化连接clickhouse。使用clickhouse-client，可以命令行连接clickhouse。
 使用分布式表1、新建分布式表
 -- 查看宏变量select * from `system`.macros;-- 查看clusterselect * from `system`.clusters;-- 创建本地表-- create table `default`.optest on cluster cluster (a UInt64) Engine = MergeTree() order by tuple();create table `default`.optest on cluster cluster (a UInt64) Engine = ReplicatedMergeTree(&#x27;/clickhouse/tables/&#123;shard&#125;/default.optest&#x27;,&#x27;&#123;replica&#125;&#x27;) order by tuple();-- 创建本地表对应的分布式表create table `default`.optest_dis on cluster cluster as optest Engine = Distributed(cluster, default, optest, cityHash64(a));-- 删除本地表drop table `default`.optest on cluster cluster;-- 要等待480s才会删除zk中的数据
@@ -2097,8 +2093,22 @@ ck_config = &#123;  &quot;host&quot;: ck_host,   &quot;port&quot;: ck_port,   &q
 ReplacingMergeTreeReplacingMergeTree + INSERT + Final 可以实现虚拟更新，以insert代替alter操作，每次select时都拉取最新一条数据。当执行optimize时，老的数据才会被删除。
 CREATE TABLE tb_test_replacing(ts DateTime,uid String,biz String) ENGINE = ReplacingMergeTree(ts) ORDER BY (ts) SETTINGS index_granularity = 8192;INSERT INTO tb_test_replacing VALUES (&#x27;2019-06-07 20:01:01&#x27;, &#x27;c&#x27;, &#x27;c1&#x27;);INSERT INTO tb_test_replacing VALUES (&#x27;2019-06-07 20:01:01&#x27;, &#x27;c&#x27;, &#x27;c2&#x27;);SELECT * FROM tb_test_replacing;SELECT * FROM tb_test_replacing FINAL;optimize table tb_test_replacing;SELECT * FROM tb_test_replacing;
 
+从MySQL同步数据到ClickHouseClickHouse官方工具set allow_experimental_database_materialize_mysql = 1;select value from system.settings where name = &#x27;allow_experimental_database_materialize_mysql&#x27;;CREATE DATABASE db1_mysqlENGINE = MaterializeMySQL(  &#x27;mysql-host.domain.com:3306&#x27;,  &#x27;db1&#x27;,  &#x27;clickhouse_user&#x27;,  &#x27;ClickHouse_123&#x27;);
 
+参考文档：
 
+Replicate a MySQL Database in ClickHouse
+
+要注意的是，文档中的materialized，需要改成materialize。
+clickhouse-client【使用ClickHouse】一节提到，clickhouse-client是一个命令行工具，支持通过输入数据文件、管道、JDBC等方式导入数据。可以将MySQL中的数据导出成csv文件，然后使用clickhouse-client导入到ClickHouse中。
+参考文档：
+
+Command-Line Client
+
+阿里云工具参考文档：
+
+阿里云ClickHouse - 从MySQL导入数据
+阿里云ClickHouse - 从RDS MySQL同步
 
 ]]></content>
       <categories>
@@ -2231,15 +2241,15 @@ options：可选的对象列表，其中每个对象可能具有 name 属性（�
       <categories>
         <category>engineering</category>
         <category>k8s</category>
+        <category>network</category>
         <category>cloudnative</category>
         <category>troubleshooting</category>
-        <category>network</category>
       </categories>
       <tags>
         <tag>k8s</tag>
+        <tag>网络</tag>
         <tag>问题排查</tag>
         <tag>clickhouse</tag>
-        <tag>网络</tag>
         <tag>dns</tag>
         <tag>kubesphere</tag>
       </tags>
@@ -2470,6 +2480,82 @@ create database vkphp default character set utf8 collate utf8_general_ci;use vkp
       </tags>
   </entry>
   <entry>
+    <title>Python包管理工具pip</title>
+    <url>/dev-python-pip/</url>
+    <content><![CDATA[pip简介
+Pip is a package-management system written in Python and is used to install and manage software packages. The Python Software Foundation recommends using pip for installing Python applications and its dependencies during deployment. Pip connects to an online repository of public packages, called the Python Package Index. Pip can be configured to connect to other package repositories (local or remote), provided that they comply to Python Enhancement Proposal 503.
+
+
+Most distributions of Python come with pip preinstalled. Python 2.7.9 and later (on the python2 series), and Python 3.4 and later include pip by default.
+
+参考文档：
+
+Wikipedia - pip
+《Python软件仓库PyPI》
+
+
+
+安装pip低版本的python没有默认安装pip，这时就需要手动安装。
+方法一：
+python -m ensurepip
+方法二：
+wget https://bootstrap.pypa.io/get-pip.pypython get-pip.py -i http://pypi.douban.com/simple/ --trusted-host pypi.douban.com
+
+查看pip路径查找默认python的pip路径
+which pipwhich python
+
+查看特定python的pip路径，已知python路径为/path/to/python
+ls -l /path/to/pip/path/to/python -m pip --version
+
+pip bin一般和python bin在相同路径。
+ModuleNotFoundError处理方法python 报错 ModuleNotFoundError: No module named ‘xxx’ ，该怎么找到module对应的package？
+一般情况下，直接执行pip install安装package即可
+pip install xxx
+
+但是，某些情况下xxx这个module，对应的package名称并不是xxx，这时可以通过搜索引擎或者chatgpt查找xxx这个module对应的package。
+module和package的对应关系，可以参考《Python基础》
+pip常用命令安装软件包
+pip install requests
+
+安装软件包，指定pypi进行加速
+pip install requests -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+安装指定版本的软件包
+pip install requests==2.25.1
+
+下载软件包但不安装
+pip download requests -d &quot;./&quot;
+
+查看软件包
+pip show requestspip show -f requests
+
+查看需要升级的软件包
+pip list -o
+
+升级软件包
+pip install --upgrade requestspip install -U requests
+
+卸载软件包
+pip uninstall requests
+
+查看兼容问题
+pip check package_namepip check # 检查所有包
+
+
+
+
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>python</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>pip</tag>
+        <tag>pypi</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Python重试</title>
     <url>/dev-python-retry/</url>
     <content><![CDATA[为什么需要重试？典型场景：程序的实现需要调用第三方的API，但是我们并不能保证第三方API一直好用，也不能保证网络一直畅通，所以在调用第三方API时需要加上错误重试。  
@@ -2570,9 +2656,6 @@ url特殊字符转义from urllib import parselabelselector = parse.quote(&#x27;a
 
 特殊字符对应url编码表：
 空格 : %20&quot; : %22# : %23% : %25&amp; : %26( : %28) : %29+ : %2B, : %2C/ : %2F: : %3A; : %3B&lt; : %3C= : %3D&gt; : %3E? : %3F@ : %40\ : %5C| : %7C 
-
-安装pip一些情况下，在安装python时没有默认安装pip，这时就需要手动安装。
-# 方法一：python -m ensurepip# 方法二：wget https://bootstrap.pypa.io/get-pip.pypython get-pip.py -i http://pypi.douban.com/simple/ --trusted-host pypi.douban.com
 
 装饰器实现一个装饰器，功能：只要函数里传了name参数，且name参数的值为haojin，那么就把这个值替换为voidking。
 from functools import wrapsdef haojin_to_voidking(func):    @wraps(func)    def decorated(*args, **kwargs):        if &#x27;name&#x27; in kwargs and kwargs[&#x27;name&#x27;] == &#x27;haojin&#x27;:            kwargs[&#x27;name&#x27;] = &#x27;voidking&#x27;        return func(*args, **kwargs)    return decorated@haojin_to_voidkingdef print_name(name):    print(name)print_name(name=&#x27;haojin&#x27;)
@@ -4032,9 +4115,9 @@ ping OpenVPN Server 的内网IP，网络畅通。
         <category>docker</category>
       </categories>
       <tags>
+        <tag>chatgpt</tag>
         <tag>macos</tag>
         <tag>docker</tag>
-        <tag>chatgpt</tag>
       </tags>
   </entry>
   <entry>
@@ -4175,8 +4258,8 @@ Python项目Debug的配置方法，参考《PyCharm调试》。不同的是，�
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>golang</category>
         <category>python</category>
+        <category>golang</category>
         <category>java</category>
       </categories>
       <tags>
@@ -4361,8 +4444,8 @@ nsenter -t &lt;pid&gt; -n iptables -t nat -nL --line-numbernsenter -t 8993 -n ip
       <categories>
         <category>engineering</category>
         <category>k8s</category>
-        <category>cloudnative</category>
         <category>network</category>
+        <category>cloudnative</category>
       </categories>
       <tags>
         <tag>k8s</tag>
@@ -4705,8 +4788,8 @@ apiVersion: monitoring.coreos.com/v1kind: PrometheusRulemetadata:  labels:    pr
       <categories>
         <category>engineering</category>
         <category>k8s</category>
-        <category>monitoring</category>
         <category>cloudnative</category>
+        <category>monitoring</category>
       </categories>
       <tags>
         <tag>k8s</tag>
@@ -4825,8 +4908,8 @@ count(&#123;job=&quot;kube-controller-manager&quot;&#125;) by (__name__)count(&#
       <categories>
         <category>engineering</category>
         <category>k8s</category>
-        <category>monitoring</category>
         <category>cloudnative</category>
+        <category>monitoring</category>
       </categories>
       <tags>
         <tag>k8s</tag>
@@ -5219,8 +5302,8 @@ apiVersion: v1kind: Podmetadata:  creationTimestamp: null  labels:    run: ubunt
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>k8s</category>
+        <category>docker</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -5347,8 +5430,8 @@ curl http://localhost:8001curl http://localhost:8080/api/v1/proxy/namespaces/YOU
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>k8s</category>
+        <category>docker</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -5950,8 +6033,8 @@ Service Account Key PairKube Proxy Client CertificateKubelet Client Certificates
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>k8s</category>
+        <category>docker</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -6143,8 +6226,8 @@ Creating a Replication Rule
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>k8s</category>
+        <category>docker</category>
         <category>cloudnative</category>
         <category>troubleshooting</category>
       </categories>
@@ -6416,8 +6499,8 @@ kubectl get cm test-config -n test -o jsonpath=&#x27;&#123;.data.config\.yaml&#1
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>k8s</category>
+        <category>docker</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -6572,17 +6655,17 @@ systemctl status firewalldsystemctl stop firewalldsystemctl disable firewalld
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>k8s</category>
+        <category>docker</category>
+        <category>network</category>
         <category>devops</category>
         <category>cloudnative</category>
-        <category>network</category>
       </categories>
       <tags>
         <tag>k8s</tag>
+        <tag>网络</tag>
         <tag>docker</tag>
         <tag>centos</tag>
-        <tag>网络</tag>
       </tags>
   </entry>
   <entry>
@@ -6646,8 +6729,8 @@ sonobuoy官网地址：sonobuoy源码地址：vmware-tanzu/sonobuoy
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>k8s</category>
+        <category>docker</category>
         <category>devops</category>
         <category>cloudnative</category>
       </categories>
@@ -6810,8 +6893,8 @@ kubectl create role developer --resource=pods --verb=list,create -n appkubectl c
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>k8s</category>
+        <category>docker</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -7016,8 +7099,8 @@ apt-get install kubeadm=1.12.0-00apt-get install kubelet=1.12.0-00kubeadm upgrad
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>k8s</category>
+        <category>docker</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -7255,19 +7338,19 @@ Nginx -&gt; IngressDomain -&gt; Nginx -&gt; Ingress -&gt; Service -&gt; Pod
       <categories>
         <category>engineering</category>
         <category>k8s</category>
-        <category>cloudnative</category>
         <category>network</category>
+        <category>cloudnative</category>
         <category>architecture</category>
       </categories>
       <tags>
         <tag>架构</tag>
         <tag>k8s</tag>
+        <tag>网络</tag>
         <tag>nginx</tag>
         <tag>shell</tag>
         <tag>https</tag>
         <tag>tls</tag>
         <tag>ssl</tag>
-        <tag>网络</tag>
         <tag>helm</tag>
         <tag>ingress</tag>
         <tag>kubesphere</tag>
@@ -8074,8 +8157,8 @@ kubectl delete pod mysql-2 -n mysql --force
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>k8s</category>
+        <category>docker</category>
         <category>cloudnative</category>
         <category>troubleshooting</category>
       </categories>
@@ -8108,8 +8191,8 @@ for i in `env | grep -E -i &#x27;SERVICE|HOST|ADDR|PORT&#x27; | sed &#x27;s/=.*/
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>k8s</category>
+        <category>docker</category>
         <category>frontend</category>
         <category>cloudnative</category>
         <category>troubleshooting</category>
@@ -8679,15 +8762,15 @@ docker network listdocker network inspect xxx
         <category>engineering</category>
         <category>python</category>
         <category>docker</category>
-        <category>troubleshooting</category>
         <category>network</category>
+        <category>troubleshooting</category>
         <category>storage</category>
       </categories>
       <tags>
         <tag>python</tag>
+        <tag>网络</tag>
         <tag>docker</tag>
         <tag>问题排查</tag>
-        <tag>网络</tag>
         <tag>docker-compose</tag>
         <tag>存储</tag>
       </tags>
@@ -9023,10 +9106,10 @@ Service
       </categories>
       <tags>
         <tag>k8s</tag>
+        <tag>kubectl</tag>
         <tag>golang</tag>
         <tag>docker</tag>
         <tag>client-go</tag>
-        <tag>kubectl</tag>
       </tags>
   </entry>
   <entry>
@@ -9075,7 +9158,7 @@ gomod实践篇安装client-go假设一个项目依赖client-go，那么参考官
 失败了，返回404，猜测是12.0版本在代理服务器不存在，使用另外一种下载方式。
 go get k8s.io/client-go@kubernetes-1.15.0
 此处下载了两个版本的client-go，我们使用v0.0.0版本。
-4、安装client-go相关依赖client-go默认下载到$GOPATH/pkg/mod/k8s.io目录下，把k8s.io目录移动到$GOPATH/src目录下。然后把&#99;&#x6c;&#105;&#x65;&#x6e;&#x74;&#45;&#103;&#x6f;&#64;&#x76;&#x30;&#46;&#x30;&#x2e;&#48;重命名为client-go，然后在client-go目录下执行安装依赖的命令：
+4、安装client-go相关依赖client-go默认下载到$GOPATH/pkg/mod/k8s.io目录下，把k8s.io目录移动到$GOPATH/src目录下。然后把&#x63;&#x6c;&#x69;&#101;&#110;&#116;&#45;&#103;&#x6f;&#x40;&#x76;&#48;&#x2e;&#48;&#x2e;&#x30;重命名为client-go，然后在client-go目录下执行安装依赖的命令：
 export GOPROXY=https://goproxy.ioexport GO111MODULE=ongo mod vendor
 完成之后，所有的依赖都下载到了client-go/vendor目录下，一个完整的client-go依赖库就准备好了。
 依赖库版本管理client-go依赖库准备好了，但是另一个问题来了：假设项目vk-project依赖client-go和库A，client-go依赖库A，两个依赖库A版本不一致，那么vk-project在编译时，会同时依赖两个不同的库A，导致编译出的二进制包有问题。
@@ -9139,10 +9222,10 @@ client-go操作K8Sclient-go实际上是封装了REST请求的客户端库，能�
       </categories>
       <tags>
         <tag>k8s</tag>
+        <tag>kubectl</tag>
         <tag>golang</tag>
         <tag>docker</tag>
         <tag>client-go</tag>
-        <tag>kubectl</tag>
       </tags>
   </entry>
   <entry>
@@ -9523,9 +9606,9 @@ PLEG is not healthyPod生命周期事件生成器PLEG（Pod Lifecycle Event Gene
       </categories>
       <tags>
         <tag>k8s</tag>
+        <tag>kubectl</tag>
         <tag>docker</tag>
         <tag>问题排查</tag>
-        <tag>kubectl</tag>
       </tags>
   </entry>
   <entry>
@@ -9618,9 +9701,9 @@ docker ps | grep weavedocker logs &lt;weave-container-id&gt; | grep ipalloc-rang
 
 查看Pod资源使用kubectl top pods -Akubectl top pods -A --sort-by=&#x27;cpu&#x27;kubectl top pods -A --sort-by=&#x27;memory&#x27;
 
-查看Pod资源申请kubectl get po -A \-o custom-columns=&quot;name:metadata.name,namespace:metadata.namespace,requests-cpu:spec.containers[*].resources.requests.cpu,requests-memory:spec.containers[*].resources.requests.memory&quot;kubectl get po -A --field-selector status.phase==Running \-o custom-columns=&quot;name:metadata.name,namespace:metadata.namespace,requests-cpu:spec.containers[*].resources.requests.cpu,requests-memory:spec.containers[*].resources.requests.memory&quot;kubectl get po -A \-o=jsonpath=&quot;&#123;range .items[*]&#125;&#123;.metadata.namespace&#125;:&#123;.metadata.name&#125;&#123;&#x27;\n&#x27;&#125;&#123;range .spec.containers[*]&#125;  &#123;.name&#125;:&#123;.resources.requests.cpu&#125;&#123;&#x27;\n&#x27;&#125;&#123;end&#125;&#123;&#x27;\n&#x27;&#125;&#123;end&#125;&quot;kubectl get po -A \-o=jsonpath=&quot;&#123;range .items[*]&#125;&#123;.metadata.namespace&#125;:&#123;.metadata.name&#125;&#123;&#x27;\n&#x27;&#125;&#123;range .spec.containers[*]&#125;  &#123;.name&#125;:&#123;.resources.requests.memory&#125;&#123;&#x27;\n&#x27;&#125;&#123;end&#125;&#123;&#x27;\n&#x27;&#125;&#123;end&#125;&quot;
+查看Pod资源申请kubectl get po -A \-o custom-columns=&quot;name:metadata.name,namespace:metadata.namespace,requests-cpu:spec.containers[*].resources.requests.cpu,requests-memory:spec.containers[*].resources.requests.memory&quot;kubectl get po -A --field-selector status.phase==Running \-o custom-columns=&quot;name:metadata.name,namespace:metadata.namespace,requests-cpu:spec.containers[*].resources.requests.cpu,requests-memory:spec.containers[*].resources.requests.memory&quot;kubectl get po -A --field-selector status.phase==Running,spec.nodeName=worker0 \-o custom-columns=&quot;name:metadata.name,namespace:metadata.namespace,requests-cpu:spec.containers[*].resources.requests.cpu,requests-memory:spec.containers[*].resources.requests.memory&quot;kubectl get po -A \-o=jsonpath=&quot;&#123;range .items[*]&#125;&#123;.metadata.namespace&#125;:&#123;.metadata.name&#125;&#123;&#x27;\n&#x27;&#125;&#123;range .spec.containers[*]&#125;  &#123;.name&#125;:&#123;.resources.requests.cpu&#125;&#123;&#x27;\n&#x27;&#125;&#123;end&#125;&#123;&#x27;\n&#x27;&#125;&#123;end&#125;&quot;kubectl get po -A \-o=jsonpath=&quot;&#123;range .items[*]&#125;&#123;.metadata.namespace&#125;:&#123;.metadata.name&#125;&#123;&#x27;\n&#x27;&#125;&#123;range .spec.containers[*]&#125;  &#123;.name&#125;:&#123;.resources.requests.memory&#125;&#123;&#x27;\n&#x27;&#125;&#123;end&#125;&#123;&#x27;\n&#x27;&#125;&#123;end&#125;&quot;
 
-查看Pod资源限制kubectl get po -A \-o custom-columns=&quot;name:metadata.name,namespace:metadata.namespace,limits-cpu:spec.containers[*].resources.limits.cpu,limits-memory:spec.containers[*].resources.limits.memory&quot;kubectl get po -A --field-selector status.phase==Running \-o custom-columns=&quot;name:metadata.name,namespace:metadata.namespace,limits-cpu:spec.containers[*].resources.limits.cpu,limits-memory:spec.containers[*].resources.limits.memory&quot;kubectl get po -A \-o=jsonpath=&quot;&#123;range .items[*]&#125;&#123;.metadata.namespace&#125;:&#123;.metadata.name&#125;&#123;&#x27;\n&#x27;&#125;&#123;range .spec.containers[*]&#125;  &#123;.name&#125;:&#123;.resources.limits.cpu&#125;&#123;&#x27;\n&#x27;&#125;&#123;end&#125;&#123;&#x27;\n&#x27;&#125;&#123;end&#125;&quot;kubectl get po -A \-o=jsonpath=&quot;&#123;range .items[*]&#125;&#123;.metadata.namespace&#125;:&#123;.metadata.name&#125;&#123;&#x27;\n&#x27;&#125;&#123;range .spec.containers[*]&#125;  &#123;.name&#125;:&#123;.resources.limits.memory&#125;&#123;&#x27;\n&#x27;&#125;&#123;end&#125;&#123;&#x27;\n&#x27;&#125;&#123;end&#125;&quot;
+查看Pod资源限制kubectl get po -A \-o custom-columns=&quot;name:metadata.name,namespace:metadata.namespace,limits-cpu:spec.containers[*].resources.limits.cpu,limits-memory:spec.containers[*].resources.limits.memory&quot;kubectl get po -A --field-selector status.phase==Running \-o custom-columns=&quot;name:metadata.name,namespace:metadata.namespace,limits-cpu:spec.containers[*].resources.limits.cpu,limits-memory:spec.containers[*].resources.limits.memory&quot;kubectl get po -A --field-selector status.phase==Running,spec.nodeName=worker0 \-o custom-columns=&quot;name:metadata.name,namespace:metadata.namespace,limits-cpu:spec.containers[*].resources.limits.cpu,limits-memory:spec.containers[*].resources.limits.memory&quot;kubectl get po -A \-o=jsonpath=&quot;&#123;range .items[*]&#125;&#123;.metadata.namespace&#125;:&#123;.metadata.name&#125;&#123;&#x27;\n&#x27;&#125;&#123;range .spec.containers[*]&#125;  &#123;.name&#125;:&#123;.resources.limits.cpu&#125;&#123;&#x27;\n&#x27;&#125;&#123;end&#125;&#123;&#x27;\n&#x27;&#125;&#123;end&#125;&quot;kubectl get po -A \-o=jsonpath=&quot;&#123;range .items[*]&#125;&#123;.metadata.namespace&#125;:&#123;.metadata.name&#125;&#123;&#x27;\n&#x27;&#125;&#123;range .spec.containers[*]&#125;  &#123;.name&#125;:&#123;.resources.limits.memory&#125;&#123;&#x27;\n&#x27;&#125;&#123;end&#125;&#123;&#x27;\n&#x27;&#125;&#123;end&#125;&quot;
 
 后记阿里云ACK - 故障排除文档非常具有参考价值，值得反复阅读。
 ]]></content>
@@ -9632,11 +9715,11 @@ docker ps | grep weavedocker logs &lt;weave-container-id&gt; | grep ipalloc-rang
       </categories>
       <tags>
         <tag>k8s</tag>
+        <tag>kubectl</tag>
         <tag>docker</tag>
         <tag>alpine</tag>
         <tag>busybox</tag>
         <tag>问题排查</tag>
-        <tag>kubectl</tag>
         <tag>debian</tag>
       </tags>
   </entry>
@@ -10088,8 +10171,8 @@ kubectl get合并为kg，kubectl describe合并为kd。
       </categories>
       <tags>
         <tag>k8s</tag>
-        <tag>shell</tag>
         <tag>kubectl</tag>
+        <tag>shell</tag>
       </tags>
   </entry>
   <entry>
@@ -12455,8 +12538,8 @@ vim /etc/init/libvirt-bin.conf，如下修改：
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>devops</category>
         <category>network</category>
+        <category>devops</category>
         <category>storage</category>
       </categories>
       <tags>
@@ -12562,13 +12645,13 @@ How to Put a KVM Guest Domain on a Bridged Network
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>devops</category>
         <category>network</category>
+        <category>devops</category>
       </categories>
       <tags>
+        <tag>网络</tag>
         <tag>linux</tag>
         <tag>ubuntu</tag>
-        <tag>网络</tag>
         <tag>libvirt</tag>
         <tag>virsh</tag>
       </tags>
@@ -13806,8 +13889,8 @@ nohup /opt/frp/frpc -c /opt/frp/frpc.ini &amp;
         <category>network</category>
       </categories>
       <tags>
-        <tag>nginx</tag>
         <tag>网络</tag>
+        <tag>nginx</tag>
         <tag>内网穿透</tag>
         <tag>代理</tag>
       </tags>
@@ -14918,10 +15001,10 @@ Linux虚拟网络设备之veth
         <category>devops</category>
       </categories>
       <tags>
+        <tag>网络</tag>
         <tag>linux</tag>
         <tag>ubuntu</tag>
         <tag>openstack</tag>
-        <tag>网络</tag>
       </tags>
   </entry>
   <entry>
@@ -15024,10 +15107,10 @@ nameserver 180.76.76.76
         <category>openstack</category>
       </categories>
       <tags>
+        <tag>网络</tag>
         <tag>linux</tag>
         <tag>ubuntu</tag>
         <tag>openstack</tag>
-        <tag>网络</tag>
       </tags>
   </entry>
   <entry>
@@ -15159,10 +15242,10 @@ systemctl restart neutron-openvswitch-agent systemctl enable neutron-openvswitch
         <category>openstack</category>
       </categories>
       <tags>
+        <tag>网络</tag>
         <tag>linux</tag>
         <tag>ubuntu</tag>
         <tag>openstack</tag>
-        <tag>网络</tag>
       </tags>
   </entry>
   <entry>
@@ -15190,10 +15273,10 @@ nameserver 180.76.76.76
         <category>openstack</category>
       </categories>
       <tags>
+        <tag>网络</tag>
         <tag>linux</tag>
         <tag>ubuntu</tag>
         <tag>openstack</tag>
-        <tag>网络</tag>
       </tags>
   </entry>
   <entry>
@@ -15302,10 +15385,10 @@ PS：ping 192.168.100.6是不通的，因为那是openstack内部网络。
         <category>openstack</category>
       </categories>
       <tags>
+        <tag>网络</tag>
         <tag>linux</tag>
         <tag>ubuntu</tag>
         <tag>openstack</tag>
-        <tag>网络</tag>
       </tags>
   </entry>
   <entry>
@@ -16989,11 +17072,11 @@ mkdir -p /root/.certs/echo -n | openssl s_client -connect smtp.163.com:465 | sed
 5、测试发送邮件echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com查看邮箱，正常的话应该已经收到邮件了。如果没有收到邮件，可以查看日志进行排查：tail /var/log/maillog
 macos参考《MacOS上软件配置》中的命令行发邮件部分
 mail命令命令格式mail [OPTION...] [address...]常用到的选项，一个是s，代表主题；一个是A，代表附件。其他的需要时查看help。
-发送普通邮件目标：给邮箱 &#118;&#111;&#105;&#x64;&#107;&#x69;&#110;&#x67;&#x40;&#x71;&#x71;&#46;&#99;&#111;&#x6d; 发送邮件，主题为“Hello VoidKing”，内容为“Welcome to mail world！”
+发送普通邮件目标：给邮箱 &#118;&#x6f;&#105;&#100;&#x6b;&#105;&#110;&#103;&#64;&#113;&#x71;&#46;&#99;&#x6f;&#x6d; 发送邮件，主题为“Hello VoidKing”，内容为“Welcome to mail world！”
 echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com
 但是，等待了几分钟，并没有收到邮件，垃圾箱也没有。mail，查看email的发送状态为Undelivered Mail Returned，原来没有投递出去。
 查看邮件系统日志：tail -n 50 /var/spool/mail/test提示host mx3.qq.com[183.57.48.35] said: 550 Mail content denied。看来qq邮箱的垃圾邮件防御机制做的不错，那就换个163邮箱，没想到依然失败。
-换一台服务器？发送给 &#118;&#111;&#x69;&#x64;&#107;&#x69;&#x6e;&#103;&#x40;&#x71;&#x71;&#46;&#x63;&#x6f;&#x6d; ，成功！很尴尬。。。就这么着吧
+换一台服务器？发送给 &#x76;&#x6f;&#x69;&#100;&#107;&#x69;&#110;&#103;&#64;&#113;&#x71;&#46;&#x63;&#111;&#x6d; ，成功！很尴尬。。。就这么着吧
 发送高级邮件1、从文本读入内容发送邮件mail -s &#39;Error report&#39; voidking@qq.com &lt; /tmp/log/ganglia/error-20180524.log
 2、发送附件mail -s &#39;Error report&#39; voidking@qq.com -A /tmp/log/ganglia/ganglia-20180524.log &lt; /tmp/log/ganglia/error-20180524.log
 3、指定发件人echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com -aFrom:haojin@qq.com
@@ -17390,8 +17473,8 @@ nameserver 10.0.0.100
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>devops</category>
         <category>network</category>
+        <category>devops</category>
       </categories>
       <tags>
         <tag>ubuntu</tag>
@@ -17660,8 +17743,8 @@ sudo iptables -t nat -A PREROUTING -p tcp --dport 10180 -j REDIRECT --to-ports 8
         <category>network</category>
       </categories>
       <tags>
-        <tag>ubuntu</tag>
         <tag>网络</tag>
+        <tag>ubuntu</tag>
         <tag>iptables</tag>
       </tags>
   </entry>
@@ -17831,8 +17914,8 @@ ubuntu配置静态路由及重启生效
         <category>network</category>
       </categories>
       <tags>
-        <tag>linux</tag>
         <tag>网络</tag>
+        <tag>linux</tag>
         <tag>iptables</tag>
       </tags>
   </entry>
@@ -18247,67 +18330,6 @@ django调试django的调试，需要对PyCharm进行设置，这里以调试djsi
         <tag>debug</tag>
         <tag>pycharm</tag>
         <tag>调试</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>《剑指Offer》摘录</title>
-    <url>/hobby-target-offer/</url>
-    <content><![CDATA[前言《剑指Offer》一书从面试官的角度，阐述了面试的流程、面试中的注意事项、简历的准备、常考的数据结构和算法等等面试相关内容。本文从一个应聘者的角度，摘录整理面试中需要准备的内容。
-程序员面试，面试的形式有电话面试、共享桌面远程面试和现场面试。无论是哪一种形式，一般的面试流程都包括三个环节：行为面试、技术面试和应聘者提问。
-
-
-行为面试行为面试，面试官参照简历了解应聘者的过往经验。面试官会注意应聘者的性格特点，深入地了解简历中列举的项目经历。不少面试官会让应聘者做一个简短的自我介绍，由于面试官拿着应聘者的简历，因此自我介绍不用花很多时间，用30秒到1分钟介绍自己的主要学习、工作经历即可。这一环节中，作为一个应聘者，最重要的是准备一份简历，一份经得起推敲的简历。其次就是准备一下自我介绍，突出重点和优势。还要想好一些常见问题的答复，增强信心，免得现场磕巴。
-简历1、项目经验项目经验的描述建议使用STAR模型：Situation（简短的项目背景）–&gt;Task（自己完成的任务）–&gt;Action（为完成任务自己做了哪些工作，是怎么做的）–&gt;Result（自己的贡献）。
-Situation：简短的项目背景。比如项日的规模，开发的软件的功能、日标用户等。
-Task：自己完成的任务。这个要写详细，要让面试官对自己的工作一目了然。在用词上要注意区分“参与”和“负责”：如果只是加入某一个开发团队写了几行代码就用“负责”，那就很危险。面试官看到简历上应聘者“负责”了某个项日，他可能就会问项目的总体框架设计、核心算法、团队合作等问题。这些问题对于只是简单“参与”的人来说，是很难回答的，会让面试官认为你不诚实，印象分会减去很多。
-Action：为了完成任务自己做了哪些工作，是怎么做的。这里可以详细介绍。做系统设计的，可以介绍系统架构的特点；做软件开发的，可以写基于什么工具在哪个平台卜应用了哪些技术；做软件测试的，可以写是手上测试还是自动化测试，是白盒测试还是黑盒侧试等。
-Result：自己的贡献。这方面的信息可以写得具体些，最好能用数字加以说明。如果是参与功能开发，可以说按时完成了多少功能；如果做优化，可以说性能提高的百分比是多少；如果是维护，可以说修改了多少个Bug。
-举个例子，笔者用下面一段话介绍白己在微软Winforms项目组的经历:Winforms是微软.NET中的一个成熟的Ul平台（Situation）。本人的工作是在添加少量新功能之外主要负责维护已有的功能（Task）。新的功能主要是让Winforms的控件的风格和Vista、Windows7的风格保持一致。在维护方面，对于较难的问题我用WinDbug等工具进行调试（Action）在过去两年中我总共修改了超过200个Bug（Result）。
-对于每个项目经验，都应该考虑清楚下面的问题：
-
-你在该项目中碰到的最大问题是什么，你是怎么解决的？
-从这个项目中你学到了什么？
-什么时候会和其他团队成员（包括开发人员、测试人员、设计人员、项目经理等）有什么样的冲突，你们是怎么解决冲突的？
-
-
-在介绍项目经验时（包括简历上介绍和口头介绍），应聘者不必详述项目的背景，而要突出介绍自己完成的工作及取得的成绩。
-
-2、掌握的技能除应聘者参与过的项目之外，面试官对应聘者掌握的技能也很感兴趣，他有可能针对简历上提到的技能提出问题。描述技能掌握程度时要注意“了解”、“熟悉”和“精通”的区别。
-“了解”指对某项技术只是上过课或者看过书，但没有做过实际的项目。通常不建议在简历中列出只是肤浅了解一点的技能，除非这项技术应聘的职位的确需要。
-简历中我们描述技能的掌握程度大部分应该是“熟悉”。如果我们在实际项目中使用某项技术已经有较长时间，通过查阅相关文档可以独立解决大部分问题，那么我们就熟悉它了。对应届毕业生而言，毕业设计所用到的技能可以用“熟悉”；对已经工作过的，在项目开发中用到的技能，也可以用“熟悉”。
-如果我们对一项技术使用得得心应手，在项目开发过程中，当同学或同事向我们请教这个领域的问题时，我们都有信心也有能力解决，这个时候我们就可以说自己精通了这项技术。应聘者不要试图在简历中把自己修饰成“高人”而轻易使用“精通”，除非自己能够轻松地回答这个领域里的绝大多数问题，否则就会适得其反。通常如果应聘者在简历中说自己精通某项技术，面试官就会对他有很高的期望值，因此会挑一些比较难的问题来问。
-3、修改对简历提问，一个问题扣一个问题，不断对简历进行修改和完善。
-自我介绍未完待续。。。
-常见问题为什么跳槽？P9避免以下四个原因：老板太苛刻，同时太难相处，加班太频繁，工资太低。理想答案：现在的工作已经做了一段时间，已经没有太多的激情了，因此希望寻找一份更有挑战的工作。然后具体论述为什么有些厌倦现在的职位，以及面试的职位我为什么会有兴趣。
-最近在看什么专业书？从中学到了哪些新技术？P16
-技术面试面试官在通过简历及行为面试大致了解应聘者的背景之后，接下来就要开始技术面试了。一轮一小时的面试，通常技术面试会占据40-50分钟时间，这是面试的重头戏，对面试的结果起决定性作用。虽然不同公司的不同面试官的背景、性格各不相同，但总体来说他们都会关注应聘者的5中素质：扎实的基础知识、能写高质量的代码、分析问题时思路清晰、能优化时间效率和空间效率、学习沟通和知识迁移等能力。
-在这一环节中，作为一个应聘者，最重要的是学好数据结构和算法。为了做好这一点，建议先做完《剑指Offer》上的题目，因为上面的题目都是最具代表性的。然后刷leetcode，刷的越多越好。
-数据结构和算法数据结构和算法，需要掌握：数组、字符串、链表、树（链表和树最常考）、栈、队列、哈希表、查找（尤其是二分查找）、排序（尤其是归并排序和快速排序）、分治法、动态规划、贪婪算法。
-这些知识点，在大学时期已经学习过，考研也复习过，就不再研读大部头著作。在刷题的时候，顺便复习吧。
-剑指Offer《剑指Offer》中的面试题都是用C++实现的，C++确实是准备面试的首选语言，但是，根据职位的不同应该有所侧重。比如，前端肯定js，安卓肯定java。而机器学习岗，肯定是python了。所以，《剑指Offer》中的题目，针对C++的，郝同学会直接略过，其他大部分题目，会用python实现。
-刷题地址：https://www.nowcoder.com/ta/coding-interviews备注：这个刷题地址的题目比原书少了一些，但是刷着方便，支持各种编程语言。而且不差那几题，实在想刷全，之后补上就是了。
-leetcodeleetcode，之前用java完成了几题，在此清零。在刷完《剑指Offer》后，使用python重新开刷。
-刷题地址1：https://leetcode.com/problemset/algorithms/刷题地址2：https://www.nowcoder.com/ta/leetcode
-白板1、理清思路：画图、举例、分解2、写出步骤3、考虑时间空间复杂度4、特殊情况：边界条件、特殊输入、错误处理5、优化
-
-思考清楚再开始编码
-良好的代码命名和缩进对齐习惯
-单元测试（建议先写）
-调试
-
-应聘者提问
-您觉得我还有哪些专业知识需要学习补充？
-您所在的部门从事哪些研究？使用哪些技术？如果能进入贵公司，会不会提供培训？
-
-模拟未完待续。。。
-后记《剑指Offer》的主体内容，其实就是讲算法。我们听说过技术过时，却从来没有听说过算法过时。不仅没有过时，而且因为机器学习、大数据的要求，算法变得越来越重要了。任何时候学习算法都不晚，当你觉得为时已晚的时候，恰恰是最早的时候。接下来，参加kaggle、天池的同时，开启刷题模式。
-]]></content>
-      <categories>
-        <category>reading</category>
-      </categories>
-      <tags>
-        <tag>面试</tag>
-        <tag>读书</tag>
       </tags>
   </entry>
   <entry>
@@ -19966,7 +19988,7 @@ linux下载好数据集后，把数据集下载到win10中nmt目录中，路径�
 训练model在根目录（nmt目录）下运行：
 python -m nmt.nmt --src=vi --tgt=en --vocab_prefix=./tmp/nmt_data/vocab  --train_prefix=./tmp/nmt_data/train --dev_prefix=./tmp/nmt_data/tst2012  --test_prefix=./tmp/nmt_data/tst2013 --out_dir=./tmp/nmt_model --num_train_steps=12000 --steps_per_stats=100 --num_layers=2 --num_units=128 --dropout=0.2 --metrics=bleu
 
-郝同学i5-3337U &#x43;&#x50;&#x55;&#x40;&#x31;&#x2e;&#56;&#48;&#71;&#x48;&#122;，8G内存，训练了将近两个小时才训练完成。下文我们要学习使用一下UCloud提供的免费GPU。
+郝同学i5-3337U &#67;&#x50;&#x55;&#64;&#x31;&#46;&#x38;&#x30;&#71;&#x48;&#x7a;，8G内存，训练了将近两个小时才训练完成。下文我们要学习使用一下UCloud提供的免费GPU。
 我们可以使用 Tensorboard 在训练过程中查看模型的总结：
 tensorboard --port 22222 --logdir ./tmp/nmt_model/
 通过以下简单的变化，就能逆向完成英语到越南语的翻译。
@@ -20041,13 +20063,35 @@ pip install setuptoolspip install wheelpython setup.py bdist_wheel
 
 测试wheel包pip install dist/example-1.0.1-py3-none-any.whlpython -m example.main
 
-自己搭建PyPI安装PyPI参考文档：
+安装配置PyPI参考文档：
 
 利用Docker快速构建基于devpi的企业级私有PyPI Server
 github - pypiserver
 dockerhub - pypiserver
+devpi-server 2.3.0
 
-登录PyPI仓库pip install devpi-clientdevpi use http://localhost:3141devpi login root --password=&#x27;&#x27;devpi passwd # 修改密码devpi user -m root password=newpasswd # 修改密码方法二devpi login root --password=newpasswddevpi logoff
+准备配置文件准备配置文件：
+
+config.yaml：devpi的配置文件
+Dockerfile：用于打包devpi-server的镜像
+devpi-ldap.yaml：devpi支持ldap的配置
+
+完整配置文件参考hexo-storage/python-pypi
+参考文档：
+
+devpi/devpi-ldap
+devpi-auth-gitlab
+
+安装PyPI1、打包镜像
+docker build -t voidking/devpi-server:v1.0 .
+
+2、master节点
+mkdir -p /opt/pypi/data/mkdir -p /opt/pypi/certs/openssl genrsa -out /opt/pypi/certs/key.pem 2048docker run -it --name devpi-master -d \--restart=always \-v /opt/pypi/data:/app/data \-v /opt/pypi/certs/key.pem:/app/certs/key.pem \-p 3141:3141 \voidking/devpi-server:v1.0 \devpi-server \--configfile config.yaml \--ldap-config devpi-ldap.yaml \--gitlab-registry-url https://gitlab.voidking.com \--role master \--secretfile /app/certs/key.pem \--port=3141
+
+3、worker节点
+docker run -it --rm \-v /opt/pypi/data:/app/data \-v /opt/pypi/certs/key.pem:/app/certs/key.pem \-p 3141:3141 \voidking/devpi-server:v1.0 \devpi-init \--configfile config.yaml \--role replica \--master=http://192.168.56.101:3141docker run -it --name devpi-worker1 -d \--restart=always \-v /opt/pypi/data:/app/data \-v /opt/pypi/certs/key.pem:/app/certs/key.pem \-p 3141:3141 \voidking/devpi-server:v1.0 \devpi-server \--configfile config.yaml \--role replica \--master=http://192.168.56.101:3141 \--secretfile /app/certs/key.pem \--port=3141
+
+使用PyPI登录PyPI仓库pip install devpi-clientdevpi use http://localhost:3141devpi login root --password=&#x27;&#x27;devpi passwd # 修改密码devpi user -m root password=newpasswd # 修改密码方法二devpi login root --password=newpasswddevpi logoff
 
 设置镜像仓库devpi index root/pypi mirror_url=&quot;https://pypi.douban.com/simple&quot;
 当本地PyPI仓库中不存在某个包时，从镜像仓库中拉取。
@@ -20063,22 +20107,16 @@ pip install sphinxdevpi upload --wheel --with-docs
 推送包到另外的索引devpi push 命令是将包从一个索引推送到另外一个索引，例如将包example推送到root/dev
 devpi push example==1.0.1 root/dev
 
-支持ldap参考文档devpi/devpi-ldap
-pip install devpi-ldapcat &gt; ldap-caconfig.yaml &lt;&lt;EOFdevpi-ldap:  url: ldap://192.168.56.102:1389  user_search:    base: ou=staff,dc=voidking,dc=com    filter: (&amp;(objectClass=user)(sAMAccountName=&#123;username&#125;))    attribute_name: CN    userdn: user0@voidking.com    password: ********  group_search:    base: ou=staff,dc=voidking,dc=com    filter: (&amp;(objectClass=group)(member=&#123;userdn&#125;))    attribute_name: CN    userdn: user0@voidking.com    password: ********EOFdevpi-server --configfile config.yaml --ldap-config ldap-config.yaml
-
-支持GitLab CI参考文档devpi-auth-gitlab
-pip install devpi-auth-gitlabdevpi-server --configfile config.yaml --ldap-config ldap-config.yaml --gitlab-registry-url https://gitlab.voidking.com
-
-gitlab-ci配置示例：
-deploy:  script:    - pip install devpi-client    - devpi use https://devpi.localnet    - devpi login &quot;gitlab-ci-token&quot; --password=&quot;$CI_BUILD_TOKEN&quot;    - devpi use &quot;corona/prod&quot;    - devpi upload --formats sdist,bdist_wheel
 
 ]]></content>
       <categories>
         <category>engineering</category>
         <category>python</category>
+        <category>docker</category>
       </categories>
       <tags>
         <tag>python</tag>
+        <tag>docker</tag>
         <tag>pip</tag>
         <tag>pypi</tag>
       </tags>
@@ -22854,8 +22892,8 @@ rate：在过去2s，10s，40s，平均的流量的值。
         <category>troubleshooting</category>
       </categories>
       <tags>
-        <tag>问题排查</tag>
         <tag>网络</tag>
+        <tag>问题排查</tag>
       </tags>
   </entry>
   <entry>
@@ -23173,9 +23211,9 @@ grep筛选出的日志，包含18:00:00-18:00:59内的日志。sed筛选出的�
 ]]></content>
       <categories>
         <category>engineering</category>
+        <category>network</category>
         <category>shell</category>
         <category>troubleshooting</category>
-        <category>network</category>
       </categories>
       <tags>
         <tag>linux</tag>
@@ -23224,7 +23262,7 @@ useradd -m voidking -s /bin/bashpasswd voidkingadduser voidking sudo
 
 
 生成密钥ssh-keygenssh-keygen -C &quot;voidking@qq.com&quot; -f ./voidking_rsa
-第一条命令执行完之后，.ssh目录下生成了 id_rsa 和 id_rsa.pub。第二条命令执行完之后，当前目录下生成了 voidking_rsa 和 voidking_rsa.pub，注释内容为 &#x76;&#x6f;&#x69;&#100;&#x6b;&#x69;&#110;&#103;&#x40;&#113;&#113;&#46;&#x63;&#x6f;&#x6d; 。
+第一条命令执行完之后，.ssh目录下生成了 id_rsa 和 id_rsa.pub。第二条命令执行完之后，当前目录下生成了 voidking_rsa 和 voidking_rsa.pub，注释内容为 &#118;&#111;&#105;&#x64;&#x6b;&#105;&#110;&#103;&#x40;&#113;&#x71;&#46;&#99;&#111;&#x6d; 。
 使密钥生效ssh-copy-id -i ~/.ssh/id_rsa.pub voidking@hostnamessh-copy-id -i ~/.ssh/id_rsa.pub voidking@hostname -p 22ssh voidking@hostname
 ssh-copy-id 这个命令做的事情，是把 id_rsa.pub 中的内容，追加到 hostname:/home/voidking/.ssh/authorized_keys 文件中。authorized_keys文件权限为600。如果配置好了sshd，但是无法使用密钥登录机器，请检查authorized_keys文件权限。
 密钥添加失败问题如果ssh-copy-id报错cannot create .ssh/authorized_keys: Operation not permitted或者手动编辑authorized_keys后无法保存，chmod也无法改变authorized_keys文件的权限。
@@ -23251,9 +23289,9 @@ for i in `cat hosts.txt`; do ssh $i &quot;echo &#x27;/home/voidking/start.sh&#x2
 ]]></content>
       <categories>
         <category>engineering</category>
+        <category>network</category>
         <category>shell</category>
         <category>troubleshooting</category>
-        <category>network</category>
       </categories>
       <tags>
         <tag>linux</tag>
@@ -23264,7 +23302,9 @@ for i in `cat hosts.txt`; do ssh $i &quot;echo &#x27;/home/voidking/start.sh&#x2
   <entry>
     <title>shell命令之系统管理</title>
     <url>/dev-shell-system/</url>
-    <content><![CDATA[查看硬件配置查看CPU物理CPU数（physical id）：主板上实际插入的cpu数量，可以数不重复的 physical id 有几个。CPU核心数（cpu cores）：单块CPU上面能处理数据的芯片组的数量，如双核、四核等逻辑CPU数：一般情况下，逻辑CPU=物理CPU个数×每颗核数；如果开启了超线程技术，逻辑CPU=物理CPU个数×每颗核数x2 
+    <content><![CDATA[查看硬件配置查看服务器型号dmidecodedmidecode | grep &quot;System Information&quot; -A16 
+
+查看CPU物理CPU数（physical id）：主板上实际插入的cpu数量，可以数不重复的 physical id 有几个。CPU核心数（cpu cores）：单块CPU上面能处理数据的芯片组的数量，如双核、四核等逻辑CPU数：一般情况下，逻辑CPU=物理CPU个数×每颗核数；如果开启了超线程技术，逻辑CPU=物理CPU个数×每颗核数x2 
 # 查看CPU详细信息lscpucat /proc/cpuinfo# 查询物理CPU数量lscpu | grep -i &quot;Architecture&quot; | wc -lcat /proc/cpuinfo | grep &quot;physical id&quot; |sort | uniq | wc -l# 查询每颗物理CPU核数lscpu | grep &quot;per socket&quot;cat /proc/cpuinfo | grep &quot;core id&quot; | sort | uniq | wc -l# 查询系统的每颗物理CPU核心是否启用超线程技术lscpu | grep -e &quot;per socket&quot; -e &quot;per core&quot;cat /proc/cpuinfo | grep -e &quot;cpu cores&quot;  -e &quot;siblings&quot; | sort | uniq# 查询系统具有多少个逻辑CPUlscpu | grep -i &quot;CPU(s):&quot;cat /proc/cpuinfo | grep &quot;processor&quot; | wc -l
 
 lscpu查看到的Core(s) per socket表示这颗物理CPU有多少核心，Thread(s) per core表示每个核心能同时处理多少线程。
@@ -23304,6 +23344,16 @@ echo &quot;unset MAILCHECK&quot; &gt;&gt; /etc/profilesource /etc/profile
 useradd -m voidking -s /bin/bashpasswd voidkingadduser voidking sudo
 
 添加用户到组usermod -G docker -a gitlab-runnerusermod -G root -a gitlab-runner
+
+添加字体查看字体
+fc-list
+
+添加字体
+mkdir -p /usr/share/fonts/win/cd /usr/share/fonts/win/rz # 或者 wget/scptar -xzvf fonts.tgz
+
+添加字体后更新缓存
+fc-cache -fvfc-list
+
 
 软件安装查看命令属于哪个软件包1、centos7
 yum makecache fastyum whatprovides lsb_release
@@ -24409,14 +24459,25 @@ docker tag busybox:1.25 harbor.voidking.com/base/busybox:1.25docker login harbor
 docker pull harbor.voidking.com/base/busybox:1.25docker tag harbor.voidking.com/base/busybox:1.25 busybox:1.25
 
 导出导入镜像导出导入镜像，主要依赖docker save和docker load命令。
-假设需求为本机有镜像 busybox:1.25，现在想要把这个镜像分享给其他机器。
-1、有镜像的机器导出镜像docker save -o busybox.tar busybox:1.25
+单个镜像出导入假设需求为本机有镜像 busybox:1.25，现在想要把这个镜像分享给其他机器。
+1、有镜像的机器导出镜像  
+docker save -o busybox.tar busybox:1.25
+
 2、拷贝压缩包到其他机器
-3、其他机器导入镜像docker load &lt; busybox.tar
-假设需求为本机有很多个镜像，现在想要把这些镜像全部导出到其他机器。
-1、有镜像的机器导出所有镜像docker save $(docker images | grep -v REPOSITORY | awk &#39;BEGIN&#123;OFS=&quot;:&quot;;ORS=&quot; &quot;&#125;&#123;print $1,$2&#125;&#39;) -o all.tar
+3、其他机器导入镜像  
+docker load -i busybox.tar
+
+全部镜像导出导入假设需求为本机有很多个镜像，现在想要把这些镜像全部导出到其他机器。
+1、有镜像的机器导出所有镜像  
+docker save $(docker images | grep -v REPOSITORY | awk &#x27;BEGIN&#123;OFS=&quot;:&quot;;ORS=&quot; &quot;&#125;&#123;print $1,$2&#125;&#x27;) -o all.tar
+
 2、拷贝压缩包到其他机器
-3、其他机器导入镜像docker load -i all.tar
+3、其他机器导入镜像  
+docker load -i all.tar
+
+存在的问题这种导出导入存在一个问题：导入后的镜像，不会作为base layer。
+已知：A主机上docker save了一个镜像X，拷贝到B主机后，B主机上docker load了镜像X。接着A主机上基于镜像X做了一个镜像Y，上传到harbor。问题：B主机上docker pull拉取harbor中的镜像Y，会全量拉取镜像吗？
+理论上，不会全量拉取镜像，只会增量拉取。但是实测第一次拉取依然会全量拉取Y。神奇的是，如果执行过docker rmi Y，再次拉取Y确实会变成增量拉取。暂时不知道原因，待解。
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -26697,7 +26758,7 @@ t0 = time()&lt; 你的 clf.fit() 代码行 &gt;print &#x27;training time:&#x27;,
 代码运行说明文件。纯文本或markdown格式，写明运行你的代码所需要的库，他们的安装方法和运行方法
 预测结果: 纯文本或CSV文件。
 
-对项目要求有疑问请致信 &#x73;&#x75;&#112;&#112;&#x6f;&#x72;&#x74;&#x40;&#121;&#x6f;&#x75;&#x64;&#97;&#x78;&#x75;&#x65;&#x2e;&#x63;&#x6f;&#x6d;
+对项目要求有疑问请致信 &#115;&#117;&#x70;&#x70;&#x6f;&#114;&#116;&#x40;&#x79;&#x6f;&#x75;&#x64;&#x61;&#120;&#117;&#101;&#x2e;&#99;&#x6f;&#x6d;
 准备好提交项目后，请点击下一项，在“项目提交”小节中提交。
 ]]></content>
       <categories>
@@ -26738,7 +26799,7 @@ Resume Builder
 项目导师会根据该评估准则（与你制作简历时遵循的清单相符）对你的简历项目进行审核。
 提交准备好提交求职信后，你需要：
 1、删除/匿名化你的求职信上的所有个人联系人信息，以防泄漏隐私。2、创建 PDF 格式的简历，这样你的简历在不同操作系统/软件/屏幕中有一致的版面样式。3、点击下方的“提交项目”按钮，并根据说明操作。4、在“告知审核员”中，请包括任何有关你的职业目标（如申请的工作或领域），或任何有意偏离评估准则情况的详细信息。
-注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#115;&#117;&#112;&#x70;&#111;&#x72;&#116;&#64;&#x79;&#111;&#117;&#x64;&#x61;&#x78;&#117;&#x65;&#46;&#x63;&#111;&#109;。
+注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#115;&#x75;&#x70;&#x70;&#x6f;&#114;&#x74;&#64;&#x79;&#x6f;&#x75;&#100;&#x61;&#120;&#117;&#101;&#46;&#x63;&#x6f;&#109;。
 GitHub个人资料项目你的GitHub个人资料展示你创建的项目，并让他人了解你的工作风格和提交频率。通过展示你对 GitHub 的熟悉程度，其他开发人员和招聘经理能够知道你拥有他们需要能力，你就是他们正在寻找的人。你的代码库应表明你认真对待项目，并且能够编写干净、格式正确的代码。请查看 GitHub 上的这篇出色的博客文章，了解如何用 GitHub 帮助你持续学习，发展职业生涯。
 为何要完成此 GitHub 个人资料项目？GitHub 越来越多地被用作招聘平台以及潜在雇主查看你的作品的方式。它还是与其他开发人员建立联系和展示你的技能的好地方。
 我应该做什么？你应该以招聘人员或用人部门经理的眼光查看你的 GitHub 个人资料，重点关注你的个人资料、项目和代码如何将你描绘成公司的潜在候选人或项目的协作者。
@@ -26767,7 +26828,7 @@ GitHub项目提交你的 GitHub 主页是呈现给潜在雇主的“关键证据
 反馈优达学城项目导师会根据该标准（与你制作领英简介时遵循的清单相符）对你的领英简介项目进行审核。
 提交准备好提交领英个人资料后：
 1、若要提交，请点击下方的“提交项目”按钮，并根据说明操作。2、在“告知评审员”中，请包括任何有关你的职业目标（如预期工作领域）的详细信息。
-注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#x73;&#x75;&#112;&#112;&#111;&#114;&#116;&#x40;&#x79;&#111;&#117;&#x64;&#97;&#x78;&#x75;&#x65;&#46;&#99;&#x6f;&#x6d;。
+注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#115;&#117;&#x70;&#x70;&#111;&#114;&#116;&#x40;&#121;&#x6f;&#x75;&#x64;&#x61;&#120;&#x75;&#101;&#46;&#x63;&#x6f;&#x6d;。
 技术面试项目对于此实战项目，你需要回答五个技术面试问题，这些问题涉及的是技术面试课程中讨论的各种主题。你应该用 Python 写出清晰高效的答案，并用文字解释代码的效率和设计理由。我们将安排合格的审核者检查你的答案，并针对任何精彩之处或欠缺的方面做出反馈：你的解决方案是最高效的吗？你很好地解释了你的想法吗？你的代码简洁易懂吗？
 请回答以下问题：
 问题 1: 假设有两个字符串 s 和 t，请判断 t 的变形词是否是 s 的子字符串。例如：如果 s = “udacity”，t = “ad”，则函数返回 True。你的函数定义应该为：“question1(s, t)”，并返回布尔值 True 或 False。 
@@ -26833,7 +26894,7 @@ Dice
 问题 5 - 通过一个情景举例说明正则化对学习好的模型的必要性，以及提供一个正则化没有意义的情景。
 问题 6 -你附近的杂货店想向顾客有针对性地发放对他们来说有用的优惠券。假设你可以访问每位顾客的购买历史和店铺商品目录，你将设计怎样一个系统，来决定发放哪些优惠券？你如何衡量这个系统的性能？
 问题 7 - 选择一个公司，然后描述你想应聘的该公司内的机器学习工程师职位（假设有）。现在，如果你已成功应聘，并从今天开始任职，在你看来，你的职位在下一年会有怎样的发展？你的长期职业目标是什么，这个职位如何帮助你实现长期目标？
-提交当你准备提交项目，点击下方“提交项目”，上传一份 PDF 文件。如果有任何与提交项目相关的疑问，或想查看提交状态，请向我们发送电子邮件询问（&#x73;&#117;&#x70;&#112;&#111;&#114;&#x74;&#64;&#x79;&#x6f;&#x75;&#x64;&#97;&#x78;&#x75;&#101;&#46;&#99;&#111;&#109;）。
+提交当你准备提交项目，点击下方“提交项目”，上传一份 PDF 文件。如果有任何与提交项目相关的疑问，或想查看提交状态，请向我们发送电子邮件询问（&#115;&#117;&#112;&#112;&#x6f;&#114;&#x74;&#64;&#x79;&#x6f;&#x75;&#x64;&#97;&#120;&#117;&#x65;&#x2e;&#99;&#111;&#109;）。
 项目资源项目评审标准。优达学城的项目导师会依据此评审标准审阅你的项目。你可以在提交前自行检查自己是否已达到所有标准。职业资源中心。你可以在这里找到更多有关准备面试的资源和贴士。
 接下来面试练习并不是只在你求职时才需要做的事情， 在你的整个职业生涯中，你都需要继续提高自己的面试技巧。抓住每一个机会，思考和与人交流你的职业目标。在申请一个职位之前，请思考清楚自己为什么要申请——这将极大地帮助你为面试做好准备。
 书签Interview Guide: Machine Learninghttps://career-resource-center.udacity.com/interview-courses-and-guides/machine-learning
@@ -27207,7 +27268,7 @@ notebook 项目导出的 HTML 文件，命名为 report.html。
 
 注意：所提交文件的文件名名，包括zip压缩包内的文件名，都不能含有中文及任何ASCII之外的字符，否则会造成提交失败。
 如何导出HTML的说明在 notebook 的最下方。 你也许需要先在命令后通过 pip install mistune 命令安装 mistune 。当你准备好所有这些文件，并且依照项目要求核对过之后，就可以在下面的项目提交页面提交你的项目了。
-如果你是第一次在优达学城提交项目，点击提交之后，要等1分钟左右才能打开提交页面。如果长时间打不开，可以刷新。如果依然无法打开项目提交页面，可以联系客服微信或者邮件至 &#x73;&#x75;&#x70;&#x70;&#111;&#x72;&#116;&#x40;&#x79;&#x6f;&#x75;&#x64;&#x61;&#x78;&#x75;&#101;&#46;&#99;&#x6f;&#x6d;
+如果你是第一次在优达学城提交项目，点击提交之后，要等1分钟左右才能打开提交页面。如果长时间打不开，可以刷新。如果依然无法打开项目提交页面，可以联系客服微信或者邮件至 &#115;&#117;&#x70;&#x70;&#111;&#x72;&#x74;&#x40;&#x79;&#x6f;&#x75;&#x64;&#x61;&#x78;&#x75;&#x65;&#x2e;&#x63;&#x6f;&#x6d;
 后记这个项目，是优达学城《机器学习工程师》课程提供的第一个实战项目。摘录了全文，方便查看。郝同学的项目地址：https://github.com/voidking/udaciyty-machine-learning/tree/master/projects/titanic_survival_exploration
 书签机器学习工程师（中/英）https://cn.udacity.com/course/machine-learning-engineer-nanodegree--nd009
 数据科学入门https://cn.udacity.com/course/intro-to-data-science--ud359
@@ -27756,31 +27817,6 @@ Python入门
       </categories>
       <tags>
         <tag>python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>《深入浅出PMP》摘录</title>
-    <url>/dev-head-first-pmp/</url>
-    <content><![CDATA[前言软件项目管理大作业：软件项目管理关键要素分析，3000字左右。找了一些相关论文和书籍，最喜欢《深入浅出PMP》一书，摘录下喜欢的内容，作业就差不多了。
-
-
-项目经理职责范围《PMBOK® Guide》为项目经理定义了4个主要的职责范围：1、识别项目的需求想出让项目成功需要什么东西。2、建立可以达成的目标规划团队努力的目标以及达成目标的方式。每个人都必须同意这些目标，所以他们所作的决策才能帮助彼此成功。3、平衡项目的范围、时间及成本追踪项目执行的情况，并与先前规划的时间进度、预算及质量需求进行比较。每当你改变三者中的任何一个时，另外两个也会受影响。因此，你总是必须对三者一起管理。为了让项目成功，你必须交付你承诺会准时且在预算内完成的东西。4、满足每个人的需要与每个受到你的项目影响的人沟通。PM的大部分工作都与沟通有关。
-项目管理实务《PMBOK® Guide》将良好的项目管理实务分为5个过程组：1、启动此过程组包含创建及定义项目范围初步版本的过程。2、计划这里是你计划如何管理项目各个方面的地方，包括范围、风险、时间、成本、质量等。3、执行这里是完成所有工作的地方。在执行过程组中所产出的东西会在下一个过程组中被监视。4、监督及控制与计划作比较及根据需要进行调整后所得到的建议。查看从执行过程组所产生的输入，并持续与计划比较。这会帮助你在该做什么能让项目保持在正轨上进行决策。5、收尾一旦工作完成，你必须做好必要的文书工作，以便公司对你的所作所为有记录。你还应该确认你的团队被空出，以便他们去做其他项目。
-知识领域9个知识领域贯穿5个过程组：1、风险为可能发生的（正面或负面的）事情预做规划并且在事情发生时处理它们。2、质量确保你在建立正确的产出并且尽可能有效率。3、范围定义项目会（以及不会）完成的任务。4、采购定义合约内容并且选择承包商来做你的项目。5、沟通建立信息流通的管道，让每个人对项目的相关信息都有清楚的理解。6、时间预估完成项目所需花费的时间并确保在所定的项目最后期限内完成项目。7、整体让所有人朝相同目标前进并且处理变更。8、成本为项目做预算并且追踪正在花费的金钱。9、人力资源找到执行项目工作的人并且激励他们。
-整体管理《PMBOK® Guide》将整体管理分成7个过程，通常，人们认为它们是项目经理的“核心”职责。1、制定项目章程新项目要完成的第一件事情就是项目章程的制定。那是授权你进行工作的文件，但是它的产生并非总是牵涉到你——往往它是由赞助人直接交给你。没有项目章程，你就没有权力告诉团队成员应该做什么以及什么时候做。
-2、制定初步范围说明书这是展示项目所有目标的文件，你在开始计划项目之前创建它——那就是它是“初步”的原因。当你对项目越来越熟悉，你就会想到更详实的项目范围。
-3、制定项目管理计划项目管理计划是整个《PMBOK® Guide》最重要的文件，因为它指导所有发生在项目上的事。它包含所有的知识领域。项目管理计划的绝大部分是关于当问题出现时该如何处理变更。
-4、指导与管理项目执行完成计划之后就要执行工作了。你的工作是确保每个人正在做他们应该做的事，以及项目创建的产品或服务满足所有利益相关者的需求。
-5、监督与控制项目工作好的项目经理持续监督项目中进行的每一件事。记住，越晚发现问题，修复起来通常就越困难，越昂贵。
-6、整体变更控制一旦发现项目有问题，你必须和利益相关者及赞助人协同合作，找出应对之道。你还应该更新项目管理计划，以反映出为完成项目所需采取的额外步骤。更新项目管理计划也可以确保执行项目工作的每个人对项目现况有共识。
-7、结束项目你对项目所做的最后一件事就是将它结束。确认你对所有事情做好文档化工作……特别是你和团队一路上所学到的经验。你不会知道这些经验什么时候会在其他项目中帮上忙。
-这7个过程分别属于5个过程组。制定项目章程、制定初步范围说明书属于启动过程组；制定项目管理计划属于计划过程组；指导与管理项目执行属于执行过程组；监督与控制项目工作、整体变更控制属于监督与控制过程组；结束项目属于收尾过程组。
-]]></content>
-      <categories>
-        <category>uncategories</category>
-      </categories>
-      <tags>
-        <tag>笔记</tag>
       </tags>
   </entry>
   <entry>
@@ -29486,14 +29522,14 @@ virtualbox中ubuntu硬盘扩展，Gparted无法进入图形界面http://blog.sin
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>devops</category>
         <category>network</category>
+        <category>devops</category>
       </categories>
       <tags>
+        <tag>网络</tag>
         <tag>ubuntu</tag>
         <tag>ssh</tag>
         <tag>centos</tag>
-        <tag>网络</tag>
         <tag>virtualbox</tag>
         <tag>xshell</tag>
         <tag>xftp</tag>
@@ -30186,7 +30222,7 @@ Node端源码https://github.com/voidking/nodebase/blob/master/controllers/weixin
 
 
 nodebasea node framework designed for myselfversion: v1.0.0url: https://github.com/voidking/nodebase.git  
-作者相关author: haojin(voidking)e-mail: &#x76;&#x6f;&#x69;&#x64;&#107;&#x69;&#x6e;&#x67;&#64;&#x71;&#113;&#46;&#x63;&#111;&#109;site: http://www.voidking.com   
+作者相关author: haojin(voidking)e-mail: &#118;&#111;&#x69;&#x64;&#x6b;&#105;&#x6e;&#103;&#64;&#113;&#x71;&#46;&#99;&#111;&#109;site: http://www.voidking.com   
 开发环境说明1、安装5.6.0以上Node2、安装mongodb，不要配置密码3、安装sass4、全局安装bower5、全局安装supervisor6、全局安装node-inspector7、全局安装puer8、运行前执行命令
 npm installbower install
 
@@ -30239,8 +30275,8 @@ NATAPP 基于ngrok高速内网穿透服务
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>nodejs</category>
         <category>network</category>
+        <category>nodejs</category>
       </categories>
       <tags>
         <tag>网络</tag>
@@ -34863,8 +34899,8 @@ HTML等学习jsp、asp、PHP、JavaEE的时候，顺便学习了一些前端的�
         <category>essay</category>
       </categories>
       <tags>
-        <tag>笔记</tag>
         <tag>随笔</tag>
+        <tag>笔记</tag>
       </tags>
   </entry>
   <entry>
@@ -35324,6 +35360,7 @@ String.prototype.len=function()&#123;return this.replace([^\x00-\xff]/g,&quot;aa
 匹配特定字符串：^[A-Za-z]+$　　//匹配由26个英文字母组成的字符串^[A-Z]+$　　//匹配由26个英文字母的大写组成的字符串^[a-z]+$　　//匹配由26个英文字母的小写组成的字符串^[A-Za-z0-9]+$　　//匹配由数字和26个英文字母组成的字符串^\w+$　　//匹配由数字、26个英文字母或者下划线组成的字符串
 ]]></content>
       <categories>
+        <category>engineering</category>
         <category>uncategories</category>
       </categories>
   </entry>
@@ -36055,7 +36092,7 @@ XMPP网络任何XMPP网络都是由若干角色组成的，这些角色可以分
 
 插件许多XMPP服务器支持插件扩展，这些插件通常使用与服务器自身相同的语言编写，并在服务器的进程内运行。他们的作用很大程度上与外部组件重叠，但插件还能够访问内部服务器数据结构并改变核心服务器行为。
 XMPP寻址XMPP网络上每个实体都有一个或多个地址（JID，jabber identifier）。JID有多种不同形式，但它们通常看上去就像是电子邮件。
-JID有两种类型，裸JID和完整JID，而裸JID是完整JID去除资源部分后的地址。例如，某个客户端的完整JID是&#x76;&#x6f;&#105;&#x64;&#x6b;&#x69;&#110;&#103;&#64;&#x76;&#x6f;&#105;&#x64;&#107;&#105;&#110;&#103;&#46;&#108;&#x69;&#116;/library，那么它的裸JID就是&#x76;&#111;&#x69;&#x64;&#x6b;&#105;&#110;&#103;&#x40;&#x76;&#x6f;&#x69;&#x64;&#107;&#x69;&#x6e;&#103;&#x2e;&#x6c;&#x69;&#x74;。
+JID有两种类型，裸JID和完整JID，而裸JID是完整JID去除资源部分后的地址。例如，某个客户端的完整JID是&#x76;&#111;&#x69;&#100;&#107;&#x69;&#110;&#103;&#64;&#118;&#111;&#x69;&#100;&#107;&#105;&#x6e;&#103;&#46;&#x6c;&#105;&#116;/library，那么它的裸JID就是&#118;&#x6f;&#x69;&#x64;&#107;&#105;&#x6e;&#103;&#64;&#118;&#111;&#105;&#x64;&#x6b;&#x69;&#x6e;&#103;&#x2e;&#x6c;&#105;&#x74;。
 节在XMPP中，各项工作都是通过在一个XMPP流上发送和接收XMPP节来完成的。核心XMPP工具集由三种基本节组成，这三种节分别为&lt;presence&gt;、&lt;message&gt;、&lt;iq&gt;。
 XMPP流由两份XML文档组成，通信的每个方向均有一份文档。这份文档有一个根元素&lt;stream:stream&gt;，这个根元素的子元素由可路由的节以及与流相关的顶级子元素构成。下面给出一段简短的XMPP会话：
 &lt;stream:stream&gt;	&lt;iq type=&#x27;get&#x27;&gt;		&lt;query xmlns=&#x27;jabber:iq:roster&#x27;/&gt;	&lt;/iq&gt;		&lt;presence/&gt;		&lt;message to=&#x27;voidking@voidking.lit&#x27; from=&#x27;haojin@gmail.com/ballroom&#x27; type=&#x27;chat&#x27;&gt;		&lt;body&gt;I cannot talk of books in a ball-room; my head is always full of something else.&lt;/body&gt;	&lt;/message&gt;		&lt;presence type=&#x27;unavailable&#x27;/&gt;&lt;/stream:stream&gt;
@@ -36204,91 +36241,6 @@ live()创建的选择器可以使用die()方法来解除绑定，语法和unbind
       <tags>
         <tag>javascript</tag>
         <tag>jquery</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>常见的汽车品牌</title>
-    <url>/hobby-car-brand/</url>
-    <content><![CDATA[前言一直认不清汽车品牌，最近在玩狂野飙车，系统学习了下，做个小结吧！
-德国大众（Volkswagen）
-
-
-
-宝马（BMW）
-
-奔驰（Mercedes-Benz）
-
-奥迪（Audi）
-
-保时捷（Porsche）
-
-意大利兰博基尼（Lamborghini）
-
-法拉利（Ferrari）
-
-玛莎拉蒂（Maserati）
-
-阿尔法罗密欧（Alfa Romeo）
-
-英国路虎（Landrover）
-
-劳斯莱斯（Rolls-Royce）
-
-宾利（Bentley）
-
-捷豹（Jaguar）
-
-阿斯顿·马丁（AstonMartin）
-
-莲花（lutos）
-
-法国雪铁龙（CITROEN）
-
-标致（peugeot）
-
-布加迪（BUGATTI）
-
-雷诺（Renault S.A.）
-
-美国福特（Ford）
-
-悍马（Hummer）
-
-凯迪拉克（Cadillac）
-
-别克（Buick）
-
-林肯（LINCOLN）
-
-雪佛兰（Chevrolet）
-
-道奇（Dodge）
-
-特斯拉（Tesla Motors）
-
-中国比亚迪（BYD）
-
-中国一汽（FAW）
-
-奇瑞（Chery）
-
-日本丰田（Toyota）
-
-英菲尼迪（Infiniti）
-
-本田（Honda）
-
-日产（NISSAN）
-
-马自达（MAZDA）
-
-雷克萨斯（LEXUS）
-]]></content>
-      <categories>
-        <category>reading</category>
-      </categories>
-      <tags>
-        <tag>笔记</tag>
       </tags>
   </entry>
   <entry>
@@ -40440,169 +40392,6 @@ BIOS 修改好后保存退出，重启电脑的时候按键盘的 F12，重新�
       </tags>
   </entry>
   <entry>
-    <title>《汇编语言（王爽）》</title>
-    <url>/hobby-assembly-language-wangshuang/</url>
-    <content><![CDATA[汇编语言发展至今，由以下三类指令组成：汇编指令、伪指令、其他符号。
-8086CPU有20位地址总线，可以传送20位地址，达到1MB的寻址能力。
-物理地址=段地址×16＋偏移地址 
-8086CPU有14个寄存器：AX,BX,CX,DX;CS,DS,SS,ES;IP,SI,DI,BP,SP;PSWCS(IP)  DS,ES(BX,SI,DI,BP)  SS(SP,BP)
-
-DEBUG功能
-
-
-r命令查看、改变CPU寄存器中的内容d命令产看内存中的内容e命令改写内存中的内容u命令将内存中的机器指令翻译成汇编指令t命令执行一条机器指令a命令以汇编指令的格式在内存中写入一条机器指令p命令跳过循环和执行中断g命令,“g 0016”直接跳到cs:0016
-
-
-在内存和寄存器之间传送字型数据时，高地址单元和高8位寄存器，低地址单元和低8位寄存器相对应。栈也是。
-汇编的一个经典栗子，看完再继续向下学习详细指令。
-assume cs:code,ds:datadata segment     db &#x27;welcome to masm!&#x27;data endscode segmentstart:   mov ax,data     mov ds,ax     mov bx,0               ;ds:bx指向data字符串     mov ax,0b800h     mov es,ax     mov si,0               ;es:si指向显存     mov cx,16s:   mov al,[bx]            ;字符赋值al     mov ah,02h             ;绿色     mov es:[si].720h,ax    ;写入第12行64列     mov ah,14h             ;绿底红色     mov es:[si].7c0h,ax    ;写入第13行64列     mov ah,71h             ;白底蓝色     mov es:[si].860h,ax    ;写入第14行64列     inc bx                 ;指向下一字符     add si,2               ;指向下一显存单元     loop s     mov ax,4c00h     int 21hcode endsend start
-
-
-
-push指令执行步骤：1. SP=SP-2 ;   2.向SS:SP指向的字单元中送入数据。pop指令执行步骤：1. 从SS:SP指向的字单元读取数据；  2.SP=SP＋2。任意时刻，SS:SP指向栈顶元素。
-
-mov指令mov ax,[0]    送入0mov ax,ds:[0]    送入内存中的值mov ax,[bx]    送入内存中的值mov ax,ds:[bx]    送入内存中的值
-
-add 指令add ax,[1]把1加到ax寄存器上
-
-sub指令sub ax,[1]把ax寄存器中的值减1
-
-and 逻辑与指令，按位进行与运算将AL的第六位设为0：and al,10111111B
-
-or 逻辑或指令，按位进行或运算将AL的第六位设为1：or al,01000000B大写字母的ASCII码第五位为0，小写字母的第五位为1.
-
-使用寄存器BP，如果没有显性地给出段地址，段地址就默认在SS中。Mov ax,[bp]:(ax)=((ss)*16+(bp))Mov ax,[bp+si+idata]:(ax)=((ss)*16+(bp)+(si)+idata)
-
-机器指令并不关心数据的值是多少，而关心指令执行前一刻，它将要处理的数据所在的位置。指令在执行前，所要处理的数据可以在三个地方：CPU内部，内存，端口Mov bx,[0]内存，ds:0单元Mov bx,axCPU内部，ax寄存器Mov bx,1CPU内部，指令缓冲器
-
-8086CPU的指令，可以处理两种尺寸的数据，byte和word。所以在机器指令中要指明，指令进行的是字操作还是字节操作。
-
-通过寄存器名指明要处理的数据的尺寸；
-没有寄存器名存在的情况下，用操作符byte ptr和word ptr指明内存单元的长度
-
-
-DIV除法指令：
-
-除数：有8位和16位两种，在一个寄存器或内存单元中
-被除数：默认放在AX或AX和DX中如果除数为8位，被除数则为16位，默认在AX中存放；如果除服为16位，被除数则为32位，在DX和AX中存放，DX存放高16位，AX存放低16位。
-结果：如果除数为8 位，则AL存储除法操作的商，AH存储除法操作的余数；如果除数为16位，则AX存储除法操作的商，DX存储除法操作的余数。
-
-
-dup操作符，与db,dw,dd等数据定义伪指令配合使用的，用来进行数据的重复。db  3  dup (&#39;abc&#39;, &#39;ABC&#39;)
-
-offset取得标号偏移地址
-
-转移指令：可以控制CPU执行内存中某处的代码的指令。jmp short 标号jmp 标号jmp far ptr 标号
-1.只修改IP时，称为段内转移，如：jmp ax。*短转移：IP的修改范围-128——127    *近转移：IP的修改范围-32768——32767    
-2.同时修改CS和IP 时，称为段间转移，如：jmp 1000:0。
-
-jcxz指令 有条件转移指令。所有的有条件转移指令都是短转移，在对应的机器码中包含转移的位移，而不是目的地址。对IP的修改范围都是：-128——127.
-jcxz  标号（如果（cx）=0，转移到标号处执行。）操作：当（cx=0）时，（IP）=(IP)+8位位移：      8位位移=”标号”处的地址 - jcxz指令后第一个字节的地址相当于：
-if((cx)==0) jmp short 标号
-
-
-
-loop指令 循环指令所有的循环指令都是短转移，在对应的机器码中包含转移的位移，而不是目的地址。对IP的修改范围都是：-128——127.
-loop 标号（（cx）=(cx)-1,如果（cx）≠0，转移到标号处执行。）操作：1.（cx）=(cx)-1；2. 如果（cx）≠0，（IP）=(IP)+8位位移。如果（cx）=0，什么也不做（程序向下执行）相当于：
-(cx)--If((cx) ≠0) jmp short 标号`
-
-
-
-ret指令 用栈中的数据，修改IP的内容，从而实现近转移CPU执行ret指令时，1.（IP）=（（SS）*16+(SP)）2. (SP)=(SP)+2相当于：
-POP IP
-
-
-Retf 指令 用栈中的数据，修改CS和IP 的内容，实现远转移CPU执行retf指令时，
-
-（IP）=（（SS）*16+(SP)）
-(SP)=(SP)+2
-（CS）=（（SS）*16+(SP)）
-(SP)=(SP)+2相当于：POP IP POP CS
-
-
-CALL 指令不能实现短转移，除此之外，和JMP指令原理相同。CPU 执行CALL指令时，1.将当前的IP或CS和IP压入栈中；2.转移
-call 标号（将当前IP压栈后，转到标号处执行指令）相当于：
-PUSH IPJMP near ptr 标号
-
-call far ptr 标号  （段间转移）相当于：
-push csPush IPJmp far ptr 标号
-
-call 16位寄存器相当于： 
-PUSH IPJmp 16位寄存器
-
-call word ptr 内存单元地址相当于：
-push IPJmp word ptr 内存单元地址
-call dword ptr 内存单元地址相当于：
-push CSpush IPJmp dword ptr 内存单元地址
-
-call 和 ret配合使用实现子程序的机制框架如下：
-Assume cs:codeCode segmentMain: :        :        Call sub1        :    Sub1: :        Call sub2        :        Ret    Sub2:        :        RetCode ends End main
-
-
-
-mul 乘法指令;(1)两个相乘的数，要么都是8位，要么都是16位；如果是8位，一个默认放在AH中，另一个放在8位寄存器或内存字节单元中；如果是16位，一个默认在AX中，另一个放在16位寄存器或内存字单元中。(2)8位乘法，结果默认放在AX中；16位乘法，结果高位默认在DX中存放，低位在AX中存放。
-
-标志寄存器flag作用：（1）用来存储相关指令的某些执行结果（2）用来为CPU执行相关指令提供行为依据（3）用来控制CPU的相关工作方式
-第6位ZF，零标志位。它记录相关指令执行后，其结果是否为0。如果结果为0，那么ZF=1，不为0，那么ZF=0.影响标志寄存器的指令，如：add，sub，div，inc，mul，or，and等，他们大都是运算指令；有的指令对标志寄存器没有影响，比如：mov，push，pop等，他们大都是传送指令。
-第2位PF，奇偶标志位。它记录相关指令执行后，其结果的所有二进制中1的个数是否为偶数。如果1的个数为偶数，PF=1，如果为奇数，那么PF=0.
-第7位SF，符号标志位。它记录相关指令执行后，其结果（实际结果（寄存器中存放的结果）并非逻辑结果）是否为负。如果结果为负，SF=1，如果非负，SF=0。CPU在执行ADD等指令的时候，包含了两种含义。将得到用同一种信息记录的两种结果，关键在于我们的程序需要哪一种结果。SF标志就是CPU对有符号数运算结果的一种记录，它记录数据的正负。在我们将数据当作有符号数来运算的时候，可以通过它来得知结果的正负。如果我们将数据当作无符号数来运算，SF的值则没有意义，虽然相关的指令影响了它的值。
-第0位CF，进位标志位。一般情况下，在进行无符号数运算的时候，它记录了运算结果的最高位向更高位的进位值，或从更高位的借位值。
-第11位OF，溢出标志位。一般情况下，OF记录了有符号数运算的结果是否发生了溢出。如果发生溢出，OF=1，如果没有，OF=0。CF 是对无符号数运算有意义的标志位，而OF是对有符号数运算有意义的标志位。
-adc带进位加法指令，它利用了CF位上记录的进位值。指令格式：adc 操作对象1，操作对象2功能：操作对象1=操作对象1+操作对象2+CF加法：1低位相加；2高位相加再加上低位相加产生的进位值下面指令和add ax,bx具有相同的结果Add al,alAdc ah,ah
-sbb 带借位减法指令，它利用了CF位上记录的借位值。格式：sbb 操作对象1，操作对象2功能：操作对象1=程序对象1-程序对象2-CFSbb ax,bx实现的功能：(ax)=(ax)-(bx)-CF
-cmp 比较指令，cmp的功能相当于减法指令，只是不保存结果。Cmp指令执行后，将对标志寄存器产生影响。其他相关指令通过识别这些被影响的标志寄存器位来得知比较结果。格式：cmp 操作对象1，操作对象2功能：计算操作对象1-操作对象2  但并不保存结果，仅仅根据计算结果对标志寄存器进行设置。cmp ax,bx  ；无符号数的比较如果(ax)=(bx)则(ax)-(bx)=0,所以：ZF=1；如果(ax)≠(bx)则(ax)-(bx)≠0，所以：ZF=0；如果(ax)&lt;(bx)则(ax)-(bx)将产生借位，所以：CF=1；如果(ax)≥(bx)则(ax)-(bx)不必借位，所以：CF=0；如果(ax)&gt;(bx)则(ax)-(bx)既不借位，结果又不为0，所以：CF=0并且ZF=0如果(ax)≤(bx)则(ax)-(bx)既可能借位，结果可能为0，所以：CF=1或ZF=1。有符号数的比较：SF只能记录实际结果的正负，发生溢出的时候，实际结果的正负不能说明逻辑上真正结果的正负。但是逻辑上的结果的正负，才是cmp指令所求的真正结果，所以我们在考察SF的同时考察OF，就可以得知逻辑上真正结果的正负，同时就知道比较的结果。1.如果SF=1，而OF=0没有溢出，逻辑结果的正负=实际结果的正负SF=1，实际结果为负，(ax)&lt;(bx)2.如果SF=1, 而 OF=1OF=1，说明有溢出，逻辑上真正结果的正负≠实际正负SF=1，实际结果为负，如果因为溢出导致了实际结果为负，则逻辑上真正的结果必然为正。这样SF=1, OF=1，说明了(ax)&gt;(bx)。3.如果SF=0，而 OF=1     说明：(ax)&lt;(bx)OF=1，说明有溢出，逻辑结果的正负≠实际结果的正负SF=0，实际结果非负，有溢出结果非0，所以实际结果为正，如果因为溢出导致了实际结果为正，则逻辑上真正的结果必然为负。4.如果SF=0，而 OF=0没有溢出，且结果非负，所以(ax）≥(bx)
-检测比较结果的条件转移指令“转移”指的是它能够修改IP，而“条件”指的是它可以根据某种条件，决定是否修改IP。这些条件转移指令通常都和CMP相配合使用，就好像call和ret指令通常相配合使用一样。常用的根据无符号数的比较结果进行转移的条件转移指令有：指令   含义            检测位Je      等于则转移      ZF=1Jne    不等于则转移    ZF=0Jb     低于则转移      CF=1Jnb    不低于则转移    CF=0Ja     高于则转移      CF=0且ZF=0Jna    不高于则转移    CF=1或ZF=1E :equal   b: below  a: above  n: not j: jump 
-flag 的第10位是DF，方向标志位。在串处理指令中，控制每次操作后si,di 的增减。DF=0   每次操作后si,di 递增DF=1   每次操作后si,di 递减Movsb 描述：mov es:[di],byte ptr ds:[si];（8086不支持这样的格式。）如果DF=0;  inc si      inc di如果DF=1； dec si      dec di功能：将ds:si指向的内存单元的字节送入es:di中，然后根据标志寄存器DF位的值，将si和di递增或递减。Movsw 将ds:si指向的内存单元的字送入es:di中，然后根据标志寄存器DF位的值，将si和di递增2或递减2。
-一般，movsb 和movsw都和rep配合使用，格式：rep movsb汇编描述：s: movsb          Loop s可见，rep的作用是根据cx的值，重复执行后面的串传送指令。8086对DF的设置：cld置0， std置1
-pushf 将标志寄存器的值压栈，popf从栈中弹出数据，送入标志寄存器中。
-四种内中断： 除法错误、单步执行、执行int0指令、执行int指令
-中断信息中包含中断类型码，中断类型码为一个字节型数据，可以表示256种中断信息的来源，即中断源。
-中断向量表，中断处理程序的入口地址列表。中断向量表在内存中保存，其中存放着256个中断源所对应的中断处理程序的入口。中断向量表指定存放在内存地址0处，从0000:0000到0000:03E8的1000个段媛中存放着中断向量表。一个表项存放着一个中断向量，也就是一个中断处理程序的入口地址，对于8086CPU，这个入口地址包括段地址和偏移地址，所以一个表项占两个字，高地址字存放段地址，低地址字存放偏移地址。
-8086CPU在收到中断信息后，引发的中断过程为：1.（从中断信息中）取得中断类型码；  N2. 标志寄存器的值入栈； pushf3. 设置标志寄存器的第八位TF和第九位IF的值为0; TF=0,IF=04. CS的内容入栈 ;   push CS5. IP的内容入栈;    push IP6. 从内存地址为：中断类型码4和中断类型码4+2的两个字单元中读取中断处理程序的入口地址设置IP和CS。(IP)=(N4),(CS)=(N4+2)在最后一步完成后，CPU开始执行程序员编写的中断处理程序。
-CPU随时都可能执行中断处理程序，所以中断处理程序必须一直存储在内存某段空间之中。
-中断处理程序的编写步骤：1.保存用到的寄存器2.处理中断3.恢复用到的寄存器4.用iret指令返回
-Iret指令的功能用汇编语法描述为：Pop IPPop CSPopfIret指令执行后，CPU回到执行中断处理程序前的执行点继续执行程序。
-CPU在执行完一条指令之后，如果检测到标志寄存器的TF位为1，则产生单步中断，引发中断过程。单步中断的中断类型码为1，则它引发的中断过程为：[1]取得中断类型码1；[2]标志寄存器入栈，TF,IF设置为0；[3]CS,IP入栈;4=(14),(CS)=(14+2)。
-Debug提供了单步中断的中断处理程序，功能为显示所有寄存器中的内容后等待输入命令。
-响应中断的特殊情况：在执行完向SS寄存器传送数据的指令后，即便是发生中断，CPU也不会响应。因为，SS：SP联合指向栈顶，而对他们的设置应该连续完成，如果在执行完设置SS的指令后，CPU响应中断，引发中断过程，要在栈中压入标志寄存器、CS和IP的值，而SS改变，SP并未改变，SS:SP指向的不是正确的栈顶，将引起错误。所以CPU在执行完设置SS的指令后，不响应中断。这给连续设置SS和SP，指向正确的栈顶提供了一个时机。因此我们将设置SS和SP 的指令连续存放，使得设置SP的质量紧接着设置SS的指令执行，而在此之前，CPU不会引发中断过程。
-
-int 指令格式：int n    n为中断类型码，它的功能是引发中断过程CPU执行INT N指令，相当于引发一个N号中断的中断过程：[1]取中断类型码n[2]标志寄存器入栈，IF=0，TF=0[3]CS、IP入栈[4]（IP）=（N4），（CS）=（N4+2）从此处转去执行N号中断的中断处理程序。
-
-在系统的ROM中存放着一套程序，称为BIOS（基本输入输出系统），BIOS中主要包括：[1]硬件系统的检测和初始化程序；[2]外部中断和内部中断的中断例程；[3]用于对硬件设备进行I/O操作的中断例程；[4]其他和硬件系统相关的中断例程。操作系统DOS也提供了中断例程，从操作系统的角度来看，DOS的中断例程就是操作系统向程序员提供的编程资源。程序员在编程的时候，可以用INT 指令直接调用BIOS和DOS提供的中断例程，来完成某些工作。
-
-BIOS和DOS中断例程的安装：[1] 开机后，CPU一加电，初始化（CS）=0FFFFH,(IP)=0，自动从FFFF:0单元开始执行程序，FFFF：0处有一条跳转指令，CPU执行该指令后，转去执行BIOS中的硬件系统检测和初始化程序。[2]初始化程序将建立BIOS所支持的中断向量，即将BIOS提供的中断例程的入口地址登记在中断向量表中。注意，对于BIOS所提供的中断例程，只需将入口地址登记在中断向量表中即可，因为他们是固化到ROM中的程序，一直在内存中存在。[3]硬件系统检测和初始化完成后，调用INT 19H进行操作系统的引导，从此将计算机交由操作系统控制。[4]DOS启动后，除完成其他工作外，还将它所提供的中断例程装入内存，并建立相应的中断向量。
-
-
-1.在PC机系统中，和CPU通过总线相连的芯片除各种存储器外，还有：[1]各种接口卡（如：网卡、显卡）上的接口芯片，他们控制接口卡进行工作[2]主板上的借口芯片，CPU通过他们对部分外设进行访问[3]其他芯片，用来存储相关的系统信息，或进行相关的输入输出处理这些芯片中，都有一组可以由CPU读写的寄存器，他们在物理上可能处于不同的芯片中，但是他们在以下两点上相同：[1]都和CPU的总线相连，当然是通过他们所在的芯片进行的[2]CPU对他们进行读写的时候，都通过控制线向他们所在的芯片发出端口读写命令。可见，从CPU的角度，将这些寄存器都当作端口，对他们进行统一的编址，从而建立了一个统一的端口地址空间。每一个端口在地址空间中都有一个地址。
-2.端口地址和内存地址一样，通过地址总线来传送，在PC系统中，CPU最多可以定位64K个不同的端口。端口地址的范围：065535.端口的读写：:in和out指令In al ,60h     从60H号端口读入一个字节在in和out指令中，只能使用ax和al来存放从端口中读入的数据或要发送到端口中的数据。访问8位端口用ax，访问16位端口用ax。对0255以内的端口进行读写时：In  al , 20hOut 20h , a对256~65535的端口读写时，端口号放在dx中Mov  dx , 3f8hIn    al , dx      从端口3F8读入一个字节Out   dx, al      向端口3F8写入一个字节
-
-CMOS RAM 芯片简称CMOS 芯片特征：[1]包含一个时钟和一个有128个存储单元的RAM存储器[2]靠电池供电，关机后内部时钟正常工作，RAM中信息不丢失[3]128个字节的RAM中，内部时钟占用0—0dh单元来保存时间信息，其余大部分单元用于保存系统配置信息，供系统启动时BIOS程序读取。BIOS也提供了相关的程序，使我们可以在开机的时候配置CMOS RAM中的系统信息。[4]该芯片内部有两个端口，端口地址为70H和71H。CPU通过这两个端口来读写CMOS RAM[5]70H为地址端口，存放要访问的CMOS RAM单元的地址；71H为数据端口，存放从选定的CMOS RAM单元中读取的数据，或要写入到其中的数据。可见，CPU对CMOS RAM的读写分两步进行，比如：读CMOS RAM的2号单元：①将2送入端口70H②从71H读出2号单元的内容
-
-4.CMOS RAM中存放的时间信息存放时间：年、月、日、时、分、秒。这6个信息的长度都是1个字节。
-
-SHL是逻辑左移指令，它的功能为：[1]将一个寄存器或内存单元的数据向左移位；[2]将最后移出的一位写入CF；[3]最低位用0补充。SHR逻辑右移指令，它与SHL操作相反：[1]将一个寄存器或内存单元的数据向右移位；[2]将最后移出的一位写入CF；[3]最高位用0补充。
-
-1.外设的输入不直接送入内存和CPU，而是送入相关的借口芯片的端口中；CPU向外设的输出也不是直接送入外设，而是先送入端口中，再由相应的芯片送到外设。可见，CPU通过端口和外部设备进行联系。
-2.可屏蔽中断：可由标志寄存器IF位设置，如果IF=1，CPU在执行完当前指令后响应中断，引发中断过程；如果IF=0，则不响应中断。Sti ,用于设置IF=1；Cli 用于设置IF=0.中断过程：1. 取中断类型码n          2. 标志寄存器入栈，IF=0，TF=0.          3. CS、IP入栈          4. （IP）=（N4）,（CS）=（N4+2）.中断类型码是通过数据总线送入CPU 的。
-3.键盘输入的处理：键盘中有一个芯片对键盘上的每一个键的开关状态进行扫描，按下一个键时，该芯片就产生一个扫描码，称为通码。扫描码被送入主板上的相关借口芯片的寄存器中，该寄存器的端口地址为60H。松开按下的键时，也产生一个扫描码，称为断码，也被送入60H。断码=通码+80H扫描码长度为一个字节，通码的第7位为0，断码的第7位为1.
-4.键盘的输入到达60H端口时，相关的芯片就会向CPU发出中断类型码为9的可屏蔽中断信息。CPU检测到该中断信息后，如果IF=1，则响应中断，引发中断过程，转去执行int9中断例程。
-5.BIOS提供了int9中断例程，用来进行基本的键盘输入处理，主要工作：[1]读出60H端口中的扫描码；[2]如果是字符键的扫描码，将该扫描码和它对应的字符码（ASCII码）送入内存中的BIOS键盘缓冲区；如果是控制键和切换键的扫描码，则将其转变成状态字节，写入内存中存储状态字的单元[3]对键盘系统进行相关的控制，比如说，向相关芯片发出应答信息。0040:17单元存储状态字节，该字节记录了控制键和切换键的状态。0：右shift状态，置1表示按下1：左shift状态，置1表示按下2：ctrl状态，置1表示按下3：alt状态，置1表示按下4：scrolllock状态，置1表示scroll指示灯亮5：Numlock状态，置1表示小键盘输入的是数字6：capslock状态，置1表示输入大写字母7：insert状态，置1表示出于删除态。
-6.键盘输入的处理过程：键盘产生扫描码——扫描码送入60H端口——引发9号中断——CPU执行INT9中断例程处理键盘输入。前三步都是由硬件系统完成的。
-7.简单延时函数Mov dx,10hMov ax,0        S:  sub ax,1            Sbb dx,0[1]            Cmp ax,0            Jne s            Cmp dx,0            Jne s    程序实现100000H次循环。
-8.指令系统总结：[1]数据传送指令：mov、push、pop、pushf、popf、xchg等，这些指令实现寄存器和内存、寄存器和寄存器之间的单个数据传送。[2]算术运算指令：add、sub、adc、sbb。Inc、dec、cmp、imul、idiv、aaa等，这些指令实现寄存器和内存中的数据的算术运算，他们的执行结果影响标志寄存器的：sf、zf、of、cf、pf、af位[3]逻辑指令：and、or、not、xor、test、shl、shr、sal、sar、rol、ror、rcl、rcr等，除了not指令外，其他的执行结果都影响标志寄存器的相关标志位。[4]转移指令：可以修改IP，或同时修改CS和IP的指令：无条件转移指令——jmp；条件转移指令——jcxz、je、jb、ja、jnb、jna；环指令：loop；过程：call，ret，retf；中断：int，iret。[5]处理机控制指令：这些指令对标志寄存器或其他处理机状态进行设置，如：cld std cli sti nop clc cmc stc hlt wait esc lock等[6]串处理指令：这些指令对内存中的批量数据进行处理，比如，movsb movsw cmps scas lods stos等，若要使用这些指令方便地进行批量数据的处理，则需要和rep、repe、repne等前缀指令配合使用。
-1.描述了单元长度的标号：a db 1,2,3,4       B dw 0    Mov al,a[si]    Mov ah,0    Add b,ax标号a、b是同时描述内存地址和单元长度的标号。标号a，描述了地址code：0，和从这个地址开始，以后的内存单元都是字节单元；而标号b描述了地址code：4，和从这个地址开始，以后的内存单元都是字单元。标号a,b后面没有“：”指令：mov ax,b相当于：mov ax,cs:[4]      指令：mov al,b      指令会引起编译错误，因为b代表的是字单元，al是8位寄存器。
-2.在其他段中使用数据标号：如果想在代码段中，直接用数据标号访问数据，则需要用伪指令assume将标号所在的段和一个段寄存器联系起来。否则编译器在编译的时候无法确定标号的段地址在哪一个寄存器中。
-3.可以将功能子程序的入口地址存储在一个表中，他们在表中的位置和功能号相对应。对应的关系为：功能号*2=对应的功能子程序在地址表中的偏移。
-]]></content>
-      <categories>
-        <category>reading</category>
-      </categories>
-      <tags>
-        <tag>笔记</tag>
-        <tag>读书</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>CentOS的一些技巧</title>
     <url>/dev-centos-skill/</url>
     <content><![CDATA[安装中文输入法1、安装中文支持包yum install &quot;@Chinese Support&quot;
@@ -40760,12 +40549,12 @@ ip addr add 10.0.0.10/24 dev enp0s3:0ipvsadm -A -t 10.0.0.10:80 -s rripvsadm -a 
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>devops</category>
         <category>network</category>
+        <category>devops</category>
       </categories>
       <tags>
-        <tag>linux</tag>
         <tag>网络</tag>
+        <tag>linux</tag>
         <tag>ipvs</tag>
       </tags>
   </entry>
@@ -40930,12 +40719,12 @@ apt-get install iptables-persistentservice iptables-persistent save
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>devops</category>
         <category>network</category>
+        <category>devops</category>
       </categories>
       <tags>
-        <tag>linux</tag>
         <tag>网络</tag>
+        <tag>linux</tag>
         <tag>iptables</tag>
       </tags>
   </entry>
@@ -42134,7 +41923,7 @@ mtools，显示所有支持MSDOS文件系统的命令。
 mutt
 mutt: mail user agent，文字界面的邮件工具
 
-mutt -s &quot;A test mail&quot; josfeng@gmail.com，将邮件寄给 &#106;&#111;&#115;&#x66;&#101;&#110;&#x67;&#64;&#x67;&#x6d;&#x61;&#105;&#x6c;&#x2e;&#x63;&#111;&#x6d;，信件主题为A test mail。
+mutt -s &quot;A test mail&quot; josfeng@gmail.com，将邮件寄给 &#x6a;&#x6f;&#x73;&#x66;&#101;&#x6e;&#x67;&#x40;&#103;&#x6d;&#97;&#x69;&#108;&#46;&#x63;&#x6f;&#109;，信件主题为A test mail。
 mv
 mv: move，移动或重命名文件或目录
 
