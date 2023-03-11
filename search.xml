@@ -2001,6 +2001,14 @@ extends使用 extends 来重用配置 section。它是 YAML 锚点 的替代方�
 
 注意：extends父作业时，如果不想执行父作业，那么父作业的名称应该以点.开头。
 参考文档：gitlab-ci - extends
+job:services使用services可以指定job运行所需的服务镜像。GitLab CI/CD会为每个任务创建一个Docker网络，并且把任务容器和服务容器都连接到这个网络上。服务容器的别名就是它在这个网络上的主机名，所以任务容器可以通过别名来访问服务容器提供的端口。
+使用Docker执行器的话，任务和服务都跑在容器中。使用Shell执行器的话，任务跑在执行器所在的机器上，服务跑在容器中。同时，执行器所在机器需要安装Docker。
+参考文档：
+
+gitlab-ci - services
+Available settings for services
+Define services in the .gitlab-ci.yml file
+
 常用配置当流水线成功时合并分支1、项目配置Project -&gt; Settings -&gt; General -&gt; Merge requests -&gt; Expand -&gt; Merge checks -&gt; 勾选 Pipelines must succeed
 2、gitlab-ci配置gitlab-ci配置时，要保证workflow和job中都允许merge requests触发pipeline。
 3、触发合并请求gitlab页面上发起一次合并请求，或者使用glab发起合并请求
@@ -2098,8 +2106,9 @@ CREATE TABLE tb_test_replacing(ts DateTime,uid String,biz String) ENGINE = Repla
 参考文档：
 
 Replicate a MySQL Database in ClickHouse
+MaterializeMySQL引擎
 
-要注意的是，文档中的materialized，需要改成materialize。
+要注意的是，官方文档中的materialized，需要改成materialize。
 clickhouse-client【使用ClickHouse】一节提到，clickhouse-client是一个命令行工具，支持通过输入数据文件、管道、JDBC等方式导入数据。可以将MySQL中的数据导出成csv文件，然后使用clickhouse-client导入到ClickHouse中。
 参考文档：
 
@@ -8049,14 +8058,16 @@ https域名访问参考《CentOS7安装配置GitLab》添加SSL一节，生成�
       </tags>
   </entry>
   <entry>
-    <title>使用Docker安装配置Mysql</title>
+    <title>使用Docker安装配置MySQL</title>
     <url>/dev-docker-mysql/</url>
     <content><![CDATA[前言《CentOS7设置mysql开机自启动》和《CentOS安装多版本MySQL》中都涉及了Mysql的安装方法，本文中会提供一个更好的Mysql安装方法。
 前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。已知docker宿主机IP为192.168.56.130。
 
 
-安装mysql-server1、登录dockerhub查看需要的mysql版本。
-2、下载mysql镜像（以mysql5.7.28为例）docker pull mysql:5.7.28
+安装MySQL安装MySQL5.7.x1、登录dockerhub查看需要的mysql版本。
+2、下载mysql镜像（以mysql5.7.28为例）
+docker pull mysql:5.7.28
+
 3、启动mysql服务
 docker run --name vk-mysql -d \-p 3306:3306 \-v /opt/data/mysql:/var/lib/mysql \-e MYSQL_ROOT_PASSWORD=voidking \mysql:5.7.28
 
@@ -8069,17 +8080,50 @@ docker run --name vk-mysql -d \-p 3306:3306 \-v /opt/data/mysql:/var/lib/mysql \
 
 更高级的启动命令参考How to use this image。
 4、验证安装docker psmysql启动正常的话就可以看到vk-mysql容器。如果启动失败，可以使用docker logs vk-mysql查看失败原因并进行解决。
-测试访问1、容器内访问
-docker exec -it vk-mysql /bin/bashmysql -uroot -p
+安装MySQL8.0.x参考文档：
 
-2、宿主机上访问（需要提前安装mysql-client）
-# centosyum install -y mariadb.x86_64 mariadb-libs.x86_64mysql -h 127.0.0.1 -uroot -p# ubuntu18#apt install mysql-client-core-8.0apt install mysql-client-core-5.7mysql -h 127.0.0.1 -uroot -p
+Docker安装最新版MySQL8（mysql-8.0.31）教程
+MySQL Product Archives
+MySQL8.0 清华镜像站
+
+1、登录dockerhub查看需要的mysql版本。
+2、下载mysql镜像（以mysql8.0.28为例）
+docker pull mysql:8.0.28
+
+3、启动mysql服务
+docker run --name vk-mysql -d \-p 3306:3306 \-v /opt/mysql/mysql-files:/var/lib/mysql-files \-v /opt/mysql/conf.d:/etc/mysql/conf.d \-v /opt/mysql/data:/var/lib/mysql \-v /opt/mysql/log:/var/log/mysql \-e MYSQL_ROOT_PASSWORD=voidking \mysql:8.0.28
+
+以上命令：
+
+命名容器为vk-mysql，后台运行
+映射宿主机3306端口到容器3306端口
+映射宿主机/opt/mysql目录下的子目录到容器目录，用于存储mysql数据到宿主机
+设置数据库密码为voidking
+
+更高级的启动命令参考How to use this image。
+4、验证安装docker psmysql启动正常的话就可以看到vk-mysql容器。如果启动失败，可以使用docker logs vk-mysql查看失败原因并进行解决。
+默认配置文件为/etc/my.cnf，会引用/etc/mysql/conf.d/目录中的以cnf结尾配置文件，例如custom.cnf。
+[mysqld]general_log_file=/var/log/mysql/mysql.loggeneral_log = 1
+
+上面的配置，会开启sql日志。
+测试访问容器内访问docker exec -it vk-mysql /bin/bashmysql -uroot -p
+
+宿主机上访问centos7上访问mysql server5.7.x
+yum install -y mariadb.x86_64 mariadb-libs.x86_64mysql -h 127.0.0.1 -uroot -p
+
+centos7上访问mysql server8.0.x
+wget https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpmcurl -L https://repo.mysql.com/RPM-GPG-KEY-mysql-2022 -o /etc/pki/rpm-gpg/RPM-GPG-KEY-mysqlrpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-mysqlrpm -ivh mysql80-community-release-el7-3.noarch.rpm # 安装repo源yum makecacheyum list | grep mysqlyum list mysql-community-client --showduplicates | sort -ryum install mysql-community-client-8.0.28-1.el7.x86_64 --setopt=protected_multilib=false
+
+ubuntu18上访问mysql server5.7.x
+#apt install mysql-client-core-8.0apt install mysql-client-core-5.7mysql -h 127.0.0.1 -uroot -p
 
 开放访问1、开放端口
 # centosfirewall-cmd --add-port=3306/tcp --permanentsystemctl reload firewalld# 或者systemctl stop firewalld# ubuntu18ufw allow 3306
 
 2、安装mysql-client，方法同上
-3、访问mysql-servermysql -h 192.168.56.130 -P 3306 -u root -p输入密码，即可连接到vk-mysql容器服务。
+3、访问mysql-server
+mysql -h 192.168.56.130 -P 3306 -u root -p
+输入密码，即可连接到vk-mysql容器服务。
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -8379,6 +8423,106 @@ ldap clientldap client也有很多，本文中选择Apache Directory Studio。�
       </tags>
   </entry>
   <entry>
+    <title>Redis集群模式概述</title>
+    <url>/dev-redis-cluster/</url>
+    <content><![CDATA[Redis集群模式简介
+FROM ChatGPT：Redis集群是Redis的一种高可用解决方案，它通过在多个节点上分片存储数据，实现数据的高可用和扩展。Redis集群最初是在Redis 3.0版本中引入的。
+
+
+Redis集群的节点由多个主节点和从节点组成，每个主节点都有多个从节点。集群中的每个节点都维护了整个集群的状态信息，节点之间通过Gossip协议进行通信，通过相互交换状态信息来保持集群中节点的一致性。Redis集群使用的哈希槽（hash slot）将键映射到不同的节点，实现了数据的分布式存储。
+
+
+Redis集群的优点包括：
+
+
+
+高可用：当集群中的某个节点故障时，集群仍然可以正常运行。
+扩展性：Redis集群可以支持更多的数据和客户端请求，可以通过增加节点来实现横向扩展。
+分布式：Redis集群可以将数据分散在不同的节点上，使得数据的读写负载得到了平衡，提高了Redis的性能。
+
+
+
+但是Redis集群也存在一些限制和注意事项，例如：
+
+
+
+Redis集群只能支持单个数据库空间，不能在不同节点之间存储不同的数据库。
+Redis集群不支持事务嵌套和 Lua 脚本中的事务操作。
+Redis集群使用的是哈希槽分片，因此在集群运行过程中，不能动态添加或删除哈希槽，否则会导致数据的迁移，对集群性能产生影响。
+
+
+
+在实际应用中，如果需要使用Redis集群，需要对集群中的节点进行适当的配置和调优，以确保集群的高可用性、性能和可靠性。
+
+
+
+Redis集群容错机制Redis集群的节点由多个主节点和从节点组成，每个主节点都有多个从节点，从节点和主节点的数据一致。从节点挂掉，不会影响redis集群数据的写入和读取，只会降低读取的性能和容错能力。从节点启动后会自动从主节点同步数据。主节点挂掉，Redis集群会将该主节点的从节点切换为新的主节点（一般在几秒内完成），以保证数据可用性和一致性，在新的主节点选出来之前，集群写能力不可用。
+参考文档：
+
+docker搭建3主3从redis集群(主从容错切换、主从扩容、主从缩容)
+K8S部署Redis Cluster集群（三主三从模式）
+redis集群节点宕机
+深入理解redis cluster的failover机制
+CLUSTER FAILOVER
+Scaling with Redis Cluster
+
+Redis集群操作命令cluster命令查看和操作redis集群。通过给定可选的参数 section ，可以让命令只返回某一部分的信息：
+
+cluster info：打印redis集群的信息
+cluster slots：列出集群的槽信息
+cluster nodes：列出集群当前已知的所有节点（node），以及这些节点的相关信息
+cluster meet &lt;ip&gt; &lt;port&gt;：将 ip 和 port 所指定的节点添加到集群当中，让它成为集群的一份子
+cluster forget &lt;node_id&gt;：从集群中移除 node_id 指定的节点
+cluster failover：该命令只能在群集slave节点执行，让slave节点进行一次人工故障切换，成为master。切换过程中redis会阻塞请求（10s），切换完成再处理请求。
+
+Redis集群重启需求描述：192.168.56.101-103 三台机器，使用7001和7002端口，搭建了redis集群。现在想降低内存碎片率，因此计划对redis集群进行重启。
+根据Redis集群容错机制，应该挨个节点重启，先重启从节点，再重启主节点。
+1、查看master和slave节点
+redis-cli -c -h 192.168.56.101 -p 7001 -a &#x27;xxx&#x27; cluster nodesredis-cli --cluster check 192.168.56.101:7001 -a &#x27;xxx&#x27;
+
+其中-c参数的作用是启用集群模式，这样可以自动重定向到正确的节点。
+2、挨个从节点重启（端口可能是7001，也可能是7002），一个节点重启完成再进行下一个
+redis-cli -c -h 192.168.56.101 -p 7002 -a &#x27;xxx&#x27; shutdownredis-server /path/to/conf/7002.confredis-cli --cluster check 192.168.56.101:7002 -a &#x27;xxx&#x27;redis-cli -c -h 192.168.56.102 -p 7002 -a &#x27;xxx&#x27; shutdownredis-server /path/to/conf/7002.confredis-cli --cluster check 192.168.56.102:7002 -a &#x27;xxx&#x27;redis-cli -c -h 192.168.56.103 -p 7002 -a &#x27;xxx&#x27; shutdownredis-server /path/to/conf/7002.confredis-cli --cluster check 192.168.56.103:7002 -a &#x27;xxx&#x27;
+
+3、挨个主节点重启（端口可能是7001，也可能是7002），一个节点重启完成再进行下一个
+redis-cli -c -h 192.168.56.101 -p 7001 -a &#x27;xxx&#x27; shutdownredis-server /path/to/conf/7001.confredis-cli --cluster check 192.168.56.101:7001 -a &#x27;xxx&#x27;redis-cli -c -h 192.168.56.102 -p 7001 -a &#x27;xxx&#x27; shutdownredis-server /path/to/conf/7001.confredis-cli --cluster check 192.168.56.102:7001 -a &#x27;xxx&#x27;redis-cli -c -h 192.168.56.103 -p 7001 -a &#x27;xxx&#x27; shutdownredis-server /path/to/conf/7001.confredis-cli --cluster check 192.168.56.103:7001 -a &#x27;xxx&#x27;
+
+Redis集群异常排查Redis集群模式，Java访问Redis集群报错：
+io.lettuce.core.RedisCommandExecutionException: CLUSTERDOWN The cluster is down
+
+排查方法：
+redis-cli -c -h 192.168.56.101 -p 7001 -a &#x27;xxx&#x27; cluster nodesredis-cli --cluster check 192.168.56.101:7001 -a &#x27;xxx&#x27;# yum install -y ruby# cd redis-6.2.4/src# ./redis-trib.rb check 192.168.56.101:7001 -a &#x27;xxx&#x27;
+
+发现报错：
+[ERR] Nodes don&#x27;t agree about configuration!&gt;&gt;&gt; Check for open slots...[WARNING] Node 192.168.56.101:7002 has slots in importing state ...
+
+解决办法一：重新握手。
+redis-cli -c -h 192.168.56.101 -p 7002 -a &#x27;xxx&#x27; cluster meet 192.168.56.101 7001redis-cli -c -h 192.168.56.101 -p 7002 -a &#x27;xxx&#x27; cluster meet 192.168.56.102 7001redis-cli -c -h 192.168.56.101 -p 7002 -a &#x27;xxx&#x27; cluster meet 192.168.56.102 7002redis-cli -c -h 192.168.56.101 -p 7002 -a &#x27;xxx&#x27; cluster meet 192.168.56.103 7001redis-cli -c -h 192.168.56.101 -p 7002 -a &#x27;xxx&#x27; cluster meet 192.168.56.103 7001
+参考文档：Redis [ERR] Nodes don’t agree about configuration!
+解决办法二（推荐）：重启redis节点。
+redis-cli -c -h 192.168.56.101 -p 7002 -a &#x27;xxx&#x27; shutdownredis-server /path/to/conf/7002.confredis-cli --cluster check 192.168.56.101:7001 -a &#x27;xxx&#x27;
+
+
+
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>docker</category>
+        <category>database</category>
+        <category>devops</category>
+        <category>cloudnative</category>
+        <category>troubleshooting</category>
+      </categories>
+      <tags>
+        <tag>chatgpt</tag>
+        <tag>docker</tag>
+        <tag>数据库</tag>
+        <tag>问题排查</tag>
+        <tag>redis</tag>
+        <tag>缓存</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Redis入门篇</title>
     <url>/dev-redis-start/</url>
     <content><![CDATA[Redis简介
@@ -8410,7 +8554,7 @@ Redis【数据结构类型篇】
 
 
 
-Redis安装模式Redis有四种安装模式：
+安装RedisRedis安装模式Redis有四种安装模式：
 
 单机模式：只有一个节点。简单，但是可用性低。
 主从复制：全部节点读，一个节点作为主节点负责写，写数据后复制到从节点。主节点宕机，从节点可以变成主节点，可用性提高了。但是，应用方需要感知主节点变化并随着变化，否则无法写。
@@ -8433,7 +8577,13 @@ docker run --name redis -d \-p 6379:6379 \redis:5.0.14-alpine3.15
 Installing Redis
 《K8S中安装Redis》
 
-安装Redis主从/哨兵/集群模式参考文档《K8S中安装配置Redis》
+安装Redis主从模式参考文档《K8S中安装配置Redis》
+安装Redis哨兵模式参考文档《K8S中安装配置Redis》
+安装Redis集群模式参考文档：
+
+《Redis集群模式概述》
+《K8S中安装配置Redis》
+
 自定义redis配置1、准备redis5.0的配置文件 
 mkdir -p /opt/redis/vim /opt/redis/redis.conf
 
@@ -8500,7 +8650,7 @@ ZSet特点：
 适用场景：i. 适用于需要有序且唯一的业务或操作：网易音乐排行榜每首歌的歌名作为元素（唯一、不重复）；每首歌的播放次数作为分值；使用zrevrange 命令来获取播放次数最多的歌曲
 Redis常用命令参考文档：Redis命令参考
 特别注意：redis命令不区分大小写。
-数据库操作建立连接docker exec -it redis-client redis-cli -h 192.168.56.102 -p 6379
+数据库操作建立连接redis-cli -h 192.168.56.102 -p 6379# docker exec -it redis-client redis-cli -h 192.168.56.102 -p 6379
 请求客户端与服务器建立连接。
 退出连接quit
 请求服务器关闭与当前客户端的连接。一旦所有等待中的回复(如果有的话)顺利写入到客户端，连接就会被关闭。
@@ -8509,7 +8659,7 @@ Redis常用命令参考文档：Redis命令参考
 如果 AUTH 命令给定的密码 password 和配置文件中的密码相符的话，服务器会返回 OK 并开始接受命令输入。
 另一方面，假如密码不匹配的话，服务器将返回一个错误，并要求客户端需重新输入密码。
 1、设置密码
-config set requirepass secret_password   # 将密码设置为 secret_passwordquit
+config set requirepass secret_password   # 将全局密码设置为 secret_passwordquit
 
 2、使用密码
 pingauth secret_password                     # 输入正确的密码ping 
@@ -8517,6 +8667,19 @@ pingauth secret_password                     # 输入正确的密码ping
 设置了密码保护之后，如果想要直接通过redis-cli直接执行redis命令，可以加上-a参数。
 docker exec -it redis-client redis-cli -h 192.168.56.102 -p 6379 -a &#x27;secret_password&#x27; ping
 
+新增用户并授权ACL SETUSER alice on +@read +@allchannels#ACL SETUSER alice on allkeys +get +setACL LISTACL GETUSER aliceACL SETUSER alice &gt;alice_passwordAUTH alice alice_password# ACL DELUSER alice
+
+参考文档：ACL（Redis Access Control List）
+指定用户连接Redis方法一：
+redis-cli -h 192.168.56.102 -p 6379&gt; AUTH alice alice_password
+
+方法二：
+redis-cli -h 192.168.56.102 -p 6379 -u alice -p alice_password
+
+方法三：
+redis-cli -u redis://alice:alice_password@192.168.56.102:6379
+
+参考文档：how to login redis 6.0+ use username and password
 切换数据库使用select切换到指定的数据库，数据库索引号 index 用数字值指定，以 0 作为起始索引值。
 SET db_number 0SELECT 1 GET db_numberSET db_number 1GET db_number
 
@@ -8537,21 +8700,6 @@ info default： 返回默认选择的信息
 
 当不带参数直接调用 INFO 命令时，使用 default 作为默认参数。
 info memoryinfo stats
-
-集群操作cluster命令查看和操作redis集群。通过给定可选的参数 section ，可以让命令只返回某一部分的信息：
-
-cluster info：打印redis集群的信息
-cluster slots：列出集群的槽信息
-cluster nodes：列出集群当前已知的所有节点（node），以及这些节点的相关信息
-cluster meet &lt;ip&gt; &lt;port&gt;：将 ip 和 port 所指定的节点添加到集群当中，让它成为集群的一份子
-cluster forget &lt;node_id&gt;：从集群中移除 node_id 指定的节点
-cluster failover：该命令只能在群集slave节点执行，让slave节点进行一次人工故障切换，成为master。切换过程中redis会阻塞请求（10s），切换完成再处理请求。
-
-参考文档：
-
-深入理解redis cluster的failover机制
-CLUSTER FAILOVER
-Scaling with Redis Cluster
 
 测试pingping使用客户端向 Redis 服务器发送一个 PING ，如果服务器运作正常的话，会返回一个 PONG 。通常用于测试与服务器的连接是否仍然生效，或者用于测量延迟值。
 echo打印一个特定的信息 message ，测试时使用。
@@ -8578,7 +8726,8 @@ hexists key field：查看哈希表 key 中，给定域 field 是否存在。
 hset key field value：将哈希表 key 中的域 field 的值设为 value 。
 hdel key field [field ...]：删除哈希表 key 中的一个或多个指定域，不存在的域将被忽略。
 
-内存碎片率使用info memory可以查看内存碎片率，内存碎片率计算方法为：mem_fragmentation_ratio = used_memory_rss / used_memory
+Redis集群操作参考文档：《Redis集群模式概述》
+内存碎片率说明使用info memory可以查看内存碎片率，内存碎片率计算方法为：mem_fragmentation_ratio = used_memory_rss / used_memory
 内存碎片率大小说明：
 
 mem_fragmentation_ratio &lt; 1 表示Redis内存分配超出了物理内存，操作系统正在进行内存交换，内存交换会引起非常明显的响应延迟；
@@ -8593,23 +8742,6 @@ memory purge
 you are looking at mem_fragmentation_ratio which is not actually fragmentation. It’s the ratio of used memory to RSS (resident physical memory), We don’t rename if for the sake of backwards compatibility.RSS includes shared libraries, code, stack and other things, so while this metric is useful, it’s not actually fragmentation (which has risk of rising to high values).If you wanna look at fragmentation, you should look at allocator_frag_ratio instead.But another point is that your db is nearly empty, so although the ratio seems high, it’s not actually a lot of memory.allocator_frag_bytes shows just about 400kb.You only wanna be concerned if that number is high, and in that case you can enable activedefrag
 
 因此，对于redis5.0.14，内存碎片率应该查看 allocator_frag_ratio 而不是 mem_fragmentation_ratio。
-Redis集群异常排查Java访问Redis报错：
-io.lettuce.core.RedisCommandExecutionException: CLUSTERDOWN The cluster is down
-
-排查方法：
-redis-cli -c -h 192.168.56.101 -p 7001 -a &#x27;xxx&#x27; cluster nodesredis-cli --cluster check 192.168.56.101:7001 -a &#x27;xxx&#x27;# yum install -y ruby# cd redis-6.2.4/src# ./redis-trib.rb check 192.168.56.101:7001 -a &#x27;xxx&#x27;
-
-发现报错：
-[ERR] Nodes don&#x27;t agree about configuration!&gt;&gt;&gt; Check for open slots...[WARNING] Node 192.168.56.101:7002 has slots in importing state ...
-
-解决办法一：重新握手。
-redis-cli -c -h 192.168.56.101 -p 7002 -a &#x27;xxx&#x27; cluster meet 192.168.56.101 7001redis-cli -c -h 192.168.56.101 -p 7002 -a &#x27;xxx&#x27; cluster meet 192.168.56.102 7001redis-cli -c -h 192.168.56.101 -p 7002 -a &#x27;xxx&#x27; cluster meet 192.168.56.102 7002redis-cli -c -h 192.168.56.101 -p 7002 -a &#x27;xxx&#x27; cluster meet 192.168.56.103 7001redis-cli -c -h 192.168.56.101 -p 7002 -a &#x27;xxx&#x27; cluster meet 192.168.56.103 7001
-参考文档：Redis [ERR] Nodes don’t agree about configuration!
-解决办法二（推荐）：重启redis节点。
-redis-cli -c -h 192.168.56.101 -p 7002 -a &#x27;xxx&#x27; shutdownredis-server /path/to/conf/7002.confredis-cli --cluster check 192.168.56.101:7001 -a &#x27;xxx&#x27;
-
-
-
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -9158,7 +9290,7 @@ gomod实践篇安装client-go假设一个项目依赖client-go，那么参考官
 失败了，返回404，猜测是12.0版本在代理服务器不存在，使用另外一种下载方式。
 go get k8s.io/client-go@kubernetes-1.15.0
 此处下载了两个版本的client-go，我们使用v0.0.0版本。
-4、安装client-go相关依赖client-go默认下载到$GOPATH/pkg/mod/k8s.io目录下，把k8s.io目录移动到$GOPATH/src目录下。然后把&#x63;&#x6c;&#x69;&#101;&#110;&#116;&#45;&#103;&#x6f;&#x40;&#x76;&#48;&#x2e;&#48;&#x2e;&#x30;重命名为client-go，然后在client-go目录下执行安装依赖的命令：
+4、安装client-go相关依赖client-go默认下载到$GOPATH/pkg/mod/k8s.io目录下，把k8s.io目录移动到$GOPATH/src目录下。然后把&#99;&#x6c;&#x69;&#101;&#110;&#116;&#x2d;&#103;&#111;&#x40;&#118;&#x30;&#x2e;&#48;&#x2e;&#x30;重命名为client-go，然后在client-go目录下执行安装依赖的命令：
 export GOPROXY=https://goproxy.ioexport GO111MODULE=ongo mod vendor
 完成之后，所有的依赖都下载到了client-go/vendor目录下，一个完整的client-go依赖库就准备好了。
 依赖库版本管理client-go依赖库准备好了，但是另一个问题来了：假设项目vk-project依赖client-go和库A，client-go依赖库A，两个依赖库A版本不一致，那么vk-project在编译时，会同时依赖两个不同的库A，导致编译出的二进制包有问题。
@@ -9597,6 +9729,51 @@ ps -ef | grep dockerkill -9 xxxsystemctl stop containerdsystemctl start docker
 降级dockerdocker versionyum list docker-ce --showduplicates | sort -rsystemctl stop kubeletsystemctl stop dockersystemctl stop docker.socketsystemctl stop containerdversion=19.03.15yum downgrade --setopt=obsoletes=0 -y docker-ce-$&#123;version&#125; docker-ce-cli-$&#123;version&#125; docker-ce-selinux-$&#123;version&#125; containerd.iosystemctl start containerdsystemctl start dockersystemctl start kubelet
 
 PLEG is not healthyPod生命周期事件生成器PLEG（Pod Lifecycle Event Generator）会记录Pod生命周期中的各种事件，如容器的启动、终止等。PLEG is not healthy异常通常是由于节点上的运行时进程异常或者节点Systemd版本缺陷导致。
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>k8s</category>
+        <category>cloudnative</category>
+        <category>troubleshooting</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
+        <tag>kubectl</tag>
+        <tag>docker</tag>
+        <tag>问题排查</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>K8S问题记录</title>
+    <url>/dev-k8s-problem/</url>
+    <content><![CDATA[前言本文记录使用K8S过程中遇到的问题和解决办法。问题排查方法参考《kubectl命令——故障排查篇》。
+
+
+kubelet不停重启问题描述K8S的一个worker节点磁盘不足，关机进行磁盘扩容，物理扩容后开机，执行esize2fs /dev/vdb，扩容完成。
+docker ps，发现没有容器被启动。kubectl status kubelet，发现kubelet不停进行重启，每次都启动失败。kubectl status docker，正常docker正常running。
+重启机器，问题依旧。
+排查解决journalctl -xeu kubelet -rjournalctl -xeu docker -r
+
+kubelet日志没有报错，docker日志中报错：
+level=error msg=&quot;xxx cleanup: failed to delete container from containerd: no such container
+
+
+FROM ChatGPT：该错误日志表示 Docker 清理容器时失败，原因是没有找到相应的容器。
+
+
+可能原因及解决方法：
+
+容器不存在：检查容器是否已被删除或者已经退出，如果是则不需要处理该错误。
+容器正在运行：如果容器正在运行，可能是由于正在执行某些任务而无法清理。此时可以尝试停止容器后再进行清理。
+Docker daemon 出现故障：在某些情况下，Docker daemon 可能会出现故障导致无法清理容器。尝试重启 Docker daemon 可能会解决问题。
+操作系统出现故障：在某些情况下，操作系统可能会出现故障导致无法清理容器。尝试重启操作系统可能会解决问题。
+
+
+解决办法：手动清理容器，然后重启机器。
+docker container prunereboot
+
+
+
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -10742,10 +10919,11 @@ Least Load
   <entry>
     <title>CentOS7安装配置GitLab</title>
     <url>/dev-centos7-install-gitlab/</url>
-    <content><![CDATA[GitLab简介GitLab是GitLab公司开发的基于Rails的开源存储库管理器。它是一个基于Web的git存储库管理器，允许团队协作编写、测试和部署应用程序。GitLab提供了多种功能，包括wiki、问题跟踪、代码审查和活动源。GitLab Inc提供4种产品：
+    <content><![CDATA[GitLab简介GitLab是GitLab公司开发的基于Rails的开源存储库管理器。它是一个基于Web的git存储库管理器，允许团队协作编写、测试和部署应用程序。GitLab提供了多种功能，包括wiki、问题跟踪、代码审查和活动源。GitLab Inc提供5种产品：
 
 Gitlab CE（社区版）：自托管和免费，社区论坛的支持。
 Gitlab EE（企业版）：自托管和付费，附带其他功能。
+Gitlab JH（企业级中国发行版）：极狐，自托管和付费，附带其他功能。
 GitLab.com：SaaS和免费。
 GitLab.io：由GitLab Inc.管理的私有GitLab实例。
 
@@ -17072,11 +17250,11 @@ mkdir -p /root/.certs/echo -n | openssl s_client -connect smtp.163.com:465 | sed
 5、测试发送邮件echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com查看邮箱，正常的话应该已经收到邮件了。如果没有收到邮件，可以查看日志进行排查：tail /var/log/maillog
 macos参考《MacOS上软件配置》中的命令行发邮件部分
 mail命令命令格式mail [OPTION...] [address...]常用到的选项，一个是s，代表主题；一个是A，代表附件。其他的需要时查看help。
-发送普通邮件目标：给邮箱 &#118;&#x6f;&#105;&#100;&#x6b;&#105;&#110;&#103;&#64;&#113;&#x71;&#46;&#99;&#x6f;&#x6d; 发送邮件，主题为“Hello VoidKing”，内容为“Welcome to mail world！”
+发送普通邮件目标：给邮箱 &#118;&#x6f;&#x69;&#100;&#107;&#x69;&#110;&#x67;&#x40;&#x71;&#113;&#46;&#99;&#111;&#x6d; 发送邮件，主题为“Hello VoidKing”，内容为“Welcome to mail world！”
 echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com
 但是，等待了几分钟，并没有收到邮件，垃圾箱也没有。mail，查看email的发送状态为Undelivered Mail Returned，原来没有投递出去。
 查看邮件系统日志：tail -n 50 /var/spool/mail/test提示host mx3.qq.com[183.57.48.35] said: 550 Mail content denied。看来qq邮箱的垃圾邮件防御机制做的不错，那就换个163邮箱，没想到依然失败。
-换一台服务器？发送给 &#x76;&#x6f;&#x69;&#100;&#107;&#x69;&#110;&#103;&#64;&#113;&#x71;&#46;&#x63;&#111;&#x6d; ，成功！很尴尬。。。就这么着吧
+换一台服务器？发送给 &#x76;&#111;&#x69;&#100;&#107;&#105;&#110;&#x67;&#64;&#x71;&#x71;&#x2e;&#x63;&#x6f;&#x6d; ，成功！很尴尬。。。就这么着吧
 发送高级邮件1、从文本读入内容发送邮件mail -s &#39;Error report&#39; voidking@qq.com &lt; /tmp/log/ganglia/error-20180524.log
 2、发送附件mail -s &#39;Error report&#39; voidking@qq.com -A /tmp/log/ganglia/ganglia-20180524.log &lt; /tmp/log/ganglia/error-20180524.log
 3、指定发件人echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com -aFrom:haojin@qq.com
@@ -19988,7 +20166,7 @@ linux下载好数据集后，把数据集下载到win10中nmt目录中，路径�
 训练model在根目录（nmt目录）下运行：
 python -m nmt.nmt --src=vi --tgt=en --vocab_prefix=./tmp/nmt_data/vocab  --train_prefix=./tmp/nmt_data/train --dev_prefix=./tmp/nmt_data/tst2012  --test_prefix=./tmp/nmt_data/tst2013 --out_dir=./tmp/nmt_model --num_train_steps=12000 --steps_per_stats=100 --num_layers=2 --num_units=128 --dropout=0.2 --metrics=bleu
 
-郝同学i5-3337U &#67;&#x50;&#x55;&#64;&#x31;&#46;&#x38;&#x30;&#71;&#x48;&#x7a;，8G内存，训练了将近两个小时才训练完成。下文我们要学习使用一下UCloud提供的免费GPU。
+郝同学i5-3337U &#x43;&#80;&#85;&#64;&#49;&#46;&#x38;&#48;&#71;&#72;&#x7a;，8G内存，训练了将近两个小时才训练完成。下文我们要学习使用一下UCloud提供的免费GPU。
 我们可以使用 Tensorboard 在训练过程中查看模型的总结：
 tensorboard --port 22222 --logdir ./tmp/nmt_model/
 通过以下简单的变化，就能逆向完成英语到越南语的翻译。
@@ -20066,9 +20244,9 @@ pip install setuptoolspip install wheelpython setup.py bdist_wheel
 安装配置PyPI参考文档：
 
 利用Docker快速构建基于devpi的企业级私有PyPI Server
-github - pypiserver
-dockerhub - pypiserver
-devpi-server 2.3.0
+devpi - PyPI
+devpi/devpi-ldap
+devpi-auth-gitlab
 
 准备配置文件准备配置文件：
 
@@ -20077,16 +20255,11 @@ Dockerfile：用于打包devpi-server的镜像
 devpi-ldap.yaml：devpi支持ldap的配置
 
 完整配置文件参考hexo-storage/python-pypi
-参考文档：
-
-devpi/devpi-ldap
-devpi-auth-gitlab
-
 安装PyPI1、打包镜像
 docker build -t voidking/devpi-server:v1.0 .
 
 2、master节点
-mkdir -p /opt/pypi/data/mkdir -p /opt/pypi/certs/openssl genrsa -out /opt/pypi/certs/key.pem 2048docker run -it --name devpi-master -d \--restart=always \-v /opt/pypi/data:/app/data \-v /opt/pypi/certs/key.pem:/app/certs/key.pem \-p 3141:3141 \voidking/devpi-server:v1.0 \devpi-server \--configfile config.yaml \--ldap-config devpi-ldap.yaml \--gitlab-registry-url https://gitlab.voidking.com \--role master \--secretfile /app/certs/key.pem \--port=3141
+mkdir -p /opt/pypi/data/mkdir -p /opt/pypi/certs/openssl genrsa -out /opt/pypi/certs/key.pem 2048chmod 600 /opt/pypi/certs/key.pemdocker run --rm \-v /opt/pypi/data:/app/data \-v /opt/pypi/certs/key.pem:/app/certs/key.pem \-p 3141:3141 \voidking/devpi-server:v1.0 \devpi-init --configfile config.yaml \--role masterdocker run -it --name devpi-master -d \--restart=always \-v /opt/pypi/data:/app/data \-v /opt/pypi/certs/key.pem:/app/certs/key.pem \-p 3141:3141 \voidking/devpi-server:v1.0 \devpi-server \--configfile config.yaml \--ldap-config devpi-ldap.yaml \--gitlab-registry-url https://gitlab.voidking.com \--role master \--secretfile /app/certs/key.pem \--port=3141
 
 3、worker节点
 docker run -it --rm \-v /opt/pypi/data:/app/data \-v /opt/pypi/certs/key.pem:/app/certs/key.pem \-p 3141:3141 \voidking/devpi-server:v1.0 \devpi-init \--configfile config.yaml \--role replica \--master=http://192.168.56.101:3141docker run -it --name devpi-worker1 -d \--restart=always \-v /opt/pypi/data:/app/data \-v /opt/pypi/certs/key.pem:/app/certs/key.pem \-p 3141:3141 \voidking/devpi-server:v1.0 \devpi-server \--configfile config.yaml \--role replica \--master=http://192.168.56.101:3141 \--secretfile /app/certs/key.pem \--port=3141
@@ -21139,6 +21312,16 @@ mysql -uroot -ppassword vkdb &lt; /root/vkdb.sqlmysql -uroot -ppassword -f vkdb 
 source /root/vkdb.sql;
 
 csv数据导入使用dbeaver导入csv数据，可以自动创建表结构。
+从binlog导出sql语句首先确保mysql server开启了binlog
+show variables like &#x27;%log_bin%&#x27;;
+
+本地导出：
+mysqlbinlog --base64-output=decode-rows -v --result-file=output.sql binlog.000001
+
+binlog文件可能比较多，选择最近修改的那个导出。
+远程导出：
+mysqlbinlog --read-from-remote-server --host=host_name --user=user_name --password=password --base64-output=decode-rows -v --result-file=output.sql -v binlog.000001
+
 shell中执行sql# shell中直接执行sqlmysql -h 192.168.56.100 -uroot -pvoidking -D vkdb -e &quot;select * from user;&quot;
 
 需求：mysql数据库，获取数据库vk中的app表中所有记录的name，写入到 name.txt 文件。
@@ -23262,7 +23445,7 @@ useradd -m voidking -s /bin/bashpasswd voidkingadduser voidking sudo
 
 
 生成密钥ssh-keygenssh-keygen -C &quot;voidking@qq.com&quot; -f ./voidking_rsa
-第一条命令执行完之后，.ssh目录下生成了 id_rsa 和 id_rsa.pub。第二条命令执行完之后，当前目录下生成了 voidking_rsa 和 voidking_rsa.pub，注释内容为 &#118;&#111;&#105;&#x64;&#x6b;&#105;&#110;&#103;&#x40;&#113;&#x71;&#46;&#99;&#111;&#x6d; 。
+第一条命令执行完之后，.ssh目录下生成了 id_rsa 和 id_rsa.pub。第二条命令执行完之后，当前目录下生成了 voidking_rsa 和 voidking_rsa.pub，注释内容为 &#118;&#x6f;&#105;&#100;&#x6b;&#105;&#110;&#x67;&#64;&#x71;&#113;&#x2e;&#99;&#111;&#109; 。
 使密钥生效ssh-copy-id -i ~/.ssh/id_rsa.pub voidking@hostnamessh-copy-id -i ~/.ssh/id_rsa.pub voidking@hostname -p 22ssh voidking@hostname
 ssh-copy-id 这个命令做的事情，是把 id_rsa.pub 中的内容，追加到 hostname:/home/voidking/.ssh/authorized_keys 文件中。authorized_keys文件权限为600。如果配置好了sshd，但是无法使用密钥登录机器，请检查authorized_keys文件权限。
 密钥添加失败问题如果ssh-copy-id报错cannot create .ssh/authorized_keys: Operation not permitted或者手动编辑authorized_keys后无法保存，chmod也无法改变authorized_keys文件的权限。
@@ -23330,6 +23513,7 @@ lscpu查看到的Core(s) per socket表示这颗物理CPU有多少核心，Thread
 dmesg用于显示内核环境下的系统日志，包括内核启动时的信息、硬件检测信息、内核模块加载信息、内核错误等。通常用于诊断系统启动和运行时出现的问题。dmesg命令显示的日志信息来自系统内核环缓冲区，因此是最新的系统日志。
 journalctl -xb命令用于查看 systemd 日志，输出系统启动时的所有日志信息，包括内核消息、系统服务和应用程序的日志信息。其中，-x 参数显示完整的日志信息，-b 参数表示显示系统启动时的日志信息。
 通过 journalctl -xb 命令，可以查看系统启动时的各个服务启动情况，应用程序启动情况，以及其他系统级别的消息。可以用来诊断系统启动过程中的错误和问题。
+更多journalctl的用法，参考文档《systemctl命令》。
 查看重启前的系统日志/var/log目录下存在dmesg日志文件：
 dmesgdmesg.0dmesg.1.gz...
 dmesg 日志文件中保存的是本次重启后的日志，而 dmesg.0 是这次重启前的 dmesg 日志，dmesg.1.gz 是上次重启前的 dmesg 日志，依次类推。
@@ -23370,13 +23554,7 @@ yum install epel-release
 安装epel源之后，可以安装很多原本 No package xxx available 的软件，比如jq：
 yum install jq
 
-查看包管理器有哪些软件版本centos
-yum list docker-ce --showduplicates | sort -r
-
-ubuntu
-apt-cache madison docker-ce | awk &#x27;&#123; print $3 &#125;&#x27;
-
-参考文档《Docker入门篇》
+安装指定版本软件以安装Docker为例，参考文档《Docker入门篇》
 问题排查查看CPU负载toptop # 按1，查看每个逻辑CPU的使用情况uptimehtop
 
 一个逻辑CPU可以处理一个线程，一般当 load average 超过逻辑CPU数量的70%，就可以认为 CPU 的负载较高。
@@ -23460,10 +23638,12 @@ Uncategories时间和时间戳# 输出时间date# 输出时间并格式化date &
 ]]></content>
       <categories>
         <category>engineering</category>
+        <category>docker</category>
         <category>shell</category>
         <category>troubleshooting</category>
       </categories>
       <tags>
+        <tag>docker</tag>
         <tag>linux</tag>
         <tag>问题排查</tag>
         <tag>shell</tag>
@@ -23521,13 +23701,9 @@ systemctl reload sshd
 查看所有活跃的服务systemctl list-units -t service
 
 systemd的其他命令journalctl日志收集systemd有自己的日志系统，称为journald。
-journalctl# 查看引导信息journalctl -b# 实时跟踪系统日志journalctl -f# 查看系统日志journalctl -xb# 查看程序日志journalctl -xeu kubelet
+journalctl# 查看引导信息journalctl -b# 实时跟踪系统日志journalctl -f# 查看系统日志journalctl -xb# 查看程序日志journalctl -xeu kubelet# 逆序查看程序日志journalctl -xeu kubelet -r# 清理2天前的日志journalctl --vacuum-time=2d# 清理超过500M的日志journalctl --vacuum-size=500M
 
-
-
-
-
-
+journalctl查看日志时翻页：fn + 上下
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -24753,11 +24929,16 @@ yum install yum-utils
 3、更新yum包  
 yum makecache fast
 
-4、安装docker 
-# yum install docker-ceyum list docker-ce --showduplicates | sort -rsudo yum install docker-ce-18.09.1 docker-ce-cli-18.09.1 containerd.io docker-compose-plugin
+4、查看docker版本 
+yum list | grep dockeryum list docker-ce --showduplicates | sort -r
 
-其中 docker-compose-plugin 也不知道是个啥，安装完也不能使用docker-compose命令，仍然需要另外安装docker-compose。
-5、启动docker-ce并设置开机启动
+看到如下内容：
+docker-ce.x86_64            3:23.0.1-1.el7                     docker-ce-stabledocker-ce.x86_64            3:23.0.1-1.el7                     @docker-ce-stabledocker-ce.x86_64            3:23.0.0-1.el7                     docker-ce-stabledocker-ce.x86_64            3:20.10.9-3.el7                    docker-ce-stabledocker-ce.x86_64            3:20.10.8-3.el7                    docker-ce-stabledocker-ce.x86_64            3:20.10.7-3.el7                    docker-ce-stable...docker-ce.x86_64            17.03.1.ce-1.el7.centos            docker-ce-stabledocker-ce.x86_64            17.03.0.ce-1.el7.centos            docker-ce-stable
+
+5、安装指定版本docker
+yum install docker-ce # 安装最新版yum install docker-ce-20.10.9 # 安装指定版本（不推荐，可能架构不匹配）# yum install &lt;softname&gt;-&lt;version&gt;.&lt;arch&gt;yum install docker-ce-3:20.10.9-3.el7.x86_64 # 安装指定版本（推荐）
+
+6、启动docker-ce并设置开机启动
 systemctl start dockersystemctl enable docker
 
 ubuntu18安装docker参考文档Install Docker Engine on Ubuntu
@@ -24774,9 +24955,13 @@ sudo mkdir -p /etc/apt/keyringscurl -fsSL https://download.docker.com/linux/ubun
 4、建立仓库
 echo \  &quot;deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \  $(lsb_release -cs) stable&quot; | sudo tee /etc/apt/sources.list.d/docker.list &gt; /dev/null
 
-5、安装docker
-sudo apt-get update#sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-pluginapt-cache madison docker-ce | awk &#x27;&#123; print $3 &#125;&#x27;VERSION_STRING=5:20.10.13~3-0~ubuntu-focalsudo apt-get install docker-ce=$VERSION_STRING docker-ce-cli=$VERSION_STRING containerd.io docker-compose-plugin
+5、查看docker版本
+sudo apt-get update#sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-pluginapt-cache madison docker-ce | awk &#x27;&#123; print $3 &#125;&#x27;
 
+6、安装指定版本docker
+VERSION_STRING=5:20.10.13~3-0~ubuntu-focalsudo apt-get install docker-ce=$VERSION_STRING docker-ce-cli=$VERSION_STRING containerd.io docker-compose-plugin
+
+win10安装docker参考文档：《Win10安装配置Docker》
 helloworld运行容器国际惯例，先跑一个helloworld。
 docker pull busybox:1.25docker run busybox:1.25 echo &quot;helloworld&quot;
 
@@ -24794,6 +24979,59 @@ Docker常用命令参考《Docker常用命令》
         <tag>docker</tag>
         <tag>centos</tag>
         <tag>harbor</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Win10安装配置Docker</title>
+    <url>/dev-win10-docker/</url>
+    <content><![CDATA[WSL2简介WSL全拼是Windows Subsystem for Linux，WSL2是适用于Linux的Windows子系统体系结构的一个新版本。WSL2是基于Hyper-V虚拟化技术的，它在Windows上启动一个真正的Linux系统，使用一个定制的Linux内核。这个内核支持完整的Linux系统调用，所以可以在WSL2中运行任何Linux应用程序。
+WSL2和Windows之间相当于两台处于一个网络中但分别独立的主机，我们称这个网络为WSL网络。我们可以在Windows主机上使用ipconfig命令来查看Windows主机在WSL网络中的地址，相应地，在WSL2中你可以使用ifconfig命令来查看WSL2在WSL网络中的地址2。这样我们就可以在两个系统之间进行网络通信，比如访问Web服务或数据库等。
+WSL2还保留了WSL1的无缝集成特性，比如我们可以从Windows资源管理器中访问Linux文件系统，或者从Linux终端中运行Windows应用程序等。我们还可以通过wsl命令来管理和配置WSL2。
+
+
+安装Docker下载Docker Desktop for Windows，双击安装。安装时勾选使用WSL2 backend，在Windows上运行一个真正的Linux环境，但是无需传统虚拟机或双系统的额外负担，性能更好。
+安装WSL2参考文档：旧版 WSL 的手动安装步骤
+1、打开PowerShell搜索PowerShell，以管理员身份运行
+2、启用适用于 Linux 的 Windows 子系统
+dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+
+3、启用虚拟机功能
+dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+
+4、下载 Linux 内核更新包下载Linux 内核更新包，双击安装。
+更改Docker数据盘到D盘参考文档：WSL2下修改Docker Desktop镜像存放路径
+WSL发行版默认安装在C盘，在%LOCALAPPDATA%/Docker/wsl目录。Docker的运行数据、镜像文件都存在%LOCALAPPDATA%/Docker/wsl/data/ext4.vhdx中。
+更改Docker数据盘方法：
+1、关闭docker
+2、关闭所有linux发行版
+wsl -l -vwsl --shutdown
+
+3、导出docker-desktop-data到D盘（原有的docker images不会一起导出）只需要迁移docker-desktop-data一个发行版就行，docker-desktop不用管，它占用空间很小。手动创建目录D:\DockerData\docker-desktop-data\，然后执行导出命令
+wsl --export docker-desktop-data D:\DockerData\docker-desktop-data\docker-desktop-data.tar
+
+4、注销 docker-desktop-data
+wsl --unregister docker-desktop-data
+
+5、导入 docker-desktop-data
+wsl --import docker-desktop-data D:\DockerData\docker-desktop-data\ D:\DockerData\docker-desktop-data\docker-desktop-data.tar --version 2
+
+6、启动docker
+进入根路径的方法方法一：PowerShell中执行wsl命令登录进入（尝试不可行）
+wsl -d docker-desktop-data -u root
+
+方法二：Windows资源管理器路径中输入
+\\wsl.localhost\docker-desktop-data
+
+
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>docker</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>windows</tag>
+        <tag>wsl2</tag>
       </tags>
   </entry>
   <entry>
@@ -25681,16 +25919,17 @@ wiki转邮件有时候，编辑好了wiki页面，然后想作为邮件发送。
       </tags>
   </entry>
   <entry>
-    <title>连接MySQL报错ERROR 2002 (HY000)</title>
-    <url>/dev-mysql-error-2002/</url>
-    <content><![CDATA[问题描述mysql -u root -p，然后输入密码，登录mysql，报错如下：
+    <title>MySQL问题记录</title>
+    <url>/dev-mysql-problem/</url>
+    <content><![CDATA[前言本文记录使用MySQL过程中遇到的一些问题，备忘。
+
+
+ERROR 2002 (HY000)问题描述mysql -u root -p，然后输入密码，登录mysql，报错如下：
 ERROR 2002 (HY000): Can&#x27;t connect to local MySQL server through socket &#x27;/tmp/mysql.sock&#x27; (2)
 
-
-
-解决办法1、查看mysql.sock文件位置find / -name mysql.sock，结果为：
-/data/db/3306/mysql.sock
-和/tmp/mysql.sock不一致。
+排查解决参考文档：MySQL错误ERROR 2002 (HY000)
+1、查看mysql.sock文件位置find / -name mysql.sock，结果为：/data/db/3306/mysql.sock
+和报错中的/tmp/mysql.sock不一致。
 在/tmp下没有mysql.sock文件，依次执行touch mysql.sock，chmod 666 mysql.sock。
 重启mysql，service mysqld restart，再次登录mysql，报错如下：
 ERROR 2002 (HY000): Can&#x27;t connect to local MySQL server through socket &#x27;/tmp/mysql.sock&#x27; (111)
@@ -25705,13 +25944,32 @@ socket=/data/db/3306/mysql.socksocket = /data/db/3306/mysql.sock
 socket = /tmp/mysql.socksocket = /tmp/mysql.sock
 
 重启mysql，再次登录，成功！
-书签MySQL错误ERROR 2002 (HY000)http://www.jb51.net/article/56952.htm
+Lost connection to MySQL server during query问题描述Python使用tortoise-orm库连接MySQL，偶尔报错：
+2013, &#x27;Lost connection to MySQL server during query ([Errno 104] Connection reset by peer)&#x27;
+
+排查解决这是报错，是因为mysql自动断开了长时间没有任何动作的连接。
+解决办法：使用pool_recycle参数。
+原理：mysql根据wait_timeout和interactive_timeout的配置，自动断开长时间没有任何动作的连接。
+tortoise-orm的pool_recycle参数可以避免MySQL自动断开长时间没有任何动作的连接，是因为它会定期检查连接的有效性，并在超过指定时间后关闭并重新打开连接。这样，就可以保证连接池中的连接都是新鲜的，不会因为MySQL服务器的超时设置而被断开。
+pool_recycle应该小于wait_timeout和interactive_timeout。
+caching_sha2_password cannot be loaded问题描述mysql命令行连接mysql8.0，报错：
+ERROR 2059 (HY000): Authentication plugin &#x27;caching_sha2_password&#x27; cannot be loaded: /usr/lib64/mysql/plugin/caching_sha2_password.so: cannot open shared object file: No such file or directory
+
+排查解决原因：该错误通常是由于 MySQL 8 使用的默认身份验证插件已更改而引起的。MySQL 8 默认使用 caching_sha2_password 身份验证插件，而之前版本默认使用 mysql_native_password。
+解决方法一：服务端改用 mysql_native_password 插件
+[mysqld]default-authentication-plugin=mysql_native_password
+
+解决方法二：升级客户端，安装支持mysql8.0的client，参考文档《使用Docker安装配置MySQL》
 ]]></content>
       <categories>
         <category>engineering</category>
+        <category>python</category>
         <category>database</category>
+        <category>troubleshooting</category>
       </categories>
       <tags>
+        <tag>python</tag>
+        <tag>问题排查</tag>
         <tag>mysql</tag>
       </tags>
   </entry>
@@ -26758,7 +27016,7 @@ t0 = time()&lt; 你的 clf.fit() 代码行 &gt;print &#x27;training time:&#x27;,
 代码运行说明文件。纯文本或markdown格式，写明运行你的代码所需要的库，他们的安装方法和运行方法
 预测结果: 纯文本或CSV文件。
 
-对项目要求有疑问请致信 &#115;&#117;&#x70;&#x70;&#x6f;&#114;&#116;&#x40;&#x79;&#x6f;&#x75;&#x64;&#x61;&#120;&#117;&#101;&#x2e;&#99;&#x6f;&#x6d;
+对项目要求有疑问请致信 &#115;&#117;&#112;&#x70;&#x6f;&#114;&#116;&#x40;&#x79;&#111;&#117;&#100;&#x61;&#x78;&#x75;&#101;&#x2e;&#99;&#111;&#109;
 准备好提交项目后，请点击下一项，在“项目提交”小节中提交。
 ]]></content>
       <categories>
@@ -26799,7 +27057,7 @@ Resume Builder
 项目导师会根据该评估准则（与你制作简历时遵循的清单相符）对你的简历项目进行审核。
 提交准备好提交求职信后，你需要：
 1、删除/匿名化你的求职信上的所有个人联系人信息，以防泄漏隐私。2、创建 PDF 格式的简历，这样你的简历在不同操作系统/软件/屏幕中有一致的版面样式。3、点击下方的“提交项目”按钮，并根据说明操作。4、在“告知审核员”中，请包括任何有关你的职业目标（如申请的工作或领域），或任何有意偏离评估准则情况的详细信息。
-注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#115;&#x75;&#x70;&#x70;&#x6f;&#114;&#x74;&#64;&#x79;&#x6f;&#x75;&#100;&#x61;&#120;&#117;&#101;&#46;&#x63;&#x6f;&#109;。
+注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#115;&#117;&#112;&#112;&#x6f;&#114;&#x74;&#x40;&#x79;&#111;&#117;&#100;&#97;&#120;&#x75;&#x65;&#46;&#x63;&#x6f;&#109;。
 GitHub个人资料项目你的GitHub个人资料展示你创建的项目，并让他人了解你的工作风格和提交频率。通过展示你对 GitHub 的熟悉程度，其他开发人员和招聘经理能够知道你拥有他们需要能力，你就是他们正在寻找的人。你的代码库应表明你认真对待项目，并且能够编写干净、格式正确的代码。请查看 GitHub 上的这篇出色的博客文章，了解如何用 GitHub 帮助你持续学习，发展职业生涯。
 为何要完成此 GitHub 个人资料项目？GitHub 越来越多地被用作招聘平台以及潜在雇主查看你的作品的方式。它还是与其他开发人员建立联系和展示你的技能的好地方。
 我应该做什么？你应该以招聘人员或用人部门经理的眼光查看你的 GitHub 个人资料，重点关注你的个人资料、项目和代码如何将你描绘成公司的潜在候选人或项目的协作者。
@@ -26828,7 +27086,7 @@ GitHub项目提交你的 GitHub 主页是呈现给潜在雇主的“关键证据
 反馈优达学城项目导师会根据该标准（与你制作领英简介时遵循的清单相符）对你的领英简介项目进行审核。
 提交准备好提交领英个人资料后：
 1、若要提交，请点击下方的“提交项目”按钮，并根据说明操作。2、在“告知评审员”中，请包括任何有关你的职业目标（如预期工作领域）的详细信息。
-注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#115;&#117;&#x70;&#x70;&#111;&#114;&#116;&#x40;&#121;&#x6f;&#x75;&#x64;&#x61;&#120;&#x75;&#101;&#46;&#x63;&#x6f;&#x6d;。
+注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#x73;&#117;&#x70;&#112;&#111;&#114;&#116;&#64;&#121;&#111;&#117;&#x64;&#97;&#120;&#x75;&#101;&#x2e;&#x63;&#111;&#109;。
 技术面试项目对于此实战项目，你需要回答五个技术面试问题，这些问题涉及的是技术面试课程中讨论的各种主题。你应该用 Python 写出清晰高效的答案，并用文字解释代码的效率和设计理由。我们将安排合格的审核者检查你的答案，并针对任何精彩之处或欠缺的方面做出反馈：你的解决方案是最高效的吗？你很好地解释了你的想法吗？你的代码简洁易懂吗？
 请回答以下问题：
 问题 1: 假设有两个字符串 s 和 t，请判断 t 的变形词是否是 s 的子字符串。例如：如果 s = “udacity”，t = “ad”，则函数返回 True。你的函数定义应该为：“question1(s, t)”，并返回布尔值 True 或 False。 
@@ -26894,7 +27152,7 @@ Dice
 问题 5 - 通过一个情景举例说明正则化对学习好的模型的必要性，以及提供一个正则化没有意义的情景。
 问题 6 -你附近的杂货店想向顾客有针对性地发放对他们来说有用的优惠券。假设你可以访问每位顾客的购买历史和店铺商品目录，你将设计怎样一个系统，来决定发放哪些优惠券？你如何衡量这个系统的性能？
 问题 7 - 选择一个公司，然后描述你想应聘的该公司内的机器学习工程师职位（假设有）。现在，如果你已成功应聘，并从今天开始任职，在你看来，你的职位在下一年会有怎样的发展？你的长期职业目标是什么，这个职位如何帮助你实现长期目标？
-提交当你准备提交项目，点击下方“提交项目”，上传一份 PDF 文件。如果有任何与提交项目相关的疑问，或想查看提交状态，请向我们发送电子邮件询问（&#115;&#117;&#112;&#112;&#x6f;&#114;&#x74;&#64;&#x79;&#x6f;&#x75;&#x64;&#97;&#120;&#117;&#x65;&#x2e;&#99;&#111;&#109;）。
+提交当你准备提交项目，点击下方“提交项目”，上传一份 PDF 文件。如果有任何与提交项目相关的疑问，或想查看提交状态，请向我们发送电子邮件询问（&#x73;&#117;&#112;&#x70;&#x6f;&#114;&#x74;&#64;&#x79;&#x6f;&#x75;&#100;&#97;&#120;&#x75;&#101;&#46;&#99;&#111;&#109;）。
 项目资源项目评审标准。优达学城的项目导师会依据此评审标准审阅你的项目。你可以在提交前自行检查自己是否已达到所有标准。职业资源中心。你可以在这里找到更多有关准备面试的资源和贴士。
 接下来面试练习并不是只在你求职时才需要做的事情， 在你的整个职业生涯中，你都需要继续提高自己的面试技巧。抓住每一个机会，思考和与人交流你的职业目标。在申请一个职位之前，请思考清楚自己为什么要申请——这将极大地帮助你为面试做好准备。
 书签Interview Guide: Machine Learninghttps://career-resource-center.udacity.com/interview-courses-and-guides/machine-learning
@@ -27268,7 +27526,7 @@ notebook 项目导出的 HTML 文件，命名为 report.html。
 
 注意：所提交文件的文件名名，包括zip压缩包内的文件名，都不能含有中文及任何ASCII之外的字符，否则会造成提交失败。
 如何导出HTML的说明在 notebook 的最下方。 你也许需要先在命令后通过 pip install mistune 命令安装 mistune 。当你准备好所有这些文件，并且依照项目要求核对过之后，就可以在下面的项目提交页面提交你的项目了。
-如果你是第一次在优达学城提交项目，点击提交之后，要等1分钟左右才能打开提交页面。如果长时间打不开，可以刷新。如果依然无法打开项目提交页面，可以联系客服微信或者邮件至 &#115;&#117;&#x70;&#x70;&#111;&#x72;&#x74;&#x40;&#x79;&#x6f;&#x75;&#x64;&#x61;&#x78;&#x75;&#x65;&#x2e;&#x63;&#x6f;&#x6d;
+如果你是第一次在优达学城提交项目，点击提交之后，要等1分钟左右才能打开提交页面。如果长时间打不开，可以刷新。如果依然无法打开项目提交页面，可以联系客服微信或者邮件至 &#115;&#117;&#112;&#112;&#111;&#114;&#x74;&#x40;&#121;&#x6f;&#x75;&#100;&#97;&#x78;&#117;&#x65;&#x2e;&#x63;&#x6f;&#x6d;
 后记这个项目，是优达学城《机器学习工程师》课程提供的第一个实战项目。摘录了全文，方便查看。郝同学的项目地址：https://github.com/voidking/udaciyty-machine-learning/tree/master/projects/titanic_survival_exploration
 书签机器学习工程师（中/英）https://cn.udacity.com/course/machine-learning-engineer-nanodegree--nd009
 数据科学入门https://cn.udacity.com/course/intro-to-data-science--ud359
@@ -30222,7 +30480,7 @@ Node端源码https://github.com/voidking/nodebase/blob/master/controllers/weixin
 
 
 nodebasea node framework designed for myselfversion: v1.0.0url: https://github.com/voidking/nodebase.git  
-作者相关author: haojin(voidking)e-mail: &#118;&#111;&#x69;&#x64;&#x6b;&#105;&#x6e;&#103;&#64;&#113;&#x71;&#46;&#99;&#111;&#109;site: http://www.voidking.com   
+作者相关author: haojin(voidking)e-mail: &#x76;&#111;&#105;&#100;&#x6b;&#x69;&#x6e;&#x67;&#x40;&#113;&#113;&#46;&#x63;&#x6f;&#109;site: http://www.voidking.com   
 开发环境说明1、安装5.6.0以上Node2、安装mongodb，不要配置密码3、安装sass4、全局安装bower5、全局安装supervisor6、全局安装node-inspector7、全局安装puer8、运行前执行命令
 npm installbower install
 
@@ -36092,7 +36350,7 @@ XMPP网络任何XMPP网络都是由若干角色组成的，这些角色可以分
 
 插件许多XMPP服务器支持插件扩展，这些插件通常使用与服务器自身相同的语言编写，并在服务器的进程内运行。他们的作用很大程度上与外部组件重叠，但插件还能够访问内部服务器数据结构并改变核心服务器行为。
 XMPP寻址XMPP网络上每个实体都有一个或多个地址（JID，jabber identifier）。JID有多种不同形式，但它们通常看上去就像是电子邮件。
-JID有两种类型，裸JID和完整JID，而裸JID是完整JID去除资源部分后的地址。例如，某个客户端的完整JID是&#x76;&#111;&#x69;&#100;&#107;&#x69;&#110;&#103;&#64;&#118;&#111;&#x69;&#100;&#107;&#105;&#x6e;&#103;&#46;&#x6c;&#105;&#116;/library，那么它的裸JID就是&#118;&#x6f;&#x69;&#x64;&#107;&#105;&#x6e;&#103;&#64;&#118;&#111;&#105;&#x64;&#x6b;&#x69;&#x6e;&#103;&#x2e;&#x6c;&#105;&#x74;。
+JID有两种类型，裸JID和完整JID，而裸JID是完整JID去除资源部分后的地址。例如，某个客户端的完整JID是&#118;&#x6f;&#105;&#100;&#107;&#x69;&#110;&#103;&#64;&#118;&#111;&#x69;&#x64;&#x6b;&#105;&#x6e;&#103;&#46;&#108;&#x69;&#116;/library，那么它的裸JID就是&#x76;&#111;&#105;&#100;&#107;&#105;&#x6e;&#103;&#64;&#x76;&#111;&#x69;&#x64;&#107;&#x69;&#110;&#103;&#x2e;&#x6c;&#x69;&#116;。
 节在XMPP中，各项工作都是通过在一个XMPP流上发送和接收XMPP节来完成的。核心XMPP工具集由三种基本节组成，这三种节分别为&lt;presence&gt;、&lt;message&gt;、&lt;iq&gt;。
 XMPP流由两份XML文档组成，通信的每个方向均有一份文档。这份文档有一个根元素&lt;stream:stream&gt;，这个根元素的子元素由可路由的节以及与流相关的顶级子元素构成。下面给出一段简短的XMPP会话：
 &lt;stream:stream&gt;	&lt;iq type=&#x27;get&#x27;&gt;		&lt;query xmlns=&#x27;jabber:iq:roster&#x27;/&gt;	&lt;/iq&gt;		&lt;presence/&gt;		&lt;message to=&#x27;voidking@voidking.lit&#x27; from=&#x27;haojin@gmail.com/ballroom&#x27; type=&#x27;chat&#x27;&gt;		&lt;body&gt;I cannot talk of books in a ball-room; my head is always full of something else.&lt;/body&gt;	&lt;/message&gt;		&lt;presence type=&#x27;unavailable&#x27;/&gt;&lt;/stream:stream&gt;
@@ -41923,7 +42181,7 @@ mtools，显示所有支持MSDOS文件系统的命令。
 mutt
 mutt: mail user agent，文字界面的邮件工具
 
-mutt -s &quot;A test mail&quot; josfeng@gmail.com，将邮件寄给 &#x6a;&#x6f;&#x73;&#x66;&#101;&#x6e;&#x67;&#x40;&#103;&#x6d;&#97;&#x69;&#108;&#46;&#x63;&#x6f;&#109;，信件主题为A test mail。
+mutt -s &quot;A test mail&quot; josfeng@gmail.com，将邮件寄给 &#x6a;&#x6f;&#x73;&#x66;&#x65;&#110;&#x67;&#x40;&#103;&#x6d;&#97;&#105;&#x6c;&#x2e;&#x63;&#x6f;&#x6d;，信件主题为A test mail。
 mv
 mv: move，移动或重命名文件或目录
 
