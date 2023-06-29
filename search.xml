@@ -580,8 +580,27 @@ docker: Error response from daemon: OCI runtime create failed: container_linux.g
 最终解决办法：检查libm.so.6的软链指向，修改指向到另外的libm。
 cd /usr/bin/../lib64/ln -snf libm-2.17.so  libm.so.6
 
+error pulling image configuration问题描述docker pull ubuntu 报错：
+Using default tag: latestlatest: Pulling from library/ubuntu6b851dcae6ca: Pulling fs layererror pulling image configuration: Get https://production.cloudflare.docker.com/registry-v2/docker/registry/v2/blobs/sha256/99/99284ca6cea039c7784d1414608c6e846dd56830c2a13e1341be681c3ffcc8ac/data?verify=1687183284-D5%2FDxEvl7V%2BLtRcgWmwP0MDFiTo%3D: dial tcp 104.18.125.25:443: i/o timeout
 
+问题分析production.cloudflare.docker.com 的IP是会变化的，当前的这个 104.18.121.25 刚好被墙了，无法访问。查看是否被墙的办法：访问ITDOG，输入 production.cloudflare.docker.com 这个网址。
+解决办法一配置使用镜像站，从镜像站拉取镜像，避开 production.cloudflare.docker.com 这个域名。
+1、编辑docker配置文件 
+vim /etc/docker/daemon.json
 
+添加 registry-mirrors 配置，配置方法参考《Docker镜像站的配置和使用》
+2、重启docker
+systemctl restart dockerdocker info
+
+解决办法二解决办法一，有时也不可行，因为有可能全国都被墙了，镜像站也无法从源站拉取我们需要的镜像。
+此时只能使用终极解决办法：使用梯子。方法一：机器上直接配置使用梯子，配置方法参考《Linux配置网络代理》。方法二：搭建一个docker本地镜像站，配置使用梯子；其他机器配置使用这个docker镜像站。配置方法参考《Docker镜像站的配置和使用》。
+failed to compute cache key问题描述已知Dockerfile内容为：
+FROM alpine:3.7.3WORKDIR /home/workCOPY Dockerfile .
+
+Dockerfile所在目录，执行docker build报错：
+failed to compute cache key: failed to calculate checksum of ref moby::heujqm1lca2el12jsbquzoarg: &quot;/Dockerfile&quot;: not found
+
+解决办法检查 .dockerignore 文件，大概率是因为该文件中忽略了 Dockerfile 。
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -828,21 +847,16 @@ docker-machine create -d virtualbox test
 sudo gitlab-runner register --url https://gitlab.voidking.com/ --registration-token $REGISTRATION_TOKEN
 
 根据提示，填写url、token、description、tags、executor类型等信息，这里executor类型填写docker+machine，最后填写一个默认的镜像。
-配置镜像加速参考文档：Docker Registry
-1、启动本地仓库
-docker run -d -p 5001:5000 -e REGISTRY_PROXY_REMOTEURL=https://gcr.io -e HTTPS_PROXY=socks5://192.168.56.1 -v /data/docker_registry_cache_gcr:/var/lib/registry --restart always --name gcr_io_registry registry:2docker run -d -p 5000:5000 -e REGISTRY_PROXY_REMOTEURL=https://registry-1.docker.io -v /data/docker_registry_cache_gcr:/var/lib/registry --restart always --name gcr_io_registry registry:2
-
-2、修改daemon.json
-&#123;    &quot;registry-mirrors&quot;: [&quot;http://localhost:5000&quot;,&quot;http://localhost:5001&quot;]&#125;
-
+配置镜像加速（可选）参考文档《Docker镜像站的配置和使用》，搭建本地镜像站。
 配置缓存1、启动minio容器
 docker run -d --name minio \--restart always \-p 9000:9000 \-p 9001:9001  \-v /data/minio/.minio:/data/.minio \-v /data/minio/export:/export \-e &quot;MINIO_ROOT_USER=root&quot; \-e &quot;MINIO_ROOT_PASSWORD=xxxxxx&quot; \minio/minio:latest server /export --console-address &quot;:9001&quot;
 
 2、页面访问http://192.168.56.101:9001/ 
 配置Runner1、修改 /etc/gitlab-runner/config.toml
-concurrent = 3check_interval = 0[session_server]  session_timeout = 1800[[runners]]  limit = 3  name = &quot;dockermachine&quot;  url = &quot;https://gitlab.voidking.com&quot;  token = &quot;xxx&quot;  executor = &quot;docker+machine&quot;  [runners.custom_build_dir]    enabled = true  [runners.cache]    Type = &quot;s3&quot;    Path = &quot;runner&quot;    Shared = true    [runners.cache.s3]      ServerAddress = &quot;192.168.56.101:9000&quot;      AccessKey = &quot;root&quot;      SecretKey = &quot;xxx&quot;      BucketName = &quot;runner&quot;      Insecure = true    [runners.cache.gcs]    [runners.cache.azure]  [runners.docker]    tls_verify = false    image = &quot;docker:19.03&quot;    privileged = true    disable_entrypoint_overwrite = false    oom_kill_disable = false    disable_cache = false    volumes = [&quot;/certs/client&quot;,&quot;/cache&quot;, &quot;/var/run/docker.sock:/var/run/docker.sock&quot;]    pull_policy = [&quot;if-not-present&quot;]    shm_size = 0  [runners.machine]    IdleCount = 5    MaxGrowthRate = 1    IdleTime = 1800    MachineDriver = &quot;virtualbox&quot;    MachineName = &quot;auto-scale-%s&quot;    MachineOptions = [      &quot;engine-registry-mirror=http://192.168.56.101:5000&quot;,      &quot;virtualbox-memory=4048&quot;,      &quot;virtualbox-disk-size=204800&quot;,      &quot;virtualbox-cpu-count=2&quot;    ]
+concurrent = 3check_interval = 0[session_server]  session_timeout = 1800[[runners]]  limit = 3  name = &quot;dockermachine&quot;  url = &quot;https://gitlab.voidking.com&quot;  token = &quot;xxx&quot;  executor = &quot;docker+machine&quot;  [runners.custom_build_dir]    enabled = true  [runners.cache]    Type = &quot;s3&quot;    Path = &quot;runner&quot;    Shared = true    [runners.cache.s3]      ServerAddress = &quot;192.168.56.101:9000&quot;      AccessKey = &quot;root&quot;      SecretKey = &quot;xxx&quot;      BucketName = &quot;runner&quot;      Insecure = true    [runners.cache.gcs]    [runners.cache.azure]  [runners.docker]    tls_verify = false    image = &quot;docker:19.03&quot;    privileged = true    disable_entrypoint_overwrite = false    oom_kill_disable = false    disable_cache = false    volumes = [&quot;/certs/client&quot;,&quot;/cache&quot;, &quot;/var/run/docker.sock:/var/run/docker.sock&quot;]    pull_policy = [&quot;if-not-present&quot;]    shm_size = 0  [runners.machine]    IdleCount = 5    MaxGrowthRate = 1    IdleTime = 1800    MachineDriver = &quot;virtualbox&quot;    MachineName = &quot;auto-scale-%s&quot;    MachineOptions = [      &quot;engine-registry-mirror=http://192.168.56.101:5000&quot;,      &quot;engine-registry-mirror=http://192.168.56.101:5001&quot;,      &quot;virtualbox-memory=4048&quot;,      &quot;virtualbox-disk-size=204800&quot;,      &quot;virtualbox-cpu-count=2&quot;    ]
 
 注意：runners.docker.image要指定版本，否则每次构建都会拉取最新版的docker，而最新版本的docker不支持http请求镜像仓库。更多docker版本可以访问dockerhub - docker获取。
+其中MachineOptions中给定的参数，是docker-machine create命令接收的参数。
 2、重新启动runner
 gitlab-runner restart
 
@@ -1195,8 +1209,16 @@ source ~/.bashrc
 
 验证安装kubectl krewkubectl krew updatekubectl krew search
 
-使用krew安装sniff
+使用krew例如，安装neat
+kubectl krew install neat
+
+例如，安装sniff
 kubectl krew install sniff
+
+后记除了使用krew安装kubectl插件之外，还有另外一个更加直接的办法安装kubectl插件：下载插件的二进制文件，和kubectl文件放到一起。例如，安装neat：
+wget https://github.com/itaysk/kubectl-neat/releases/download/v2.0.3/kubectl-neat_linux_amd64.tar.gztar -xzvf kubectl-neat_linux_amd64.tar.gzwhich kubectl # /usr/bin/kubectlmv kubectl-neat /usr/binkubectl neat -hkubectl get pod test -oyaml | kubectl neat
+
+
 
 
 
@@ -1263,6 +1285,9 @@ kubectl apply -f namespace.yamlkubectl apply -f rbac.yamlkubectl apply -f deploy
 4、查看安装
 kubectl get all -n imagepullsecret-patcherkubectl get sa -n imagepullsecret-patcherkubectl get sa default -n imagepullsecret-patcher -oyaml
 可以发现，harbor-secret 已经注入到了sa中。
+修改imagePullSecrets有时候，我们需要修改imagePullSecrets，比如修改用户名和密码。这时可以直接修改 image-pull-secret-src 这个secret，修改完成后，imagepullsecret-patcher会自动完成所有namespace下的 harbor-secret 的修改。
+kubectl edit secret image-pull-secret-src -n imagepullsecret-patcher
+
 删除imagePullSecrets有时候，我们需要替换imagePullSecrets，比如imagePullSecrets名称发生了变更。这时就需要删除原本的imagePullSecrets。
 单个sa删除imagePullSecrets方法：
 INDEX=$(kubectl get sa default -n imagepullsecret-patcher -o json | jq &#x27;.imagePullSecrets | map(.name == &quot;harbor-secret&quot;) | index(true)&#x27;)kubectl patch sa default --type=json -p=&quot;[&#123;&#x27;op&#x27;: &#x27;remove&#x27;, &#x27;path&#x27;: &#x27;/imagePullSecrets/$INDEX&#x27;&#125;]&quot; -n imagepullsecret-patcher
@@ -1291,7 +1316,10 @@ dockerconfigjson2 内容为：
 
 那么 dockerconfigjson1 和 dockerconfigjson2 可以拼接成一个明文dockerconfigjson：
 jq -n &#x27;reduce inputs as $i (&#123;&#125;; . * $i)&#x27; dockerconfigjson1 dockerconfigjson2 | jq -c
+
 然后通过base64加密，就是我们需要的加密后的dockerconfigjson。
+jq -n &#x27;reduce inputs as $i (&#123;&#125;; . * $i)&#x27; dockerconfigjson1 dockerconfigjson2 | jq -c | base64 | tr -d &#x27;\n&#x27;
+
 参考文档：
 
 Multiple deployments for multiple secrets / private registries?
@@ -7029,7 +7057,7 @@ sudo curl -L https://raw.githubusercontent.com/beautifulcode/ssh-copy-id-for-OSX
 ssh jumpboxssh bastionhost
 
 tldrtldr项目是社区维护的命令行工具帮助页面的集合，旨在成为对传统帮助的更简单的补充。
-1、安装b
+1、安装tldr
 pip3 install tldr
 
 2、使用
@@ -7059,6 +7087,13 @@ j dirname
 然后配合tab补全，回车跳转目录。
 PS：linux中可以通过配置CDPATH变量实现快捷cd目录.bash_profile添加：
 # workdirCDPATH=&quot;.:~:~/git&quot;
+
+ftp client1、解除telnet链接
+brew unlink telnet
+
+如果之前已经安装过telnet，需要解除链接。因为ftp命令依赖inetutils，inetutils包含telnet，安装inetutils时会和单独安装的telnet发生冲突。
+2、安装inetutils
+brew install libidnbrew install inetutilstelnet --helpftp --help
 
 编辑器sublimesublime破解方法（已失效）：
 1、vim /etc/hosts，添加
@@ -7272,8 +7307,12 @@ cd ..open .# 界面点击推出移动硬盘
 方法二：
 cd ..diskutil unmount /Volumes/WDdiskutil unmount force /Volumes/WD
 
-
-
+检查wifi信号强度显示附近可用wifi网络列表，包括信号强度、信道和加密类型等。
+/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -s
+其中RSSI表示信号强度，这个值越接近0值，信号强度越好。
+查看当前连接的wifi网络信息，包括信号强度、信道和加密类型等。
+/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I
+其中agrCtlRSSI表示信号强度，这个值越接近0值，信号强度越好。
 ]]></content>
       <categories>
         <category>computer</category>
@@ -7399,6 +7438,7 @@ yum list | grep postgresqlyum install postgresql.x86_64psql -U postgres -h local
         <tag>k8s</tag>
         <tag>docker</tag>
         <tag>数据库</tag>
+        <tag>harbor</tag>
       </tags>
   </entry>
   <entry>
@@ -7481,6 +7521,7 @@ docker push如果报错：The push refers to repository [harbor.voidking.com/voi
 查找docker-compose.yml如果不知道harbor docker-compose.yml的目录，就没有办法对harbor服务进行启停。查找docker-compose.yml最好使用locate命令，速度快。
 locate docker-compose.yml
 
+修改harbor数据库参考文档：《PostgreSQL入门篇》
 错误排查cd /var/log/harbor/ls -ltail -n 100 core.log
 
 配置Harbor自动启动当docker发生了重启之后，需要手动执行docker-compose start启动harbor，比较麻烦，因此最好配置上harbor的自动启动。详情参考Docker 笔记 - 将 Harbor 设置为系统服务
@@ -7519,8 +7560,8 @@ Creating a Replication Rule
       </tags>
   </entry>
   <entry>
-    <title>JSONPath</title>
-    <url>/dev-jsonpath/</url>
+    <title>JSONPath入门篇</title>
+    <url>/dev-jsonpath-start/</url>
     <content><![CDATA[JSONPath简介
 JSON (JavaScript Object Notation) allows for easy interchange of data, often between a program and a database.
 
@@ -7884,7 +7925,11 @@ IPsec-VPN入门概述
 
 Kubeadm is a tool built to provide kubeadm init and kubeadm join as best-practice “fast paths” for creating Kubernetes clusters.
 
-更多内容，参考Overview of kubeadm和Installing kubeadm。
+参考文档：
+
+Overview of kubeadm
+Installing kubeadm
+
 
 
 安装流程目标：搭建一个k8s集群，包括master和node01两个节点，节点系统为centos7.6.1810。master节点ip为192.168.56.200，node01节点ip为192.168.56.201。
@@ -8039,11 +8084,12 @@ systemctl status firewalldsystemctl stop firewalldsystemctl disable firewalld
   <entry>
     <title>使用kubeadm安装部署K8S集群——Ubuntu篇</title>
     <url>/dev-kubeadm-install-k8s-in-ubuntu/</url>
-    <content><![CDATA[kubeadm简介《使用kubeadm升级K8S集群》一文中，了解了k8s集群中常见组件，并且使用kubeadm对k8s集群进行了升级。本文中，会学习使用kubeadm安装部署k8s集群。
+    <content><![CDATA[前言《使用kubeadm安装部署K8S集群——CentOS篇》一文中，在CentOS系统中部署了K8S集群。本文中，我们学习使用kubeadm在Ubuntu系统中安装部署k8s集群。
+参考文档：
 
-Kubeadm is a tool built to provide kubeadm init and kubeadm join as best-practice “fast paths” for creating Kubernetes clusters.
+Overview of kubeadm
+Installing kubeadm
 
-更多内容，参考Overview of kubeadm和Installing kubeadm。
 
 
 安装流程目标：搭建一个k8s集群，包括master和node01两个节点，节点系统为ubuntu16.04.2。
@@ -8059,41 +8105,16 @@ Kubeadm is a tool built to provide kubeadm init and kubeadm join as best-practic
 
 4、参考Docker入门，安装Docker
 安装kubeadm参考Installing kubeadm。
-1、确认系统版本cat /etc/os-release
+1、确认系统版本
+cat /etc/os-release
+
 2、执行安装kubeadm、kubelet和kubectl（两个节点都要执行）
 sudo apt-get update &amp;&amp; sudo apt-get install -y apt-transport-https curlcurl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -cat &lt;&lt;EOF | sudo tee /etc/apt/sources.list.d/kubernetes.listdeb https://apt.kubernetes.io/ kubernetes-xenial mainEOFsudo apt-get updatesudo apt-get install -y kubelet kubeadm kubectlsudo apt-mark hold kubelet kubeadm kubectl
 
-3、查看kubelet版本kubelet --version
-初始化节点参考Installing kubeadm on your hosts。
-master1、下载必须的镜像文件（默认从gcr.io下载）kubeadm config images pull
-2、执行初始化kubeadm init完成后，屏幕输出会提示创建配置文件，以及添加worker node的join命令，记录下来。
-3、创建配置文件
-mkdir -p $HOME/.kubesudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/configsudo chown $(id -u):$(id -g) $HOME/.kube/config
+3、查看kubelet版本
+kubelet --version
 
-PS：如果忘记了添加worker node的join命令，可以重新生成。
-kubeadm token create --helpkubeadm token create --print-join-command
-生成新的join命令后，之前的join命令同样可以使用。
-node011、使用join命令，添加node01节点到集群
-kubeadm join 172.17.0.53:6443 --token b09bi7.ob6evvc11a8jt1ie \    --discovery-token-ca-cert-hash sha256:8abadf8f2eb81301060af3ac6002959714ccf79aaf853546445a2fd6a0265001
-
-2、验证结果在master节点执行：kubectl get nodes可以看到master节点和node01节点，都是NotReady的状态。
-安装网络插件参考Installing a Pod network add-on，本文中选择安装weave。（以下命令都是在master节点执行。）
-1、安装weave
-kubectl apply -f &quot;https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d &#x27;\n&#x27;)&quot;
-
-2、验证结果kubectl get nodes -w等待一会，可以看到master节点和node01节点，变化为Ready的状态，nice。
-以上，k8s集群安装部署完成。
-验证安装手动验证kubectl get nodeskubectl get pods --all-namespacesservice kube-apiserver statusservice kube-controller-manager statusservice kube-scheduler statusservice kubelet statusservice kube-proxy status
-
-kubectl run nginxkubectl get podskubectl scale --replicas=3 deploy/nginxkubectl get podskubectl expose deployment nginx --port=80 --type=NodePortkubectl get servicecurl http://node01:31850
-
-test-infra源码地址：kubernetes/test-infra
-1、拉取源码go get -u k8s.io/test-infra/kubetest
-2、执行kubetest
-kubetest --extract=v1.11.3cd kubernetesexport KUBE_MASTER_IP=&quot;172.17.0.53:6443&quot;export KUBE_MASTER=kube-masterkubetest --test --provider=skeleton &gt; testout.txtkubetest --test --provider=skeleton --test_args=&quot;ginkgo.focus=Secrets&quot; &gt; testout.txtcat testout.txt
-
-Smoke Test按照Smoke Test文档操作一遍。
-sonobuoy官网地址：sonobuoy源码地址：vmware-tanzu/sonobuoy
+CONTINUE后续步骤，和《使用kubeadm安装部署K8S集群——CentOS篇》中的步骤相同。
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -8321,6 +8342,15 @@ openssl x509 -in cert.der -inform der -text -noout
 # pem to deropenssl x509 -in cert.crt -outform der -out cert.der# der to pemopenssl x509 -in cert.crt -inform der -outform pem -out cert.pem
 
 创建服务账户kubectl create serviceaccount jane
+
+注意：v1.22 之前的 Kubernetes 版本会自动创建凭据访问 Kubernetes API。 这种更老的机制基于先创建令牌 Secret，然后将其挂载到正运行的 Pod 中。在包括 Kubernetes v1.27 在内最近的几个版本中，使用 TokenRequest API 直接获得 API 凭据， 并使用投射卷挂载到 Pod 中。使用这种方法获得的令牌具有绑定的生命周期， 当挂载的 Pod 被删除时这些令牌将自动失效。你仍然可以手动创建 Secret 来保存服务账号令牌；例如在你需要一个永不过期的令牌的时候。一旦你手动创建一个 Secret 并将其关联到 ServiceAccount， Kubernetes 控制平面就会自动将令牌填充到该 Secret 中。
+简单来说，新版本的K8S创建sa时，已经不会自动生成admin-user-token-xxx这种secret，也就不同从这种secret中获取token。
+详情参考文档手动管理 ServiceAccount 的 Secret
+手动创建API令牌的方法：
+kubectl create token jane --duration=8760h
+该令牌只会显示一次，请保存好它。
+创建长期有效API令牌的方法：
+kubectl apply -f - &lt;&lt;EOFapiVersion: v1kind: Secretmetadata:  name: jane-secret  annotations:    kubernetes.io/service-account.name: janetype: kubernetes.io/service-account-tokenEOFkubectl describe secrets/jane-secret # 查看token部分
 
 授权创建完用户账户和服务账户，只是有了账户，并没有K8S集群的权限。账户授权方法参考文档《K8S中的RBAC鉴权》。
 K8S中的数字证书我们自己创建的用户账户拥有自己的数字证书，除此之外，K8S的各个组件也拥有自己的数字证书，用于组件之间的安全访问。
@@ -8569,6 +8599,7 @@ kubectl create ns ingress-nginxhelm install ingress-nginx ingress-nginx/ingress-
 5、查看安装
 kubectl get all -n ingress-nginxkubectl get ingressclass
 
+注意：新版本的ingress，会创建ingressclass，但是一些旧版本的ingress，并没有ingressclass这种资源。在 Kubernetes 1.18 之前，通常是在 Ingress 资源上通过 kubernetes.io/ingress.class 注解来指定使用的 Ingress Controller。虽然这个注解从未被正式定义过，但却是被各个 Ingress Controller 所广泛支持的，注解的值可以在Ingress Controller启动时指定。Kubernetes 1.18 起提供了 IngressClass 资源，IngressClass指定关联spec.controller，Ingress指定关联spec.ingressClassName，就实现了Ingress指定Ingress Controller。详情参考文档K8s Ingress、Ingress Controller 和 Ingress Class
 KS中的Ingress Controller如果k8s集群中安装了kubesphere，那么可以直接启用kubesphere的网关，本质也是ingress nginx controller。开启办法：admin用户登录控制台，集群设置，网关设置，启用网关。
 参考文档：
 
@@ -8659,12 +8690,7 @@ k8s集群中，使用ingress配置了很多四级域名，例如 test0.intl.void
 ingress位于不同的namespace
 
 需求：*.intl.voidking.com域名证书过期，需要批量修改k8s中对应的四级域名证书，不要影响五级域名证书。
-1、准备脚本 patch.sh
-#!/bin/bashdomain=$1if [[ -z &quot;$domain&quot; ]];then  echo &quot;domain can not be null!&quot;  exit 1ficrt=&quot;/etc/letsencrypt/live/$&#123;domain&#125;/fullchain.pem&quot;key=&quot;/etc/letsencrypt/live/$&#123;domain&#125;/privkey.pem&quot;if [[ ! (-e $crt &amp;&amp; -e $key) ]];then  echo &quot;$crt or $key does not exist!&quot;  exit 1fitlscrt=$(cat $crt | base64 | tr -d &#x27;\n&#x27;)tlskey=$(cat $key | base64 | tr -d &#x27;\n&#x27;)kubectl get ingress -A | grep &quot;\.$domain&quot; | grep -Pv &quot;.+\..+\.$domain&quot; | awk &#x27;&#123;print $1&quot; &quot;$2&quot; &quot;$4&#125;&#x27; &gt; ingress.txtcat ingress.txtread -p &quot;is the content right？[Y/N]&quot; inputif [[ ! ($input = &quot;y&quot; || $input = &quot;Y&quot;) ]];then  &quot;exit!&quot;  exit 0fiwhile read line;do    echo &quot;$line&quot;    namespace=$(echo &quot;$line&quot; | awk &#x27;&#123;print $1&#125;&#x27;)    ingressname=$(echo &quot;$line&quot; | awk &#x27;&#123;print $2&#125;&#x27;)    secretname=$(kubectl get ingress $ingressname -n $namespace -o=jsonpath=&#x27;&#123;.spec.tls[0].secretName&#125;&#x27;)    echo &quot;secret: $secretname&quot;    if [[ -z &quot;$secretname&quot; ]];then      &quot;ingress $ingressname does not link secret!&quot;      continue    fi    kubectl patch secret $secretname \    -p &quot;&#123;\&quot;data\&quot;: &#123;\&quot;tls.crt\&quot;: \&quot;$tlscrt\&quot;&#125;&#125;&quot; \    -n $namespace    kubectl patch secret $secretname \    -p &quot;&#123;\&quot;data\&quot;: &#123;\&quot;tls.key\&quot;: \&quot;$tlskey\&quot;&#125;&#125;&quot; \    -n $namespacedone &lt; ingress.txt
-
-2、执行脚本
-bash patch.sh intl.voidking.com
-
+脚本实现：patch-ingress-tls
 前后端分离需求描述：前端后端是两个服务，位于两个namespace，要配置ingress，使发往路由/的流量打到前端服务，发往/api的流量打到后端服务。
 方法一：在一个namespace中，创建一个ingress和一个externalname类型的service。在ingress中配置两个path。
 方法二：在两个namespace中，分别创建一个ingress。host相同，配置不同的path，ingress-controller会自动合并这两个配置。
@@ -8725,8 +8751,54 @@ Nginx -&gt; IngressDomain -&gt; Nginx -&gt; Ingress -&gt; Service -&gt; Pod
         <tag>ssl</tag>
         <tag>网络</tag>
         <tag>helm</tag>
-        <tag>kubesphere</tag>
         <tag>ingress</tag>
+        <tag>kubesphere</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>K8S中的Service详解</title>
+    <url>/dev-k8s-service/</url>
+    <content><![CDATA[K8S中的Service分类K8S中Service的作用是四层负载均衡，把发往Service的流量负载均衡到对应的Pod（endpoints）上。根据暴露服务方式的不同，可以分为四种类型：ClusterIP、NodePort、LoadBalancer和ExternalName。
+参考文档：
+
+服务
+一文讲透K8s的Service概念
+
+
+
+ClusterIPClusterIP：通过集群的内部 IP 暴露服务，选择该值时服务只能够在集群内部访问。 这也是默认的 ServiceType。
+NodePortNodePort：通过每个节点上的 IP 和静态端口（NodePort）暴露服务。 NodePort 服务会路由到自动创建的 ClusterIP 服务。 通过请求 &lt;节点 IP&gt;:&lt;节点端口&gt;，你可以从集群的外部访问一个 NodePort 服务。NodePort的默认范围是30000-32767，可以通过–service-node-port-range修改。
+LoadBalancerLoadBalancer：使用云提供商的负载均衡器向外部暴露服务。 外部负载均衡器可以将流量路由到自动创建的 NodePort 服务和 ClusterIP 服务上。
+ExternalNameExternalName：通过返回 CNAME 和对应值，可以将服务映射到 externalName 字段的内容（例如，foo.bar.example.com），实现外部服务的对内映射。
+这个类型的作用主要是为了方便迁移，比如现在集群中的服务依赖一个外部的服务，那就可以使用ExternalName把这个外部服务映射到集群内部，以后这个外部服务迁移到集群内部，我们可以通过修改service类型使用内部的新服务，对于依赖方是无感的。
+externalName虽然可以配置IP地址，但是Ingress和CoreDNS并没有解析。如果外部服务为IP，则可以使用Headless Service来实现映射。
+示例1：
+apiVersion: v1kind: Servicemetadata:  name: mysqlspec:  type: ExternalName  externalName: mysql.example.com  ports:    - protocol: TCP      port: 3306      targetPort: 3306
+
+示例2：
+apiVersion: v1kind: Servicemetadata:  name: mysqlspec:  type: ClusterIP  clusterIP: None  ports:  - port: 3306    targetPort: 3306---apiVersion: v1kind: Endpointsmetadata: name: mysqlsubsets:- addresses:  - ip: 192.168.56.10  ports:  - port: 3306
+
+参考文档：Kubernetes External Service Mapping
+注意：一个service可能有多个endpoint，这些endpoint要求IP不同。比如，mysql:3306对应的endpoint是192.168.56.10:3306，如果想要再增加endpoint，那么需要增加IP，而不是增加port。
+Headless ServiceHeadless Service，实际上属于ClusterIP类型，是一种特殊的ClusterIP。有时不需要负载均衡，也不需要单独的 ServiceIP，可以通过指定 ClusterIP（spec.clusterIP）的值为 “None” 来创建 Headless Service。Headless Service常用于StatefulSet类型负载的对外服务暴露，或者外部服务的对内映射。
+Headless Service和普通Service的不同有两点：1、在DNS查询时普通Service会返回ServiceIP，而Headless Service会返回多个真实的endpoint，这样客户端就可以自己选择调用哪一个endpoint。2、Headless Service对应的每一个pod都会分配一个DNS域名，这样pod间就可以通过域名互相访问了。而有状态服务就需要这种互相不同的识别，因此，Headless Service常常和statefulset配合使用。
+参考文档：
+
+Headless Services
+K8S容器编排之Headless浅谈
+
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>k8s</category>
+        <category>cloudnative</category>
+        <category>network</category>
+        <category>architecture</category>
+      </categories>
+      <tags>
+        <tag>架构</tag>
+        <tag>k8s</tag>
+        <tag>网络</tag>
       </tags>
   </entry>
   <entry>
@@ -10230,11 +10302,14 @@ mem_fragmentation_ratio &gt; 1.5 说明Redis消耗了实际需要物理内存的
 手动清理内存碎片方法：
 memory purge
 
-但是，对于redis5.0.14，这个内存碎片率的说明并不适用，经测试查看到的内存碎片率为13-15，远大于1。参考文档Redis 5.0.11 high memory fragmentation ratio可知：
+但是，对于redis5.0.14，这个内存碎片率的说明并不适用，经测试查看到的内存碎片率为13-15，远大于1。参考文档Commands - INFO和Redis 5.0.11 high memory fragmentation ratio可知：
+
+allocator_frag_ratio:: Ratio between allocator_active and allocator_allocated. This is the true (external) fragmentation metric (not mem_fragmentation_ratio).
+
 
 you are looking at mem_fragmentation_ratio which is not actually fragmentation. It’s the ratio of used memory to RSS (resident physical memory), We don’t rename if for the sake of backwards compatibility.RSS includes shared libraries, code, stack and other things, so while this metric is useful, it’s not actually fragmentation (which has risk of rising to high values).If you wanna look at fragmentation, you should look at allocator_frag_ratio instead.But another point is that your db is nearly empty, so although the ratio seems high, it’s not actually a lot of memory.allocator_frag_bytes shows just about 400kb.You only wanna be concerned if that number is high, and in that case you can enable activedefrag
 
-因此，对于redis5.0.14，内存碎片率应该查看 allocator_frag_ratio 而不是 mem_fragmentation_ratio。
+因此，对于redis5.0.14和更高版本，内存碎片率应该查看 allocator_frag_ratio 而不是 mem_fragmentation_ratio。
 Redis可视化工具RedisInsightRedisInsight is supported on multiple operating systems: Linux, Windows, and macOS.
 RedisInsight supports all Redis deployments. Whether you use Redis Open Source, Redis Stack, Redis Enterprise Software, Redis Enterprise Cloud, or Amazon ElastiCache, RedisInsight makes it easy to interact with your data and your application.
 官方网站：RedisInsight
@@ -10786,7 +10861,7 @@ gomod实践篇安装client-go假设一个项目依赖client-go，那么参考官
 失败了，返回404，猜测是12.0版本在代理服务器不存在，使用另外一种下载方式。
 go get k8s.io/client-go@kubernetes-1.15.0
 此处下载了两个版本的client-go，我们使用v0.0.0版本。
-4、安装client-go相关依赖client-go默认下载到$GOPATH/pkg/mod/k8s.io目录下，把k8s.io目录移动到$GOPATH/src目录下。然后把&#x63;&#108;&#x69;&#101;&#110;&#x74;&#45;&#x67;&#111;&#64;&#x76;&#48;&#x2e;&#48;&#x2e;&#x30;重命名为client-go，然后在client-go目录下执行安装依赖的命令：
+4、安装client-go相关依赖client-go默认下载到$GOPATH/pkg/mod/k8s.io目录下，把k8s.io目录移动到$GOPATH/src目录下。然后把&#x63;&#x6c;&#x69;&#x65;&#x6e;&#x74;&#x2d;&#103;&#111;&#64;&#x76;&#48;&#x2e;&#x30;&#x2e;&#x30;重命名为client-go，然后在client-go目录下执行安装依赖的命令：
 export GOPROXY=https://goproxy.ioexport GO111MODULE=ongo mod vendor
 完成之后，所有的依赖都下载到了client-go/vendor目录下，一个完整的client-go依赖库就准备好了。
 依赖库版本管理client-go依赖库准备好了，但是另一个问题来了：假设项目vk-project依赖client-go和库A，client-go依赖库A，两个依赖库A版本不一致，那么vk-project在编译时，会同时依赖两个不同的库A，导致编译出的二进制包有问题。
@@ -10972,6 +11047,7 @@ projected：投射卷能将多个卷来源映射到同一目录上。
 
 持久卷（PersistentVolume，PV） 是集群中的一块存储，可以由管理员事先制备， 或者使用存储类（Storage Class）来动态制备。 持久卷是集群资源，就像节点也是集群资源一样。PV 持久卷和普通的 Volume 一样， 也是使用卷插件来实现的，只是它们拥有独立于任何使用 PV 的 Pod 的生命周期。 此 API 对象中记述了存储的实现细节，无论其背后是 NFS、iSCSI 还是特定于云平台的存储系统。
 持久卷申领（PersistentVolumeClaim，PVC） 表达的是用户对存储的请求。概念上与 Pod 类似。 Pod 会耗用节点资源，而 PVC 申领会耗用 PV 资源。Pod 可以请求特定数量的资源（CPU 和内存）；同样 PVC 申领也可以请求特定的大小和访问模式 （例如，可以要求 PV 卷能够以 ReadWriteOnce、ReadOnlyMany 或 ReadWriteMany 模式之一来挂载，参见访问模式）。
+PVC与PV是一一对应关系，不能一个PVC挂载多个PV，也不能一个PV挂载多个PVC。
 参考文档：
 
 K8S官方文档 - 存储
@@ -10980,6 +11056,7 @@ K8S官方文档 - 持久卷
 K8S官方文档 - 临时卷
 K8S官方文档 - 投射卷
 K8S官方文档 - Downward API
+阿里云ACK - 存储基础知识
 《K8S中安装配置StorageClass》
 
 
@@ -11215,6 +11292,30 @@ nodefs.inodesFree&lt;5%（Linux 节点）
 “requests”定义了容器所需的最小资源数量。Kubernetes调度器使用这个值来决定在哪个节点上运行容器，并确保节点上有足够的资源满足容器的请求。”requests”的目的是为了确保容器能够正常运行而不会遇到资源不足的问题。
 而”limits”定义了容器允许使用的资源的上限。Kubernetes使用这个值来监控容器的资源使用情况，并保护节点的稳定性。如果容器试图使用超过其限制的资源量，Kubernetes会采取相应的措施，如终止容器或重新调度到其他节点。”limits”的目的是为了防止容器使用过多的资源，从而保护整个集群的稳定性。
 尽管可以在容器中设置超过”requests”的资源使用量，但这并不是一个推荐的做法。当容器超过其”requests”的资源使用量时，它可能会影响其他容器的性能，导致资源竞争和不稳定的情况。超过”requests”的使用量只是暂时允许，Kubernetes会尽力满足容器的需求，但不保证持续提供额外的资源。
+节点资源充足但是无法调度问题描述某个节点CPU、内存资源充足，也没有污点和亲和性配置，但是Pod无法调度到上面。
+排查解决除了检查资源之外，再检查下节点上Pod数量的限制。
+kubectl describe node node01
+
+Non-terminated Pods 要小于 Allocatable.pods ，如果Pod数量已经达到了节点上Pod数量限制，那么需要调大这个上限。
+vim /var/lib/kubelet/config.yaml # maxPods默认110，调大它systemctl restart kubelet
+
+kubectl top命令执行报错问题描述执行kubectl top pod，报错：error: Metrics API not available 
+在Kubernetes Dashboard上，也发现Pod的CPU使用率和内存使用都无法显示。
+问题分析参考kubectl top node error: metrics not available yet可知，之所以出现上面的问题，是因为K8S集群没有安装 metrics-server 。
+解决办法解决办法：安装 metrics-server 。
+通用安装方法：
+wget https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yamlkubectl apply -f components.yaml
+
+如果是sealos安装的K8S集群，那么可以使用 metrics-server 集群镜像安装。
+sealos run labring/metrics-server:v0.6.2 --cmd=&quot;\    helm upgrade -i metrics-server charts/metrics-server \    -n kube-system \    -f /root/metrics-server/values.yaml&quot;
+
+其中 /root/metrics-server/values.yaml 内容为：
+defaultArgs:  - --cert-dir=/tmp  - --kubelet-preferred-address-types=InternalIP  - --kubelet-use-node-status-port  - --metric-resolution=15s  - --kubelet-insecure-tls
+
+
+
+
+
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -11227,6 +11328,7 @@ nodefs.inodesFree&lt;5%（Linux 节点）
         <tag>docker</tag>
         <tag>问题排查</tag>
         <tag>kubectl</tag>
+        <tag>sealos</tag>
       </tags>
   </entry>
   <entry>
@@ -11408,6 +11510,8 @@ Kubernetes 调度器
 Pod 拓扑分布约束
 污点和容忍度
 
+
+
 调度规则每个节点具有每种资源类型的最大容量：可为 Pod 提供的 CPU 和内存量。调度程序确保对于每种资源类型，调度的容器的资源请求的总和小于节点的容量。哪怕节点上实际CPU或内存的资源使用量非常低，但如果容量检查失败，则调度程序仍然拒绝在该节点上放置 Pod。
 参考文档：管理容器的计算资源
 nodeNamepod想要指定调度到某个node，可以直接在spec下制定nodeName字段
@@ -11419,7 +11523,11 @@ label和nodeSelector添加labelkubectl label nodes node1 key1=value1,key2=value2
 spec:  nodeSelector:    key1: value1
 
 删除label如果不再使用某个label，可以进行删除。
-kubectl label nodes node1 key2-````&lt;!--more--&gt;# 亲和性与反亲和性## 节点亲和性节点亲和性(Node Affinity)是一种 Pod 调度器机制，用于指定 Pod 可以调度到哪些节点上运行。它可以通过指定节点的标签来实现，从而确保 Pod 运行在它所需要的节点上，以实现更好的资源利用率和性能表现。1、节点添加label```bashkubectl label nodes node1 key1=value1,key2=value2
+kubectl label nodes node1 key2-
+
+亲和性与反亲和性节点亲和性节点亲和性(Node Affinity)是一种 Pod 调度器机制，用于指定 Pod 可以调度到哪些节点上运行。它可以通过指定节点的标签来实现，从而确保 Pod 运行在它所需要的节点上，以实现更好的资源利用率和性能表现。
+1、节点添加label
+kubectl label nodes node1 key1=value1,key2=value2
 
 2、spec添加affinitynode添加label后，pod想要指定调度到这个node，也可以在spec下添加affinity字段
 spec:  affinity:    nodeAffinity:      requiredDuringSchedulingIgnoredDuringExecution:        nodeSelectorTerms:        - matchExpressions:          - key: key1            operator: In            values:            - value1            - valuex      preferredDuringSchedulingIgnoredDuringExecution:      - weight: 1        preference:          matchExpressions:          - key: key2            operator: In            values:            - value2            - valuey
@@ -11598,9 +11706,12 @@ List of ports to expose from the container. Exposing a port here gives the syste
 生成deployment的yaml文件模板（即将废弃）：
 kubectl run vk-deploy --image=nginx --dry-run -o yaml
 会出现提示：kubectl run –generator=deployment/apps.v1 is DEPRECATED and will be removed in a future version. Use kubectl run –generator=run-pod/v1 or kubectl create instead.因为官方不推荐使用 run-pod/v1 以外的其他生成器，其他生成器不久后就会弃用。更多内容参考kubectl run。
-导出文件模板从K8S集群中导出已经存在的资源对象的yaml文件（即将废弃）：
+导出文件模板从K8S集群中导出已经存在的资源对象的yaml文件（已经废弃）：
 kubectl get deploy/deployment-name -o yaml --export &gt; deploy-name.yaml
-也会出现提示：Flag –export has been deprecated, This flag is deprecated and will be removed in future.很尴尬，–export 也要弃用了，且用且珍惜吧。
+出现提示：Flag –export has been deprecated, This flag is deprecated and will be removed in future.该flag 1.14版本弃用，1.18版本移除，目前已经不可用。
+替代方案：
+kubectl krew install neatkubectl get deploy/deployment-name -o yaml | kubectl neat
+
 -h帮助在生成yaml文件的过程中，如果忘记了参数，可以使用kubectl xxx -h命令来获取帮助。
 kubectl -hkubectl create -hkubectl create deployment -h
 
@@ -11629,8 +11740,6 @@ kubectl run vkpod --image=busybox --restart=Never --dry-run=client -oyamlkubectl
 建议记住常用资源的SHORTNAMES，可以提升输入效率。此外，记住常用资源的APIGROUP，可以提高编写yaml文件时的效率。
 查看所有资源对象kubectl get allkubectl get all -o wide
 
-根据label筛选资源对象kubectl get all -l &#x27;env=dev&#x27;
-
 查看指定的资源对象以deployment资源对象为例，其他资源对象操作方法相同。
 查看所有空间的所有deployment，deployment可以缩写为deploy
 kubectl get deployment --all-namespaces
@@ -11653,7 +11762,25 @@ kubectl describe deploy/deployment-name
 查看deployment实时变化
 kubectl get deploy/deployment-name --watch
 
+根据label筛选资源对象筛选所有label包含 env=dev 的资源对象
+kubectl get all -l &#x27;env=dev&#x27;# orkubectl get all --selector &#x27;env=dev&#x27;
 
+根据field筛选资源对象对于Pod资源来说，以下是一些可用于--field-selector的字段：
+
+metadata.name
+metadata.namespace
+status.phase（例如，Running，Pending，Succeeded，Failed，Unknown）
+status.podIP
+spec.nodeName（节点名）
+
+这是一个不完全的列表，支持的字段可能会随着Kubernetes版本的更新而变化。
+筛选所有Running状态的Pod
+kubectl get pod -A --field-selector status.phase==Running
+
+根据jsonpath筛选资源对象筛选所有Ready状态的Pod
+#!/bin/bashkubectl get pods -A -o jsonpath=&#x27;&#123;range .items[*]&#125;&#123;.metadata.namespace&#125;&#123;&quot;\t&quot;&#125;&#123;.metadata.name&#125;&#123;&quot;\n&quot;&#125;&#123;end&#125;&#x27; &gt; pods.txtwhile read line;do  namespace=$(echo &quot;$line&quot; | awk &#x27;&#123;print $1&#125;&#x27;)  name=$(echo &quot;$line&quot; | awk &#x27;&#123;print $2&#125;&#x27;)  # ready 取值 True/False  ready=$(kubectl get pods $name -n $namespace -o jsonpath=&quot;&#123;.status.conditions[?(@.type==&#x27;Ready&#x27;)].status&#125;&quot;)  if [[ $ready == &quot;True&quot; ]];then    echo &quot;$&#123;namespace&#125;/$&#123;name&#125; is ready!&quot;  else    echo &quot;$&#123;namespace&#125;/$&#123;name&#125; is not ready!&quot;  fidone &lt; pods.txt
+
+更多jsonpath的内容，参考文档《JSONPath入门篇》
 创建资源对象以deployment资源对象为例，其他资源对象操作方法相同。
 指令式命令kubectl create deployment vk-deploy --image=nginx
 
@@ -11662,7 +11789,43 @@ kubectl create -f deploy.yaml
 
 声明式对象配置和指令式对象配置唯一不同的是，kubectl create 改为 kubectl apply。
 更新资源对象以deployment资源对象为例，其他资源对象操作方法相同。
-# 编辑集群中的资源kubectl edit deployment deployment-name# 比较manifest与集群中当前资源的不同kubectl diff -f deploy.yaml# 应用最新定义kubectl replace -f deploy.yamlkubectl apply -f deploy.yaml# 添加labelkubectl label deployment deployment-name new-label=awesome# 添加annotationkubectl annotate deployment deployment-name icon-url=http://goo.gl/XXBTWq # 部分修改deploymentkubectl patch deployment deployment-name --type json \    -p=&#x27;[&#123;&quot;op&quot;: &quot;remove&quot;, &quot;path&quot;: &quot;/spec/template/spec/containers/0/livenessProbe&quot;&#125;]&#x27;
+基本操作# 编辑集群中的资源kubectl edit deployment deployment-name# 比较manifest与集群中当前资源的不同kubectl diff -f deploy.yaml# 应用最新定义kubectl replace -f deploy.yamlkubectl apply -f deploy.yaml# 添加labelkubectl label deployment deployment-name new-label=awesome# 添加annotationkubectl annotate deployment deployment-name icon-url=http://goo.gl/XXBTWq 
+
+patch操作kubectl patch: Update field(s) of a resource using strategic merge patch.
+用法：
+kubectl patch (-f FILENAME | TYPE NAME) -p PATCH
+
+JSON and YAML formats are accepted.
+--type有三个选项：
+
+strategic：策略更新，也是默认的选项。根据k8s crd 资源对象的字段定义（patchStrategy）决定如何该如何更新，不指定patchStrategy时，默认是replace，当前大多资源对象在代码中已经指定patchStrategy为merge。
+merge：合并更新，有相同的字段就替换，没有相同的字段就合并。和代码中指定patchStrategy为merge效果相同。
+json：json更新，要求--patch参数是一个json列表 [&#123;&quot;op&quot;:&quot;&quot;,&quot;path&quot;:&quot;&quot;,&quot;value&quot;:&quot;&quot;&#125;]。
+
+merge之坑：
+
+如果一个字段的值为数组，无论你有没有指定 --type=merge，新的元素都将覆盖掉原先所有的列表元素。
+merge 想要删除一个 key，只能通过将 key 设置为 null，但有些 key 对应的 value 是不能为 null 的。
+
+当 --patch 参数是 json 格式时，path 里的斜杠就会与 key 冲突，此时可以将 波浪线和斜杠 替换成如下转义字符。
+
+~（波浪线）对应的是 ~0
+/（斜杠）对应的是 ~1
+
+这个规则和kustomize中的patchesJson6902类似。
+参考文档：
+
+kubectl patch
+详解 kubectl patch 命令 – strategic、json 和 merge 区别
+《Kustomize工具》
+
+添加节点亲和性kubectl patch deployment deployment-name --type=merge -p &quot;$(cat data.yaml)&quot;# orkubectl patch deployment deployment-name --type=merge --patch-file data.yaml
+
+data.yaml内容为：
+spec:  template:    spec:      affinity:        nodeAffinity:          requiredDuringSchedulingIgnoredDuringExecution:            nodeSelectorTerms:              - matchExpressions:                  - key: key1                    operator: In                    values:                      - value1
+
+json格式的文件也是支持的。
+删除存活探针kubectl patch deployment deployment-name --type json \    -p=&#x27;[&#123;&quot;op&quot;: &quot;remove&quot;, &quot;path&quot;: &quot;/spec/template/spec/containers/0/livenessProbe&quot;&#125;]&#x27;
 
 删除资源对象以deployment资源对象为例，其他资源对象操作方法相同。
 删除单个deployment：
@@ -11783,9 +11946,11 @@ kubectl proxy --port=6880 &amp;curl -k -H &quot;Content-Type: application/json&q
         <category>engineering</category>
         <category>k8s</category>
         <category>cloudnative</category>
+        <category>shell</category>
       </categories>
       <tags>
         <tag>k8s</tag>
+        <tag>shell</tag>
         <tag>kubectl</tag>
       </tags>
   </entry>
@@ -11927,7 +12092,7 @@ Kubernetes 学习笔记之 MiniKube 安装
 
 安装Docker Toolbox1、下载Docker Toolbox，双击安装。
 2、启动Docker Toolbox打开Docker quickstart terminal，Docker会进行初始化。
-镜像加速器参考《Docker镜像下载加速》配置镜像加速器，本文中使用阿里云的镜像加速器。
+镜像加速器参考《Docker镜像站的配置和使用》配置镜像加速器，本文中使用阿里云的镜像加速器。
 1、访问阿里云镜像加速器，得到一个专属的加速地址。
 2、对于Docker Toolbox用户，首先进入default虚拟机docker-machine ssh default
 3、设置加速地址
@@ -14365,6 +14530,59 @@ How to Put a KVM Guest Domain on a Bridged Network
         <tag>网络</tag>
         <tag>libvirt</tag>
         <tag>virsh</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>组网技术概述</title>
+    <url>/dev-network-building/</url>
+    <content><![CDATA[组网技术是啥？组网技术是指网络组建技术，分为以太网组网技术和局域网组网技术。
+参考文档：
+
+组网技术与配置
+
+
+
+Mesh组网Mesh组网概述在工作和生活中，我们最常使用到的是局域网组网技术中的Mesh组网。
+Mesh组网可以实现WiFi信号的全屋覆盖，并且在WiFi信号的切换过程中实现无缝漫游，拥有无感式切换的高速上网体验。
+Mesh组网有两种方式：无线组网和有线组网。无线组网是主路由和子路由之间通过WiFi连接，路由位置的摆放不受布线的限制。有线组网是主路由和子路由之间通过网线连接，有线Mesh相比对无线Mesh更稳定，但无线Mesh相比对有线Mesh布置更自由和美观。
+参考文档：
+
+Mesh组网教程（有线+无线）
+
+有线Mesh组网1、主路由配置能正常上网
+2、主路由开启Mesh组网功能
+3、子路由通电，恢复出厂状态
+4、子路由WAN口，连接主路由LAN口
+5、子路由等待WAN口灯亮和网络灯常亮，表示组网成功
+无线Mesh组网1、主路由配置能正常上网
+2、主路由开启Mesh组网功能
+3、子路由通电，恢复出厂状态
+4、同时按下主路由和子路由的WPS键，等待主路由和子路由的网络灯开始闪烁
+5、继续等待，子路由网络灯常亮，表示组网成功
+UniFi组网UniFi组网概述（本节内容来自chatgpt）
+UniFi WiFi是一种由Ubiquiti Networks提供的企业级无线局域网（WLAN）解决方案。UniFi WiFi通过集中管理和控制的方式，提供高性能、可扩展和易于部署的无线网络。
+UniFi WiFi的主要特点和功能：
+
+集中式管理：UniFi WiFi通过UniFi控制器软件实现集中管理。管理员可以使用控制器软件来配置和监控整个网络，包括无线接入点（AP）、路由器和交换机等设备。这简化了网络管理过程，同时提供了全面的网络可视化和统计信息。
+高性能无线接入点：UniFi WiFi提供了一系列高性能的无线接入点，适用于不同规模和需求的网络环境。这些接入点支持最新的无线标准，如802.11ac和802.11ax（Wi-Fi 6），提供更快的数据传输速率和更大的网络容量。
+灵活的网络拓扑：UniFi WiFi支持灵活的网络拓扑结构。管理员可以根据需要进行无线接入点的部署，包括单一AP、多个AP的无线覆盖范围扩展，以及网桥模式和无线分离模式等。这样可以根据具体需求实现最佳的无线覆盖和网络性能。
+客户端管理和身份验证：UniFi WiFi提供了客户端管理功能，允许管理员对连接到网络的设备进行监控和控制。此外，UniFi WiFi还支持多种身份验证方法，包括预共享密钥（PSK）、WPA Enterprise和RADIUS认证等，以确保网络的安全性和可控性。
+强大的网络分析和报告：UniFi控制器软件提供了丰富的网络分析和报告功能。管理员可以查看实时的网络状态、流量分布和用户连接情况，以及历史数据和性能趋势。这些数据和报告有助于网络优化和故障排除。
+
+参考文档：
+
+UniFi AP 介绍
+UniFi - 设备采用
+
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>devops</category>
+        <category>network</category>
+      </categories>
+      <tags>
+        <tag>chatgpt</tag>
+        <tag>网络</tag>
       </tags>
   </entry>
   <entry>
@@ -18931,11 +19149,11 @@ mkdir -p /root/.certs/echo -n | openssl s_client -connect smtp.163.com:465 | sed
 5、测试发送邮件echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com查看邮箱，正常的话应该已经收到邮件了。如果没有收到邮件，可以查看日志进行排查：tail /var/log/maillog
 macos参考文档：《MacOS配置发送邮件》
 mail命令命令格式mail [OPTION...] [address...]常用到的选项，一个是s，代表主题；一个是A，代表附件。其他的需要时查看help。
-发送普通邮件目标：给邮箱 &#x76;&#x6f;&#105;&#x64;&#x6b;&#105;&#110;&#103;&#64;&#x71;&#113;&#46;&#99;&#x6f;&#x6d; 发送邮件，主题为“Hello VoidKing”，内容为“Welcome to mail world！”
+发送普通邮件目标：给邮箱 &#118;&#x6f;&#x69;&#x64;&#x6b;&#105;&#110;&#x67;&#x40;&#113;&#113;&#x2e;&#99;&#111;&#x6d; 发送邮件，主题为“Hello VoidKing”，内容为“Welcome to mail world！”
 echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com
 但是，等待了几分钟，并没有收到邮件，垃圾箱也没有。mail，查看email的发送状态为Undelivered Mail Returned，原来没有投递出去。
 查看邮件系统日志：tail -n 50 /var/spool/mail/test提示host mx3.qq.com[183.57.48.35] said: 550 Mail content denied。看来qq邮箱的垃圾邮件防御机制做的不错，那就换个163邮箱，没想到依然失败。
-换一台服务器？发送给 &#118;&#x6f;&#x69;&#x64;&#x6b;&#105;&#x6e;&#x67;&#x40;&#113;&#x71;&#46;&#x63;&#111;&#109; ，成功！很尴尬。。。就这么着吧
+换一台服务器？发送给 &#x76;&#x6f;&#105;&#100;&#x6b;&#x69;&#110;&#103;&#x40;&#113;&#x71;&#46;&#99;&#111;&#109; ，成功！很尴尬。。。就这么着吧
 发送高级邮件1、从文本读入内容发送邮件mail -s &#39;Error report&#39; voidking@qq.com &lt; /tmp/log/ganglia/error-20180524.log
 2、发送附件mail -s &#39;Error report&#39; voidking@qq.com -A /tmp/log/ganglia/ganglia-20180524.log &lt; /tmp/log/ganglia/error-20180524.log
 3、指定发件人echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com -aFrom:haojin@qq.com
@@ -21976,7 +22194,7 @@ linux下载好数据集后，把数据集下载到win10中nmt目录中，路径�
 训练model在根目录（nmt目录）下运行：
 python -m nmt.nmt --src=vi --tgt=en --vocab_prefix=./tmp/nmt_data/vocab  --train_prefix=./tmp/nmt_data/train --dev_prefix=./tmp/nmt_data/tst2012  --test_prefix=./tmp/nmt_data/tst2013 --out_dir=./tmp/nmt_model --num_train_steps=12000 --steps_per_stats=100 --num_layers=2 --num_units=128 --dropout=0.2 --metrics=bleu
 
-郝同学i5-3337U &#67;&#x50;&#x55;&#64;&#x31;&#x2e;&#x38;&#48;&#x47;&#72;&#x7a;，8G内存，训练了将近两个小时才训练完成。下文我们要学习使用一下UCloud提供的免费GPU。
+郝同学i5-3337U &#x43;&#80;&#x55;&#64;&#x31;&#46;&#56;&#x30;&#71;&#72;&#x7a;，8G内存，训练了将近两个小时才训练完成。下文我们要学习使用一下UCloud提供的免费GPU。
 我们可以使用 Tensorboard 在训练过程中查看模型的总结：
 tensorboard --port 22222 --logdir ./tmp/nmt_model/
 通过以下简单的变化，就能逆向完成英语到越南语的翻译。
@@ -24713,14 +24931,19 @@ W：–whole-file 全量传输，而不是默认的增量传输
 使用rsync本地拷贝断点续传需求：本地拷贝/opt/nginx目录中的所有文件，到/opt/nginx.bak，断点续传
 rsync -P -avz /opt/nginx/ /opt/nginx.bak/
 
-远程拷贝断点续传需求：拷贝本地/opt/nginx目录中的所有文件，到远程服务器192.168.56.102:/opt/nginx目录中，断点续传
+远程拷贝断点续传需求1：拷贝本地/opt/nginx目录中的所有文件，到远程服务器192.168.56.102:/opt/nginx目录中，断点续传
 rsync -P -avz /opt/nginx/ 192.168.56.102:/opt/nginx/rsync -P -avz -e &#x27;ssh -p 2222&#x27; /opt/nginx/ 192.168.56.102:/opt/nginx/
 
-后台运行rsync后台运行rsync，最好使用screen而不是nohup。如果使用nohup，那么在终端关闭后，rsync也会终止，报错：
+注意：要提前配置好ssh免密登录，配置方法参考文档《shell命令之ssh》。
+需求2：拷贝远程服务器192.168.56.102:/opt/nginx目录中的所有文件，到本地/opt/nginx目录中，断点续传
+rsync -P -avz 192.168.56.102:/opt/nginx/ /opt/nginx/
+
+注意：如果想暂时结束rsync，稍后继续，请使用ctrl+C，而不是直接kill。直接kill进程会导致断点续传失效（缓存文件来不及写入到目标文件），补救办法是把缓存文件重命名为目标文件，就可以断点续传了。
+后台运行rsync后台运行rsync，最好使用screen而不是nohup。如果使用nohup，那么在终端关闭后，rsync可能也会终止，报错：
 rsync error: received SIGINT, SIGTERM, or SIGHUP (code 20) at rsync.c(638) [sender=3.1.2]rsync error: received SIGINT, SIGTERM, or SIGHUP (code 20) at io.c(504) [generator=3.1.2]
 没有找到原因，因此就先避免nohup和rsync配合使用。
 使用screen后台运行rsync示例：
-screen rsync -P -avz /opt/nginx/ /opt/nginx.bak/# ctrl+A+Dscreen -lsscreen -r 23500.ttys005.B000000349215A
+screen rsync -P -avz --log-file=/path/to/rsync.log /opt/nginx/ /opt/nginx.bak/# ctrl+A+Dscreen -lsscreen -r 23500.ttys005.B000000349215A
 
 screen详细说明参考文档《Linux后台运行脚本或程序》
 ]]></content>
@@ -25447,14 +25670,18 @@ useradd -m voidking -s /bin/bashpasswd voidkingadduser voidking sudo
 
 
 
-生成密钥ssh-keygenssh-keygen -C &quot;voidking@qq.com&quot; -f ./voidking_rsa
-第一条命令执行完之后，.ssh目录下生成了 id_rsa 和 id_rsa.pub。第二条命令执行完之后，当前目录下生成了 voidking_rsa 和 voidking_rsa.pub，注释内容为 &#x76;&#x6f;&#x69;&#100;&#107;&#x69;&#x6e;&#x67;&#x40;&#113;&#113;&#46;&#99;&#111;&#109; 。
-使密钥生效ssh-copy-id -i ~/.ssh/id_rsa.pub voidking@hostnamessh-copy-id -i ~/.ssh/id_rsa.pub voidking@hostname -p 22ssh voidking@hostname
-ssh-copy-id 这个命令做的事情，是把 id_rsa.pub 中的内容，追加到 hostname:/home/voidking/.ssh/authorized_keys 文件中。authorized_keys文件权限为600。如果配置好了sshd，但是无法使用密钥登录机器，请检查authorized_keys文件权限。
+生成密钥对# 生成 ~/.ssh/id_rsa 和 ~/.ssh/id_rsa.pubssh-keygen# 生成 voidking_rsa 和 voidking_rsa.pub，注释内容为 voidking@qq.comssh-keygen -C &quot;voidking@qq.com&quot; -f ./voidking_rsa 
+
+配置免密登录添加公钥到远程机器
+# ~/.ssh/id_rsa.pub 的内容追加到远程机器的 ~/.ssh/authorized_keys 中ssh-copy-id voidking@hostname # 指定public key，追加到远程机器的 ~/.ssh/authorized_keys 中ssh-copy-id -i ~/.ssh/id_rsa.pub voidking@hostnamessh-copy-id -i ~/.ssh/id_rsa.pub voidking@hostname -p 22# 测试登录ssh voidking@hostname
+
+注意：authorized_keys文件权限为600。如果配置好了sshd，但是无法使用密钥登录机器，请检查authorized_keys文件权限。
 密钥添加失败问题如果ssh-copy-id报错cannot create .ssh/authorized_keys: Operation not permitted或者手动编辑authorized_keys后无法保存，chmod也无法改变authorized_keys文件的权限。
 那么可能是因为authorized_keys被加锁了，防止误删，需要先进行解锁。
 chattr -i ~/.ssh/authorized_keys
 参考文档chattr命令 – 更改文件隐藏属性
+测试ssh连接ssh -vvv root@192.168.56.100 /bin/true
+
 ssh执行远程命令执行远程命令很简单，直接ssh后面跟着命令就可以了。
 ssh root@192.168.56.100 &quot;echo helloworld&quot;
 
@@ -25526,6 +25753,9 @@ journalctl -k -b -1journalctl -r -k -b -1
 
 系统配置修改默认shellecho $SHELLcat /etc/shellswhich bashchsh -s /bin/bash
 
+显示颜色vim ~/.bashrc
+
+取消 force_color_prompt=yes 的提示。
 禁止检查邮件系统经常提示：您在 /var/spool/mail/root 中有新邮件
 echo &quot;unset MAILCHECK&quot; &gt;&gt; /etc/profilesource /etc/profile
 
@@ -25600,6 +25830,12 @@ ncdu / --exclude=/data/mntnfs
 查看磁盘IO负载iostat -x
 
 在iostat命令的输出中，磁盘IO请求队列长度对应的是avgqu-sz字段，表示平均每秒的I/O请求队列长度。它可以用来判断系统的磁盘IO瓶颈情况，如果该值超过了磁盘的最大IO队列长度，就说明磁盘IO请求队列积压了，系统IO性能可能会受到影响。一般来说，当avgqu-sz值超过1时，就可能会有IO瓶颈的风险。
+测试磁盘读写性能测试读取性能：
+dd if=/path/to/testfile of=/dev/null bs=1M count=1000
+从 /path/to/testfile 测试文件中读取数据并将其丢弃，将结果输出到/dev/null，以避免干扰测试。bs=1M指定每个数据块的大小为1MB，count=1000指定要读取的数据块数量。
+测试写入性能：
+dd if=/dev/zero of=/path/to/testfile bs=1M count=1000 conv=fdatasync
+将/path/to/testfile替换为要进行测试的文件路径，bs=1M和count=1000指定了数据块的大小和数量，conv=fdatasync确保数据同步写入磁盘。
 查看网络负载iftop
 
 详情参考《iftop命令》
@@ -26783,38 +27019,68 @@ docker load -i all.tar
       </tags>
   </entry>
   <entry>
-    <title>Docker镜像下载加速</title>
-    <url>/dev-docker-image-download-speedup/</url>
-    <content><![CDATA[问题描述使用 Docker 的时候，需要经常从官方获取镜像，但是拉取镜像的过程非常耗时，严重影响使用 Docker 的体验。
-解决办法解决办法很简单，使用镜像加速器。比较好的镜像加速器有DaoCloud、阿里云、腾讯云，下文中我们来配置体验一下。
+    <title>Docker镜像站的配置和使用</title>
+    <url>/dev-docker-registry-mirror/</url>
+    <content><![CDATA[前言使用 Docker 的时候，经常需要从官方获取镜像，但是有时候拉取镜像的非常慢，体验很差。
+解决办法：使用 docker.io 的国内镜像站，加速docker镜像的下载。
+本文中，我们就来学习配置使用docker镜像站。
+参考文档：
+
+镜像加速器
+yeasy/docker_practice
+镜像站可用性测试
 
 
-DaoCloudDaoCloud通过智能路由和缓存机制，提升了国内网络访问 Docker Hub 的速度，目前已经拥有了广泛的用户群体，并得到了 Docker 官方的大力推荐。
-1、访问DaoCloud官网，注册一个账号。
-2、访问配置 Docker 加速器，可以获得一个专属加速地址（每次访问都会获得不同的地址）。
-3、参考Docker 加速器，创建或修改 /etc/docker/daemon.json，内容为：
-&#123;    &quot;registry-mirrors&quot;: [        &quot;http://f1361db2.m.daocloud.io&quot;    ],    &quot;insecure-registries&quot;: []&#125;
 
-4、重启docker
-systemctl daemon-reloadsystemctl restart docker
+推荐镜像站
+Docker中国区官方镜像：https://registry.docker-cn.com
+网易：https://hub-mirror.c.163.com
+中国科技大学：https://docker.mirrors.ustc.edu.cn
+阿里云：https://cr.console.aliyun.com
+腾讯云（已废弃）：https://mirror.ccs.tencentyun.com
 
-5、验证配置docker info
-阿里云除了使用DaoCloud的镜像加速器，还可以使用阿里云的镜像加速器。
-1、访问阿里云镜像加速器，得到一个专属的加速地址。
-2、对于CentOS7平台，创建或修改 /etc/docker/daemon.json，内容为：
-&#123;  &quot;registry-mirrors&quot;: [&quot;https://wrqtu3hz.mirror.aliyuncs.com&quot;]&#125;
+个人专属加速地址：
 
-3、重启docker
-systemctl daemon-reloadsystemctl restart docker
+阿里云：访问阿里云镜像加速器，得到一个专属的加速地址。
+DaoCloud：访问配置 Docker 加速器，得到一个专属加速地址。
 
-4、验证配置docker info
-腾讯云1、修改 /etc/docker/daemon.json 配置为：
-&#123;   &quot;registry-mirrors&quot;: [       &quot;https://mirror.ccs.tencentyun.com&quot;  ]&#125;
+配置使用镜像站1、修改docker配置文件创建或修改 /etc/docker/daemon.json ，添加 registry-mirrors 配置
+&#123;    &quot;registry-mirrors&quot; : [        &quot;https://registry.docker-cn.com&quot;,        &quot;https://docker.mirrors.ustc.edu.cn&quot;,        &quot;https://hub-mirror.c.163.com&quot;,        &quot;https://cr.console.aliyun.com&quot;    ]&#125;
 
 2、重启docker
 systemctl daemon-reloadsystemctl restart docker
 
-3、验证配置docker info
+3、验证配置  
+docker info
+
+看到 Registry Mirrors 部分有我们配置的镜像站，就表明配置成功。
+自建镜像站自建镜像站的优点，是可以统一配置代理，下载需要科学上网才能下载的镜像。
+参考文档：Docker Registry
+启动镜像站1、下载registry镜像
+docker pull registry:2.7.1
+
+2、启动本地镜像站启动docker.io镜像站：
+docker run --name docker_io_mirror -d registry:2.7.1 \-p 5000:5000 \-e REGISTRY_PROXY_REMOTEURL=https://registry-1.docker.io \-v /data/docker_io_registry:/var/lib/registry \--restart always 
+
+启动gcr.io镜像站：
+docker run --name gcr_io_mirror -d registry:2.7.1 \-p 5001:5000 \-e REGISTRY_PROXY_REMOTEURL=https://gcr.io \-e HTTPS_PROXY=socks5://192.168.56.1:7891 \-v /data/gcr_io_registry:/var/lib/registry \--restart always
+
+使用本地镜像站假设镜像站宿主机IP地址为：192.168.56.101那么想要使用镜像站的机器上， /etc/docker/daemon.json 修改为：
+&#123;    &quot;registry-mirrors&quot;: [      &quot;http://192.168.56.101:5000&quot;,      &quot;http://192.168.56.101:5001&quot;    ],    &quot;insecure-registries&quot;: [      &quot;http://192.168.56.101:5000&quot;,      &quot;http://192.168.56.101:5001&quot;    ]&#125;
+
+K8S中搭建镜像站K8S中搭建镜像站，可以参考docker-registry-mirror/manifests
+Harbor作为镜像站除了使用docker registry作为镜像站，harbor也可以作为镜像站，具体配置方法参考文档使用 Harbor 搭建 Mirror Registry。
+不过不建议这么使用，因为harbor作为mirror站后，只能作为mirror站，大材小用，原本的很多功能就不能使用了。
+Docker Proxy
+Docker Proxy提供多平台容器镜像代理服务,支持 Docker Hub, GitHub, Google, k8s, Quay等镜像仓库。
+
+Docker Hub 官方镜像代理常规镜像代理官方命令：docker pull stilleshan/frpc:latest代理命令：docker pull dockerproxy.com/stilleshan/frpc:latest
+根镜像代理官方命令：docker pull nginx:latest代理命令：docker pull dockerproxy.com/library/nginx:latest
+GitHub Container Registry常规镜像代理官方命令：docker pull ghcr.io/username/image:tag代理命令：docker pull ghcr.dockerproxy.com/username/image:tag
+Google Container Registry常规镜像代理官方命令：docker pull gcr.io/username/image:tag代理命令：docker pull gcr.dockerproxy.com/username/image:tag
+Google Kubernetes常规镜像代理官方命令：docker pull k8s.gcr.io/username/image:tag官方命令：docker pull registry.k8s.io/username/image:tag代理命令：docker pull k8s.dockerproxy.com/username/image:tag
+根镜像代理官方命令：docker pull k8s.gcr.io/coredns:1.6.5官方命令：docker pull registry.k8s.io/coredns:1.6.5代理命令：docker pull k8s.dockerproxy.com/coredns:1.6.5
+Quay.io常规镜像代理官方命令：docker pull quay.io/username/image:tag代理命令：docker pull quay.dockerproxy.com/username/image:tag
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -27286,6 +27552,8 @@ Open WSL2 Set static ip?
 netsh interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=22 connectaddress=172.29.132.34 connectport=22netsh interface portproxy show v4tov4#netsh interface portproxy delete v4tov4 listenaddress=0.0.0.0 listenport=22
 
 参考文档：Netsh interface portproxy 命令
+配置路由规则之后，本地访问本机IP:22端口，会自动转发到172.29.132.34:22。
+如果局域网中其他主机也想要访问到172.29.132.34:22，那么本机还需要关闭局域网防火墙（专有网络防火墙）。
 关闭防火墙搜索“防火墙”，选择Windows Defender 防火墙，启用或关闭Windows Defender防火墙，关闭防火墙。
 或者操作开放端口，参考文档：WIN10电脑怎么开放可访问端口
 关闭防火墙之后，使用局域网内的其他主机尝试远程登录Ubuntu18进行测试。
@@ -29409,7 +29677,7 @@ t0 = time()&lt; 你的 clf.fit() 代码行 &gt;print &#x27;training time:&#x27;,
 代码运行说明文件。纯文本或markdown格式，写明运行你的代码所需要的库，他们的安装方法和运行方法
 预测结果: 纯文本或CSV文件。
 
-对项目要求有疑问请致信 &#x73;&#x75;&#x70;&#112;&#111;&#x72;&#116;&#x40;&#121;&#x6f;&#117;&#x64;&#x61;&#x78;&#x75;&#x65;&#x2e;&#99;&#x6f;&#x6d;
+对项目要求有疑问请致信 &#x73;&#117;&#112;&#x70;&#x6f;&#x72;&#116;&#x40;&#121;&#111;&#117;&#x64;&#97;&#120;&#117;&#x65;&#x2e;&#99;&#111;&#109;
 准备好提交项目后，请点击下一项，在“项目提交”小节中提交。
 ]]></content>
       <categories>
@@ -29450,7 +29718,7 @@ Resume Builder
 项目导师会根据该评估准则（与你制作简历时遵循的清单相符）对你的简历项目进行审核。
 提交准备好提交求职信后，你需要：
 1、删除/匿名化你的求职信上的所有个人联系人信息，以防泄漏隐私。2、创建 PDF 格式的简历，这样你的简历在不同操作系统/软件/屏幕中有一致的版面样式。3、点击下方的“提交项目”按钮，并根据说明操作。4、在“告知审核员”中，请包括任何有关你的职业目标（如申请的工作或领域），或任何有意偏离评估准则情况的详细信息。
-注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#x73;&#x75;&#112;&#x70;&#x6f;&#x72;&#x74;&#x40;&#x79;&#x6f;&#117;&#100;&#x61;&#120;&#117;&#101;&#x2e;&#x63;&#x6f;&#x6d;。
+注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#x73;&#x75;&#112;&#112;&#111;&#x72;&#x74;&#x40;&#121;&#x6f;&#x75;&#100;&#x61;&#120;&#x75;&#x65;&#46;&#99;&#111;&#109;。
 GitHub个人资料项目你的GitHub个人资料展示你创建的项目，并让他人了解你的工作风格和提交频率。通过展示你对 GitHub 的熟悉程度，其他开发人员和招聘经理能够知道你拥有他们需要能力，你就是他们正在寻找的人。你的代码库应表明你认真对待项目，并且能够编写干净、格式正确的代码。请查看 GitHub 上的这篇出色的博客文章，了解如何用 GitHub 帮助你持续学习，发展职业生涯。
 为何要完成此 GitHub 个人资料项目？GitHub 越来越多地被用作招聘平台以及潜在雇主查看你的作品的方式。它还是与其他开发人员建立联系和展示你的技能的好地方。
 我应该做什么？你应该以招聘人员或用人部门经理的眼光查看你的 GitHub 个人资料，重点关注你的个人资料、项目和代码如何将你描绘成公司的潜在候选人或项目的协作者。
@@ -29479,7 +29747,7 @@ GitHub项目提交你的 GitHub 主页是呈现给潜在雇主的“关键证据
 反馈优达学城项目导师会根据该标准（与你制作领英简介时遵循的清单相符）对你的领英简介项目进行审核。
 提交准备好提交领英个人资料后：
 1、若要提交，请点击下方的“提交项目”按钮，并根据说明操作。2、在“告知评审员”中，请包括任何有关你的职业目标（如预期工作领域）的详细信息。
-注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#115;&#117;&#x70;&#x70;&#111;&#114;&#x74;&#x40;&#121;&#x6f;&#x75;&#100;&#97;&#x78;&#117;&#101;&#46;&#99;&#x6f;&#109;。
+注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#x73;&#117;&#x70;&#x70;&#x6f;&#114;&#x74;&#64;&#x79;&#111;&#117;&#100;&#97;&#x78;&#x75;&#101;&#x2e;&#x63;&#111;&#109;。
 技术面试项目对于此实战项目，你需要回答五个技术面试问题，这些问题涉及的是技术面试课程中讨论的各种主题。你应该用 Python 写出清晰高效的答案，并用文字解释代码的效率和设计理由。我们将安排合格的审核者检查你的答案，并针对任何精彩之处或欠缺的方面做出反馈：你的解决方案是最高效的吗？你很好地解释了你的想法吗？你的代码简洁易懂吗？
 请回答以下问题：
 问题 1: 假设有两个字符串 s 和 t，请判断 t 的变形词是否是 s 的子字符串。例如：如果 s = “udacity”，t = “ad”，则函数返回 True。你的函数定义应该为：“question1(s, t)”，并返回布尔值 True 或 False。 
@@ -29545,7 +29813,7 @@ Dice
 问题 5 - 通过一个情景举例说明正则化对学习好的模型的必要性，以及提供一个正则化没有意义的情景。
 问题 6 -你附近的杂货店想向顾客有针对性地发放对他们来说有用的优惠券。假设你可以访问每位顾客的购买历史和店铺商品目录，你将设计怎样一个系统，来决定发放哪些优惠券？你如何衡量这个系统的性能？
 问题 7 - 选择一个公司，然后描述你想应聘的该公司内的机器学习工程师职位（假设有）。现在，如果你已成功应聘，并从今天开始任职，在你看来，你的职位在下一年会有怎样的发展？你的长期职业目标是什么，这个职位如何帮助你实现长期目标？
-提交当你准备提交项目，点击下方“提交项目”，上传一份 PDF 文件。如果有任何与提交项目相关的疑问，或想查看提交状态，请向我们发送电子邮件询问（&#115;&#117;&#x70;&#112;&#x6f;&#114;&#116;&#x40;&#121;&#x6f;&#117;&#100;&#97;&#x78;&#117;&#101;&#x2e;&#99;&#111;&#109;）。
+提交当你准备提交项目，点击下方“提交项目”，上传一份 PDF 文件。如果有任何与提交项目相关的疑问，或想查看提交状态，请向我们发送电子邮件询问（&#115;&#117;&#112;&#112;&#x6f;&#x72;&#116;&#x40;&#x79;&#x6f;&#x75;&#100;&#97;&#x78;&#x75;&#x65;&#46;&#99;&#x6f;&#x6d;）。
 项目资源项目评审标准。优达学城的项目导师会依据此评审标准审阅你的项目。你可以在提交前自行检查自己是否已达到所有标准。职业资源中心。你可以在这里找到更多有关准备面试的资源和贴士。
 接下来面试练习并不是只在你求职时才需要做的事情， 在你的整个职业生涯中，你都需要继续提高自己的面试技巧。抓住每一个机会，思考和与人交流你的职业目标。在申请一个职位之前，请思考清楚自己为什么要申请——这将极大地帮助你为面试做好准备。
 书签Interview Guide: Machine Learninghttps://career-resource-center.udacity.com/interview-courses-and-guides/machine-learning
@@ -29999,7 +30267,7 @@ notebook 项目导出的 HTML 文件，命名为 report.html。
 
 注意：所提交文件的文件名名，包括zip压缩包内的文件名，都不能含有中文及任何ASCII之外的字符，否则会造成提交失败。
 如何导出HTML的说明在 notebook 的最下方。 你也许需要先在命令后通过 pip install mistune 命令安装 mistune 。当你准备好所有这些文件，并且依照项目要求核对过之后，就可以在下面的项目提交页面提交你的项目了。
-如果你是第一次在优达学城提交项目，点击提交之后，要等1分钟左右才能打开提交页面。如果长时间打不开，可以刷新。如果依然无法打开项目提交页面，可以联系客服微信或者邮件至 &#115;&#x75;&#112;&#x70;&#111;&#x72;&#x74;&#64;&#x79;&#x6f;&#x75;&#x64;&#x61;&#120;&#117;&#101;&#46;&#x63;&#x6f;&#x6d;
+如果你是第一次在优达学城提交项目，点击提交之后，要等1分钟左右才能打开提交页面。如果长时间打不开，可以刷新。如果依然无法打开项目提交页面，可以联系客服微信或者邮件至 &#115;&#x75;&#112;&#112;&#111;&#x72;&#x74;&#64;&#x79;&#x6f;&#x75;&#100;&#97;&#120;&#117;&#x65;&#x2e;&#99;&#111;&#x6d;
 后记这个项目，是优达学城《机器学习工程师》课程提供的第一个实战项目。摘录了全文，方便查看。郝同学的项目地址：https://github.com/voidking/udaciyty-machine-learning/tree/master/projects/titanic_survival_exploration
 书签机器学习工程师（中/英）https://cn.udacity.com/course/machine-learning-engineer-nanodegree--nd009
 数据科学入门https://cn.udacity.com/course/intro-to-data-science--ud359
@@ -32058,11 +32326,12 @@ flush: 清空所有路由。
 
 route常用命令查看当前路由表route -n
 
-添加/删除静态路由添加一条静态路由
-route add -net 目标网络地址 netmask 子网掩码 gw 网关地址route add -net 192.168.1.0 netmask 255.255.255.0 gw 192.168.0.1
+添加/删除静态路由已知主机A的IP为172.16.0.2和192.168.0.2，默认网关A为172.16.0.1。主机A同时和网关B 192.168.0.1连通，网关B连通 192.168.0.0/24 和 192.168.1.0/24。
+添加一条静态路由，使主机A连通 192.168.1.0/24
+route add -net 目标网络地址 netmask 子网掩码 gw 网关地址 dev 网络设备route add -net 192.168.1.0 netmask 255.255.255.0 gw 192.168.0.1 dev eth0
 
-删除一条静态路由
-route del -net 目标网络地址 netmask 子网掩码 gw 网关地址route del -net 192.168.1.0 netmask 255.255.255.0 gw 192.168.0.1
+删除一条静态路由，使主机A不连通 192.168.1.0/24
+route del -net 目标网络地址 netmask 子网掩码 gw 网关地址 dev 网络设备route del -net 192.168.1.0 netmask 255.255.255.0 gw 192.168.0.1 dev eth0
 
 添加/删除默认路由添加默认路由
 route add default gw 网关地址route add default gw 192.168.0.1route add default gw 192.168.0.1 dev eth0
@@ -33340,7 +33609,7 @@ Node端源码https://github.com/voidking/nodebase/blob/master/controllers/weixin
 
 
 nodebasea node framework designed for myselfversion: v1.0.0url: https://github.com/voidking/nodebase.git  
-作者相关author: haojin(voidking)e-mail: &#x76;&#111;&#x69;&#x64;&#x6b;&#105;&#x6e;&#103;&#x40;&#x71;&#x71;&#46;&#99;&#x6f;&#109;site: http://www.voidking.com   
+作者相关author: haojin(voidking)e-mail: &#x76;&#111;&#x69;&#x64;&#x6b;&#x69;&#110;&#103;&#64;&#x71;&#x71;&#x2e;&#99;&#111;&#109;site: http://www.voidking.com   
 开发环境说明1、安装5.6.0以上Node2、安装mongodb，不要配置密码3、安装sass4、全局安装bower5、全局安装supervisor6、全局安装node-inspector7、全局安装puer8、运行前执行命令
 npm installbower install
 
@@ -38466,7 +38735,7 @@ XMPP网络任何XMPP网络都是由若干角色组成的，这些角色可以分
 
 插件许多XMPP服务器支持插件扩展，这些插件通常使用与服务器自身相同的语言编写，并在服务器的进程内运行。他们的作用很大程度上与外部组件重叠，但插件还能够访问内部服务器数据结构并改变核心服务器行为。
 XMPP寻址XMPP网络上每个实体都有一个或多个地址（JID，jabber identifier）。JID有多种不同形式，但它们通常看上去就像是电子邮件。
-JID有两种类型，裸JID和完整JID，而裸JID是完整JID去除资源部分后的地址。例如，某个客户端的完整JID是&#x76;&#x6f;&#105;&#x64;&#107;&#105;&#110;&#x67;&#64;&#118;&#x6f;&#105;&#100;&#x6b;&#105;&#x6e;&#103;&#46;&#x6c;&#105;&#116;/library，那么它的裸JID就是&#x76;&#x6f;&#105;&#100;&#107;&#x69;&#x6e;&#x67;&#x40;&#x76;&#111;&#105;&#x64;&#107;&#105;&#x6e;&#x67;&#x2e;&#x6c;&#x69;&#116;。
+JID有两种类型，裸JID和完整JID，而裸JID是完整JID去除资源部分后的地址。例如，某个客户端的完整JID是&#118;&#x6f;&#x69;&#100;&#107;&#105;&#x6e;&#103;&#x40;&#x76;&#111;&#105;&#100;&#107;&#x69;&#110;&#103;&#x2e;&#108;&#105;&#x74;/library，那么它的裸JID就是&#x76;&#111;&#x69;&#x64;&#107;&#x69;&#x6e;&#103;&#64;&#118;&#x6f;&#x69;&#100;&#x6b;&#105;&#110;&#103;&#x2e;&#x6c;&#x69;&#116;。
 节在XMPP中，各项工作都是通过在一个XMPP流上发送和接收XMPP节来完成的。核心XMPP工具集由三种基本节组成，这三种节分别为&lt;presence&gt;、&lt;message&gt;、&lt;iq&gt;。
 XMPP流由两份XML文档组成，通信的每个方向均有一份文档。这份文档有一个根元素&lt;stream:stream&gt;，这个根元素的子元素由可路由的节以及与流相关的顶级子元素构成。下面给出一段简短的XMPP会话：
 &lt;stream:stream&gt;	&lt;iq type=&#x27;get&#x27;&gt;		&lt;query xmlns=&#x27;jabber:iq:roster&#x27;/&gt;	&lt;/iq&gt;		&lt;presence/&gt;		&lt;message to=&#x27;voidking@voidking.lit&#x27; from=&#x27;haojin@gmail.com/ballroom&#x27; type=&#x27;chat&#x27;&gt;		&lt;body&gt;I cannot talk of books in a ball-room; my head is always full of something else.&lt;/body&gt;	&lt;/message&gt;		&lt;presence type=&#x27;unavailable&#x27;/&gt;&lt;/stream:stream&gt;
@@ -42147,12 +42416,53 @@ SELinux    Security Enhanced LinuxLPI        Linux Professional Instituteext3   
       </categories>
   </entry>
   <entry>
-    <title>vsftpd下错误之:500 OOPS</title>
-    <url>/dev-vftpd-error-500-oops/</url>
-    <content><![CDATA[前言vsftpd下错误之：500 OOPS。vsftpd是在Linux发行版中最推崇的一种FTP服务器程序，vsftpd的特点：小巧轻快、安全易用等。 这里主要讲的是如何解决vsftpd下错误之：500 OOPS　
-详细问题：我在用ftp IP 地址登录FTP服务器时，系统提示我输入用户名和密码，可是仍然提示：500 OOPS: child died.Connection closed by remote host.
-解决办法：1、 查看 SELinux 的状态： sestatus -b | grep ftp2、 在出现的结果中可以看到ftp_home_dir offtftpd_disable_trans off之类。我们现在只要把其中之一设置为on就可以了。3、 setsebool -P ftpd_disable_trans on 或者 setsebool -P ftp_home_dir on4、 重启vsftpd： service vsftpd restart
-再次登录登录成功了。试着上传一些文件来进行测试，看看是否有日志记录默认的日志在/var/log/目录下面。
+    <title>Linux中安装配置FTP服务</title>
+    <url>/dev-linux-ftp/</url>
+    <content><![CDATA[前言FTP服务是最常见的服务之一，本文中我们学习在Linux中安装配置FTP服务。
+参考文档：
+
+File Transfer Protocol
+CentOS7 安装 vsftpd 服务
+
+
+
+安装vsftpd服务vsftpd简介vsftpd是在Linux发行版中最推崇的一种FTP服务器程序，vsftpd的特点：小巧轻快、安全易用等。 
+centos7安装vsftpd1、安装 vsftpd 和 ftp
+yum install vsftpd ftp -y
+
+2、启动vsftpd服务
+systemctl enable vsftpdsystemctl start vsftpdsystemctl status vsftpd
+
+vsftpd启动后，默认端口号21，允许匿名访问。
+3、访问测试
+ftp 127.0.0.1ftp 192.168.56.101
+
+Name 输入 anonymous ， Password 为空直接回车。登录后，当前目录为根目录，默认有个pub目录，里面为空。
+配置文件说明
+/etc/vsftpd/vsftpd.conf 主配置文件
+/etc/vsftpd/ftpusers 不允许访问的用户列表
+/etc/vsftpd/user_list 允许或者不允许访问的用户列表
+/var/log/xferlog 上传下载日志
+
+配置允许系统用户访问FTP1、编辑配置文件
+vim /etc/vsftpd/vsftpd.conf
+
+修改如下：
+anonymous_enable=NOlocal_enable=YESwrite_enable=YESlocal_umask=022chroot_local_user=YESuserlist_enable=YESuserlist_deny=NOuserlist_file=/etc/vsftpd/user_listpam_service_name=vsftpdtcp_wrappers=YES
+
+2、重启vsftpd
+systemctl restart vsftpd
+
+3、创建ftp用户
+useradd ftpuser -d /data/ftpuserpasswd ftpuserchmod a-w /data/ftpuserecho ftpuser &gt; /etc/vsftpd/user_list
+
+4、限制用户只能ftp登录，不能ssh登录
+usermod -s /sbin/nologin ftpuserecho &quot;/sbin/nologin&quot; &gt;&gt; /etc/shells
+
+5、访问测试
+ftp 127.0.0.1ftp 192.168.56.101
+
+Name 输入 ftpuser ， Password 输入该用户的密码。登录后，当前目录为/data/ftpuser。
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -42160,6 +42470,7 @@ SELinux    Security Enhanced LinuxLPI        Linux Professional Instituteext3   
       </categories>
       <tags>
         <tag>linux</tag>
+        <tag>ftp</tag>
       </tags>
   </entry>
   <entry>
@@ -43305,6 +43616,7 @@ Gentoo，伟大的Gentoo是Linux世界最年轻的发行版本，正因为年轻
 /tmp用来存放不同程序执行时产生的临时文件。
 /usrunix software resource用户应用程序默认安装的路径，这是linux系统中占用硬盘空间最大的目录。用户安装的应用程序可以安装到/usr/local路径下，/usr/share主要存放一些共享文件，/usr/bin存放普通用户程序所需要用到的命令，/usr/sbin存放系统管理员程序所需要用到的程序。
 /opt可选的应用程序的安装路径，安装在这个路径下的应用程序，它的源文件，库文件等都是处于同个目录下，这样卸载程序的时候，只需要直接删除了，不会对其他程序造成影响。
+/varVariable files，可变文件。在系统正常运行期间，其内容预计会不断更改的文件，如日志和缓存。
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -44074,7 +44386,7 @@ mtools，显示所有支持MSDOS文件系统的命令。
 mutt
 mutt: mail user agent，文字界面的邮件工具
 
-mutt -s &quot;A test mail&quot; josfeng@gmail.com，将邮件寄给 &#106;&#x6f;&#115;&#x66;&#101;&#x6e;&#x67;&#x40;&#x67;&#109;&#97;&#x69;&#x6c;&#46;&#x63;&#111;&#x6d;，信件主题为A test mail。
+mutt -s &quot;A test mail&quot; josfeng@gmail.com，将邮件寄给 &#106;&#x6f;&#x73;&#102;&#101;&#x6e;&#103;&#x40;&#x67;&#x6d;&#97;&#x69;&#x6c;&#x2e;&#x63;&#x6f;&#109;，信件主题为A test mail。
 mv
 mv: move，移动或重命名文件或目录
 
