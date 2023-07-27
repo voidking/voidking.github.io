@@ -248,6 +248,233 @@ k8s-tool备考的过程中，完善自己的k8s-tool，考试的时候可以使�
       </tags>
   </entry>
   <entry>
+    <title>Helm官方文档摘录</title>
+    <url>/dev-helm-doc-extract/</url>
+    <content><![CDATA[前言Helm官方文档写的很棒，本文会摘录Helm官方文档中的一些基础知识和最佳实践，备忘。更细致全面的内容，请移步阅读Helm官方文档。
+参考文档：
+
+《Helm入门篇》
+Helm - Getting Started
+
+
+
+Helm三大概念Chart 代表着 Helm 包。它包含在 Kubernetes 集群内部运行应用程序，工具或服务所需的所有资源定义。你可以把它看作是 Homebrew formula，Apt dpkg，或 Yum RPM 在Kubernetes 中的等价物。
+Repository（仓库） 是用来存放和共享 charts 的地方。它就像 Perl 的 CPAN 档案库网络 或是 Fedora 的 软件包仓库，只不过它是供 Kubernetes 包所使用的。
+Release 是运行在 Kubernetes 集群中的 chart 的实例。一个 chart 通常可以在同一个集群中安装多次。每一次安装都会创建一个新的 release。以 MySQL chart为例，如果你想在你的集群中运行两个数据库，你可以安装该chart两次。每一个数据库都会拥有它自己的 release 和 release name。
+在了解了上述这些概念以后，我们就可以这样来解释 Helm：Helm 安装 charts 到 Kubernetes 集群中，每次安装都会创建一个新的 release。你可以在 Helm 的 chart repositories 中寻找新的 chart。
+Helm安装资源的顺序Helm按照以下顺序安装资源：
+
+Namespace
+NetworkPolicy
+ResourceQuota
+LimitRange
+PodSecurityPolicy
+PodDisruptionBudget
+ServiceAccount
+Secret
+SecretList
+ConfigMap
+StorageClass
+PersistentVolume
+PersistentVolumeClaim
+CustomResourceDefinition
+ClusterRole
+ClusterRoleList
+ClusterRoleBinding
+ClusterRoleBindingList
+Role
+RoleList
+RoleBinding
+RoleBindingList
+Service
+DaemonSet
+Pod
+ReplicationController
+ReplicaSet
+Deployment
+HorizontalPodAutoscaler
+StatefulSet
+Job
+CronJob
+Ingress
+APIService
+
+Chart模板指南内容太多，建议直接阅读Helm官方文档 - Chart模板指南，了解基础概念和语法。
+本节只简单说明几个概念和语法。
+模板templates/目录中的.yaml文件和.tpl文件，就是模板。当Helm评估chart时，会通过模板渲染引擎将所有文件发送到templates/目录中。 然后收集模板的结果并发送给Kubernetes。
+values.yaml 文件也导入到了模板。这个文件包含了chart的 默认值 。这些值会在用户执行helm install 或 helm upgrade时被覆盖。
+Chart.yaml 文件包含了该chart的描述。你可以从模板中访问它。charts/目录 可以 包含其他的chart(称之为 子chart)。
+模板中横线的作用：
+
+&#123;&#123;-`：表示在模板渲染时要去掉前面的空白字符和换行符。
+- `-&#125;&#125;：表示在模板渲染时要去掉后面的空白字符和换行符。
+
+变量和作用域Helm模板中，变量是对另一个对象的命名引用。
+变量的作用域一般不是全局的，而是其声明所在的块。所谓块，是指if/else、with、range、define、template、block定义的范围。
+.代表对当前作用域的引用，.Values表示在当前作用域查找Values对象。每个模板中，默认可以访问到的内置对象有Release、Values、Chart、Files、Capabilities和Template。如果定义了块，那么在块中不可以通过.Values找到Values对象。
+$代表对根作用域的引用，$.Values表示在根作用域查找Values对象。如果定义了块，那么在块中可以通过$.Values找到Values对象。
+变量定义格式示例：&#123;&#123;- $name := .Release.Name -&#125;&#125;在模板顶层定义变量，变量的作用域会是整个模板；在块中定义变量，变量的作用域只在块内。
+变量类型Helm 模板语言是用强类型Go编程语言实现的。 因此，模板中的变量是 有类型的。大多数情况下，变量将作为以下类型之一显示：
+
+string: 文本字符串
+bool: true 或 false
+int: 整型值（包含8位，16位，32位，和64有符号和无符号整数）
+float64: 64位浮点数(也有8位，16位，32位类型)
+字节切片([]byte)，一般用于保存（可能的）二进制数据
+struct: 有属性和方法的对象
+上述某种类型的切片(索引列表)
+字符串键map (map[string]interface&#123;&#125;) 值是上述某种类型
+
+Go里面有很多其他类型，有时你需要在模板里转换。调试对象类型最简便的方式是在模板中传递给printf “%t”，这样会打印类型。 也可以使用 typeOf 和 kindOf 函数。
+命名模板命名模板（也被称作一个 部分 或一个 子模板）名称是全局的。一个常见的命名惯例是用chart名称作为模板前缀。使用特定chart名称作为前缀可以避免可能因为 两个不同chart使用了相同名称的模板而引起的冲突。
+用define和template声明和使用模板。按照惯例，define声明的命名模板一般放在_helpers.tpl文件中。因为是模板名称是全局的，因此可以被.yaml文件引用。
+template渲染时，一般传入.作为命名模板可以访问的范围。include是template的替代，只是为了更好地处理YAML文档的输出格式，方便缩进。
+NOTES.txt文件在helm install 或 helm upgrade命令的最后，Helm会打印出对用户有用的信息。 使用模板可以高度自定义这部分信息。要在chart添加安装说明，只需创建 templates/NOTES.txt 文件即可。该文件是纯文本，但会像模板一样处理， 所有正常的模板函数和对象都是可用的。
+.helmignore 文件.helmignore 文件用来指定你不想包含在你的helm chart中的文件。如果该文件存在，helm package 命令会在打包应用时忽略所有在 .helmignore 文件中匹配的文件。
+一些值得注意的和.gitignore不同之处：
+
+不支持**语法。
+globbing库是Go的 ‘filepath.Match’，不是fnmatch(3)
+末尾空格总会被忽略(不支持转义序列)
+不支持!作为特殊的引导序列
+默认不会排除自身，需要显式添加 .helmignore
+
+YAML技术参考文档：《YAML语言》
+Chart开发技巧模板方法Helm使用Go模板，同时增加了两个特殊模板方法：include和required。
+include方法允许你引入另一个模板，并将结果传递给其他模板方法。比如，这个模板片段包含了一个叫mytpl的模板，然后将其转成小写，并使用双引号括起来。
+value: &#123;&#123; include &quot;mytpl&quot; . | lower | quote &#125;&#125;
+
+required方法可以让你声明模板渲染所需的特定值。如果这个值是空的，模板渲染会出错并打印用户提交的错误信息。下面这个required方法的例子声明了一个.Values.who需要的条目，并且当这个条目不存在时会打印错误信息：
+value: &#123;&#123; required &quot;A valid .Values.who entry required!&quot; .Values.who &#125;&#125;
+
+tpl方法允许开发者在模板中使用字符串作为模板。将模板字符串作为值传给chart或渲染额外的配置文件时会很有用。语法： &#123;&#123; tpl TEMPLATE_STRING VALUES &#125;&#125;
+使用Partials和模板引用有时你想在chart中创建可以重复利用的部分，不管是块还是局部模板。通常将这些文件保存在自己的文件中会更干净。
+在 templates/ 目录中，任何以下划线(_)开始的文件不希望输出到Kubernetes清单文件中。因此按照惯例，辅助模板和局部模板会被放在_helpers.tpl文件中。
+创建镜像拉取密钥1、定义 values.yaml
+imageCredentials:  registry: quay.io  username: someone  password: sillyness  email: someone@host.com
+
+2、定义辅助模板（写在 _helpers.tpl 文件里）
+&#123;&#123;- define &quot;imagePullSecret&quot; &#125;&#125;&#123;&#123;- with .Values.imageCredentials &#125;&#125;&#123;&#123;- printf &quot;&#123;\&quot;auths\&quot;:&#123;\&quot;%s\&quot;:&#123;\&quot;username\&quot;:\&quot;%s\&quot;,\&quot;password\&quot;:\&quot;%s\&quot;,\&quot;email\&quot;:\&quot;%s\&quot;,\&quot;auth\&quot;:\&quot;%s\&quot;&#125;&#125;&#125;&quot; .registry .username .password .email (printf &quot;%s:%s&quot; .username .password | b64enc) | b64enc &#125;&#125;&#123;&#123;- end &#125;&#125;&#123;&#123;- end &#125;&#125;
+
+3、模板中使用辅助模板
+apiVersion: v1kind: Secretmetadata:  name: myregistrykeytype: kubernetes.io/dockerconfigjsondata:  .dockerconfigjson: &#123;&#123; template &quot;imagePullSecret&quot; . &#125;&#125;
+
+YAML是JSON的超集根据YAML规范，YAML是JSON的超集。这意味着任意的合法JSON结构在YAML中应该是合法的。
+这有个优势：有时候模板开发者会发现使用类JSON语法更容易表达数据结构而不是处理YAML的空白敏感度。
+作为最佳实践，模板应遵循类YAML语法 除非 JSON语法大大降低了格式问题的风险。
+构建复杂Chart在CNCF的 Artifact Hub 中的很多chart是创建更先进应用的“组成部分”。但是chart可能被用于创建大规模应用实例。 在这种场景中，一个总的chart会有很多子chart，每一个是整体功能的一部分。
+当前从离散组件组成一个复杂应用的最佳实践是创建一个顶层总体chart构建全局配置，然后使用charts子目录嵌入每个组件。
+最佳实践一般惯例chart名称chart名称必须是小写字母和数字。单词之间可以使用横杠分隔(-)。
+版本号Helm尽可能使用 SemVer 2来表示版本号。（注意Docker镜像的tag不一定遵循SemVer， 因此被认为是一个不幸的例外规则。）
+当SemVer版本存储在Kubernetes标签中时，我们通常把+字符改成_，因为标签不允许使用+作为值进行签名。
+格式化YAMLYAML 文件应该按照 双空格 缩进(绝不要使用tab键)。
+Helm 和 Chart的用法以下是几个 Helm 和 helm 的惯用方法。
+
+Helm 是指整个项目
+helm 是指客户端命令
+chart 不是专有名词，不需要首字母大写
+Chart.yaml 需要首字母大写，因为文件名大小写敏感
+
+若有疑问，使用 Helm (‘H’大写)。
+Values命名规范变量名称以小写字母开头，单词按驼峰区分
+扁平或嵌套的ValueYAML是一种灵活格式，值可以嵌套得很深，也可以是扁平的。大多数场景中，扁平的优于嵌套的。因为对模板开发者和用户来说更加简单。
+类型清楚YAML的类型强制规则有时候是很反常的。比如，foo: false 和 foo: “false” 是不一样的。大整型数如：foo: 12345678 有时会被转换成科学计数法。
+避免类型强制规则错误最简单的方式是字符串明确定义，其他都是不明确的。或者，简单来讲， 给所有字符串打引号。
+通常，为了避免整数转换问题，将整型存储为字符串更好，并用 &#123;&#123; int $value &#125;&#125; 在模板中将字符串转回整型。
+在大多数场景中，显式的类型标记更好，所以 foo: !!string 1234 会将1234作为字符串对待。 但是，YAML解析器会消耗标记，因此类型数据在一次解析后会丢失。
+考虑用户使用value有三种value来源:
+
+chart的values.yaml文件
+由helm install -f提供的values文件
+在执行helm install 时传递给–set 或 –set-string 参数的values
+
+当设计values的结构时，记得你的chart用户可能会通过-f 参数或–set选项覆盖他们。由于–set在表现上更有限，编写你values.yaml文件的第一指导原则是确保它容易被–set覆盖。因此使用map构建values文件更好。
+给values.yaml写文档values.yaml中每个定义的属性都应该文档化。文档字符串应该以它要描述的属性开头，并至少给出一句描述。
+模板templates 结构templates/目录结构应该如下：
+
+如果生成YAML输出，模板文件应该有扩展名.yaml。 扩展名是.tpl可用于生成非格式化内容的模板文件。
+模板文件名称应该使用横杠符号(my-example-configmap.yaml)，不用驼峰记法。
+每个资源的定义应该在它自己的模板文件中。
+模板文件的名称应该反映名称中的资源类型。比如：foo-pod.yaml， bar-svc.yaml
+
+定义模板的名称定义的模板(在&#123;&#123; define &#125;&#125;命令中定义的模板)是可全局访问的。这就意味着chart和所有的子chart都可以访问用&#123;&#123; define &#125;&#125;创建的所有模板。
+因此， 所有定义的模板名称应该被命名空间化。
+正确的：
+&#123;&#123;- define &quot;nginx.fullname&quot; &#125;&#125;&#123;&#123;/* ... */&#125;&#125;&#123;&#123; end -&#125;&#125;
+
+不正确的：
+&#123;&#123;- define &quot;fullname&quot; -&#125;&#125;&#123;&#123;/* ... */&#125;&#125;&#123;&#123; end -&#125;&#125;
+
+强烈建议通过helm create命令创建新chart，因为模板名称是根据此最佳实践自动定义的。
+格式化模板模板应该使用两个 空格 缩进（永远不要用tab）。模板命令的大括号前后应该使用空格。正确的：
+&#123;&#123; .foo &#125;&#125;&#123;&#123; print &quot;foo&quot; &#125;&#125;&#123;&#123;- print &quot;bar&quot; -&#125;&#125;
+
+不正确的：
+&#123;&#123;.foo&#125;&#125;&#123;&#123;print &quot;foo&quot;&#125;&#125;&#123;&#123;-print &quot;bar&quot;-&#125;&#125;
+
+生成模板中的空格最好在生成的模板中将空格量保持在最小值。尤其是大量的空行不应该相邻出现。但偶尔有空行（尤其在逻辑块之间）是没问题的。
+注释YAML和Helm模板都有注释标记符。YAML注释：
+# This is a commenttype: sprocket
+
+模板注释：
+&#123;&#123;- /*This is a comment.*/&#125;&#125;type: frobnitz
+
+在模板和模板输出中使用JSONYAML是JSON的超集。在某些情况下，使用JSON语法比其他YAML表示更具可读性。
+比如，这个YAML更接近表示列表的普通YAML方法：
+arguments:  - &quot;--dirname&quot;  - &quot;/foo&quot;
+
+但是折叠成JSON列表样式时会更易阅读:
+arguments: [&quot;--dirname&quot;, &quot;/foo&quot;]
+
+使用JSON可以很好地提高易读性。然而，JSON语法不应用于表示更复杂的结构。
+标签和注释建议使用 helm.sh/chart: NAME-VERSION 作为标签，以便操作员可以找到特定chart的所有实例。
+如果元数据项不是用于查询，就应该设置为注释。
+标准标签参考文档：标签和注释
+Pod和Pod模板Pod指的是Pod，Pod模板指的是Deployment、ReplicationController、ReplicaSet、DaemonSet、StatefulSet等。
+容器镜像应该使用固定的tag或镜像SHA。不应该使用latest, head, canary等标签或其他被设计为“浮动的”标签。
+所有的Pod模板部分应该指定一个selector。比如：
+selector:  matchLabels:      app.kubernetes.io/name: MyNametemplate:  metadata:    labels:      app.kubernetes.io/name: MyName
+
+基于角色的访问控制RBAC 资源有：
+
+ServiceAccount (namespaced)
+Role (namespaced)
+ClusterRole
+RoleBinding (namespaced)
+ClusterRoleBinding
+
+RBAC和服务账户配置应该使用独立的key。它们是独立的内容。在YAML中将这两个概念分开可以消除歧义使其更加清晰。
+rbac:  # Specifies whether RBAC resources should be created  create: trueserviceAccount:  # Specifies whether a ServiceAccount should be created  create: true  # The name of the ServiceAccount to use.  # If not set and create is true, a name is generated using the fullname template  name:
+
+rbac.create 应该是布尔值，用于控制RBAC资源是否被创建。默认是 true。用户想自己管理RBAC访问控制时可以设置为false (示例如下)。
+serviceAccount.name 要设置为由chart创建的访问控制资源的ServiceAccount的名称。 如果serviceAccount.create是true，则使用该名称的ServiceAccount会被创建。如果没有设置名称， 则会使用fullname模板生成一个名称。如果serviceAccount.create是false，则不会被创建，但仍然会与相同的资源关联， 以便后续手动创建的引用它的RBAC资源可以正常工作。如果serviceAccount.create是false且没有指定名称， 会使用默认的ServiceAccount。
+&#123;&#123;/*Create the name of the service account to use*/&#125;&#125;&#123;&#123;- define &quot;mychart.serviceAccountName&quot; -&#125;&#125;&#123;&#123;- if .Values.serviceAccount.create -&#125;&#125;    &#123;&#123; default (include &quot;mychart.fullname&quot; .) .Values.serviceAccount.name &#125;&#125;&#123;&#123;- else -&#125;&#125;    &#123;&#123; default &quot;default&quot; .Values.serviceAccount.name &#125;&#125;&#123;&#123;- end -&#125;&#125;&#123;&#123;- end -&#125;&#125;
+
+调试语法检查helm lint
+
+测试本地渲染helm template --debug
+
+测试服务器渲染helm install --dry-run --debug
+
+忽略检查测试服务器渲染helm install --dry-run --disable-openapi-validation
+
+查看安装在服务上的模板helm get manifest
+
+
+
+
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>k8s</category>
+        <category>cloudnative</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
+        <tag>helm</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>搭建Spark on Yarn集群</title>
     <url>/dev-spark-on-yarn/</url>
     <content><![CDATA[前言计划在三台Linux主机中搭建Spark on Yarn集群，Spark版本3.2.3，Hadoop版本3.2.3。
@@ -1328,8 +1555,8 @@ Multiple deployments for multiple secrets / private registries?
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>k8s</category>
+        <category>docker</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -1588,8 +1815,8 @@ worker节点操作以worker-0为例，方便进行描述。
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>k8s</category>
+        <category>docker</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -5985,8 +6212,8 @@ apiVersion: monitoring.coreos.com/v1kind: PrometheusRulemetadata:  labels:    pr
       <categories>
         <category>engineering</category>
         <category>k8s</category>
-        <category>monitoring</category>
         <category>cloudnative</category>
+        <category>monitoring</category>
       </categories>
       <tags>
         <tag>k8s</tag>
@@ -6105,8 +6332,8 @@ count(&#123;job=&quot;kube-controller-manager&quot;&#125;) by (__name__)count(&#
       <categories>
         <category>engineering</category>
         <category>k8s</category>
-        <category>monitoring</category>
         <category>cloudnative</category>
+        <category>monitoring</category>
       </categories>
       <tags>
         <tag>k8s</tag>
@@ -6177,177 +6404,6 @@ resolution是可选的。默认值为全局评估间隔。
         <tag>prometheus</tag>
         <tag>监控</tag>
         <tag>promql</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>使用Docker安装配置Grafana</title>
-    <url>/dev-docker-grafana/</url>
-    <content><![CDATA[Grafana简介
-Grafana allows you to query, visualize, alert on and understand your metrics no matter where they are stored.
-
-本文中，我们会使用Docker来安装配置grafana，并且显示prometheus中的数据。前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。已知docker宿主机IP为192.168.56.102。
-
-
-安装Grafana1、登录dockerhub查看需要的grafana版本。
-2、下载grafana镜像（以grafana6.7.4为例）docker pull grafana/grafana:6.7.4
-3、启动grafana服务
-docker run --name=vk-grafana -d \-p 3000:3000 \grafana/grafana:6.7.4
-
-以上命令：
-
-命名容器为vk-grafana，后台运行
-映射宿主机3000端口到容器3000端口
-
-grafana的配置文件为 /etc/grafana/grafana.ini ，可以进入容器进行修改，或者挂出到宿主机。
-更高级的启动命令参考How to use the container。
-4、验证安装docker psmysql启动正常的话就可以看到vk-grafana容器。如果启动失败，可以使用docker logs vk-grafana查看失败原因并进行解决。
-开放端口firewall-cmd --add-port=3000/tcp --permanentsystemctl reload firewalld# 或者systemctl stop firewalld
-
-测试服务1、本机测试curl localhost:3000
-2、浏览器测试访问 http://192.168.56.102:3000用户名密码默认都是admin，第一次登录会提示修改。
-配置Prometheus数据假设我们已经安装配置好了prometheus，参考《使用Docker安装配置Prometheus》。
-1、添加数据资源
-2、配置Prometheus数据Name填入 Prometheus ，URL填入 http://192.168.56.102:9090，其他不用变。Save&amp;Test。
-3、选择dashboard点击Dashboards，点击三个Import，引入三个dashboard。
-4、引入其他dashboard比如可以填入URL https://grafana.com/grafana/dashboards/405 ，点击Load，就可以下载Node Exporter的dashboard。选择Folder，选择Prometheus数据源，Import。
-5、查看dashboard左上角HOME，出现下拉框，即可选择dashboard。
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>docker</category>
-        <category>monitoring</category>
-      </categories>
-      <tags>
-        <tag>prometheus</tag>
-        <tag>监控</tag>
-        <tag>docker</tag>
-        <tag>centos</tag>
-        <tag>grafana</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>使用Docker安装配置Prometheus</title>
-    <url>/dev-docker-prometheus/</url>
-    <content><![CDATA[Prometheus简介
-Prometheus是在SoundCloud的基础上构建的开源系统监视和警报工具。自从2012年以来，许多公司和组织都采用了Prometheus，该项目拥有非常活跃的开发人员和用户社区。现在，它是一个独立的开源项目，并且独立于任何公司进行维护。为了强调这一点并阐明项目的治理结构，Prometheus在2016年加入了Cloud Native Computing Foundation，这是继Kubernetes之后的第二个托管项目。
-
-Prometheus的主要特性包括：
-
-一个包含时间序列的多维数据模型，由指标名称和键值对进行标记
-PromQL，一种灵活的查询语言
-不依赖分布式存储；单服务器节点是自治的
-时间序列收集是通过HTTP拉取模型实现的
-支持通过中间网关推送时间序列
-通过服务发现或静态配置发现目标
-支持多种图形和仪表板
-
-Prometheus生态系统包含多个组件，其中许多是可选的：
-
-prometheus server，负责收取并存储时间序列数据
-client libraries，用于检测应用程序代码
-push gateway，支持短期工作
-exporters，适用于特定服务的指标收集器，如HAProxy，StatsD，Graphite
-alertmanager，处理报警
-各种支持工具
-
-更多内容参考Prometheus文档。本文中，我们会使用Docker来安装配置Prometheus，主要参考Prometheus监控系统之入门篇。前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。已知docker宿主机IP为192.168.56.102。
-
-
-prometheus server1、登录dockerhub查看需要的prometheus server。
-2、下载prometheus server镜像（以v2.18.0为例）
-docker pull prom/prometheus:v2.18.0
-
-3、准备配置文件
-mkdir -p /opt/prometheus/vim /opt/prometheus/prometheus.yml
-
-prometheus.yml文件内容为：
-global:  scrape_interval: 15s #默认采集监控数据时间间隔  external_labels:    monitor: &#x27;my-monitor&#x27;scrape_configs:  #监控对象设置  - job_name: prometheus #任务名称    scrape_interval: 5s #每隔5s获取一次监控数据    static_configs: #监控对象地址      - targets: [&#x27;127.0.0.1:9090&#x27;]  # 将自己加入到监控对象中
-
-4、启动prometheus server
-docker run --name=prometheus -d \-p 9090:9090 \-v /opt/prometheus:/etc/prometheus \prom/prometheus:v2.18.0 --config.file=/etc/prometheus/prometheus.yml --web.enable-lifecycle 
-
-5、测试服务浏览器访问 http://192.168.56.102:9090/
-6、查看targets浏览器访问 http://192.168.56.102:9090/targets/
-7、查看指标浏览器访问 http://192.168.56.102:9090/metrics/
-node exporter1、登录dockerhub查看需要的node exporter。
-2、下载node-exporter镜像（以v1.0.0为例）
-docker pull prom/node-exporter:v1.0.0
-
-3、启动node exporter
-docker run --name=node-exporter -d \-p 9100:9100 \docker run --name=node-exporter -d \  -p 9100:9100 \  --net=&quot;host&quot; \  --pid=&quot;host&quot; \  -v &quot;/:/host:ro,rslave&quot; \  prom/node-exporter:v1.0.0 \  --path.rootfs=/host
-
-promserver收集exporter数据1、修改prometheus.yml
-global:  scrape_interval: 15s #默认采集监控数据时间间隔  external_labels:    monitor: &#x27;my-monitor&#x27;scrape_configs:  #监控对象设置  - job_name: prometheus #任务名称    scrape_interval: 5s #每隔5s获取一次监控数据    static_configs: #监控对象地址      - targets: [&#x27;127.0.0.1:9090&#x27;]  # 将自己加入到监控对象中      - targets: [&#x27;192.168.56.102:9100&#x27;]        labels:          group: &#x27;client-node-exporter&#x27;
-
-2、重新加载配置文件
-curl -X POST http://localhost:9090/-/reload
-然而我重新加载配置文件并不生效，最后重启了prometheus server。
-3、查看targets浏览器访问 http://192.168.56.102:9090/targets/
-push gatewayPrometheus采集数据是用的pull方式，prometheus配置文件设置的5秒就是采集数据的频率。但是有些数据并不适合采用这样的方式，对这样的数据可以使用Push Gateway服务。PushGateway比较适合临时作业和批处理作业，由于这些作业是short-lived的，如果采用pull的模式，可能在prometheus采集之前，作业已经执行结束。pushgateway相当于一个暂存器，这些临时作业将metrics数据缓存到pushgateway中，然后等待Prometheus来pull数据。
-1、登录dockerhub查看需要的pushgateway。
-2、下载pushgateway镜像（以v1.1.0为例）
-docker pull prom/pushgateway:v1.1.0
-
-3、启动push gateway
-docker run --name=pushgateway -d \-p 9091:9091 \prom/pushgateway:v1.1.0
-
-4、测试服务浏览器访问 http://192.168.56.102:9091/#
-5、推送数据给push gateway
-echo &quot;exam_metric 100&quot; | curl --data-binary @- http://127.0.0.1:9091/metrics/job/examcat &lt;&lt;EOF | curl --data-binary @- http://127.0.0.1:9091/metrics/job/exam/instance/testchinese 120math 150english 140EOF
-
-
-promserver收集pushgateway数据1、修改prometheus.yml文件
-global:  scrape_interval: 15s #默认采集监控数据时间间隔  external_labels:    monitor: &#x27;my-monitor&#x27;scrape_configs:  #监控对象设置  - job_name: prometheus #任务名称    scrape_interval: 5s #每隔5s获取一次监控数据    static_configs: #监控对象地址      - targets: [&#x27;127.0.0.1:9090&#x27;]  # 将自己加入到监控对象中      - targets: [&#x27;192.168.56.102:9100&#x27;]        labels:          group: &#x27;client-node-exporter&#x27;      - targets: [&#x27;192.168.56.102:9091&#x27;]        labels:          group: &#x27;pushgateway&#x27;
-
-2、重新加载配置或者重启promserver
-3、在promserver查看数据
-alertmanager1、登录dockerhub查看需要的alertmanager。
-2、下载alertmanager镜像（以v0.15.0为例）
-docker pull prom/alertmanager:v0.15.0
-
-高版本比如v0.20.0打开页面后会报错，Uncaught TypeError: Cannot read property ‘elmFs’ of undefined
-3、创建配置文件
-mkdir -p /opt/alertmanager/vim /opt/alertmanager/alertmanager.yml
-
-alertmanager.yml内容为：
-global:  resolve_timeout: 5mroute:  group_by: [&#x27;exam&#x27;]  #与prometheus告警规则配置的groupname对应  group_wait: 10s #报警等待时间  group_interval: 10s #报警间隔时间  repeat_interval: 1m #重复报警间隔时间  receiver: &#x27;web.hook&#x27; #告警处理方式，我们这里通过web.hook方式，也可以配置成邮件等方式receivers:  - name: &#x27;web.hook&#x27;    webhook_configs:      - url: &#x27;http://192.168.56.102:8080/exam/test&#x27; #告警webhook地址，告警信息会post到该地址，需要编写服务接收该告警数据inhibit_rules:  - source_match:      severity: &#x27;critical&#x27;    target_match:      severity: &#x27;warning&#x27; #目标告警状态    equal: [&#x27;alertname&#x27;, &#x27;dev&#x27;, &#x27;instance&#x27;]
-
-4、启动alertmanager
-docker run --name=alertmanager -d \-p 9093:9093 \-v /opt/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml \prom/alertmanager:v0.15.0 --config.file=/etc/alertmanager/alertmanager.yml --storage.path=/alertmanager
-
-5、测试服务浏览器访问 http://192.168.56.102:9093/
-告警配置1、设置报警规则
-mkdir -p /opt/prometheus/rules/vim /opt/prometheus/rules/exam.rules
-
-exam.rules内容为
-groups:  - name: exam    rules:      - alert: exam告警测试        expr: chinese &gt; 100 #语文成绩大于100告警，注：我们在pushgateway推送数据的时候，设置的是120，因此会触发告警        for: 1m        labels:          status: warning        annotations:          summary: &quot;&#123;&#123;$labels.instance&#125;&#125;:语文成绩优秀! nb了!!!&quot;          description: &quot;&#123;&#123;$labels.instance&#125;&#125;: 语文成绩优秀! nbnbnb!!!&quot;
-
-2、编辑prometheus.yml配置文件，添加alertmanager配置和报警规则配置
-global:  scrape_interval: 15s #默认采集监控数据时间间隔  external_labels:    monitor: &#x27;my-monitor&#x27;scrape_configs:  #监控对象设置  - job_name: prometheus #任务名称    scrape_interval: 5s #每隔5s获取一次监控数据    static_configs: #监控对象地址      - targets: [&#x27;127.0.0.1:9090&#x27;]  # 将自己加入到监控对象中      - targets: [&#x27;192.168.56.102:9100&#x27;]        labels:          group: &#x27;client-node-exporter&#x27;      - targets: [&#x27;192.168.56.102:9091&#x27;]        labels:          group: &#x27;pushgateway&#x27;alerting:   #告警管理器设置  alertmanagers:    - static_configs:      - targets: [&#x27;192.168.56.102:9093&#x27;] #告警信息会发送给alertmanager进一步处理rule_files:  - /etc/prometheus/rules/*.rules   #告警规则文件路径，对应宿主机 /opt/prometheus/rules/*.rules
-
-3、重新加载配置或者重启promserver
-4、在prometheus alerts页面查看告警
-或者在alertmanager alerts页面查看告警
-告警通知处理alertmanager.yml文件中配置的告警方式是webhook，告警发送到 http://192.168.56.102:8080/exam/test ，因此，我们需要一个服务来接收处理这个告警。
-1、安装golang环境，参考《CentOS7部署beego项目》golang安装一节
-2、创建main.go
-package mainimport (	&quot;fmt&quot;	&quot;io/ioutil&quot;	&quot;github.com/gin-gonic/gin&quot;)func main() &#123;	r := gin.Default()	r.POST(&quot;/exam/test&quot;, func(c *gin.Context) &#123;		res, _ := ioutil.ReadAll(c.Request.Body)		fmt.Println(string(res)) //这里我们只简单打印告警信息		c.JSON(200, gin.H&#123;			&quot;message&quot;: &quot;alert message&quot;,		&#125;)	&#125;)	r.Run(&quot;:8080&quot;)&#125;
-
-3、运行代码
-go get github.com/gin-gonic/gingo run main.go
-如上图，服务接收到了告警信息。
-配置更多prometheus配置，参考CONFIGURATION 和 Prometheus 配置
-后记以上，配置完成了promserver、exporter、pushgateway、alertmanager，跑通了数据的收集和显示，测试了告警信息的收集。本文就到这里，需要用到prometheus的其他内容时，再继续学习，比如thanos。
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>docker</category>
-        <category>monitoring</category>
-      </categories>
-      <tags>
-        <tag>prometheus</tag>
-        <tag>监控</tag>
-        <tag>docker</tag>
       </tags>
   </entry>
   <entry>
@@ -6500,8 +6556,8 @@ apiVersion: v1kind: Podmetadata:  creationTimestamp: null  labels:    run: ubunt
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>k8s</category>
+        <category>docker</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -6628,8 +6684,8 @@ curl http://localhost:8001curl http://localhost:8080/api/v1/proxy/namespaces/YOU
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>k8s</category>
+        <category>docker</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -6964,7 +7020,10 @@ Fatkun图片批量下载，批量下载图片的工具
 floccus bookmarks sync，书签同步工具，源码floccusaddon/floccus
 JSONVue，json格式化查看
 Octotree - GitHub code tree，github代码树查看工具
+AdBlock — 最佳广告拦截工具，浏览器去广告神器
 ODM 的视频下载器，在线视频下载器，下载音乐、视频、mp3、图像、文件
+视频下载器 - CoCoCut，在线视频下载器
+FetchV，在线视频下载器
 OneTab，Tab页合并，节省浏览器内存
 Tampermonkey（油猴），在网站上运行用户脚本
 二维码（生成及识别），生成和识别二维码的工具
@@ -7307,7 +7366,8 @@ cd ..open .# 界面点击推出移动硬盘
 方法二：
 cd ..diskutil unmount /Volumes/WDdiskutil unmount force /Volumes/WD
 
-检查wifi信号强度显示附近可用wifi网络列表，包括信号强度、信道和加密类型等。
+检查wifi信号强度图形界面打开wireless Diagnostics（无线诊断），忽略打开的窗口。菜单栏点击窗口，扫描，看到网络信息中，RSSI表示信号强度，这个值越接近0值，信号强度越好。
+命令行显示附近可用wifi网络列表，包括信号强度、信道和加密类型等。
 /System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -s
 其中RSSI表示信号强度，这个值越接近0值，信号强度越好。
 查看当前连接的wifi网络信息，包括信号强度、信道和加密类型等。
@@ -7351,8 +7411,8 @@ Service Account Key PairKube Proxy Client CertificateKubelet Client Certificates
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>k8s</category>
+        <category>docker</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -7428,6 +7488,12 @@ docker exec -it vk-pg /bin/bashpsql -U postgrespsql -U postgres -h localhost -p 
 yum list | grep postgresqlyum install postgresql.x86_64psql -U postgres -h localhost -p 5432
 这次必须输入正确的密码才能登录。
 以上，pg安装配置完成。
+Postgresql启动报错问题问题描述bitnami安装的postgresql，pod重建后无法启动，一直重启，看日志报错：
+LOG: database system was interrupted; last known up at xxxx-xx-xx xx:xx:xx GMTFATAL: the database system is starting up
+
+解决办法修改探活，增加 initialDelaySeconds 或者增加 failureThreshold 。
+问题原因：如果服务器突然停止，或者突然失去对文件系统的访问权限，那么内存中的所有内容都会丢失，下次启动它时，它需要重新播放日志，以使表恢复到正确的状态（这可能需要相当长的时间，具体取决于自上次检查点以来发生了多少）。在完成之前，任何使用服务器的尝试都将导致 FATAL: the database system is starting up
+参考文档：Postgresql fatal the database system is starting up - windows 10
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -7439,6 +7505,8 @@ yum list | grep postgresqlyum install postgresql.x86_64psql -U postgres -h local
         <tag>docker</tag>
         <tag>数据库</tag>
         <tag>harbor</tag>
+        <tag>bitnami</tag>
+        <tag>postgresql</tag>
       </tags>
   </entry>
   <entry>
@@ -7546,8 +7614,8 @@ Creating a Replication Rule
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>k8s</category>
+        <category>docker</category>
         <category>cloudnative</category>
         <category>troubleshooting</category>
       </categories>
@@ -7819,8 +7887,8 @@ kubectl get cm test-config -n test -o jsonpath=&#x27;&#123;.data.config\.yaml&#1
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>k8s</category>
+        <category>docker</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -7905,8 +7973,8 @@ IPsec-VPN入门概述
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>k8s</category>
+        <category>docker</category>
         <category>devops</category>
         <category>cloudnative</category>
         <category>network</category>
@@ -8068,8 +8136,8 @@ systemctl status firewalldsystemctl stop firewalldsystemctl disable firewalld
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>k8s</category>
+        <category>docker</category>
         <category>devops</category>
         <category>cloudnative</category>
         <category>network</category>
@@ -8118,8 +8186,8 @@ CONTINUE后续步骤，和《使用kubeadm安装部署K8S集群——CentOS篇�
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>k8s</category>
+        <category>docker</category>
         <category>devops</category>
         <category>cloudnative</category>
       </categories>
@@ -8282,8 +8350,8 @@ kubectl create role developer --resource=pods --verb=list,create -n appkubectl c
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>k8s</category>
+        <category>docker</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -8497,8 +8565,8 @@ apt-get install kubeadm=1.12.0-00apt-get install kubelet=1.12.0-00kubeadm upgrad
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>k8s</category>
+        <category>docker</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -9135,31 +9203,217 @@ from django.urls import pathfrom . import viewsfrom . import views_wechatfrom we
       </tags>
   </entry>
   <entry>
-    <title>Prometheus入门篇</title>
-    <url>/dev-prometheus-start/</url>
+    <title>使用Docker安装配置Grafana</title>
+    <url>/dev-docker-grafana/</url>
+    <content><![CDATA[Grafana简介
+Grafana allows you to query, visualize, alert on and understand your metrics no matter where they are stored.
+
+本文中，我们会使用Docker来安装配置grafana（已知主机IP为192.168.56.102），并且显示prometheus中的数据。
+参考文档：
+
+《Docker入门》
+《使用Docker安装配置Prometheus》
+
+
+
+安装Grafana1、下载grafana镜像（以grafana6.7.4为例）
+docker pull grafana/grafana:6.7.4
+
+更多版本，可以访问dockerhub - grafana获取。
+2、启动grafana服务
+docker run --name=vk-grafana -d \    -p 3000:3000 \    grafana/grafana:6.7.4
+
+以上命令：
+
+命名容器为vk-grafana，后台运行
+映射宿主机3000端口到容器3000端口
+
+grafana的配置文件为 /etc/grafana/grafana.ini ，可以进入容器进行修改，或者挂出到宿主机。
+更高级的启动命令参考How to use the container。
+4、验证安装
+docker ps
+mysql启动正常的话就可以看到vk-grafana容器。如果启动失败，可以使用docker logs vk-grafana查看失败原因并进行解决。
+开放端口firewall-cmd --add-port=3000/tcp --permanentsystemctl reload firewalld# 或者systemctl stop firewalld
+
+测试Grafana1、本机测试
+curl localhost:3000
+
+2、浏览器测试访问 http://192.168.56.102:3000用户名密码默认都是admin，第一次登录会提示修改。
+配置Prometheus数据假设我们已经安装配置好了prometheus，参考《使用Docker安装配置Prometheus》。
+1、添加数据资源
+2、配置Prometheus数据Name填入 Prometheus ，URL填入 http://192.168.56.102:9090，其他不用变。Save&amp;Test。
+3、选择dashboard点击Dashboards，点击三个Import，引入三个dashboard。
+4、引入其他dashboard比如可以填入URL https://grafana.com/grafana/dashboards/405 ，点击Load，就可以下载Node Exporter的dashboard。选择Folder，选择Prometheus数据源，Import。
+5、查看dashboard左上角HOME，出现下拉框，即可选择dashboard。
+Grafana问答数据源和Dashboard问：一个prometheus数据源中，会包含不同类型exporter采集的metrics数据，grafana中的一个dashboard怎样知道哪些数据是自己应该展示的？答：和exporter无关，grafana只关心metrics，grafana根据指标名称和标签过滤自己需要的数据。
+label_values问：Grafana的Dashboard中，可以创建Variables用来筛选数据，其中Query经常使用 label_values ，这个函数是Grafana自带的，还是PromQL自带的？答：Grafana自带的，PromQL中用不了。
+label_values(node_uname_info, job)详解：
+
+label_values() 函数用于从指定指标中提取指定标签的唯一值列表。
+node_uname_info 是一个指标名称，代表了包含有关节点操作系统和内核的信息的指标。
+job 是要提取的标签名称，这里表示作业或服务的标识。
+
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>docker</category>
+        <category>monitoring</category>
+      </categories>
+      <tags>
+        <tag>prometheus</tag>
+        <tag>监控</tag>
+        <tag>docker</tag>
+        <tag>grafana</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用Docker安装配置Prometheus</title>
+    <url>/dev-docker-prometheus/</url>
     <content><![CDATA[Prometheus简介
 Prometheus is an open-source systems monitoring and alerting toolkit originally built at SoundCloud. Since its inception in 2012, many companies and organizations have adopted Prometheus, and the project has a very active developer and user community. It is now a standalone open source project and maintained independently of any company. To emphasize this, and to clarify the project’s governance structure, Prometheus joined the Cloud Native Computing Foundation in 2016 as the second hosted project, after Kubernetes.
 
-特性、组件和架构等更多信息，参考Prometheus官方文档。
+
+Prometheus是在SoundCloud的基础上构建的开源系统监视和警报工具。自从2012年以来，许多公司和组织都采用了Prometheus，该项目拥有非常活跃的开发人员和用户社区。现在，它是一个独立的开源项目，并且独立于任何公司进行维护。为了强调这一点并阐明项目的治理结构，Prometheus在2016年加入了Cloud Native Computing Foundation，这是继Kubernetes之后的第二个托管项目。
+
+Prometheus的主要特性包括：
+
+一个包含时间序列的多维数据模型，由指标名称和键值对进行标记
+PromQL，一种灵活的查询语言
+不依赖分布式存储；单服务器节点是自治的
+时间序列收集是通过HTTP拉取模型实现的
+支持通过中间网关推送时间序列
+通过服务发现或静态配置发现目标
+支持多种图形和仪表板
+
+Prometheus生态系统包含多个组件，其中许多是可选的：
+
+prometheus server，负责收取并存储时间序列数据
+client libraries，用于检测应用程序代码
+push gateway，支持短期工作
+exporters，适用于特定服务的指标收集器，如HAProxy，StatsD，Graphite
+alertmanager，处理报警
+各种支持工具
+
+本文中，会使用Docker安装配置Prometheus生态系统的组件（已知主机IP为192.168.56.102）。
+参考文档：
+
+《Docker入门篇》
+Prometheus官方文档
+Prometheus - GETTING STARTED
+Prometheus下载
+Prometheus - CONFIGURATION
+Prometheus实战 - Prometheus配置
+Prometheus监控系统之入门篇
 
 
-安装Prometheus server本节在CentOS7虚拟机上安装Prometheus server，虚拟机IP为192.168.56.130，安装流程主要参考Prometheus - GETTING STARTED。
-1、下载Prometheus server访问Prometheus官网下载页，这里选择下载prometheus-2.15.2.linux-amd64.tar.gz
-cd /optwget https://github.com/prometheus/prometheus/releases/download/v2.15.2/prometheus-2.15.2.linux-amd64.tar.gz
 
-2、解压并进行配置
-tar -xzvf prometheus-2.15.2.linux-amd64.tar.gzmv prometheus-2.15.2.linux-amd64 prometheuscd prometheusvim prometheus.yml
+安装prometheus server1、下载prometheus镜像（以v2.18.0为例）
+docker pull prom/prometheus:v2.18.0
 
-修改targets为0.0.0.0:9090，修改后的prometheus.yml如下：
-# my global configglobal:  scrape_interval:     15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.  # scrape_timeout is set to the global default (10s).# Alertmanager configurationalerting:  alertmanagers:  - static_configs:    - targets:      # - alertmanager:9093# Load rules once and periodically evaluate them according to the global &#x27;evaluation_interval&#x27;.rule_files:  # - &quot;first_rules.yml&quot;  # - &quot;second_rules.yml&quot;# A scrape configuration containing exactly one endpoint to scrape:# Here it&#x27;s Prometheus itself.scrape_configs:  # The job name is added as a label `job=&lt;job_name&gt;` to any timeseries scraped from this config.  - job_name: &#x27;prometheus&#x27;    # metrics_path defaults to &#x27;/metrics&#x27;    # scheme defaults to &#x27;http&#x27;.    static_configs:    - targets: [&#x27;0.0.0.0:9090&#x27;]
+更多版本镜像，访问dockerhub - prometheus获取。
+2、准备配置文件
+docker run --rm \    -u root \    --entrypoint cp \    -v /opt:/opt \    prom/prometheus:v2.18.0 \    -rf /etc/prometheus /opt/vim /opt/prometheus/prometheus.yml
 
-3、启动prometheus./prometheus --config.file=prometheus.yml
-除了上面的安装方法，还可以下载Prometheus的Docker images，使用Docker安装。
-简单使用1、访问metrics浏览器访问 http://192.168.56.130:9090/metrics可以看到prometheus的一些信息：
-# HELP go_gc_duration_seconds A summary of the GC invocation durations.# TYPE go_gc_duration_seconds summarygo_gc_duration_seconds&#123;quantile=&quot;0&quot;&#125; 6.078e-06go_gc_duration_seconds&#123;quantile=&quot;0.25&quot;&#125; 9.877e-06go_gc_duration_seconds&#123;quantile=&quot;0.5&quot;&#125; 9.9e-06go_gc_duration_seconds&#123;quantile=&quot;0.75&quot;&#125; 1.1475e-05go_gc_duration_seconds&#123;quantile=&quot;1&quot;&#125; 1.2132e-05go_gc_duration_seconds_sum 4.9462e-05go_gc_duration_seconds_count 5# HELP go_goroutines Number of goroutines that currently exist.# TYPE go_goroutines gaugego_goroutines 35
+prometheus.yml文件内容为：
+global:  scrape_interval: 15s #默认采集监控数据时间间隔  external_labels:    monitor: &#x27;my-monitor&#x27;scrape_configs:  #监控对象设置  - job_name: prometheus #任务名称    scrape_interval: 5s #每隔5s获取一次监控数据    static_configs: #监控对象地址      - targets: [&#x27;127.0.0.1:9090&#x27;]  # 将自己加入到监控对象中
 
-2、查看图表浏览器访问 http://192.168.56.130:9090/graph在Expression输入框中输入：prometheus_target_interval_length_seconds，然后点击Execute，再点击下面Tab中的Graph。可以看到一个图表，图表的含义是，emm，不知道。
-3、收集其他metrics想要收集metrics，首先要安装配置好exporter。比如想要收集jmx metrics，那么需要安装prometheus/jmx_exporter。
+3、启动prometheus
+docker run --name=prometheus -d \-p 9090:9090 \-v /opt/prometheus:/etc/prometheus \prom/prometheus:v2.18.0 --config.file=/etc/prometheus/prometheus.yml --web.enable-lifecycle 
+
+如果使用 file_sd_configs ，那么修改启动命令为：
+docker run --name=prometheus -d \-p 9090:9090 \-v /opt/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml \-v /opt/prometheus/targets:/etc/prometheus/targets \prom/prometheus:v2.18.0 --config.file=/etc/prometheus/prometheus.yml --web.enable-lifecycle 
+
+4、访问Prometheus浏览器访问 http://192.168.56.102:9090/
+5、查看targets浏览器访问 http://192.168.56.102:9090/targets/
+6、查看指标浏览器访问 http://192.168.56.102:9090/metrics/
+安装node exporter参考文档：prometheus/node_exporter
+Docker安装node exporter1、下载node-exporter镜像（以v1.0.0为例）
+docker pull prom/node-exporter:v1.0.0
+
+更多版本镜像，访问dockerhub - node exporter获取。
+2、启动node exporter
+docker run --name=node-exporter -d \  -p 9100:9100 \  --net=&quot;host&quot; \  --pid=&quot;host&quot; \  -v &quot;/:/host:ro,rslave&quot; \  prom/node-exporter:v1.0.0 \  --path.rootfs=/host
+
+3、访问node exporter
+curl http://localhost:9100/metrics
+
+bin安装node exporterbin安装node exporter的优势是适用于所有主机，不管主机上有没有安装docker。
+1、安装node exporter
+wget https://github.com/prometheus/node_exporter/releases/download/v1.0.0/node_exporter-1.0.0.linux-amd64.tar.gztar -xzvf node_exporter-1.0.0.linux-amd64.tar.gzmv node_exporter-1.0.0.linux-amd64/node_exporter /usr/local/bin
+
+2、测试启动node exporter
+node_exporter
+
+3、配置systemd管理
+cat &lt;&lt;EOF &gt; /etc/systemd/system/node_exporter.service [Unit]Description=Node Exporter[Service]User=rootExecStart=/usr/local/bin/node_exporterRestart=always[Install]WantedBy=multi-user.targetEOF
+
+4、启动node exporter
+systemctl start node_exportersystemctl status node_exportersystemctl enable node_exporter
+
+5、访问node exporter
+curl http://localhost:9100/metrics
+
+promserver收集exporter数据1、修改prometheus.yml
+global:  scrape_interval: 15s #默认采集监控数据时间间隔  external_labels:    monitor: &#x27;my-monitor&#x27;scrape_configs:  #监控对象设置  - job_name: prometheus #任务名称    scrape_interval: 5s #每隔5s获取一次监控数据    static_configs: #监控对象地址      - targets: [&#x27;127.0.0.1:9090&#x27;]  # 将自己加入到监控对象中      - targets: [&#x27;192.168.56.102:9100&#x27;]        labels:          group: &#x27;client-node-exporter&#x27;
+
+2、重新加载配置文件
+curl -X POST http://localhost:9090/-/reload
+然而重新加载配置文件并不生效，最后重启了prometheus才生效。
+3、查看targets浏览器访问 http://192.168.56.102:9090/targets/
+push gatewayPrometheus采集数据是用的pull方式，prometheus配置文件设置的5秒就是采集数据的频率。但是有些数据并不适合采用这样的方式，对这样的数据可以使用Push Gateway服务。PushGateway比较适合临时作业和批处理作业，由于这些作业是short-lived的，如果采用pull的模式，可能在prometheus采集之前，作业已经执行结束。pushgateway相当于一个暂存器，这些临时作业将metrics数据缓存到pushgateway中，然后等待Prometheus来pull数据。
+1、登录dockerhub查看需要的pushgateway。
+2、下载pushgateway镜像（以v1.1.0为例）
+docker pull prom/pushgateway:v1.1.0
+
+3、启动push gateway
+docker run --name=pushgateway -d \-p 9091:9091 \prom/pushgateway:v1.1.0
+
+4、测试服务浏览器访问 http://192.168.56.102:9091/#
+5、推送数据给push gateway
+echo &quot;exam_metric 100&quot; | curl --data-binary @- http://127.0.0.1:9091/metrics/job/examcat &lt;&lt;EOF | curl --data-binary @- http://127.0.0.1:9091/metrics/job/exam/instance/testchinese 120math 150english 140EOF
+
+
+promserver收集pushgateway数据1、修改prometheus.yml文件
+global:  scrape_interval: 15s #默认采集监控数据时间间隔  external_labels:    monitor: &#x27;my-monitor&#x27;scrape_configs:  #监控对象设置  - job_name: prometheus #任务名称    scrape_interval: 5s #每隔5s获取一次监控数据    static_configs: #监控对象地址      - targets: [&#x27;127.0.0.1:9090&#x27;]  # 将自己加入到监控对象中      - targets: [&#x27;192.168.56.102:9100&#x27;]        labels:          group: &#x27;client-node-exporter&#x27;      - targets: [&#x27;192.168.56.102:9091&#x27;]        labels:          group: &#x27;pushgateway&#x27;
+
+2、重新加载配置或者重启promserver
+3、在promserver查看数据
+alertmanager1、登录dockerhub查看需要的alertmanager。
+2、下载alertmanager镜像（以v0.15.0为例）
+docker pull prom/alertmanager:v0.15.0
+
+高版本比如v0.20.0打开页面后会报错，Uncaught TypeError: Cannot read property ‘elmFs’ of undefined
+3、创建配置文件
+mkdir -p /opt/alertmanager/vim /opt/alertmanager/alertmanager.yml
+
+alertmanager.yml内容为：
+global:  resolve_timeout: 5mroute:  group_by: [&#x27;exam&#x27;]  #与prometheus告警规则配置的groupname对应  group_wait: 10s #报警等待时间  group_interval: 10s #报警间隔时间  repeat_interval: 1m #重复报警间隔时间  receiver: &#x27;web.hook&#x27; #告警处理方式，我们这里通过web.hook方式，也可以配置成邮件等方式receivers:  - name: &#x27;web.hook&#x27;    webhook_configs:      - url: &#x27;http://192.168.56.102:8080/exam/test&#x27; #告警webhook地址，告警信息会post到该地址，需要编写服务接收该告警数据inhibit_rules:  - source_match:      severity: &#x27;critical&#x27;    target_match:      severity: &#x27;warning&#x27; #目标告警状态    equal: [&#x27;alertname&#x27;, &#x27;dev&#x27;, &#x27;instance&#x27;]
+
+4、启动alertmanager
+docker run --name=alertmanager -d \-p 9093:9093 \-v /opt/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml \prom/alertmanager:v0.15.0 --config.file=/etc/alertmanager/alertmanager.yml --storage.path=/alertmanager
+
+5、测试服务浏览器访问 http://192.168.56.102:9093/
+告警配置1、设置报警规则
+mkdir -p /opt/prometheus/rules/vim /opt/prometheus/rules/exam.rules
+
+exam.rules内容为
+groups:  - name: exam    rules:      - alert: exam告警测试        expr: chinese &gt; 100 #语文成绩大于100告警，注：我们在pushgateway推送数据的时候，设置的是120，因此会触发告警        for: 1m        labels:          status: warning        annotations:          summary: &quot;&#123;&#123;$labels.instance&#125;&#125;:语文成绩优秀! nb了!!!&quot;          description: &quot;&#123;&#123;$labels.instance&#125;&#125;: 语文成绩优秀! nbnbnb!!!&quot;
+
+2、编辑prometheus.yml配置文件，添加alertmanager配置和报警规则配置
+global:  scrape_interval: 15s #默认采集监控数据时间间隔  external_labels:    monitor: &#x27;my-monitor&#x27;scrape_configs:  #监控对象设置  - job_name: prometheus #任务名称    scrape_interval: 5s #每隔5s获取一次监控数据    static_configs: #监控对象地址      - targets: [&#x27;127.0.0.1:9090&#x27;]  # 将自己加入到监控对象中      - targets: [&#x27;192.168.56.102:9100&#x27;]        labels:          group: &#x27;client-node-exporter&#x27;      - targets: [&#x27;192.168.56.102:9091&#x27;]        labels:          group: &#x27;pushgateway&#x27;alerting:   #告警管理器设置  alertmanagers:    - static_configs:      - targets: [&#x27;192.168.56.102:9093&#x27;] #告警信息会发送给alertmanager进一步处理rule_files:  - /etc/prometheus/rules/*.rules   #告警规则文件路径，对应宿主机 /opt/prometheus/rules/*.rules
+
+3、重新加载配置或者重启promserver
+4、在prometheus alerts页面查看告警
+或者在alertmanager alerts页面查看告警
+告警通知处理alertmanager.yml文件中配置的告警方式是webhook，告警发送到 http://192.168.56.102:8080/exam/test ，因此，我们需要一个服务来接收处理这个告警。
+1、安装golang环境，参考《CentOS7部署beego项目》golang安装一节
+2、创建main.go
+package mainimport (  &quot;fmt&quot;  &quot;io/ioutil&quot;  &quot;github.com/gin-gonic/gin&quot;)func main() &#123;  r := gin.Default()  r.POST(&quot;/exam/test&quot;, func(c *gin.Context) &#123;    res, _ := ioutil.ReadAll(c.Request.Body)    fmt.Println(string(res)) //这里我们只简单打印告警信息    c.JSON(200, gin.H&#123;      &quot;message&quot;: &quot;alert message&quot;,    &#125;)  &#125;)  r.Run(&quot;:8080&quot;)&#125;
+
+3、运行代码
+go get github.com/gin-gonic/gingo run main.go
+如上图，服务接收到了告警信息。
+grafanagrafana常被用来展示prometheus的数据，详情参考《使用Docker安装配置Grafana》。
 Prometheus服务发现static_configs: #静态服务发现，基于prometheus配置文件指定的监控目标file_sd_configs: #基于指定的文件实现服务发现，基于指定的文件发现监控目标kubernetes_sd_configs: #基于 Kubernetes API实现的服务发现，让prometheus动态发现kubernetes中被监控的目标 dns_sd_configs: #DNS服务发现监控目标consul_sd_configs: #Consul服务发现，基于consul服务动态发现监控目标
 
 参考文档：
@@ -9167,15 +9421,27 @@ Prometheus服务发现static_configs: #静态服务发现，基于prometheus配�
 prometheus服务发现
 Prometheus - Configuration file
 
-后记Prometheus也有不少问题，比如数据量大的时候需要拆分集群，聚合数据很难数据去重，可用性较低等。因此出现了Thanos，能够解决Prometheus的很多问题，详情参考分布式 Promethues 之 Thanos。
+static_configs静态服务发现，基于prometheus配置文件指定的监控目标。示例参考上文【安装Prometheus server】一节。
+file_sd_configs基于指定的文件实现服务发现，基于指定的文件发现监控目标。
+示例：scrape_configs配置为：
+scrape_configs:  - job_name: &#x27;file_sd_targets&#x27;    file_sd_configs:      - files:          - &#x27;/path/to/targets.yaml&#x27;
+
+targets.yaml 内容为：
+- targets:    - localhost:9090  labels:    job: prometheus- targets:    - localhost:9100  labels:    job: node_exporter- targets:    - localhost:8080  labels:    job: my_app
+
+PS：targets.yaml 可以改成 json 格式，效果是一样的。
+默认情况下，Prometheus每隔15秒会重新读取一次配置文件，因此修改了targets.yaml后，不需要重新Prometheus。
+后记以上，配置完成了promserver、exporter、pushgateway、alertmanager，跑通了数据的收集和显示，测试了告警信息的收集。但是，Prometheus也有不少问题，比如数据量大的时候需要拆分集群，聚合数据很难数据去重，可用性较低等。因此出现了Thanos，能够解决Prometheus的很多问题，详情参考 Thanos官网 和 分布式 Promethues 之 Thanos。
 ]]></content>
       <categories>
         <category>engineering</category>
+        <category>docker</category>
         <category>monitoring</category>
       </categories>
       <tags>
         <tag>prometheus</tag>
         <tag>监控</tag>
+        <tag>docker</tag>
       </tags>
   </entry>
   <entry>
@@ -9720,8 +9986,8 @@ kubectl delete pod mysql-2 -n mysql --force
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>k8s</category>
+        <category>docker</category>
         <category>cloudnative</category>
         <category>troubleshooting</category>
       </categories>
@@ -9754,8 +10020,8 @@ for i in `env | grep -E -i &#x27;SERVICE|HOST|ADDR|PORT&#x27; | sed &#x27;s/=.*/
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>k8s</category>
+        <category>docker</category>
         <category>frontend</category>
         <category>cloudnative</category>
         <category>troubleshooting</category>
@@ -10861,7 +11127,7 @@ gomod实践篇安装client-go假设一个项目依赖client-go，那么参考官
 失败了，返回404，猜测是12.0版本在代理服务器不存在，使用另外一种下载方式。
 go get k8s.io/client-go@kubernetes-1.15.0
 此处下载了两个版本的client-go，我们使用v0.0.0版本。
-4、安装client-go相关依赖client-go默认下载到$GOPATH/pkg/mod/k8s.io目录下，把k8s.io目录移动到$GOPATH/src目录下。然后把&#x63;&#x6c;&#x69;&#x65;&#x6e;&#x74;&#x2d;&#103;&#111;&#64;&#x76;&#48;&#x2e;&#x30;&#x2e;&#x30;重命名为client-go，然后在client-go目录下执行安装依赖的命令：
+4、安装client-go相关依赖client-go默认下载到$GOPATH/pkg/mod/k8s.io目录下，把k8s.io目录移动到$GOPATH/src目录下。然后把&#99;&#x6c;&#x69;&#x65;&#110;&#x74;&#x2d;&#x67;&#x6f;&#64;&#118;&#x30;&#x2e;&#48;&#46;&#x30;重命名为client-go，然后在client-go目录下执行安装依赖的命令：
 export GOPROXY=https://goproxy.ioexport GO111MODULE=ongo mod vendor
 完成之后，所有的依赖都下载到了client-go/vendor目录下，一个完整的client-go依赖库就准备好了。
 依赖库版本管理client-go依赖库准备好了，但是另一个问题来了：假设项目vk-project依赖client-go和库A，client-go依赖库A，两个依赖库A版本不一致，那么vk-project在编译时，会同时依赖两个不同的库A，导致编译出的二进制包有问题。
@@ -11025,6 +11291,90 @@ apiVersion: storage.k8s.io/v1kind: StorageClassmetadata:  name: nfs-storage-102p
         <tag>存储</tag>
         <tag>helm</tag>
         <tag>nfs</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>自己动手制作Helm Chart</title>
+    <url>/dev-make-helm-chart/</url>
+    <content><![CDATA[前言本文中，我们学习制作Helm Chart，用来简化imagepullsecret-patcher的部署。
+参考文档：
+
+《Helm入门篇》
+Helm - Getting Started
+《K8S配置使用imagePullSecrets》
+imagepullsecret-patcher
+imagepullsecret-patcher deploy-example
+
+
+
+第一个Chart1、生成chart模板
+helm create imagepullsecret-patcher
+
+2、删除所有templates
+rm -rf imagepullsecret-patcher/templates/*
+
+3、准备资源清单
+
+imagepullsecret-patcher/templates/namespace.yaml
+imagepullsecret-patcher/templates/rbac.yaml
+imagepullsecret-patcher/templates/deployment.yaml
+
+具体资源清单内容参见：make-helm-chart/v1/imagepullsecret-patcher
+这份资源清单来自《K8S配置使用imagePullSecrets》，yaml文件中没有使用任何变量。
+4、检查chart
+helm lint imagepullsecret-patcher
+
+5、执行安装
+helm install imagepullsecret-patcher ./imagepullsecret-patcher
+
+chart安装成功，但是出现了一个问题：chart所属namespace是default，但是真实资源所属namespace是imagepullsecret-patcher（在yaml文件中指定的）。
+第一个Chart存在的问题第一个Chart，存在几个问题：
+
+helm install 的namespace和真实资源的namespace不同
+deployment等资源的name是固定的，不能在values.yaml中或者安装时自定义
+dockerconfigjson是固定的，不能在values.yaml中或者安装时自定义
+imagepullsecret-patcher/values.yaml 中的变量完全无用
+chart的version和app的version不符合预期
+
+为了解决上面几个问题，我们先来补充下helm的知识。参考文档《Helm官方文档摘录》
+第二个Chart第二个Chart，解决第一个Chart中存在的问题。
+1、准备资源清单
+
+imagepullsecret-patcher/templates/rbac.yaml
+imagepullsecret-patcher/templates/deployment.yaml
+imagepullsecret-patcher/templates/_helpers.tpl
+imagepullsecret-patcher/templates/NOTES.txt
+imagepullsecret-patcher/values.yaml
+
+具体资源清单内容参见：make-helm-chart/v2/imagepullsecret-patcher
+2、检查chart
+helm lint imagepullsecret-patcher
+
+3、执行安装
+helm install imagepullsecret-patcher ./imagepullsecret-patcher \    -n imagepullsecret-patcher --create-namespace \    --set imageCredentials.registry=harbor.voidking.com \    --set imageCredentials.username=haojin \    --set imageCredentials.password=haojin123
+
+4、打包chart
+helm package imagepullsecret-patcher
+生成chart包 imagepullsecret-patcher-0.1.0.tgz
+分享Chart仓库参考文档：
+
+Chart仓库指南
+Helm上传Chart到Artifact Hub
+Helm 进阶到骨灰玩家，请收藏！
+bitnami/charts
+bitnami/index.yaml
+
+创建Chart仓库1、在github创建一个公共仓库
+未完待续
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>k8s</category>
+        <category>cloudnative</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
+        <tag>helm</tag>
       </tags>
   </entry>
   <entry>
@@ -14574,6 +14924,28 @@ UniFi WiFi的主要特点和功能：
 UniFi AP 介绍
 UniFi - 设备采用
 
+修改 Wi-Fi 信道
+信道、频道或波道，是信号在通信系统中传输的通道，由信号从发射端传输到接收端所经过的传输媒质所构成。广义的信道定义除了包括传输媒质，还包括传输信号的相关设备。
+
+根据国际电信联盟（ITU）划分的频段，蓝牙、Wi-Fi、WAPI等无线技术都在2.4G频段工作。蓝牙传输技术中，工作频率是2.402～2.480GHz，在蓝牙3.0技术有79个信道，而4.0则降低到40个（由于带宽变大导致，并非坏事）。Wi-Fi 2.4G技术中，工作频率为2.400～2.483GHz，中国采用欧洲/ETSI，有13个信道。在这83.5MHz频带中，每个信道的中心频率相差5MHz，向上向下分别拓展11MHz，带宽22MHz。
+Wi-Fi中，每个信道的带宽是22MHz。但是，实际使用中，有效的带宽是20MHz，其中有2MHz是隔离频带，起保护作用。
+20MHz信道带宽对应的是65M带宽 ，它的特性是穿透性好 传输的距离远（100米左右）。
+40MHz信道带宽对应的是150M带宽 ，它的穿透性差 传输的距离较近 （50米左右)。
+因为一个信道的带宽是有限的，所以如果一个信道被附近的很多Wi-Fi使用，那么这些可能会相互干扰，导致网络质量变差。
+修改信道，可以尽量避免Wi-Fi互相干扰导致的网络质量变差。
+1、检测信道状态对于macos用户，打开wireless Diagnostics（无线诊断），忽略打开的窗口。菜单栏点击窗口，扫描，看到网络信息中，频段就是信道。当前使用的wifi信息会被加粗。按频段排序，可以看到哪些频段繁忙，哪些频段空闲。
+PS：按住option，单击桌面wifi图标，可以直接显示当前使用wifi信息（包括信道）。
+2、修改信道登录路由器设置页面，修改信道到空闲的信道。
+参考文档：
+
+信道
+信道是什么
+无线局域网信道列表
+WIFI中频段、信道、信道带宽、传输速率无线2.4GHz和5GHz的区别？
+Wi-Fi 路由器和接入点的推荐设置
+如何修改信道？
+无线路由器怎么修改WiFi信道
+
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -16555,7 +16927,7 @@ ansible [-h] [--version] [-v] [-b] [--become-method BECOME_METHOD]        [--bec
 -i：指定主机列表
 
 例子：
-# 查看所有主机ansible all --list-hosts# 指定主机清单ansible all -i ./hosts --list-hosts# 查看commonservers组的主机ansible commonservers --list-hosts# 测试连通ansible all -m ping# 查看客户机的内存ansible all -m command -a &quot;free -h&quot;# 在客户机执行管理机脚本cp /bin/echo ~/echo.shansible all -m script -a &quot;~/echo.sh hello&quot; -vvv# 在客户机执行客户机脚本ansible all -m command -a &quot;cp /bin/echo /home/voidking/echo.sh&quot;ansible all -m shell -a &quot;/home/voidking/echo.sh hello&quot;# 向客户机拷贝文件ansible all -m copy -a &quot;src=/home/voidking/echo.sh dest=/tmp/ owner=voidking group=voidking mode=0755&quot;# 后台执行命令ansible all -m ping -B 3600 -P 0ansible all -m async_status -a &quot;jid=&#x27;182829279182.2094&#x27;&quot;# 批量添加sudo权限ansible all -i hosts -s -m shell -a &quot;echo &#x27;haojin ALL=(ALL) NOPASSWD: ALL&#x27; &gt;&gt; /etc/sudoers&quot;# 批量移除sudo权限ansible all -i hosts -s -m shell -a &quot;sed -i &#x27;/haojin ALL=(ALL) NOPASSWD: ALL/d&#x27; /etc/sudoers&quot;# 使用root用户备份和拷贝文件ansible all -i hosts -s -m shell -a &quot;mv /tmp/run.sh /tmp/run.sh.bak&quot;ansible all -i hosts -b --become-user=root -m shell -a &quot;mv /tmp/run.sh /tmp/run.sh.bak&quot;ansible all -i hosts -s -m copy -a &quot;src=/root/run.sh dest=/tmp/run.sh owner=voidking group=root mode=0755&quot;# 重启服务ansible all -i hosts -s -m shell -a &quot;/tmp/stop.sh&quot;ansible all -i hosts -s -m shell -a &quot;/tmp/run.sh&quot; -u voidking
+# 查看主机清单中的所有主机ansible all --list-hosts# 指定主机清单，查看主机清单中的所有主机ansible all -i ./hosts --list-hosts# 查看commonservers组的主机ansible commonservers --list-hosts# 测试连通ansible all -m ping# 单台主机执行命令ansible all -i &quot;192.168.56.102,&quot; -m ping# 查看客户机的内存ansible all -m command -a &quot;free -h&quot;# 在客户机执行管理机脚本cp /bin/echo ~/echo.shansible all -m script -a &quot;~/echo.sh hello&quot; -vvv# 在客户机执行客户机脚本ansible all -m command -a &quot;cp /bin/echo /home/voidking/echo.sh&quot;ansible all -m shell -a &quot;/home/voidking/echo.sh hello&quot;# 向客户机拷贝文件ansible all -m copy -a &quot;src=/home/voidking/echo.sh dest=/tmp/ owner=voidking group=voidking mode=0755&quot;# 后台执行命令ansible all -m ping -B 3600 -P 0ansible all -m async_status -a &quot;jid=&#x27;182829279182.2094&#x27;&quot;# 批量添加sudo权限ansible all -i hosts -s -m shell -a &quot;echo &#x27;haojin ALL=(ALL) NOPASSWD: ALL&#x27; &gt;&gt; /etc/sudoers&quot;# 批量移除sudo权限ansible all -i hosts -s -m shell -a &quot;sed -i &#x27;/haojin ALL=(ALL) NOPASSWD: ALL/d&#x27; /etc/sudoers&quot;# 使用root用户备份和拷贝文件ansible all -i hosts -s -m shell -a &quot;mv /tmp/run.sh /tmp/run.sh.bak&quot;ansible all -i hosts -b --become-user=root -m shell -a &quot;mv /tmp/run.sh /tmp/run.sh.bak&quot;ansible all -i hosts -s -m copy -a &quot;src=/root/run.sh dest=/tmp/run.sh owner=voidking group=root mode=0755&quot;# 重启服务ansible all -i hosts -s -m shell -a &quot;/tmp/stop.sh&quot;ansible all -i hosts -s -m shell -a &quot;/tmp/run.sh&quot; -u voidking
 
 配置文件
 /etc/ansible/ansible.cfg，主配置文件，配置ansible工作特性
@@ -16828,35 +17200,37 @@ Kolla OpenStack系统视频课程
   <entry>
     <title>Hexo使用livere作为评论插件</title>
     <url>/dev-hexo-livere-comment-plugin/</url>
-    <content><![CDATA[前言使用gitalk作为评论插件，差强人意，因为每篇文章都需要初始化。而且，加载速度很慢。想了一天，决定再换一个评论插件，换成韩国的评论插件livere。
-
-
-livere简介livere（来必力）是一个社会化评论插件，优点有：
+    <content><![CDATA[livere简介livere（来必力）是一个社会化评论插件，优点有：
 
 使用社交网站账户登录，免去注册过程。
 提高用户的参与和沟通意愿。
 管理/删除我的评论内容。
 提供管理页面，管理网站文章及评论内容。
 
-准备1、访问来必力官网，注册账号。
+
+
+注册livere1、访问来必力官网，注册账号。
 2、登录后点击导航栏“安装”，选择city版。
 3、根据提示，申请获取代码。
 4、郝同学获取到的一般网站的代码为：
 &lt;!-- 来必力City版安装代码 --&gt;&lt;div id=&quot;lv-container&quot; data-id=&quot;city&quot; data-uid=&quot;MTAyMC8zODU3Mi8xNTEwMA==&quot;&gt;    &lt;script type=&quot;text/javascript&quot;&gt;   (function(d, s) &#123;       var j, e = d.getElementsByTagName(s)[0];       if (typeof LivereTower === &#x27;function&#x27;) &#123; return; &#125;       j = d.createElement(s);       j.src = &#x27;https://cdn-city.livere.com/js/embed.dist.js&#x27;;       j.async = true;       e.parentNode.insertBefore(j, e);   &#125;)(document, &#x27;script&#x27;);    &lt;/script&gt;&lt;noscript&gt; 为正常使用来必力评论功能请激活JavaScript&lt;/noscript&gt;&lt;/div&gt;&lt;!-- City版安装代码已完成 --&gt;
 
-使用配置1、在yilia/layout/_partial/post目录下，新建livere.ejs，内容为：
+配置使用livere1、在 yilia/layout/_partial/post 目录下，新建livere.ejs，内容为：
 &lt;div class=&quot;livere&quot;&gt;    &lt;!-- 来必力City版安装代码 --&gt;    &lt;div id=&quot;lv-container&quot; data-id=&quot;city&quot; data-uid=&quot;&lt;%=theme.livere.uid%&gt;&quot;&gt;        &lt;script type=&quot;text/javascript&quot;&gt;       (function(d, s) &#123;           var j, e = d.getElementsByTagName(s)[0];           if (typeof LivereTower === &#x27;function&#x27;) &#123; return; &#125;           j = d.createElement(s);           j.src = &#x27;https://cdn-city.livere.com/js/embed.dist.js&#x27;;           j.async = true;           e.parentNode.insertBefore(j, e);       &#125;)(document, &#x27;script&#x27;);        &lt;/script&gt;    &lt;noscript&gt; 为正常使用来必力评论功能请激活JavaScript&lt;/noscript&gt;    &lt;/div&gt;    &lt;!-- City版安装代码已完成 --&gt;&lt;/div&gt;
 
-2、编辑yilia/layout/_partial/article.ejs，添加：
+2、编辑 yilia/layout/_partial/article.ejs，添加：
 &lt;% if (!index &amp;&amp; theme.livere.enable &amp;&amp; post.comments)&#123; %&gt;&lt;%- partial(&#x27;post/livere&#x27;, &#123;    key: post.slug,    title: post.title,    url: config.url+url_for(post.path)  &#125;) %&gt;&lt;% &#125; %&gt;
 
-3、编辑yilia/_config.yml，添加：
+3、编辑 yilia/_config.yml，添加：
 # 注释所有畅言配置# 注释所有gitalk配置# livere配置livere:   enable: true  uid: MTAyMC8zODU3Mi8xNTEwMA==
 
-4、在yilia/source/css/_partial/main.stly中添加：
+4、在 yilia/source/css/_partial/main.stly 中添加：
 .livere&#123;  padding: 0 40px;&#125;
 
-至此，配置livere评论插件完成，效果如下：nice，看起来比gitalk强多了，就你了。
+至此，配置livere评论插件完成，效果如下：
+nice，比gitalk要美观，支持平台也更多。
+配置评论提醒访问livere管理页面 - 评论提醒，设置接受提醒的邮箱和提醒周期（建议3小时）。
+配置评论提醒后，有新的评论我们就能及时看到并进行回复，给用户更好的体验。
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -16869,14 +17243,9 @@ livere简介livere（来必力）是一个社会化评论插件，优点有：
   <entry>
     <title>Hexo使用gitalk作为评论插件</title>
     <url>/dev-hexo-gitalk-comment-plugin/</url>
-    <content><![CDATA[前言Hexo的评论插件，最开始使用多说，很棒，后来多说没有了。
-之后评论插件换成了畅言，很棒；后来畅言开始插入广告，不服，使用CSS技术屏蔽了广告；现在，畅言更换了插入广告的方式，肯定有解决办法，但是不想和畅言玩了。
-决定换一个更好用更靠谱的评论插件，或者找个开源项目自己搭建评论插件系统，实在不行自己写一个。
-找到了disqus，感觉很靠谱，但是被墙了。通过曲线救国也能使用，但是违背了简单易用的初衷，遂放弃。
-最后，找到了gitalk项目，看了演示，nice，搞一搞。
+    <content><![CDATA[gitalk简介
+Gitalk 是一个基于 GitHub Issue 和 Preact 开发的评论插件。
 
-
-gitalk简介Gitalk 是一个基于 GitHub Issue 和 Preact 开发的评论插件。项目地址：https://github.com/gitalk/gitalk
 特点：
 
 使用 GitHub 登录
@@ -16885,7 +17254,17 @@ gitalk简介Gitalk 是一个基于 GitHub Issue 和 Preact 开发的评论插件
 无干扰模式（设置 distractionFreeMode 为 true 开启）
 快捷键提交评论 （cmd|ctrl + enter）
 
-准备想要gitalk，需要申请GitHub Application。
+本文中，我们学习使用gitalk作为Hexo评论插件。
+参考文档：
+
+如何在 hexo 博客中，集成 gitalk 评论插件
+在Hexo、Hugo博客框架中使用Gitalk
+Gitalk评论自动初始化
+hexo next 主题配置 gitalk 评论后无法初始化创建 issue
+
+
+
+准备工作想要使用gitalk，需要申请GitHub Application。
 如上图，以郝同学的申请为例：
 
 Application name填入喜欢的应用名称。
@@ -16894,38 +17273,55 @@ Application description填入应用的描述。
 Authorization callback URL 填入域名。
 
 然后，Register application，转到应用页面。在该页面，可以看到Client ID和Client Secret。
-使用配置以yilia主题为例。
-1、下载gitalk项目git clone https://github.com/gitalk/gitalk.git
-2、拷贝gitalk/dist/目录下的gitalk.css和gitalk.min.js到yilia/source/lib/gitalk目录。
-3、在yilia/layout/_partial/post目录下，新建gittalk.ejs，内容为：
+配置使用gitalkyilia主题配置本节给yilia主题配置gitalk。
+1、下载gitalk项目
+git clone https://github.com/gitalk/gitalk.git
+
+2、准备前端样式和脚本
+mkdir yilia/source/lib/gitalkcp gitalk/dist/gitalk.css yilia/source/lib/gitalkcp gitalk/dist/gitalk.min.js yilia/source/lib/gitalk
+
+PS：yilia的全路径为/path/to/hexo/themes/yilia
+3、创建ejs模板文件 gitalk.ejs创建 yilia/layout/_partial/post/gitalk.ejs，内容为：
 &lt;div class=&quot;gitalk&quot;&gt;    &lt;div id=&quot;gitalk-container&quot;&gt;&lt;/div&gt;    &lt;script type=&quot;text/javascript&quot;&gt;        const gitalk = new Gitalk(&#123;            clientID: &#x27;&lt;%=theme.gitalk.client_id%&gt;&#x27;,            clientSecret: &#x27;&lt;%=theme.gitalk.client_secret%&gt;&#x27;,            repo: &#x27;&lt;%=theme.gitalk.repo%&gt;&#x27;,            owner: &#x27;&lt;%=theme.gitalk.owner%&gt;&#x27;,            admin: [&#x27;&lt;%=theme.gitalk.admin%&gt;&#x27;],            id: location.pathname,      // Ensure uniqueness and length less than 50            distractionFreeMode: false  // Facebook-like distraction free mode        &#125;)        gitalk.render(&#x27;gitalk-container&#x27;)    &lt;/script&gt;&lt;/div&gt;
 
-4、编辑yilia/layout/_partial/article.ejs，添加：
+
+4、编辑 article.ejs，添加 gitalk 引用yilia/layout/_partial/article.ejs文件中，添加：
 &lt;% if (!index &amp;&amp; theme.gitalk.enable &amp;&amp; post.comments)&#123; %&gt;&lt;%- partial(&#x27;post/gitalk&#x27;, &#123;    key: post.slug,    title: post.title,    url: config.url+url_for(post.path)  &#125;) %&gt;&lt;% &#125; %&gt;
 
-5、编辑yilia/_config.yml，添加：
+5、编辑主题配置文件，添加 gitalk 配置编辑yilia/_config.yml，添加：
 # 注释所有畅言配置# 配置gitalkgitalk:   enable: true  client_id: 5a238b8c32b1e4dd2156  client_secret: bfb5d518626f6fdc7da0351d1e0cd37ab75c6361  repo: voidking.github.io  owner: voidking  admin: voidking
 
-6、编辑yilia/layout/_partial/head.ejs，添加：
+6、编辑 head.ejs ，按配置决定是否启用 gitalk编辑yilia/layout/_partial/head.ejs，添加：
 &lt;% if (theme.gitalk.enable)&#123; %&gt;  &lt;link rel=&quot;stylesheet&quot; href=&quot;/lib/gitalk/gitalk.css&quot;&gt;  &lt;script src=&quot;/lib/gitalk/gitalk.min.js&quot;&gt;&lt;/script&gt;&lt;% &#125; %&gt;
 
 至此，配置gitalk评论插件完成。
 最终效果如下图：居然，每篇文章都需要初始化！！！尴尬。。。勉强可以接受。
+批量初始化未完待续。。。
 Validation Failed打开一些页面的时候，报错：Error: Validation Failed.在gitalk的issue中发现，如果location.pathname大于50，就会报这个错误。
-有同学采用md5编码url的方式来解决这个问题，好想法，参考处理Gitalk中由于文章URL过长导致的Validation Failed(422)，来处理一下。
-1、访问blueimp-md5 CDN，下载md5.min.js，放入yilia/source/lib/gitalk目录。
-2、编辑yilia/layout/_partial/head.ejs，添加：
+有同学采用md5编码url的方式来解决这个问题，好想法。参考文档：
+
+处理Gitalk中由于文章URL过长导致的Validation Failed(422)
+报错出现 Error: Validation Failed.
+
+1、下载md5 js访问blueimp-md5 CDN，下载md5.min.js，放入yilia/source/lib/gitalk目录。
+2、编辑 head.ejs，添加md5 js引用
 &lt;% if (theme.gitalk.enable)&#123; %&gt;  &lt;link rel=&quot;stylesheet&quot; href=&quot;/lib/gitalk/gitalk.css&quot;&gt;  &lt;script src=&quot;/lib/gitalk/gitalk.min.js&quot;&gt;&lt;/script&gt;  &lt;script src=&quot;/lib/gitalk/md5.min.js&quot;&gt;&lt;/script&gt;&lt;% &#125; %&gt;
 
-3、gitalk.ejs中id修改为：
+3、编辑 gitalk.ejs，修改id
 id: md5(location.pathname), 
 
 至此，问题解决。
-为了更加美观，可以适当修改css，比如在yilia/source/css/_partial/main.stly中添加：
+为了更加美观，可以适当修改css，比如在 yilia/source/css/_partial/main.stly 中添加：
 .gitalk&#123;  padding: 0 40px;&#125;
 
-书签hexo next 主题配置 gitalk 评论后无法初始化创建 issue
-报错出现 Error: Validation Failed.
+后记Hexo评论插件对比
+
+多说，挺好用，下线了
+畅言，广告太多，弃用
+disqus，靠谱，但是被墙
+gitalk，初始化麻烦，加载慢
+livere，加载慢，广告需自行屏蔽
+
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -19149,11 +19545,11 @@ mkdir -p /root/.certs/echo -n | openssl s_client -connect smtp.163.com:465 | sed
 5、测试发送邮件echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com查看邮箱，正常的话应该已经收到邮件了。如果没有收到邮件，可以查看日志进行排查：tail /var/log/maillog
 macos参考文档：《MacOS配置发送邮件》
 mail命令命令格式mail [OPTION...] [address...]常用到的选项，一个是s，代表主题；一个是A，代表附件。其他的需要时查看help。
-发送普通邮件目标：给邮箱 &#118;&#x6f;&#x69;&#x64;&#x6b;&#105;&#110;&#x67;&#x40;&#113;&#113;&#x2e;&#99;&#111;&#x6d; 发送邮件，主题为“Hello VoidKing”，内容为“Welcome to mail world！”
+发送普通邮件目标：给邮箱 &#x76;&#111;&#x69;&#100;&#107;&#105;&#110;&#103;&#64;&#113;&#x71;&#x2e;&#x63;&#x6f;&#x6d; 发送邮件，主题为“Hello VoidKing”，内容为“Welcome to mail world！”
 echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com
 但是，等待了几分钟，并没有收到邮件，垃圾箱也没有。mail，查看email的发送状态为Undelivered Mail Returned，原来没有投递出去。
 查看邮件系统日志：tail -n 50 /var/spool/mail/test提示host mx3.qq.com[183.57.48.35] said: 550 Mail content denied。看来qq邮箱的垃圾邮件防御机制做的不错，那就换个163邮箱，没想到依然失败。
-换一台服务器？发送给 &#x76;&#x6f;&#105;&#100;&#x6b;&#x69;&#110;&#103;&#x40;&#113;&#x71;&#46;&#99;&#111;&#109; ，成功！很尴尬。。。就这么着吧
+换一台服务器？发送给 &#x76;&#111;&#105;&#100;&#107;&#105;&#110;&#x67;&#64;&#x71;&#x71;&#46;&#x63;&#111;&#109; ，成功！很尴尬。。。就这么着吧
 发送高级邮件1、从文本读入内容发送邮件mail -s &#39;Error report&#39; voidking@qq.com &lt; /tmp/log/ganglia/error-20180524.log
 2、发送附件mail -s &#39;Error report&#39; voidking@qq.com -A /tmp/log/ganglia/ganglia-20180524.log &lt; /tmp/log/ganglia/error-20180524.log
 3、指定发件人echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com -aFrom:haojin@qq.com
@@ -22194,7 +22590,7 @@ linux下载好数据集后，把数据集下载到win10中nmt目录中，路径�
 训练model在根目录（nmt目录）下运行：
 python -m nmt.nmt --src=vi --tgt=en --vocab_prefix=./tmp/nmt_data/vocab  --train_prefix=./tmp/nmt_data/train --dev_prefix=./tmp/nmt_data/tst2012  --test_prefix=./tmp/nmt_data/tst2013 --out_dir=./tmp/nmt_model --num_train_steps=12000 --steps_per_stats=100 --num_layers=2 --num_units=128 --dropout=0.2 --metrics=bleu
 
-郝同学i5-3337U &#x43;&#80;&#x55;&#64;&#x31;&#46;&#56;&#x30;&#71;&#72;&#x7a;，8G内存，训练了将近两个小时才训练完成。下文我们要学习使用一下UCloud提供的免费GPU。
+郝同学i5-3337U &#67;&#x50;&#x55;&#x40;&#x31;&#46;&#x38;&#x30;&#x47;&#72;&#x7a;，8G内存，训练了将近两个小时才训练完成。下文我们要学习使用一下UCloud提供的免费GPU。
 我们可以使用 Tensorboard 在训练过程中查看模型的总结：
 tensorboard --port 22222 --logdir ./tmp/nmt_model/
 通过以下简单的变化，就能逆向完成英语到越南语的翻译。
@@ -25650,6 +26046,11 @@ cat &lt;&lt;EOF &gt; test.txthello worldwelcome to python world!EOFcat &lt;&lt;E
 追加内容：
 cat &lt;&lt;EOF &gt;&gt; test.txthello worldwelcome to python world!EOFcat &lt;&lt;EOF | tee -a test.txthello worldwelcome to python world!EOF
 
+写入的内容有$符：
+cat &lt;&lt;EOF &gt; /etc/init.wsl#!/bin/sh/etc/init.d/cron \$1/etc/init.d/ssh \$1EOF
+
+
+
 
 
 ]]></content>
@@ -25776,6 +26177,9 @@ sudo -i# orsudo su
 切换普通用户
 su voidking
 
+修改用户家目录usermod -d /data/voidking voidking # 切换用户家目录到 /data/voidkingusermod -md /data/voidking voidking # 切换用户家目录，同时把原来家目录中的内容移动到新的家目录
+
+对于root用户，需要先进入单用户模式，才能进行修改家目录操作。
 添加字体查看字体
 fc-list
 
@@ -25785,6 +26189,37 @@ mkdir -p /usr/share/fonts/win/cd /usr/share/fonts/win/rz # 或者 wget/scptar -x
 添加字体后更新缓存
 fc-cache -fvfc-list
 
+设置临时IP添加临时IP
+ip addr add 192.168.51.20/24 dev em1
+
+删除临时IP
+ip addr del 192.168.51.20/24 dev em1
+
+网桥从属网卡两台主机通过网线直连，并且设置了临时IP后，如果发现互ping不通，那么可以检查下桥接从属网卡配置。有的时候，一个网桥可能会添加多个从属网卡，从而导致网卡设置了IP但是不通。
+从属网卡在网络中起到以下作用：
+
+扩展网络端口：通过将多个网卡添加到网桥或交换机上，可以增加网络设备的端口数量，从而连接更多的设备或虚拟机。
+实现网络聚合：从属网卡可以用于实现网络聚合，将多个物理网卡绑定在一起，提供更高的带宽和冗余。
+实现冗余和容错：通过将多个从属网卡连接到网桥或交换机上，可以实现冗余路径，当一个路径发生故障时，可以切换到其他路径，提高网络的可靠性和容错性。
+提供网络隔离：从属网卡可以用于隔离网络流量，将不同类型的流量或不同网络的流量分开处理，增加网络的安全性和性能。
+
+查看网桥信息
+ip addr # 可以查看到网卡从属的网桥brctl showbridge link
+
+增加网桥从属网卡
+bridge link set dev eth2 master br0
+
+删除网桥从属网卡
+ip link set dev eth2 downbrctl delif br0 eth2ip link set dev eth2 up
+
+确定网卡编号和网口对应关系ethtool -p eth2
+
+执行上面的命令后，观察网口，闪烁的那个网口就是网卡编号对应的网口。
+修改网卡配置1、查看网卡配置
+ethtool eth2
+
+2、设置网卡千兆全双工
+ethtool -s eth2 speed 1000 duplex full
 
 软件安装查看命令属于哪个软件包1、centos7
 yum makecache fastyum whatprovides lsb_release
@@ -27237,6 +27672,12 @@ docker logs --tail=100 vk-busybox | grep xxxdocker logs --tail=100 vk-busybox 2&
 拷贝文件在宿主机和容器之间互相拷贝文件
 docker cp /tmp/test.txt vk-busybox:/tmpdocker cp vk-busybox:/tmp/test.txt /tmp/test.txt
 
+启动容器的同时拷贝文件使用cat代替cp：
+docker run --rm \    --entrypoint cat \    prom/prometheus:v2.43.1 \    /etc/prometheus/prometheus.yml &gt; prometheus.yml
+
+挂载目录拷贝：
+docker run --rm \    -u root \    --entrypoint cp \    -v /opt:/opt \    prom/prometheus:v2.43.1 \    -rf /etc/prometheus /opt/
+
 进入容器docker exec -it vk-busybox /bin/sh
 
 
@@ -27374,6 +27815,61 @@ Docker常用命令参考《Docker常用命令》
       </tags>
   </entry>
   <entry>
+    <title>Win10安装配置Docker Desktop</title>
+    <url>/dev-win10-docker-desktop/</url>
+    <content><![CDATA[Docker Desktop简介
+Docker Desktop is a one-click-install application for your Mac, Linux, or Windows environment that enables you to build and share containerized applications and microservices.
+
+
+It provides a straightforward GUI (Graphical User Interface) that lets you manage your containers, applications, and images directly from your machine. Docker Desktop can be used either on it’s own or as a complementary tool to the CLI.
+
+
+Docker Desktop reduces the time spent on complex setups so you can focus on writing code. It takes care of port mappings, file system concerns, and other default settings, and is regularly updated with bug fixes and security updates.
+
+参考文档：Docker Desktop
+本文中，我们学习在Win10中安装配置Docker Desktop的方法。
+
+
+安装WSL2参考文档：《Win10安装配置Linux和Docker》
+安装配置Docker Desktop安装Docker下载Docker Desktop for Windows，双击安装。安装时勾选使用WSL2 backend，在Windows上运行一个真正的Linux环境，但是无需传统虚拟机或双系统的额外负担，性能更好。
+进入根路径的方法方法一：打开文件资源管理器，点击左侧Linux
+方法二：Windows资源管理器路径中输入
+\\wsl.localhost\docker-desktop-data
+
+使用示例以安装MySQL为例：
+docker pull mysql:8.0.28docker run --name mysql -d -p 3306:3306 -v D:\DockerData\mysql\mysql-files:/var/lib/mysql-files -v D:\DockerData\mysql\conf.d:/etc/mysql/conf.d -v D:\DockerData\mysql\mysql:/var/lib/mysql -v D:\DockerData\mysql\log:/var/log/mysql -e MYSQL_ROOT_PASSWORD=voidking mysql:8.0.28
+
+注意：这里挂载宿主机目录使用的是Win10中的目录D:\DockerData\mysql，方便查找文件。如果依然使用/opt/mysql，那么文件很难找到（我没找到，捂脸）。
+更多内容参考文档：《使用Docker安装配置MySQL》
+更改Docker数据盘到D盘参考文档：WSL2下修改Docker Desktop镜像存放路径
+WSL发行版默认安装在C盘，在%LOCALAPPDATA%/Docker/wsl目录。Docker的运行数据、镜像文件都存在%LOCALAPPDATA%/Docker/wsl/data/ext4.vhdx中。
+更改Docker数据盘方法：
+1、关闭docker desktop
+2、关闭所有linux发行版
+wsl -l --allwsl -l -vwsl --shutdown
+
+3、导出docker-desktop-data到D盘（原有的docker images不会一起导出）只需要迁移docker-desktop-data一个发行版就行，docker-desktop不用管，它占用空间很小。手动创建目录D:\DockerData\docker-desktop-data\，然后执行导出命令
+wsl --export docker-desktop-data D:\DockerData\docker-desktop-data\docker-desktop-data.tar
+
+4、注销 docker-desktop-data
+wsl --unregister docker-desktop-data
+
+5、导入 docker-desktop-data
+wsl --import docker-desktop-data D:\DockerData\docker-desktop-data\ D:\DockerData\docker-desktop-data\docker-desktop-data.tar --version 2
+
+6、启动docker desktop
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>docker</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>windows</tag>
+        <tag>wsl2</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Win10中的Docker使用USB设备</title>
     <url>/dev-win10-docker-usb/</url>
     <content><![CDATA[前言《Win10安装配置Docker》一文中，其中方法（4）是在Win10中安装WSL2 Linux系统，然后在Linux系统中安装Docker。
@@ -27443,12 +27939,12 @@ lsusb
       </tags>
   </entry>
   <entry>
-    <title>Win10安装配置Docker</title>
-    <url>/dev-win10-docker/</url>
+    <title>Win10安装配置Linux和Docker</title>
+    <url>/dev-win10-linux-docker/</url>
     <content><![CDATA[Win10安装配置Docker的方法在Win10中安装配置Docker，有四种方法：（1）在Win10上安装Docker Desktop。Docker Desktop 利用了 Windows 10 的 Hyper-V 虚拟化技术，来创建一个轻量级的 Linux 虚拟机（VM），并在其中运行 Docker 引擎和容器。这样，用户就可以在 Windows 上享受到 Linux 上的 Docker 功能和性能。（2）在Win10上安装Docker Toolbox。Docker Toolbox 是一种适用于不支持 Hyper-V 的旧版 Windows 系统的替代方案，它使用了 Oracle VirtualBox 来创建一个 Linux VM，并在其中运行 Docker 引擎和容器。Docker Toolbox 需要用户手动配置一些网络和存储设置，以便让 Windows 和 VM 之间进行通信和数据交换。（3）使用VirtualBox等虚拟化工具启动一个Linux虚拟机（与方法（2）类似），然后在虚拟机中安装使用Docker。（4）在Win10上安装一个WSL2 Linux系统，然后在Linux系统中安装Docker。
 无论哪种方法，想要在 Windows 上运行 Docker，都需要一个 Linux VM 来托管 Docker 引擎和容器，因为 Docker 是基于 Linux 内核的技术，而不能直接在 Windows 内核上运行。但是，用户可以通过命令行或图形界面来操作和管理 Docker 容器，就像它们是本地应用程序一样。
-方法（2），Docker Toolbox的安装配置方法，参考文档《K8S入门篇》。方法（3），虚拟机中安装使用Docker的方法，和Linux中安装使用Docker的方法没有区别，参考文档《Docker入门篇》。
-本文中，我们学习方法（1）Docker Desktop安装配置方法，以及方法（4）Win10中安装Linux并在Linux中安装Docker的方法。
+方法（1），Docker Desktop的安装配置方法，参考文档《Win10安装配置Docker Desktop》方法（2），Docker Toolbox的安装配置方法，参考文档《K8S入门篇》。方法（3），虚拟机中安装使用Docker的方法，和Linux中安装使用Docker的方法没有区别，参考文档《Docker入门篇》。
+本文中，我们学习方法（4），在Win10中安装Linux，并在Linux中安装Docker。
 
 
 WSL2简介WSL全拼是Windows Subsystem for Linux，WSL2是适用于Linux的Windows子系统体系结构的一个新版本。WSL2是基于Hyper-V虚拟化技术的，它在Windows上启动一个真正的Linux系统，使用一个定制的Linux内核。这个内核支持完整的Linux系统调用，所以可以在WSL2中运行任何Linux应用程序。
@@ -27472,33 +27968,6 @@ dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /nores
 5、将WSL2设置为默认版本
 wsl --set-default-version 2
 
-安装配置Docker Desktop安装Docker下载Docker Desktop for Windows，双击安装。安装时勾选使用WSL2 backend，在Windows上运行一个真正的Linux环境，但是无需传统虚拟机或双系统的额外负担，性能更好。
-进入根路径的方法方法一：打开文件资源管理器，点击左侧Linux
-方法二：Windows资源管理器路径中输入
-\\wsl.localhost\docker-desktop-data
-
-使用示例以安装MySQL为例：
-docker pull mysql:8.0.28docker run --name mysql -d -p 3306:3306 -v D:\DockerData\mysql\mysql-files:/var/lib/mysql-files -v D:\DockerData\mysql\conf.d:/etc/mysql/conf.d -v D:\DockerData\mysql\mysql:/var/lib/mysql -v D:\DockerData\mysql\log:/var/log/mysql -e MYSQL_ROOT_PASSWORD=voidking mysql:8.0.28
-
-注意：这里挂载宿主机目录使用的是Win10中的目录D:\DockerData\mysql，方便查找文件。如果依然使用/opt/mysql，那么文件很难找到（我没找到，捂脸）。
-更多内容参考文档：《使用Docker安装配置MySQL》
-更改Docker数据盘到D盘参考文档：WSL2下修改Docker Desktop镜像存放路径
-WSL发行版默认安装在C盘，在%LOCALAPPDATA%/Docker/wsl目录。Docker的运行数据、镜像文件都存在%LOCALAPPDATA%/Docker/wsl/data/ext4.vhdx中。
-更改Docker数据盘方法：
-1、关闭docker
-2、关闭所有linux发行版
-wsl -l --allwsl -l -vwsl --shutdown
-
-3、导出docker-desktop-data到D盘（原有的docker images不会一起导出）只需要迁移docker-desktop-data一个发行版就行，docker-desktop不用管，它占用空间很小。手动创建目录D:\DockerData\docker-desktop-data\，然后执行导出命令
-wsl --export docker-desktop-data D:\DockerData\docker-desktop-data\docker-desktop-data.tar
-
-4、注销 docker-desktop-data
-wsl --unregister docker-desktop-data
-
-5、导入 docker-desktop-data
-wsl --import docker-desktop-data D:\DockerData\docker-desktop-data\ D:\DockerData\docker-desktop-data\docker-desktop-data.tar --version 2
-
-6、启动docker
 Win10中安装Ubuntu18参考文档：
 
 旧版 WSL 的手动安装步骤
@@ -27517,28 +27986,15 @@ wsl -l -vwsl -d Ubuntu-18.04wsl -d Ubuntu-18.04 -u root
 PS：docker-desktop-data 发行版是不支持 wsl -d 登录的。
 磁盘路径说明C盘对应Ubuntu18路径/mnt/c，D盘对应Ubuntu18路径/mnt/d
 配置SSH登录参考文档：Win10安装Ubuntu
-配置远程登录Ubuntu18支持SSH登录了，但是只能从Win10宿主机上登录，相同局域网的其他主机还不能访问到Ubuntu18。本节配置使局域网其他主机也可以访问到Ubuntu18。
+配置远程登录Ubuntu18支持SSH登录了，但是只能从Win10宿主机上登录，相同局域网的其他主机还不能访问到Ubuntu18。本节配置使局域网其他主机也可以访问到Ubuntu18，操作步骤如下：1、固定Ubuntu18的IP地址2、配置端口转发，发往Win10特定端口的请求转发给Ubuntu183、关闭Win10防火墙
 参考文档：
 
 如何在局域网的其他主机上中访问本机的WSL2
 wsl转wsl2与局域网内网访问填坑
 如何用笔记本ssh连接局域网内其他电脑上的wsl2 ubuntu
 
-固定IP地址（无效）每次重启WSL2 Ubuntu18重启后，IP地址都会发生变化，无法固定路由规则，因此需要配置固定IP。
-1、查看当前IP配置
-ifconfigroute -n
-查看到IP地址为172.29.132.34，网关为172.29.128.1（Win10虚拟网卡的IP）。
-2、编辑网卡配置文件
-vim /etc/netplan/01-network-manager-all.yaml
-
-如下修改：
-# Let NetworkManager manage all devices on this systemnetwork:  version: 2  renderer: NetworkManager  ethernets:    eth0:      dhcp4: false                          # 禁止动态IP      addresses: [172.29.132.34/20]       # IP地址和掩码      gateway4: 172.29.128.1               # 网关      nameservers:        addresses: [180.76.76.76,114.114.114.114]   #DNS服务器
-
-3、使配置生效
-netplan apply
-
-报错：System has not been booted with systemd as init system (PID 1). Can’t operate.
-固定IP地址（有效）参考文档：
+固定IP地址每次重启WSL2 Ubuntu18重启后，IP地址都会发生变化，无法固定路由规则，因此需要配置固定IP。
+参考文档：
 
 Open WSL2 Set static ip?
 将bat文件设置为开机启动
@@ -27547,8 +28003,20 @@ Open WSL2 Set static ip?
 @echo offsetlocal enabledelayedexpansion:: set windows ipipconfig | findstr &quot;172.29.128.1&quot; &gt; nulif !errorlevel! equ 0 (    echo windows ip has set) else (    netsh interface ip add address &quot;vEthernet (WSL)&quot; 172.29.128.1 255.255.240.0    echo set windows ip success: 172.29.128.1):: set wsl2 ipwsl -d Ubuntu-18.04 -u root ip addr | findstr &quot;172.29.132.34&quot; &gt; nulif !errorlevel! equ 0 (    echo wsl2 ip has set) else (    wsl -d Ubuntu-18.04 -u root ip addr add 172.29.132.34/20 broadcast 172.29.143.255 dev eth0 label eth0:1    echo set wsl2 ip success: 172.29.132.34)pause
 
 2、以管理员身份运行脚本
-3、登录到Ubuntu18，查看IP
-配置路由规则Win10中以管理员身份打开PowerShell，执行
+3、登录到Ubuntu18，查看IP和网关
+ifconfigroute -n
+正常的话，可以查看到IP地址为172.29.132.34，网关为172.29.128.1（Win10虚拟网卡的IP）。
+注意：不能使用常规的在Ubuntu18中配置固定IP的方法。1、编辑网卡配置文件
+vim /etc/netplan/01-network-manager-all.yaml
+
+如下修改：
+# Let NetworkManager manage all devices on this systemnetwork:  version: 2  renderer: NetworkManager  ethernets:    eth0:      dhcp4: false                          # 禁止动态IP      addresses: [172.29.132.34/20]       # IP地址和掩码      gateway4: 172.29.128.1               # 网关      nameservers:        addresses: [180.76.76.76,114.114.114.114]   #DNS服务器
+
+2、使配置生效
+netplan apply
+
+会报错：System has not been booted with systemd as init system (PID 1). Can’t operate.
+配置端口转发Win10中以管理员身份打开PowerShell，执行
 netsh interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=22 connectaddress=172.29.132.34 connectport=22netsh interface portproxy show v4tov4#netsh interface portproxy delete v4tov4 listenaddress=0.0.0.0 listenport=22
 
 参考文档：Netsh interface portproxy 命令
@@ -27557,15 +28025,39 @@ netsh interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=22 connect
 关闭防火墙搜索“防火墙”，选择Windows Defender 防火墙，启用或关闭Windows Defender防火墙，关闭防火墙。
 或者操作开放端口，参考文档：WIN10电脑怎么开放可访问端口
 关闭防火墙之后，使用局域网内的其他主机尝试远程登录Ubuntu18进行测试。
-开机自动初始化1、编写Win10开机自启动脚本 ubuntu18-init.bat功能包括：自动设置固定IP地址、配置路由规则、启动SSH
+配置开机自启动配置开机自启动概述配置开机自启动的常用方法包括：
+
+Startup目录中放入快捷方式，快捷方式可能链接到bat脚本或者exe程序
+Startup目录中放入vbs脚步
+任务计划程序中添加要执行的程序，配置触发器
+使用第三方配置开机自启动的程序，例如NSSM和FireDaemon
+
+启动ssh参考文档：
+
+WSL 服务自动启动的正确方法
+让 wsl 中的服务随 Win10 开机自启动
+在 Windows 10 中添加在启动时自动运行的应用
+
+方法一：使用 vbs 脚本
+1、创建 vbs 脚本在 Windows 中，开始-运行，输入shell:startup，进入Startup目录创建 ubuntu18.vbs 脚本，内容为：
+Set ws = CreateObject(&quot;Wscript.Shell&quot;)ws.run &quot;wsl -d Ubuntu-18.04 -u root /etc/init.d/ssh start&quot;, vbhide
+
+2、重启机器测试重启机器后，打开任务管理器，详细信息，启动，可以看到 ubuntu18.vbs 被调用了。
+方法二：使用快捷方式
+1、创建快捷方式在 Windows 中，开始-运行，输入shell:startup，进入Startup目录新建快捷方式，起始位置为D:\Windows\System32，目标为wsl.exe -d Ubuntu-18.04 -u root /etc/init.d/ssh start
+2、重启机器测试重启机器后，打开任务管理器，详细信息，启动，可以看到 wsl.exe 被调用了。
+配置固定IP地址方法一：使用启动目录
+1、编写Win10开机自启动脚本 ubuntu18-init.bat功能包括：自动设置固定IP地址、配置路由规则
 @echo offsetlocal enabledelayedexpansion:: set windows ipipconfig | findstr &quot;172.29.128.1&quot; &gt; nulif !errorlevel! equ 0 (    echo windows ip has set) else (    netsh interface ip add address &quot;vEthernet (WSL)&quot; 172.29.128.1 255.255.240.0    echo set windows ip success: 172.29.128.1):: set wsl2 ipwsl -d Ubuntu-18.04 -u root ip addr | findstr &quot;172.29.132.34&quot; &gt; nulif !errorlevel! equ 0 (    echo wsl2 ip has set) else (    wsl -d Ubuntu-18.04 -u root ip addr add 172.29.132.34/20 broadcast 172.29.143.255 dev eth0 label eth0:1    echo set wsl2 ip success: 172.29.132.34):: set portproxynetsh interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=22 connectaddress=172.29.132.34 connectport=22echo set set protproxy success: 22 -&gt; 172.29.132.34:22:: start sshdwsl -d Ubuntu-18.04 -u root /usr/sbin/service ssh startecho start sshd success: port 172.29.132.34:22pause
 
-2、ubuntu18-init.bat 脚本放入指定目录脚本如果放入启动目录中，开机后会自动执行C:\Users\&lt;username&gt;\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup
-但是，因为我们需要以管理员身份执行，所以放入目录C:\Users\&lt;username&gt;\AppData\Roaming\Microsoft\Windows\Start Menu\Programs
-3、创建快捷方式右键 ubuntu18-init.bat，创建快捷方式，放入到 Startup 目录中右键快捷方式，属性，高级，勾选用管理员身份运行。
-4、重启机器测试重启机器后，打开任务管理器，详细信息，启动，可以看到ubuntu18-init.bat被调用了。
-但是，并没有生效。
-开机自动初始化v2.01、打开任务计划程序按键盘上的Windows + R键以打开运行，然后键入taskschd.msc，回车。
+2、创建快捷方式右键 ubuntu18-init.bat，创建快捷方式。右键快捷方式，属性，高级，勾选用管理员身份运行。
+3、设置开机自启动ubuntu18-init.bat 的快捷方式，放入到 Startup 目录中，开机后会自动执行它。
+win+R打开运行，输入shell:startup，进入Startup目录。Startup 目录全路径为 C:\Users\&lt;username&gt;\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup
+4、重启机器测试重启机器后，打开任务管理器，详细信息，启动，可以看到 ubuntu18-init.bat 被调用了。
+PS：这个设置开机自启动的方法，不止适用于 bat 脚本，对于常见的应用程序也是可行的，比如QQ、微信等。
+方法二：使用计划任务
+参考文档：Windows开机启动bat文件
+1、打开任务计划程序按键盘上的Windows + R键以打开运行，然后键入taskschd.msc，回车。
 2、创建任务点击创建任务，进行任务配置。
 常规参数：
 
@@ -27577,7 +28069,7 @@ netsh interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=22 connect
 触发器，新建，开始任务选择启动时，延迟任务时间选择1分钟，勾选已启用，确定。操作，新建，操作选择启动程序，程序或脚本通过浏览选中ubuntu18-init.bat，添加参数空白，起始于空白（在哪个路径中执行），确定。
 3、查看任务右键任务计划程序库，刷新，即可看到新增的任务。
 4、重启机器测试
-参考文档：Windows开机启动bat文件
+手动测试计划任务：1、在powershell或者cmd中执行计划任务中定义的命令和参数2、单击计划任务，点击右侧开始
 Ubuntu18中安装Docker安装方法参考文档：《Docker入门篇》
 启动Docker使用service命令启动Docker
 service docker start
@@ -27601,6 +28093,11 @@ wsl --import Ubuntu-18.04 D:\Ubuntu18\ D:\Ubuntu18\Ubuntu-18.04.tar --version 2
 
 6、启动Ubuntu18
 wsl -d Ubuntu-18.04
+
+服务探活交互式探活@echo offset /p host=&quot;Enter IP: &quot;set /p port=&quot;Enter PORT: &quot;powershell -Command &quot;if((Test-NetConnection -ComputerName %host% -Port %port%).TcpTestSucceeded)&#123;write-host &#x27;connect to %host%:%port% success&#x27;&#125;else&#123;write-host &#x27;connect to %host%:%port% failed&#x27;&#125;&quot;pause
+
+一键探活假设 Ubuntu-18.04 中安装了MySQL和Redis，想要在Win10中一键探活，那么可以使用下面的脚本。
+@echo offREM 探测MySQL状态set mysql_host=172.29.132.34set mysql_port=3306powershell -Command &quot;if((Test-NetConnection -ComputerName %mysql_host% -Port %mysql_port%).TcpTestSucceeded)&#123;write-host &#x27;connect to mysql %mysql_host%:%mysql_port% success&#x27;&#125;else&#123;write-host &#x27;connect to mysql %mysql_host%:%mysql_port% failed&#x27;&#125;&quot;REM 探测Redis状态set redis_host=172.29.132.34set redis_port=6379powershell -Command &quot;if((Test-NetConnection -ComputerName %redis_host% -Port %redis_port%).TcpTestSucceeded)&#123;write-host &#x27;connect to redis %redis_host%:%redis_port% success&#x27;&#125;else&#123;write-host &#x27;connect to redis %redis_host%:%redis_port% failed&#x27;&#125;&quot;pause
 
 
 
@@ -29677,7 +30174,7 @@ t0 = time()&lt; 你的 clf.fit() 代码行 &gt;print &#x27;training time:&#x27;,
 代码运行说明文件。纯文本或markdown格式，写明运行你的代码所需要的库，他们的安装方法和运行方法
 预测结果: 纯文本或CSV文件。
 
-对项目要求有疑问请致信 &#x73;&#117;&#112;&#x70;&#x6f;&#x72;&#116;&#x40;&#121;&#111;&#117;&#x64;&#97;&#120;&#117;&#x65;&#x2e;&#99;&#111;&#109;
+对项目要求有疑问请致信 &#x73;&#x75;&#112;&#112;&#111;&#x72;&#116;&#64;&#121;&#x6f;&#117;&#100;&#97;&#120;&#117;&#x65;&#46;&#x63;&#x6f;&#109;
 准备好提交项目后，请点击下一项，在“项目提交”小节中提交。
 ]]></content>
       <categories>
@@ -29718,7 +30215,7 @@ Resume Builder
 项目导师会根据该评估准则（与你制作简历时遵循的清单相符）对你的简历项目进行审核。
 提交准备好提交求职信后，你需要：
 1、删除/匿名化你的求职信上的所有个人联系人信息，以防泄漏隐私。2、创建 PDF 格式的简历，这样你的简历在不同操作系统/软件/屏幕中有一致的版面样式。3、点击下方的“提交项目”按钮，并根据说明操作。4、在“告知审核员”中，请包括任何有关你的职业目标（如申请的工作或领域），或任何有意偏离评估准则情况的详细信息。
-注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#x73;&#x75;&#112;&#112;&#111;&#x72;&#x74;&#x40;&#121;&#x6f;&#x75;&#100;&#x61;&#120;&#x75;&#x65;&#46;&#99;&#111;&#109;。
+注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#115;&#117;&#x70;&#112;&#111;&#114;&#116;&#64;&#121;&#111;&#117;&#100;&#x61;&#x78;&#117;&#101;&#46;&#x63;&#x6f;&#109;。
 GitHub个人资料项目你的GitHub个人资料展示你创建的项目，并让他人了解你的工作风格和提交频率。通过展示你对 GitHub 的熟悉程度，其他开发人员和招聘经理能够知道你拥有他们需要能力，你就是他们正在寻找的人。你的代码库应表明你认真对待项目，并且能够编写干净、格式正确的代码。请查看 GitHub 上的这篇出色的博客文章，了解如何用 GitHub 帮助你持续学习，发展职业生涯。
 为何要完成此 GitHub 个人资料项目？GitHub 越来越多地被用作招聘平台以及潜在雇主查看你的作品的方式。它还是与其他开发人员建立联系和展示你的技能的好地方。
 我应该做什么？你应该以招聘人员或用人部门经理的眼光查看你的 GitHub 个人资料，重点关注你的个人资料、项目和代码如何将你描绘成公司的潜在候选人或项目的协作者。
@@ -29747,7 +30244,7 @@ GitHub项目提交你的 GitHub 主页是呈现给潜在雇主的“关键证据
 反馈优达学城项目导师会根据该标准（与你制作领英简介时遵循的清单相符）对你的领英简介项目进行审核。
 提交准备好提交领英个人资料后：
 1、若要提交，请点击下方的“提交项目”按钮，并根据说明操作。2、在“告知评审员”中，请包括任何有关你的职业目标（如预期工作领域）的详细信息。
-注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#x73;&#117;&#x70;&#x70;&#x6f;&#114;&#x74;&#64;&#x79;&#111;&#117;&#100;&#97;&#x78;&#x75;&#101;&#x2e;&#x63;&#111;&#109;。
+注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#115;&#x75;&#112;&#112;&#x6f;&#x72;&#x74;&#x40;&#x79;&#111;&#117;&#x64;&#x61;&#120;&#x75;&#x65;&#x2e;&#x63;&#111;&#x6d;。
 技术面试项目对于此实战项目，你需要回答五个技术面试问题，这些问题涉及的是技术面试课程中讨论的各种主题。你应该用 Python 写出清晰高效的答案，并用文字解释代码的效率和设计理由。我们将安排合格的审核者检查你的答案，并针对任何精彩之处或欠缺的方面做出反馈：你的解决方案是最高效的吗？你很好地解释了你的想法吗？你的代码简洁易懂吗？
 请回答以下问题：
 问题 1: 假设有两个字符串 s 和 t，请判断 t 的变形词是否是 s 的子字符串。例如：如果 s = “udacity”，t = “ad”，则函数返回 True。你的函数定义应该为：“question1(s, t)”，并返回布尔值 True 或 False。 
@@ -29813,7 +30310,7 @@ Dice
 问题 5 - 通过一个情景举例说明正则化对学习好的模型的必要性，以及提供一个正则化没有意义的情景。
 问题 6 -你附近的杂货店想向顾客有针对性地发放对他们来说有用的优惠券。假设你可以访问每位顾客的购买历史和店铺商品目录，你将设计怎样一个系统，来决定发放哪些优惠券？你如何衡量这个系统的性能？
 问题 7 - 选择一个公司，然后描述你想应聘的该公司内的机器学习工程师职位（假设有）。现在，如果你已成功应聘，并从今天开始任职，在你看来，你的职位在下一年会有怎样的发展？你的长期职业目标是什么，这个职位如何帮助你实现长期目标？
-提交当你准备提交项目，点击下方“提交项目”，上传一份 PDF 文件。如果有任何与提交项目相关的疑问，或想查看提交状态，请向我们发送电子邮件询问（&#115;&#117;&#112;&#112;&#x6f;&#x72;&#116;&#x40;&#x79;&#x6f;&#x75;&#100;&#97;&#x78;&#x75;&#x65;&#46;&#99;&#x6f;&#x6d;）。
+提交当你准备提交项目，点击下方“提交项目”，上传一份 PDF 文件。如果有任何与提交项目相关的疑问，或想查看提交状态，请向我们发送电子邮件询问（&#115;&#x75;&#112;&#x70;&#x6f;&#x72;&#x74;&#x40;&#x79;&#x6f;&#x75;&#x64;&#x61;&#x78;&#x75;&#x65;&#x2e;&#x63;&#111;&#x6d;）。
 项目资源项目评审标准。优达学城的项目导师会依据此评审标准审阅你的项目。你可以在提交前自行检查自己是否已达到所有标准。职业资源中心。你可以在这里找到更多有关准备面试的资源和贴士。
 接下来面试练习并不是只在你求职时才需要做的事情， 在你的整个职业生涯中，你都需要继续提高自己的面试技巧。抓住每一个机会，思考和与人交流你的职业目标。在申请一个职位之前，请思考清楚自己为什么要申请——这将极大地帮助你为面试做好准备。
 书签Interview Guide: Machine Learninghttps://career-resource-center.udacity.com/interview-courses-and-guides/machine-learning
@@ -30267,7 +30764,7 @@ notebook 项目导出的 HTML 文件，命名为 report.html。
 
 注意：所提交文件的文件名名，包括zip压缩包内的文件名，都不能含有中文及任何ASCII之外的字符，否则会造成提交失败。
 如何导出HTML的说明在 notebook 的最下方。 你也许需要先在命令后通过 pip install mistune 命令安装 mistune 。当你准备好所有这些文件，并且依照项目要求核对过之后，就可以在下面的项目提交页面提交你的项目了。
-如果你是第一次在优达学城提交项目，点击提交之后，要等1分钟左右才能打开提交页面。如果长时间打不开，可以刷新。如果依然无法打开项目提交页面，可以联系客服微信或者邮件至 &#115;&#x75;&#112;&#112;&#111;&#x72;&#x74;&#64;&#x79;&#x6f;&#x75;&#100;&#97;&#120;&#117;&#x65;&#x2e;&#99;&#111;&#x6d;
+如果你是第一次在优达学城提交项目，点击提交之后，要等1分钟左右才能打开提交页面。如果长时间打不开，可以刷新。如果依然无法打开项目提交页面，可以联系客服微信或者邮件至 &#115;&#117;&#x70;&#x70;&#111;&#114;&#x74;&#64;&#x79;&#111;&#117;&#x64;&#97;&#120;&#117;&#x65;&#46;&#x63;&#111;&#109;
 后记这个项目，是优达学城《机器学习工程师》课程提供的第一个实战项目。摘录了全文，方便查看。郝同学的项目地址：https://github.com/voidking/udaciyty-machine-learning/tree/master/projects/titanic_survival_exploration
 书签机器学习工程师（中/英）https://cn.udacity.com/course/machine-learning-engineer-nanodegree--nd009
 数据科学入门https://cn.udacity.com/course/intro-to-data-science--ud359
@@ -32175,43 +32672,25 @@ Zenmap prits all states as unknown
       </tags>
   </entry>
   <entry>
-    <title>Web安全之防御DDoS</title>
-    <url>/dev-web-security-defend-ddos/</url>
-    <content><![CDATA[DDoS简介DDoS(Distributed Denial of Service) 是一种攻击方式，中文翻译为分布式拒绝服务。DDoS攻击通过利用大量的计算机或设备向目标网络或服务器发送海量的请求，以消耗其带宽、处理器或存储等资源，从而使其无法正常服务。
-相关文档：
+    <title>Cloudflare配置概述</title>
+    <url>/dev-cloudflare-config/</url>
+    <content><![CDATA[添加域名
+Create a Cloudflare account and add your domain.
 
-WikiPedia - Denial-of-service attack
+Choose Plan.
+
+Change your nameservers.
 
 
 
-常见防御方法
-增加带宽：扩大带宽是一种最常见的DDoS攻击防御方法。增加带宽可以分摊攻击流量，从而减轻攻击对服务器的影响。
-安装防火墙：防火墙可以监控和控制网络流量，过滤掉异常流量和攻击流量。防火墙可以根据一些策略进行配置，例如限制IP地址和端口号。
-CDN加速：CDN（内容分发网络）可以将静态和动态内容缓存到全球各地的节点上，使用户能够更快地访问网站内容。CDN可以防止DDoS攻击，因为攻击者无法攻击所有节点。
-防DDoS设备：防DDoS设备可以在攻击开始时自动检测并过滤攻击流量。这些设备可以使用各种算法进行攻击检测和流量分析，并对攻击流量进行过滤和阻止。
-使用云服务：云服务提供商可以使用多个数据中心和高度可用的服务来防止DDoS攻击。通过使用云服务，网站管理员可以更好地分摊攻击流量，同时提高网站的可用性和稳定性。
 
-腾讯云防护产品腾讯云CLB腾讯云CLB依靠大禹分布式防御系统能够防御绝大多数网络攻击（例如 DDoS、Web 入侵），针对流量攻击实现秒级清洗，极大避免 IP 被封、带宽被占满等情况发生。CLB 自带的 synproxy 防攻击机制，避免了大禹系统生效之前后端 CVM 被攻击压垮，保护数据更安全稳定。CLB 对每个租户的流量进行严格隔离，提供主动 DDoS 防护能力，公网 CLB 默认支持 DDoS 基础防护。CLB 还支持 DDoS 高防包、DDoS 高防 IP、Web 应用防火墙 等多种安全产品，保障业务安全性。
-价格：免费
-腾讯云WAF腾讯云 Web 应用防火墙（Web Application Firewall，WAF）是一款基于 AI 的一站式 Web 业务运营风险防护方案。通过 AI+规则双引擎识别恶意流量，保护网站安全，提高 Web 站点的安全性和可靠性。通过 BOT 行为分析，防御恶意访问行为，保护网站核心业务安全和数据安全。腾讯云 WAF 提供两种类型的云上 WAF，SaaS 型 WAF 和负载均衡型 WAF，两种 WAF 提供的安全防护能力基本相同，接入方式不同。
+快速配置快速配置地址：https://dash.cloudflare.com/&lt;xxx&gt;/voidking.com/recommendations其中 &lt;xxx&gt; 要改成Cloudflare自动生成的随机字符串。
 
-SaaS 型 WAF 通过 DNS 解析，将域名解析到 WAF 集群提供的 CNAME 地址上，通过 WAF 配置源站服务器 IP，实现域名恶意流量清洗和过滤，将正常流量回源到源站，保护网站安全。
-负载均衡型 WAF 通过和腾讯云负载均衡集群进行联动，将负载均衡的 HTTP/HTTPS 流量镜像到 WAF 集群，WAF 进行旁路威胁检测和清洗，将用户请求的可信状态同步到负载均衡集群进行威胁拦截或放行，实现网站安全防护。
+提高安全性，自动HTTPS重写，始终使用HTTPS
+优化性能，Brotli压缩
+摘要
 
-腾讯云 WAF 可以有效防御 SQL 注入、XSS 跨站脚本、木马上传、非授权访问等 OWASP 攻击。此外还可以有效过滤 CC 攻击、提供 0day 漏洞补丁、防止网页篡改等，通过多种手段全方位保护网站的系统以及业务安全。
-价格：3880元/月 - 28880元/月
-DDoS防护DDoS 基础防护是腾讯云免费为云服务器（Cloud Virtual Machine，CVM）、负载均衡（Cloud Load Balancer，CLB）等资源提供的基础 DDoS 防护能力，满足日常安全运营需求。普通用户默认可享受不超过2Gbps防护，VIP 用户 可享受不超过10Gbps防护，境外地区可享受不超过2Gbps防护。腾讯云会根据用户的安全信誉状态，动态调整封堵阈值。安全信誉状态与历史攻击情况、云上基础资源信息等相关。安全信誉过低会影响用户的免费防护能力，直到后续安全信誉恢复。DDoS 基础防护默认开启，实时监控网络流量，发现攻击立即清洗，为腾讯云上公网 IP 秒级开启防护。
-除了基础防护，用户还可以按需选购轻量版高防包、DDoS 高防包、DDoS 高防 IP（中国大陆）、DDoS 高防 IP（境外）、DDoS 高防 IP（境外企业版）。
-付费版价格：10万元/年 - 300万元/年
-Cloudflare使用Cloudflare的CDN加速，可以实现防护DDoS。
-免费版不支持配置CDN加速。
-付费版价格：25刀/月 - 250刀/月
-参考文档：
-
-安全、性能和可靠性 —— 一个软件包全部搞定
-Partial (CNAME) setup
-
-添加域名
+CloudFlare for SaaS配置添加域名
 Create a Cloudflare account and add your domain.
 
 For your Plan, choose Business or Enterprise.
@@ -32239,7 +32718,113 @@ At your authoritative DNS provider:
         <category>network</category>
       </categories>
       <tags>
+        <tag>网络</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Web安全之防御DDoS</title>
+    <url>/dev-web-security-defend-ddos/</url>
+    <content><![CDATA[DDoS简介DDoS(Distributed Denial of Service) 是一种攻击方式，中文翻译为分布式拒绝服务。DDoS攻击通过利用大量的计算机或设备向目标网络或服务器发送海量的请求，以消耗其带宽、处理器或存储等资源，从而使其无法正常服务。
+相关文档：
+
+WikiPedia - Denial-of-service attack
+如何发动 DDoS 攻击 | DoS 和 DDoS 攻击工具
+
+
+
+常见防御方法
+增加带宽：扩大带宽是一种最常见的DDoS攻击防御方法。增加带宽可以分摊攻击流量，从而减轻攻击对服务器的影响。
+安装防火墙：防火墙可以监控和控制网络流量，过滤掉异常流量和攻击流量。防火墙可以根据一些策略进行配置，例如限制IP地址和端口号。
+CDN加速：CDN（内容分发网络）可以将静态和动态内容缓存到全球各地的节点上，使用户能够更快地访问网站内容。CDN可以防止DDoS攻击，因为攻击者无法攻击所有节点。
+防DDoS设备：防DDoS设备可以在攻击开始时自动检测并过滤攻击流量。这些设备可以使用各种算法进行攻击检测和流量分析，并对攻击流量进行过滤和阻止。
+使用云服务：云服务提供商可以使用多个数据中心和高度可用的服务来防止DDoS攻击。通过使用云服务，网站管理员可以更好地分摊攻击流量，同时提高网站的可用性和稳定性。
+
+选择防御方法
+增加带宽：不合适。LB本身就没有带宽限制。
+安装防火墙：不合适。腾讯云WAF太贵（3880元/月 - 28880元/月），防止DDoS服务还要单独购买（10万元/年 - 300万元/年）；自己搭建DDoS防火墙，需要专职的安全人员开发，成本更高。
+CDN加速：备选。配置简单，价格合适（还有免费版）。
+防DDoS设备：不合适。价格昂贵（上百万一台）。
+使用云服务：不合适。没有必要提供那么强的负载能力。
+
+综上，选择CDN加速进行DDoS防护，是最优选。
+CDN调研Cloudflare CDNCloudflare CDN防护原理Cloudflare CDN加速防御DDoS攻击的基本原理：
+
+分布式架构：Cloudflare使用分布式的CDN架构，在全球各地部署了大量的数据中心和服务器节点。这些节点可以缓存和分发网站的静态内容和动态内容，并提供基于云端的防御和安全服务。
+基于行为的分析：Cloudflare使用基于行为的分析技术，对访问网站的流量进行实时分析和识别。当检测到异常的访问行为时，例如大量请求来自同一IP地址或同一地区的访问等，Cloudflare会自动封锁这些IP地址或地区的流量，以减轻DDoS攻击的影响。
+基于IP地址的访问控制：Cloudflare可以通过设置IP白名单和黑名单，限制访问网站的IP地址范围。这可以帮助阻止一些恶意IP地址和流量，以保护网站的安全性和稳定性。
+流量限制：Cloudflare可以限制访问网站的流量速率和数量，以避免过度的流量消耗和服务器崩溃。当检测到DDoS攻击的流量时，Cloudflare会自动限制流量速率和数量，以减轻攻击的影响。
+DDoS防火墙：Cloudflare还提供了一些高级防御和防护功能，例如Web应用程序防火墙（WAF）和SSL证书等。WAF可以识别和阻止一些常见的攻击和漏洞，例如SQL注入、XSS等。SSL证书可以为网站提供HTTPS加密和身份认证功能，以保护用户的隐私和安全。
+
+使用Cloudflare CDN之后，通过dig还能找到真实后端服务器吗？使用Cloudflare CDN加速后，通过dig命令（或其他查询DNS记录的工具）查询域名解析结果，通常只能查到Cloudflare的DNS记录，而无法直接查到真实的后端服务器。这是因为Cloudflare CDN使用了反向代理和缓存技术，将网站的内容缓存在Cloudflare的边缘节点上，并使用Cloudflare的IP地址作为前端入口，而后端的真实服务器地址通常不会暴露在外部。
+Cloudflare CDN注意事项使用Cloudflare的CDN加速，可以实现防护DDoS。
+Cloudflare收费标准：
+
+免费版：支持DNS解析、DDoS防护、CDN、SSL证书，足够我们使用了。
+付费Pro版：25刀/月
+付费Business版：250刀/月
+付费Enterprise版：250刀+/月
+
+免费版和付费Pro版，添加站点时，最后一步会提示修改NS地址，也就是说该域名所有的解析都要托管到Cloudflare，这就很不友好了。对于付费Business版和Enterprise版，如果不想修改NS地址，那么建议使用Partial (CNAME) setup，配置方法参考《Cloudflare配置概述》。对于免费版和付费Pro版，如果不想修改NS地址，那么建议使用Cloudflare for SaaS，不过这种配置方式可能会被拦截，页面出现 警方提示疑似诈骗 联系电话：0592-96110。
+参考文档：
+
+安全、性能和可靠性 —— 一个软件包全部搞定
+Partial (CNAME) setup
+Cloudflare for SaaS
+最新Cloudflare免费CNAME和IP接入教程-无需修改NS直接接入Cloudflare
+
+腾讯云CDN收费方式：按访问次数和流量收费是否防DDoS：想要防DDoS，需额外购买SCDN（最基础套餐3800元/月，支持20个域名，10Gbps防护）
+结论：可防DDoS，价格不合适
+参考文档：
+
+全站加速网络 - 产品概述
+全站加速网络 - 计费说明
+安全加速 SCDN
+SCND - 价格试算
+
+阿里云CDN收费方式：按流量计费是否防DDoS：想要防DDoS，需额外购买边缘DDoS（6万块10个域名/每月）
+结论：可防DDoS，价格不合适
+参考文档：
+
+阿里云 - CDN
+阿里云 - CDN计费概述
+如何处理加速域名遭受DDoS或CC攻击问题？
+阿里云 - 边缘DDoS防护
+
+AWS CDN收费方式：每月免费1TB流量，1千万请求，超出部分收费是否防DDoS：防DDoS
+结论：可防DDoS，备选
+参考文档：
+
+Amazon CloudFront
+Amazon CloudFront 定价
+
+Azure CDN收费方式：按流量、请求量和规则数量收费（较贵)是否防DDoS：防DDoS
+结论：可防DDoS，价格不合适
+参考文档
+
+Azure 内容分发网络
+内容分发网络定价
+
+小结综上，从价格方面考虑，最合适的选择是Cloudflare CDN，其次是AWS CDN。
+扩展阅读腾讯云防护产品腾讯云CLB腾讯云CLB依靠大禹分布式防御系统能够防御绝大多数网络攻击（例如 DDoS、Web 入侵），针对流量攻击实现秒级清洗，极大避免 IP 被封、带宽被占满等情况发生。CLB 自带的 synproxy 防攻击机制，避免了大禹系统生效之前后端 CVM 被攻击压垮，保护数据更安全稳定。CLB 对每个租户的流量进行严格隔离，提供主动 DDoS 防护能力，公网 CLB 默认支持 DDoS 基础防护。CLB 还支持 DDoS 高防包、DDoS 高防 IP、Web 应用防火墙 等多种安全产品，保障业务安全性。
+价格：免费
+腾讯云WAF腾讯云 Web 应用防火墙（Web Application Firewall，WAF）是一款基于 AI 的一站式 Web 业务运营风险防护方案。通过 AI+规则双引擎识别恶意流量，保护网站安全，提高 Web 站点的安全性和可靠性。通过 BOT 行为分析，防御恶意访问行为，保护网站核心业务安全和数据安全。腾讯云 WAF 提供两种类型的云上 WAF，SaaS 型 WAF 和负载均衡型 WAF，两种 WAF 提供的安全防护能力基本相同，接入方式不同。
+
+SaaS 型 WAF 通过 DNS 解析，将域名解析到 WAF 集群提供的 CNAME 地址上，通过 WAF 配置源站服务器 IP，实现域名恶意流量清洗和过滤，将正常流量回源到源站，保护网站安全。
+负载均衡型 WAF 通过和腾讯云负载均衡集群进行联动，将负载均衡的 HTTP/HTTPS 流量镜像到 WAF 集群，WAF 进行旁路威胁检测和清洗，将用户请求的可信状态同步到负载均衡集群进行威胁拦截或放行，实现网站安全防护。
+
+腾讯云 WAF 可以有效防御 SQL 注入、XSS 跨站脚本、木马上传、非授权访问等 OWASP 攻击。此外还可以有效过滤 CC 攻击、提供 0day 漏洞补丁、防止网页篡改等，通过多种手段全方位保护网站的系统以及业务安全。
+价格：3880元/月 - 28880元/月
+DDoS防护DDoS 基础防护是腾讯云免费为云服务器（Cloud Virtual Machine，CVM）、负载均衡（Cloud Load Balancer，CLB）等资源提供的基础 DDoS 防护能力，满足日常安全运营需求。普通用户默认可享受不超过2Gbps防护，VIP 用户 可享受不超过10Gbps防护，境外地区可享受不超过2Gbps防护。腾讯云会根据用户的安全信誉状态，动态调整封堵阈值。安全信誉状态与历史攻击情况、云上基础资源信息等相关。安全信誉过低会影响用户的免费防护能力，直到后续安全信誉恢复。DDoS 基础防护默认开启，实时监控网络流量，发现攻击立即清洗，为腾讯云上公网 IP 秒级开启防护。
+除了基础防护，用户还可以按需选购轻量版高防包、DDoS 高防包、DDoS 高防 IP（中国大陆）、DDoS 高防 IP（境外）、DDoS 高防 IP（境外企业版）。
+付费版价格：10万元/年 - 300万元/年
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>network</category>
+      </categories>
+      <tags>
         <tag>chatgpt</tag>
+        <tag>网络</tag>
         <tag>安全</tag>
         <tag>黑客</tag>
       </tags>
@@ -33609,7 +34194,7 @@ Node端源码https://github.com/voidking/nodebase/blob/master/controllers/weixin
 
 
 nodebasea node framework designed for myselfversion: v1.0.0url: https://github.com/voidking/nodebase.git  
-作者相关author: haojin(voidking)e-mail: &#x76;&#111;&#x69;&#x64;&#x6b;&#x69;&#110;&#103;&#64;&#x71;&#x71;&#x2e;&#99;&#111;&#109;site: http://www.voidking.com   
+作者相关author: haojin(voidking)e-mail: &#118;&#x6f;&#105;&#x64;&#x6b;&#105;&#110;&#103;&#x40;&#x71;&#113;&#46;&#x63;&#x6f;&#x6d;site: http://www.voidking.com   
 开发环境说明1、安装5.6.0以上Node2、安装mongodb，不要配置密码3、安装sass4、全局安装bower5、全局安装supervisor6、全局安装node-inspector7、全局安装puer8、运行前执行命令
 npm installbower install
 
@@ -38735,7 +39320,7 @@ XMPP网络任何XMPP网络都是由若干角色组成的，这些角色可以分
 
 插件许多XMPP服务器支持插件扩展，这些插件通常使用与服务器自身相同的语言编写，并在服务器的进程内运行。他们的作用很大程度上与外部组件重叠，但插件还能够访问内部服务器数据结构并改变核心服务器行为。
 XMPP寻址XMPP网络上每个实体都有一个或多个地址（JID，jabber identifier）。JID有多种不同形式，但它们通常看上去就像是电子邮件。
-JID有两种类型，裸JID和完整JID，而裸JID是完整JID去除资源部分后的地址。例如，某个客户端的完整JID是&#118;&#x6f;&#x69;&#100;&#107;&#105;&#x6e;&#103;&#x40;&#x76;&#111;&#105;&#100;&#107;&#x69;&#110;&#103;&#x2e;&#108;&#105;&#x74;/library，那么它的裸JID就是&#x76;&#111;&#x69;&#x64;&#107;&#x69;&#x6e;&#103;&#64;&#118;&#x6f;&#x69;&#100;&#x6b;&#105;&#110;&#103;&#x2e;&#x6c;&#x69;&#116;。
+JID有两种类型，裸JID和完整JID，而裸JID是完整JID去除资源部分后的地址。例如，某个客户端的完整JID是&#x76;&#x6f;&#105;&#100;&#107;&#x69;&#x6e;&#x67;&#64;&#118;&#x6f;&#x69;&#x64;&#107;&#105;&#x6e;&#103;&#46;&#108;&#105;&#x74;/library，那么它的裸JID就是&#x76;&#x6f;&#105;&#x64;&#x6b;&#x69;&#110;&#103;&#x40;&#118;&#x6f;&#x69;&#x64;&#107;&#x69;&#110;&#103;&#x2e;&#108;&#105;&#116;。
 节在XMPP中，各项工作都是通过在一个XMPP流上发送和接收XMPP节来完成的。核心XMPP工具集由三种基本节组成，这三种节分别为&lt;presence&gt;、&lt;message&gt;、&lt;iq&gt;。
 XMPP流由两份XML文档组成，通信的每个方向均有一份文档。这份文档有一个根元素&lt;stream:stream&gt;，这个根元素的子元素由可路由的节以及与流相关的顶级子元素构成。下面给出一段简短的XMPP会话：
 &lt;stream:stream&gt;	&lt;iq type=&#x27;get&#x27;&gt;		&lt;query xmlns=&#x27;jabber:iq:roster&#x27;/&gt;	&lt;/iq&gt;		&lt;presence/&gt;		&lt;message to=&#x27;voidking@voidking.lit&#x27; from=&#x27;haojin@gmail.com/ballroom&#x27; type=&#x27;chat&#x27;&gt;		&lt;body&gt;I cannot talk of books in a ball-room; my head is always full of something else.&lt;/body&gt;	&lt;/message&gt;		&lt;presence type=&#x27;unavailable&#x27;/&gt;&lt;/stream:stream&gt;
@@ -44386,7 +44971,7 @@ mtools，显示所有支持MSDOS文件系统的命令。
 mutt
 mutt: mail user agent，文字界面的邮件工具
 
-mutt -s &quot;A test mail&quot; josfeng@gmail.com，将邮件寄给 &#106;&#x6f;&#x73;&#102;&#101;&#x6e;&#103;&#x40;&#x67;&#x6d;&#97;&#x69;&#x6c;&#x2e;&#x63;&#x6f;&#109;，信件主题为A test mail。
+mutt -s &quot;A test mail&quot; josfeng@gmail.com，将邮件寄给 &#x6a;&#111;&#115;&#x66;&#101;&#x6e;&#103;&#x40;&#x67;&#x6d;&#x61;&#x69;&#x6c;&#x2e;&#99;&#x6f;&#109;，信件主题为A test mail。
 mv
 mv: move，移动或重命名文件或目录
 
