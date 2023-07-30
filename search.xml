@@ -177,10 +177,10 @@ on:  workflow_dispatch:    inputs:      build:        description: &quot;build p
         <category>troubleshooting</category>
       </categories>
       <tags>
+        <tag>hexo</tag>
         <tag>问题排查</tag>
         <tag>git</tag>
         <tag>cicd</tag>
-        <tag>hexo</tag>
         <tag>travis-ci</tag>
         <tag>github-actions</tag>
       </tags>
@@ -697,8 +697,8 @@ kubectl sniff test -n default -f &quot;port 80&quot;
       <categories>
         <category>engineering</category>
         <category>k8s</category>
-        <category>cloudnative</category>
         <category>network</category>
+        <category>cloudnative</category>
       </categories>
       <tags>
         <tag>k8s</tag>
@@ -910,8 +910,8 @@ Git项目管理，代码规范pre-commit使用详解
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>python</category>
         <category>devops</category>
+        <category>python</category>
         <category>git</category>
         <category>testing</category>
       </categories>
@@ -1162,8 +1162,8 @@ gitlab-runner restart
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>k8s</category>
         <category>devops</category>
+        <category>k8s</category>
         <category>cloudnative</category>
         <category>git</category>
       </categories>
@@ -1252,8 +1252,8 @@ Custom executor自定义执行器允许您指定自己的执行环境。当 GitL
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>k8s</category>
         <category>devops</category>
+        <category>k8s</category>
         <category>cloudnative</category>
         <category>git</category>
       </categories>
@@ -1347,8 +1347,8 @@ time=&quot;2022-10-31T03:24:16Z&quot; level=info msg=&quot;keys expired, rotatin
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>k8s</category>
         <category>devops</category>
+        <category>k8s</category>
         <category>cloudnative</category>
         <category>troubleshooting</category>
       </categories>
@@ -1555,8 +1555,8 @@ Multiple deployments for multiple secrets / private registries?
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>k8s</category>
         <category>docker</category>
+        <category>k8s</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -1815,8 +1815,8 @@ worker节点操作以worker-0为例，方便进行描述。
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>k8s</category>
         <category>docker</category>
+        <category>k8s</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -2144,8 +2144,8 @@ kubectl get pod -n argocd -owideargocd login 10.x.x.x:8080 --grpc-webargocd clus
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>k8s</category>
         <category>devops</category>
+        <category>k8s</category>
         <category>cloudnative</category>
         <category>troubleshooting</category>
       </categories>
@@ -2410,8 +2410,8 @@ pip install xxx --proxy http://192.168.56.1:7890
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
+        <category>docker</category>
         <category>network</category>
       </categories>
       <tags>
@@ -2639,8 +2639,8 @@ SYNC OPTIONS：​- SKIP SCHEMA VALIDATION​​：是否执行资源规范格�
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>k8s</category>
         <category>devops</category>
+        <category>k8s</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -3422,8 +3422,8 @@ options：可选的对象列表，其中每个对象可能具有 name 属性（�
       <categories>
         <category>engineering</category>
         <category>k8s</category>
-        <category>cloudnative</category>
         <category>network</category>
+        <category>cloudnative</category>
         <category>troubleshooting</category>
       </categories>
       <tags>
@@ -4146,8 +4146,8 @@ config.yml配置hexo目录中的_config.yml修改为：
         <category>hexo</category>
       </categories>
       <tags>
-        <tag>node</tag>
         <tag>hexo</tag>
+        <tag>node</tag>
       </tags>
   </entry>
   <entry>
@@ -4202,8 +4202,8 @@ Ran out of free trial build credits available for private repositories.Travis CI
         <category>hexo</category>
       </categories>
       <tags>
-        <tag>cicd</tag>
         <tag>hexo</tag>
+        <tag>cicd</tag>
         <tag>travis-ci</tag>
       </tags>
   </entry>
@@ -4382,8 +4382,8 @@ def modify_id3(audio_path, title, artist ,img_path):    audio = eyed3.load(audio
         <category>hexo</category>
       </categories>
       <tags>
-        <tag>shell</tag>
         <tag>hexo</tag>
+        <tag>shell</tag>
       </tags>
   </entry>
   <entry>
@@ -4465,8 +4465,8 @@ git add .git commmit -m &quot;简化travis.yml&quot;git push
         <category>hexo</category>
       </categories>
       <tags>
-        <tag>cicd</tag>
         <tag>hexo</tag>
+        <tag>cicd</tag>
         <tag>travis-ci</tag>
       </tags>
   </entry>
@@ -5631,8 +5631,8 @@ Python项目Debug的配置方法，参考《PyCharm调试》。不同的是，�
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>golang</category>
         <category>python</category>
+        <category>golang</category>
         <category>java</category>
       </categories>
       <tags>
@@ -5817,8 +5817,8 @@ nsenter -t &lt;pid&gt; -n iptables -t nat -nL --line-numbernsenter -t 8993 -n ip
       <categories>
         <category>engineering</category>
         <category>k8s</category>
-        <category>cloudnative</category>
         <category>network</category>
+        <category>cloudnative</category>
       </categories>
       <tags>
         <tag>k8s</tag>
@@ -6139,8 +6139,8 @@ artifacthub - Bitnami package for Redis(R)
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>k8s</category>
         <category>devops</category>
+        <category>k8s</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -6212,8 +6212,8 @@ apiVersion: monitoring.coreos.com/v1kind: PrometheusRulemetadata:  labels:    pr
       <categories>
         <category>engineering</category>
         <category>k8s</category>
-        <category>cloudnative</category>
         <category>monitoring</category>
+        <category>cloudnative</category>
       </categories>
       <tags>
         <tag>k8s</tag>
@@ -6332,8 +6332,8 @@ count(&#123;job=&quot;kube-controller-manager&quot;&#125;) by (__name__)count(&#
       <categories>
         <category>engineering</category>
         <category>k8s</category>
-        <category>cloudnative</category>
         <category>monitoring</category>
+        <category>cloudnative</category>
       </categories>
       <tags>
         <tag>k8s</tag>
@@ -6556,8 +6556,8 @@ apiVersion: v1kind: Podmetadata:  creationTimestamp: null  labels:    run: ubunt
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>k8s</category>
         <category>docker</category>
+        <category>k8s</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -6684,8 +6684,8 @@ curl http://localhost:8001curl http://localhost:8080/api/v1/proxy/namespaces/YOU
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>k8s</category>
         <category>docker</category>
+        <category>k8s</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -7411,8 +7411,8 @@ Service Account Key PairKube Proxy Client CertificateKubelet Client Certificates
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>k8s</category>
         <category>docker</category>
+        <category>k8s</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -7614,8 +7614,8 @@ Creating a Replication Rule
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>k8s</category>
         <category>docker</category>
+        <category>k8s</category>
         <category>cloudnative</category>
         <category>troubleshooting</category>
       </categories>
@@ -7887,8 +7887,8 @@ kubectl get cm test-config -n test -o jsonpath=&#x27;&#123;.data.config\.yaml&#1
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>k8s</category>
         <category>docker</category>
+        <category>k8s</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -7973,11 +7973,11 @@ IPsec-VPN入门概述
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>k8s</category>
-        <category>docker</category>
         <category>devops</category>
-        <category>cloudnative</category>
+        <category>docker</category>
+        <category>k8s</category>
         <category>network</category>
+        <category>cloudnative</category>
       </categories>
       <tags>
         <tag>k8s</tag>
@@ -8136,11 +8136,11 @@ systemctl status firewalldsystemctl stop firewalldsystemctl disable firewalld
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>k8s</category>
-        <category>docker</category>
         <category>devops</category>
-        <category>cloudnative</category>
+        <category>docker</category>
+        <category>k8s</category>
         <category>network</category>
+        <category>cloudnative</category>
       </categories>
       <tags>
         <tag>k8s</tag>
@@ -8186,9 +8186,9 @@ CONTINUE后续步骤，和《使用kubeadm安装部署K8S集群——CentOS篇�
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>k8s</category>
-        <category>docker</category>
         <category>devops</category>
+        <category>docker</category>
+        <category>k8s</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -8350,8 +8350,8 @@ kubectl create role developer --resource=pods --verb=list,create -n appkubectl c
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>k8s</category>
         <category>docker</category>
+        <category>k8s</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -8565,8 +8565,8 @@ apt-get install kubeadm=1.12.0-00apt-get install kubelet=1.12.0-00kubeadm upgrad
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>k8s</category>
         <category>docker</category>
+        <category>k8s</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -8805,8 +8805,8 @@ Nginx -&gt; IngressDomain -&gt; Nginx -&gt; Ingress -&gt; Service -&gt; Pod
       <categories>
         <category>engineering</category>
         <category>k8s</category>
-        <category>cloudnative</category>
         <category>network</category>
+        <category>cloudnative</category>
         <category>architecture</category>
       </categories>
       <tags>
@@ -8859,8 +8859,8 @@ K8S容器编排之Headless浅谈
       <categories>
         <category>engineering</category>
         <category>k8s</category>
-        <category>cloudnative</category>
         <category>network</category>
+        <category>cloudnative</category>
         <category>architecture</category>
       </categories>
       <tags>
@@ -8925,8 +8925,8 @@ sudo: falselanguage: node_jsnode_js:- 10.16.3cache: npmbranches:  only:  - maste
         <category>hexo</category>
       </categories>
       <tags>
-        <tag>cicd</tag>
         <tag>hexo</tag>
+        <tag>cicd</tag>
         <tag>gulp</tag>
       </tags>
   </entry>
@@ -8969,9 +8969,9 @@ after_success:- git config --global user.name &quot;voidking&quot;- git config -
         <category>git</category>
       </categories>
       <tags>
+        <tag>hexo</tag>
         <tag>git</tag>
         <tag>cicd</tag>
-        <tag>hexo</tag>
         <tag>travis-ci</tag>
       </tags>
   </entry>
@@ -9008,8 +9008,8 @@ hexo配置多个git仓库为了维护两个站点，所以每次更新，需要�
         <category>git</category>
       </categories>
       <tags>
-        <tag>git</tag>
         <tag>hexo</tag>
+        <tag>git</tag>
       </tags>
   </entry>
   <entry>
@@ -9468,8 +9468,8 @@ crond日志1、查看crond日志tail /var/log/cron报错没有这个文件，这
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
+        <category>docker</category>
       </categories>
       <tags>
         <tag>docker</tag>
@@ -9722,16 +9722,16 @@ curl http://8.136.13.58curl http://8.136.13.58 -L
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
         <category>hexo</category>
+        <category>docker</category>
         <category>troubleshooting</category>
       </categories>
       <tags>
+        <tag>hexo</tag>
         <tag>nginx</tag>
         <tag>docker</tag>
         <tag>问题排查</tag>
-        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -9986,8 +9986,8 @@ kubectl delete pod mysql-2 -n mysql --force
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>k8s</category>
         <category>docker</category>
+        <category>k8s</category>
         <category>cloudnative</category>
         <category>troubleshooting</category>
       </categories>
@@ -10020,8 +10020,8 @@ for i in `env | grep -E -i &#x27;SERVICE|HOST|ADDR|PORT&#x27; | sed &#x27;s/=.*/
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>k8s</category>
         <category>docker</category>
+        <category>k8s</category>
         <category>frontend</category>
         <category>cloudnative</category>
         <category>troubleshooting</category>
@@ -10338,8 +10338,8 @@ redis-cli -c -h 192.168.56.101 -p 7002 -a &#x27;xxx&#x27; shutdownredis-server /
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
+        <category>docker</category>
         <category>database</category>
         <category>cloudnative</category>
         <category>troubleshooting</category>
@@ -10582,8 +10582,8 @@ RedisInsight supports all Redis deployments. Whether you use Redis Open Source, 
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
+        <category>docker</category>
         <category>database</category>
         <category>cloudnative</category>
       </categories>
@@ -10880,8 +10880,8 @@ cd vkbeegobee run
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>golang</category>
         <category>devops</category>
+        <category>golang</category>
       </categories>
       <tags>
         <tag>golang</tag>
@@ -11127,7 +11127,7 @@ gomod实践篇安装client-go假设一个项目依赖client-go，那么参考官
 失败了，返回404，猜测是12.0版本在代理服务器不存在，使用另外一种下载方式。
 go get k8s.io/client-go@kubernetes-1.15.0
 此处下载了两个版本的client-go，我们使用v0.0.0版本。
-4、安装client-go相关依赖client-go默认下载到$GOPATH/pkg/mod/k8s.io目录下，把k8s.io目录移动到$GOPATH/src目录下。然后把&#99;&#x6c;&#x69;&#x65;&#110;&#x74;&#x2d;&#x67;&#x6f;&#64;&#118;&#x30;&#x2e;&#48;&#46;&#x30;重命名为client-go，然后在client-go目录下执行安装依赖的命令：
+4、安装client-go相关依赖client-go默认下载到$GOPATH/pkg/mod/k8s.io目录下，把k8s.io目录移动到$GOPATH/src目录下。然后把&#99;&#x6c;&#x69;&#x65;&#110;&#116;&#x2d;&#x67;&#111;&#x40;&#x76;&#48;&#46;&#48;&#46;&#48;重命名为client-go，然后在client-go目录下执行安装依赖的命令：
 export GOPROXY=https://goproxy.ioexport GO111MODULE=ongo mod vendor
 完成之后，所有的依赖都下载到了client-go/vendor目录下，一个完整的client-go依赖库就准备好了。
 依赖库版本管理client-go依赖库准备好了，但是另一个问题来了：假设项目vk-project依赖client-go和库A，client-go依赖库A，两个依赖库A版本不一致，那么vk-project在编译时，会同时依赖两个不同的库A，导致编译出的二进制包有问题。
@@ -12513,8 +12513,8 @@ Kubernetes 学习路径
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>k8s</category>
         <category>devops</category>
+        <category>k8s</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -16839,9 +16839,9 @@ YAML特殊符号说明
 ]]></content>
       <categories>
         <category>engineering</category>
+        <category>devops</category>
         <category>python</category>
         <category>k8s</category>
-        <category>devops</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -19289,14 +19289,14 @@ sed -i &quot;s/专业,开发,nginx/engineering,devops/g&quot; `grep &#x27;专业
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>shell</category>
         <category>hexo</category>
+        <category>shell</category>
       </categories>
       <tags>
+        <tag>hexo</tag>
         <tag>macos</tag>
         <tag>linux</tag>
         <tag>shell</tag>
-        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -19545,11 +19545,11 @@ mkdir -p /root/.certs/echo -n | openssl s_client -connect smtp.163.com:465 | sed
 5、测试发送邮件echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com查看邮箱，正常的话应该已经收到邮件了。如果没有收到邮件，可以查看日志进行排查：tail /var/log/maillog
 macos参考文档：《MacOS配置发送邮件》
 mail命令命令格式mail [OPTION...] [address...]常用到的选项，一个是s，代表主题；一个是A，代表附件。其他的需要时查看help。
-发送普通邮件目标：给邮箱 &#x76;&#111;&#x69;&#100;&#107;&#105;&#110;&#103;&#64;&#113;&#x71;&#x2e;&#x63;&#x6f;&#x6d; 发送邮件，主题为“Hello VoidKing”，内容为“Welcome to mail world！”
+发送普通邮件目标：给邮箱 &#x76;&#x6f;&#x69;&#100;&#x6b;&#x69;&#110;&#103;&#64;&#113;&#113;&#x2e;&#x63;&#x6f;&#109; 发送邮件，主题为“Hello VoidKing”，内容为“Welcome to mail world！”
 echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com
 但是，等待了几分钟，并没有收到邮件，垃圾箱也没有。mail，查看email的发送状态为Undelivered Mail Returned，原来没有投递出去。
 查看邮件系统日志：tail -n 50 /var/spool/mail/test提示host mx3.qq.com[183.57.48.35] said: 550 Mail content denied。看来qq邮箱的垃圾邮件防御机制做的不错，那就换个163邮箱，没想到依然失败。
-换一台服务器？发送给 &#x76;&#111;&#105;&#100;&#107;&#105;&#110;&#x67;&#64;&#x71;&#x71;&#46;&#x63;&#111;&#109; ，成功！很尴尬。。。就这么着吧
+换一台服务器？发送给 &#118;&#x6f;&#x69;&#x64;&#x6b;&#105;&#x6e;&#103;&#64;&#113;&#x71;&#x2e;&#99;&#x6f;&#x6d; ，成功！很尴尬。。。就这么着吧
 发送高级邮件1、从文本读入内容发送邮件mail -s &#39;Error report&#39; voidking@qq.com &lt; /tmp/log/ganglia/error-20180524.log
 2、发送附件mail -s &#39;Error report&#39; voidking@qq.com -A /tmp/log/ganglia/ganglia-20180524.log &lt; /tmp/log/ganglia/error-20180524.log
 3、指定发件人echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com -aFrom:haojin@qq.com
@@ -19793,8 +19793,8 @@ sudo cp /etc/apt/sources.list /etc/apt/sources.list.baksudo sed -i &#x27;s#http:
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
+        <category>docker</category>
       </categories>
       <tags>
         <tag>docker</tag>
@@ -20213,8 +20213,8 @@ sudo iptables -t nat -A PREROUTING -p tcp --dport 10180 -j REDIRECT --to-ports 8
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>shell</category>
         <category>network</category>
+        <category>shell</category>
       </categories>
       <tags>
         <tag>ubuntu</tag>
@@ -20250,8 +20250,8 @@ server &#123;    listen 80;    listen 443 ssl;    server_name www.voidking.com; 
         <category>hexo</category>
       </categories>
       <tags>
-        <tag>nginx</tag>
         <tag>hexo</tag>
+        <tag>nginx</tag>
       </tags>
   </entry>
   <entry>
@@ -20312,8 +20312,8 @@ mathjax本来打算参考《Hexo中使用Mathjax的冲突问题》，修改一�
         <category>hexo</category>
       </categories>
       <tags>
-        <tag>node</tag>
         <tag>hexo</tag>
+        <tag>node</tag>
         <tag>mathjax</tag>
         <tag>nvm</tag>
       </tags>
@@ -20386,8 +20386,8 @@ dns-nameserver 180.76.76.76 223.5.5.5
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>shell</category>
         <category>network</category>
+        <category>shell</category>
       </categories>
       <tags>
         <tag>linux</tag>
@@ -20547,8 +20547,8 @@ Request -&gt; Nginx(certificate)  -&gt; Ingress                               -&
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
+        <category>docker</category>
       </categories>
       <tags>
         <tag>docker</tag>
@@ -20725,8 +20725,8 @@ SSL的配置不要加 ssl on ，否则启动时会存在一个警告：
         <category>hexo</category>
       </categories>
       <tags>
-        <tag>nginx</tag>
         <tag>hexo</tag>
+        <tag>nginx</tag>
         <tag>https</tag>
         <tag>加密</tag>
         <tag>tls</tag>
@@ -21525,8 +21525,8 @@ nginx + uwsgi（socket方式）
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>python</category>
         <category>devops</category>
+        <category>python</category>
       </categories>
       <tags>
         <tag>python</tag>
@@ -21761,8 +21761,8 @@ Django 部署(Nginx)
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>python</category>
         <category>devops</category>
+        <category>python</category>
       </categories>
       <tags>
         <tag>python</tag>
@@ -22590,7 +22590,7 @@ linux下载好数据集后，把数据集下载到win10中nmt目录中，路径�
 训练model在根目录（nmt目录）下运行：
 python -m nmt.nmt --src=vi --tgt=en --vocab_prefix=./tmp/nmt_data/vocab  --train_prefix=./tmp/nmt_data/train --dev_prefix=./tmp/nmt_data/tst2012  --test_prefix=./tmp/nmt_data/tst2013 --out_dir=./tmp/nmt_model --num_train_steps=12000 --steps_per_stats=100 --num_layers=2 --num_units=128 --dropout=0.2 --metrics=bleu
 
-郝同学i5-3337U &#67;&#x50;&#x55;&#x40;&#x31;&#46;&#x38;&#x30;&#x47;&#72;&#x7a;，8G内存，训练了将近两个小时才训练完成。下文我们要学习使用一下UCloud提供的免费GPU。
+郝同学i5-3337U &#67;&#80;&#x55;&#x40;&#x31;&#x2e;&#x38;&#48;&#71;&#x48;&#122;，8G内存，训练了将近两个小时才训练完成。下文我们要学习使用一下UCloud提供的免费GPU。
 我们可以使用 Tensorboard 在训练过程中查看模型的总结：
 tensorboard --port 22222 --logdir ./tmp/nmt_model/
 通过以下简单的变化，就能逆向完成英语到越南语的翻译。
@@ -25948,8 +25948,8 @@ grep筛选出的日志，包含18:00:00-18:00:59内的日志。sed筛选出的�
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>shell</category>
         <category>network</category>
+        <category>shell</category>
         <category>troubleshooting</category>
       </categories>
       <tags>
@@ -26103,8 +26103,8 @@ for i in `cat hosts.txt`; do ssh $i &quot;echo &#x27;/home/voidking/start.sh&#x2
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>shell</category>
         <category>network</category>
+        <category>shell</category>
         <category>troubleshooting</category>
       </categories>
       <tags>
@@ -26745,8 +26745,8 @@ tomcat使用supervisor管理
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
+        <category>docker</category>
         <category>java</category>
         <category>troubleshooting</category>
       </categories>
@@ -26833,8 +26833,8 @@ curl localhost:28080
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
+        <category>docker</category>
       </categories>
       <tags>
         <tag>docker</tag>
@@ -27278,8 +27278,8 @@ ifconfig docker0 down
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
+        <category>docker</category>
       </categories>
       <tags>
         <tag>nginx</tag>
@@ -27362,8 +27362,8 @@ curl localhost:8080
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
+        <category>docker</category>
         <category>uncategories</category>
       </categories>
       <tags>
@@ -28359,8 +28359,8 @@ Supervisor实战管理tomcat参考《CentOS7设置tomcat开机自启动》。
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>python</category>
         <category>devops</category>
+        <category>python</category>
       </categories>
       <tags>
         <tag>python</tag>
@@ -28425,8 +28425,8 @@ pyenv global systempyenv rehashpython -V
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>python</category>
         <category>devops</category>
+        <category>python</category>
       </categories>
       <tags>
         <tag>python</tag>
@@ -30174,7 +30174,7 @@ t0 = time()&lt; 你的 clf.fit() 代码行 &gt;print &#x27;training time:&#x27;,
 代码运行说明文件。纯文本或markdown格式，写明运行你的代码所需要的库，他们的安装方法和运行方法
 预测结果: 纯文本或CSV文件。
 
-对项目要求有疑问请致信 &#x73;&#x75;&#112;&#112;&#111;&#x72;&#116;&#64;&#121;&#x6f;&#117;&#100;&#97;&#120;&#117;&#x65;&#46;&#x63;&#x6f;&#109;
+对项目要求有疑问请致信 &#x73;&#x75;&#112;&#112;&#111;&#x72;&#116;&#x40;&#121;&#111;&#117;&#x64;&#x61;&#120;&#x75;&#x65;&#46;&#x63;&#111;&#x6d;
 准备好提交项目后，请点击下一项，在“项目提交”小节中提交。
 ]]></content>
       <categories>
@@ -30215,7 +30215,7 @@ Resume Builder
 项目导师会根据该评估准则（与你制作简历时遵循的清单相符）对你的简历项目进行审核。
 提交准备好提交求职信后，你需要：
 1、删除/匿名化你的求职信上的所有个人联系人信息，以防泄漏隐私。2、创建 PDF 格式的简历，这样你的简历在不同操作系统/软件/屏幕中有一致的版面样式。3、点击下方的“提交项目”按钮，并根据说明操作。4、在“告知审核员”中，请包括任何有关你的职业目标（如申请的工作或领域），或任何有意偏离评估准则情况的详细信息。
-注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#115;&#117;&#x70;&#112;&#111;&#114;&#116;&#64;&#121;&#111;&#117;&#100;&#x61;&#x78;&#117;&#101;&#46;&#x63;&#x6f;&#109;。
+注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#x73;&#x75;&#112;&#112;&#x6f;&#x72;&#x74;&#64;&#121;&#x6f;&#117;&#100;&#97;&#x78;&#117;&#x65;&#46;&#99;&#x6f;&#x6d;。
 GitHub个人资料项目你的GitHub个人资料展示你创建的项目，并让他人了解你的工作风格和提交频率。通过展示你对 GitHub 的熟悉程度，其他开发人员和招聘经理能够知道你拥有他们需要能力，你就是他们正在寻找的人。你的代码库应表明你认真对待项目，并且能够编写干净、格式正确的代码。请查看 GitHub 上的这篇出色的博客文章，了解如何用 GitHub 帮助你持续学习，发展职业生涯。
 为何要完成此 GitHub 个人资料项目？GitHub 越来越多地被用作招聘平台以及潜在雇主查看你的作品的方式。它还是与其他开发人员建立联系和展示你的技能的好地方。
 我应该做什么？你应该以招聘人员或用人部门经理的眼光查看你的 GitHub 个人资料，重点关注你的个人资料、项目和代码如何将你描绘成公司的潜在候选人或项目的协作者。
@@ -30244,7 +30244,7 @@ GitHub项目提交你的 GitHub 主页是呈现给潜在雇主的“关键证据
 反馈优达学城项目导师会根据该标准（与你制作领英简介时遵循的清单相符）对你的领英简介项目进行审核。
 提交准备好提交领英个人资料后：
 1、若要提交，请点击下方的“提交项目”按钮，并根据说明操作。2、在“告知评审员”中，请包括任何有关你的职业目标（如预期工作领域）的详细信息。
-注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#115;&#x75;&#112;&#112;&#x6f;&#x72;&#x74;&#x40;&#x79;&#111;&#117;&#x64;&#x61;&#120;&#x75;&#x65;&#x2e;&#x63;&#111;&#x6d;。
+注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#x73;&#117;&#x70;&#112;&#x6f;&#x72;&#x74;&#64;&#x79;&#x6f;&#x75;&#100;&#97;&#120;&#117;&#101;&#x2e;&#x63;&#x6f;&#109;。
 技术面试项目对于此实战项目，你需要回答五个技术面试问题，这些问题涉及的是技术面试课程中讨论的各种主题。你应该用 Python 写出清晰高效的答案，并用文字解释代码的效率和设计理由。我们将安排合格的审核者检查你的答案，并针对任何精彩之处或欠缺的方面做出反馈：你的解决方案是最高效的吗？你很好地解释了你的想法吗？你的代码简洁易懂吗？
 请回答以下问题：
 问题 1: 假设有两个字符串 s 和 t，请判断 t 的变形词是否是 s 的子字符串。例如：如果 s = “udacity”，t = “ad”，则函数返回 True。你的函数定义应该为：“question1(s, t)”，并返回布尔值 True 或 False。 
@@ -30310,7 +30310,7 @@ Dice
 问题 5 - 通过一个情景举例说明正则化对学习好的模型的必要性，以及提供一个正则化没有意义的情景。
 问题 6 -你附近的杂货店想向顾客有针对性地发放对他们来说有用的优惠券。假设你可以访问每位顾客的购买历史和店铺商品目录，你将设计怎样一个系统，来决定发放哪些优惠券？你如何衡量这个系统的性能？
 问题 7 - 选择一个公司，然后描述你想应聘的该公司内的机器学习工程师职位（假设有）。现在，如果你已成功应聘，并从今天开始任职，在你看来，你的职位在下一年会有怎样的发展？你的长期职业目标是什么，这个职位如何帮助你实现长期目标？
-提交当你准备提交项目，点击下方“提交项目”，上传一份 PDF 文件。如果有任何与提交项目相关的疑问，或想查看提交状态，请向我们发送电子邮件询问（&#115;&#x75;&#112;&#x70;&#x6f;&#x72;&#x74;&#x40;&#x79;&#x6f;&#x75;&#x64;&#x61;&#x78;&#x75;&#x65;&#x2e;&#x63;&#111;&#x6d;）。
+提交当你准备提交项目，点击下方“提交项目”，上传一份 PDF 文件。如果有任何与提交项目相关的疑问，或想查看提交状态，请向我们发送电子邮件询问（&#x73;&#117;&#112;&#x70;&#x6f;&#114;&#116;&#x40;&#121;&#111;&#117;&#x64;&#97;&#120;&#117;&#x65;&#x2e;&#x63;&#111;&#x6d;）。
 项目资源项目评审标准。优达学城的项目导师会依据此评审标准审阅你的项目。你可以在提交前自行检查自己是否已达到所有标准。职业资源中心。你可以在这里找到更多有关准备面试的资源和贴士。
 接下来面试练习并不是只在你求职时才需要做的事情， 在你的整个职业生涯中，你都需要继续提高自己的面试技巧。抓住每一个机会，思考和与人交流你的职业目标。在申请一个职位之前，请思考清楚自己为什么要申请——这将极大地帮助你为面试做好准备。
 书签Interview Guide: Machine Learninghttps://career-resource-center.udacity.com/interview-courses-and-guides/machine-learning
@@ -30764,7 +30764,7 @@ notebook 项目导出的 HTML 文件，命名为 report.html。
 
 注意：所提交文件的文件名名，包括zip压缩包内的文件名，都不能含有中文及任何ASCII之外的字符，否则会造成提交失败。
 如何导出HTML的说明在 notebook 的最下方。 你也许需要先在命令后通过 pip install mistune 命令安装 mistune 。当你准备好所有这些文件，并且依照项目要求核对过之后，就可以在下面的项目提交页面提交你的项目了。
-如果你是第一次在优达学城提交项目，点击提交之后，要等1分钟左右才能打开提交页面。如果长时间打不开，可以刷新。如果依然无法打开项目提交页面，可以联系客服微信或者邮件至 &#115;&#117;&#x70;&#x70;&#111;&#114;&#x74;&#64;&#x79;&#111;&#117;&#x64;&#97;&#120;&#117;&#x65;&#46;&#x63;&#111;&#109;
+如果你是第一次在优达学城提交项目，点击提交之后，要等1分钟左右才能打开提交页面。如果长时间打不开，可以刷新。如果依然无法打开项目提交页面，可以联系客服微信或者邮件至 &#115;&#x75;&#112;&#112;&#111;&#114;&#116;&#x40;&#x79;&#111;&#x75;&#x64;&#x61;&#x78;&#117;&#101;&#46;&#99;&#111;&#109;
 后记这个项目，是优达学城《机器学习工程师》课程提供的第一个实战项目。摘录了全文，方便查看。郝同学的项目地址：https://github.com/voidking/udaciyty-machine-learning/tree/master/projects/titanic_survival_exploration
 书签机器学习工程师（中/英）https://cn.udacity.com/course/machine-learning-engineer-nanodegree--nd009
 数据科学入门https://cn.udacity.com/course/intro-to-data-science--ud359
@@ -32596,9 +32596,9 @@ Hexo的一个小BUG(Template render error)http://www.jianshu.com/p/738ebe02029b
         <category>frontend</category>
       </categories>
       <tags>
+        <tag>hexo</tag>
         <tag>前端</tag>
         <tag>angularjs</tag>
-        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -32960,8 +32960,8 @@ MacOS中的route命令MacOS中的route命令与Linux中的route命令具有相�
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>shell</category>
         <category>network</category>
+        <category>shell</category>
       </categories>
       <tags>
         <tag>macos</tag>
@@ -34194,7 +34194,7 @@ Node端源码https://github.com/voidking/nodebase/blob/master/controllers/weixin
 
 
 nodebasea node framework designed for myselfversion: v1.0.0url: https://github.com/voidking/nodebase.git  
-作者相关author: haojin(voidking)e-mail: &#118;&#x6f;&#105;&#x64;&#x6b;&#105;&#110;&#103;&#x40;&#x71;&#113;&#46;&#x63;&#x6f;&#x6d;site: http://www.voidking.com   
+作者相关author: haojin(voidking)e-mail: &#118;&#111;&#105;&#100;&#107;&#x69;&#110;&#103;&#64;&#x71;&#x71;&#46;&#x63;&#111;&#109;site: http://www.voidking.com   
 开发环境说明1、安装5.6.0以上Node2、安装mongodb，不要配置密码3、安装sass4、全局安装bower5、全局安装supervisor6、全局安装node-inspector7、全局安装puer8、运行前执行命令
 npm installbower install
 
@@ -34247,8 +34247,8 @@ NATAPP 基于ngrok高速内网穿透服务
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>nodejs</category>
         <category>network</category>
+        <category>nodejs</category>
       </categories>
       <tags>
         <tag>网络</tag>
@@ -37700,9 +37700,9 @@ git-scmhttp://git-scm.com/
         <category>hexo</category>
       </categories>
       <tags>
+        <tag>hexo</tag>
         <tag>git</tag>
         <tag>ssh</tag>
-        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -39320,7 +39320,7 @@ XMPP网络任何XMPP网络都是由若干角色组成的，这些角色可以分
 
 插件许多XMPP服务器支持插件扩展，这些插件通常使用与服务器自身相同的语言编写，并在服务器的进程内运行。他们的作用很大程度上与外部组件重叠，但插件还能够访问内部服务器数据结构并改变核心服务器行为。
 XMPP寻址XMPP网络上每个实体都有一个或多个地址（JID，jabber identifier）。JID有多种不同形式，但它们通常看上去就像是电子邮件。
-JID有两种类型，裸JID和完整JID，而裸JID是完整JID去除资源部分后的地址。例如，某个客户端的完整JID是&#x76;&#x6f;&#105;&#100;&#107;&#x69;&#x6e;&#x67;&#64;&#118;&#x6f;&#x69;&#x64;&#107;&#105;&#x6e;&#103;&#46;&#108;&#105;&#x74;/library，那么它的裸JID就是&#x76;&#x6f;&#105;&#x64;&#x6b;&#x69;&#110;&#103;&#x40;&#118;&#x6f;&#x69;&#x64;&#107;&#x69;&#110;&#103;&#x2e;&#108;&#105;&#116;。
+JID有两种类型，裸JID和完整JID，而裸JID是完整JID去除资源部分后的地址。例如，某个客户端的完整JID是&#118;&#111;&#x69;&#x64;&#107;&#105;&#x6e;&#103;&#x40;&#118;&#111;&#x69;&#x64;&#x6b;&#x69;&#110;&#103;&#46;&#x6c;&#x69;&#x74;/library，那么它的裸JID就是&#x76;&#111;&#x69;&#x64;&#x6b;&#105;&#110;&#x67;&#64;&#118;&#111;&#x69;&#100;&#107;&#105;&#110;&#103;&#46;&#x6c;&#x69;&#x74;。
 节在XMPP中，各项工作都是通过在一个XMPP流上发送和接收XMPP节来完成的。核心XMPP工具集由三种基本节组成，这三种节分别为&lt;presence&gt;、&lt;message&gt;、&lt;iq&gt;。
 XMPP流由两份XML文档组成，通信的每个方向均有一份文档。这份文档有一个根元素&lt;stream:stream&gt;，这个根元素的子元素由可路由的节以及与流相关的顶级子元素构成。下面给出一段简短的XMPP会话：
 &lt;stream:stream&gt;	&lt;iq type=&#x27;get&#x27;&gt;		&lt;query xmlns=&#x27;jabber:iq:roster&#x27;/&gt;	&lt;/iq&gt;		&lt;presence/&gt;		&lt;message to=&#x27;voidking@voidking.lit&#x27; from=&#x27;haojin@gmail.com/ballroom&#x27; type=&#x27;chat&#x27;&gt;		&lt;body&gt;I cannot talk of books in a ball-room; my head is always full of something else.&lt;/body&gt;	&lt;/message&gt;		&lt;presence type=&#x27;unavailable&#x27;/&gt;&lt;/stream:stream&gt;
@@ -43741,8 +43741,8 @@ apt-get install iptables-persistentservice iptables-persistent save
       <categories>
         <category>engineering</category>
         <category>devops</category>
-        <category>shell</category>
         <category>network</category>
+        <category>shell</category>
       </categories>
       <tags>
         <tag>linux</tag>
@@ -44971,7 +44971,7 @@ mtools，显示所有支持MSDOS文件系统的命令。
 mutt
 mutt: mail user agent，文字界面的邮件工具
 
-mutt -s &quot;A test mail&quot; josfeng@gmail.com，将邮件寄给 &#x6a;&#111;&#115;&#x66;&#101;&#x6e;&#103;&#x40;&#x67;&#x6d;&#x61;&#x69;&#x6c;&#x2e;&#99;&#x6f;&#109;，信件主题为A test mail。
+mutt -s &quot;A test mail&quot; josfeng@gmail.com，将邮件寄给 &#x6a;&#111;&#115;&#102;&#x65;&#110;&#x67;&#64;&#x67;&#x6d;&#97;&#x69;&#108;&#x2e;&#99;&#111;&#x6d;，信件主题为A test mail。
 mv
 mv: move，移动或重命名文件或目录
 
