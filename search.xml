@@ -687,93 +687,6 @@ variables:  GIT_CHECKOUT: &quot;true&quot;
       </tags>
   </entry>
   <entry>
-    <title>GitLab Runner入门篇</title>
-    <url>/dev-gitlab-runner-start/</url>
-    <content><![CDATA[GitLab Runner简介GitLab Runner 是一个开源软件，它与 GitLab CI/CD 配合，在管道流中运行作业。GitLab Runner 是用Go编写，几乎可以直接运行在任何操作系统（个别系统需要自行编译）。GitLab Runner 也可以在 Docker 容器内运行或部署到 Kubernetes 集群中。
-GitLab Runner能不能替换成其他的Runner？可以，但是没有必要，毕竟Gitlab Runner是开源的，有什么个性化需求就自己改一改。而且，也没有找到合适的替代产品。
-参考文档：
-
-GitLab Runner 
-GitLab CI/CD中文文档
-GitLab CI/CD文档
-GitLab Runner
-Executors
-The Shell executor
-《GitLab CI/CD入门篇》
-
-
-
-GitLab、Runner和Executor关于GitLab、Runner和Executor的关系，有一个比喻很恰当：GitLab是老板，会去查看需求单（.gitlab-ci.yml），建立一张又一张有先后顺序的工单（CI Pipeline）。GitLab Runner 是执行 CI Job 的工人，定期去询问老板（GitLab）现在有分配给自己的工作（CI Job）吗？如果拿到工作，就开始执行，并在执行过程中将进度即时写在工单上。Executor 是工人（Runner）执行 CI Job 的工作环境，例如一个 CI Job 是打印出”hello”，那么Runner可以在本地Shell环境中执行，可以在虚拟机环境中执行，还可以在Docker环境中执行；而如果一个CI Job需要在基础镜像上进行构建，那么就需要Docker环境或者K8S环境了。
-Runner通常在安装Runner的同一台机器上处理作业。但是，我们也可以让Runner在容器、k8s 集群、或者云上的自动缩放实例中处理作业。
-安装Runner后，想要使用它，需要在GitLab平台进行注册，注册做的工作就是建立Gitlab与Runner之间的通信。注册完成后，Runner就可以运行来自 GitLab 的 CI/CD 作业了。
-当我们注册一个Runner时，必须选择一个Executor。Executor决定了每个作业运行的环境。
-Gitlab Runner的安装环境包括Linux、MacOS、Windows、Docker和Kubernetes。而不同安装环境的Runner，支持不同的Executors。根据Executor的不同，同一个Runner程序，可以注册为不同Executor类型的Runner，例如SSH、Shell、Parallels、VirtualBox、Docker、Docker Machine (auto-scaling)、Kubernetes、Custom。
-例如：
-
-如果我们希望 CI/CD 作业运行 PowerShell 命令，那么可以在 Windows 服务器上安装 GitLab Runner，然后注册一个使用 Shell Executor的Runner。
-如果我们希望 CI/CD 作业在自定义 Docker 容器中运行命令，那么可以在 Linux 服务器上安装 GitLab Runner 并注册一个使用 Docker Executor 的 Runner。
-我们还可以在虚拟机上安装 GitLab Runner，并让它使用另一个虚拟机作为Executor。
-
-最常用的Executor：Shell、Docker、Docker Machine、Kubernetes。
-参考文档：
-
-GitLab Runner 
-Executors
-GitLab CI 之 Runner 的 Executor 該如何選擇？
-
-Executor简介ShellShell 是最简单的配置执行器。构建所需的所有依赖项都需要手动安装在安装 GitLab Runner 的同一台机器上。
-Docker executor一个很好的选择是使用 Docker，因为它允许一个干净的构建环境，并且具有简单的依赖项管理（构建项目的所有依赖项都可以放在 Docker 映像中）。 Docker 执行器允许您轻松创建具有依赖服务的构建环境，例如 MySQL。
-当我们在 Docker 容器中安装 GitLab Runner 并选择 Docker executor来运行作业时，它有时被称为 Docker-in-Docker （dind）配置。
-注意：有些Docker容器中，默认的shell并不是bash，shell选择逻辑如下
-if [ -x /usr/local/bin/bash ]; then    exec /usr/local/bin/bash $@elif [ -x /usr/bin/bash ]; then    exec /usr/bin/bash $@elif [ -x /bin/bash ]; then    exec /bin/bash $@elif [ -x /usr/local/bin/sh ]; then    exec /usr/local/bin/sh $@elif [ -x /usr/bin/sh ]; then    exec /usr/bin/sh $@elif [ -x /bin/sh ]; then    exec /bin/sh $@else    echo shell not found    exit 1fi
-
-参考文档：
-
-How To Run Docker in Docker
-How To Run Docker in Docker Container
-Docker-in-Docker in Gitlab Runners
-shell in docker executor isn’t bash
-
-Docker Machine executorDocker Machine 是 Docker 执行器的特殊版本，支持自动缩放。它像普通的 Docker 执行器一样工作，但使用 Docker Machine 按需创建的构建主机。
-Docker官方已经废弃了Docker Machine，GitLab Runner使用的是自己维护的Docker Machine。
-Docker Machine executor原理：
-
-安装Runner并配置gitlab-runner用户具有启动虚拟机的权限
-Runner调用驱动启动Docker Machine VM，VM系统为Boot2Docker
-当VM中开始跑CI Job时，会启动一个Docker容器作为执行容器，在容器中跑CI Job
-CI Job中可以包含docker build等命令，此时会共享调用VM的Docker，是Docker in Docker模式的一种
-
-参考文档：
-
-Install and register GitLab Runner for autoscaling with Docker Machine
-Docker Machine Executor autoscale configuration
-
-Kubernetes executorKubernetes 执行器允许您使用现有的 Kubernetes 集群进行构建。执行器将调用 Kubernetes 集群 API 并为每个 GitLab CI 作业创建一个新的 Pod（带有构建容器和服务容器）。
-Kubernetes executor也是支持 Docker-in-Docker 的。
-参考文档：
-
-The Kubernetes executor for GitLab Runner
-The Kubernetes executor for GitLab Runner - Using Docker in your builds
-Cannot access docker daemon in gitlab runner using Kubernetes executor
-
-SSH executorSSH 执行器是为了完整性而添加的，但它是所有执行器中受支持最少的。它使 GitLab Runner 连接到外部服务器并在那里运行构建。我们有一些来自使用此执行器的组织的成功案例，但通常我们建议使用其他类型之一。
-Virtual Machine executor这种类型的执行器允许您使用已创建的虚拟机，该虚拟机被克隆并用于运行您的构建。我们提供两个完整的系统虚拟化选项：VirtualBox 和 Parallels。如果您想在不同的操作系统上运行构建，它们可能会很有用，因为它允许在 Windows、Linux、macOS 或 FreeBSD 上创建虚拟机，然后 GitLab Runner 连接到虚拟机并在其上运行构建。它的使用也有助于降低基础设施成本。
-Custom executor自定义执行器允许您指定自己的执行环境。当 GitLab Runner 不提供执行器（例如，LXC 容器）时，您可以向 GitLab Runner 提供自己的可执行文件，以配置和清理您想要使用的任何环境。
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>devops</category>
-        <category>k8s</category>
-        <category>cloudnative</category>
-        <category>git</category>
-      </categories>
-      <tags>
-        <tag>git</tag>
-        <tag>cicd</tag>
-        <tag>gitlab</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>GitLab Runner安装实践</title>
     <url>/dev-gitlab-runner-install/</url>
     <content><![CDATA[GitLab Runner版本说明出于兼容性原因，GitLab Runner major.minor 版本应与 GitLab major.minor 版本保持同步。较旧的runner可能仍然可以使用较新的 GitLab 版本，反之亦然。但是，如果存在版本差异，功能可能无法使用或无法正常工作。minor版本更新时，会保障向后兼容性。但是，有时 GitLab 的minor版本更新会引入新功能，这些新功能需要 GitLab Runner 在同一minor版本上。
@@ -972,6 +885,93 @@ gitlab-runner restart
         <tag>gitlab</tag>
         <tag>helm</tag>
         <tag>virtualbox</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>GitLab Runner入门篇</title>
+    <url>/dev-gitlab-runner-start/</url>
+    <content><![CDATA[GitLab Runner简介GitLab Runner 是一个开源软件，它与 GitLab CI/CD 配合，在管道流中运行作业。GitLab Runner 是用Go编写，几乎可以直接运行在任何操作系统（个别系统需要自行编译）。GitLab Runner 也可以在 Docker 容器内运行或部署到 Kubernetes 集群中。
+GitLab Runner能不能替换成其他的Runner？可以，但是没有必要，毕竟Gitlab Runner是开源的，有什么个性化需求就自己改一改。而且，也没有找到合适的替代产品。
+参考文档：
+
+GitLab Runner 
+GitLab CI/CD中文文档
+GitLab CI/CD文档
+GitLab Runner
+Executors
+The Shell executor
+《GitLab CI/CD入门篇》
+
+
+
+GitLab、Runner和Executor关于GitLab、Runner和Executor的关系，有一个比喻很恰当：GitLab是老板，会去查看需求单（.gitlab-ci.yml），建立一张又一张有先后顺序的工单（CI Pipeline）。GitLab Runner 是执行 CI Job 的工人，定期去询问老板（GitLab）现在有分配给自己的工作（CI Job）吗？如果拿到工作，就开始执行，并在执行过程中将进度即时写在工单上。Executor 是工人（Runner）执行 CI Job 的工作环境，例如一个 CI Job 是打印出”hello”，那么Runner可以在本地Shell环境中执行，可以在虚拟机环境中执行，还可以在Docker环境中执行；而如果一个CI Job需要在基础镜像上进行构建，那么就需要Docker环境或者K8S环境了。
+Runner通常在安装Runner的同一台机器上处理作业。但是，我们也可以让Runner在容器、k8s 集群、或者云上的自动缩放实例中处理作业。
+安装Runner后，想要使用它，需要在GitLab平台进行注册，注册做的工作就是建立Gitlab与Runner之间的通信。注册完成后，Runner就可以运行来自 GitLab 的 CI/CD 作业了。
+当我们注册一个Runner时，必须选择一个Executor。Executor决定了每个作业运行的环境。
+Gitlab Runner的安装环境包括Linux、MacOS、Windows、Docker和Kubernetes。而不同安装环境的Runner，支持不同的Executors。根据Executor的不同，同一个Runner程序，可以注册为不同Executor类型的Runner，例如SSH、Shell、Parallels、VirtualBox、Docker、Docker Machine (auto-scaling)、Kubernetes、Custom。
+例如：
+
+如果我们希望 CI/CD 作业运行 PowerShell 命令，那么可以在 Windows 服务器上安装 GitLab Runner，然后注册一个使用 Shell Executor的Runner。
+如果我们希望 CI/CD 作业在自定义 Docker 容器中运行命令，那么可以在 Linux 服务器上安装 GitLab Runner 并注册一个使用 Docker Executor 的 Runner。
+我们还可以在虚拟机上安装 GitLab Runner，并让它使用另一个虚拟机作为Executor。
+
+最常用的Executor：Shell、Docker、Docker Machine、Kubernetes。
+参考文档：
+
+GitLab Runner 
+Executors
+GitLab CI 之 Runner 的 Executor 該如何選擇？
+
+Executor简介ShellShell 是最简单的配置执行器。构建所需的所有依赖项都需要手动安装在安装 GitLab Runner 的同一台机器上。
+Docker executor一个很好的选择是使用 Docker，因为它允许一个干净的构建环境，并且具有简单的依赖项管理（构建项目的所有依赖项都可以放在 Docker 映像中）。 Docker 执行器允许您轻松创建具有依赖服务的构建环境，例如 MySQL。
+当我们在 Docker 容器中安装 GitLab Runner 并选择 Docker executor来运行作业时，它有时被称为 Docker-in-Docker （dind）配置。
+注意：有些Docker容器中，默认的shell并不是bash，shell选择逻辑如下
+if [ -x /usr/local/bin/bash ]; then    exec /usr/local/bin/bash $@elif [ -x /usr/bin/bash ]; then    exec /usr/bin/bash $@elif [ -x /bin/bash ]; then    exec /bin/bash $@elif [ -x /usr/local/bin/sh ]; then    exec /usr/local/bin/sh $@elif [ -x /usr/bin/sh ]; then    exec /usr/bin/sh $@elif [ -x /bin/sh ]; then    exec /bin/sh $@else    echo shell not found    exit 1fi
+
+参考文档：
+
+How To Run Docker in Docker
+How To Run Docker in Docker Container
+Docker-in-Docker in Gitlab Runners
+shell in docker executor isn’t bash
+
+Docker Machine executorDocker Machine 是 Docker 执行器的特殊版本，支持自动缩放。它像普通的 Docker 执行器一样工作，但使用 Docker Machine 按需创建的构建主机。
+Docker官方已经废弃了Docker Machine，GitLab Runner使用的是自己维护的Docker Machine。
+Docker Machine executor原理：
+
+安装Runner并配置gitlab-runner用户具有启动虚拟机的权限
+Runner调用驱动启动Docker Machine VM，VM系统为Boot2Docker
+当VM中开始跑CI Job时，会启动一个Docker容器作为执行容器，在容器中跑CI Job
+CI Job中可以包含docker build等命令，此时会共享调用VM的Docker，是Docker in Docker模式的一种
+
+参考文档：
+
+Install and register GitLab Runner for autoscaling with Docker Machine
+Docker Machine Executor autoscale configuration
+
+Kubernetes executorKubernetes 执行器允许您使用现有的 Kubernetes 集群进行构建。执行器将调用 Kubernetes 集群 API 并为每个 GitLab CI 作业创建一个新的 Pod（带有构建容器和服务容器）。
+Kubernetes executor也是支持 Docker-in-Docker 的。
+参考文档：
+
+The Kubernetes executor for GitLab Runner
+The Kubernetes executor for GitLab Runner - Using Docker in your builds
+Cannot access docker daemon in gitlab runner using Kubernetes executor
+
+SSH executorSSH 执行器是为了完整性而添加的，但它是所有执行器中受支持最少的。它使 GitLab Runner 连接到外部服务器并在那里运行构建。我们有一些来自使用此执行器的组织的成功案例，但通常我们建议使用其他类型之一。
+Virtual Machine executor这种类型的执行器允许您使用已创建的虚拟机，该虚拟机被克隆并用于运行您的构建。我们提供两个完整的系统虚拟化选项：VirtualBox 和 Parallels。如果您想在不同的操作系统上运行构建，它们可能会很有用，因为它允许在 Windows、Linux、macOS 或 FreeBSD 上创建虚拟机，然后 GitLab Runner 连接到虚拟机并在其上运行构建。它的使用也有助于降低基础设施成本。
+Custom executor自定义执行器允许您指定自己的执行环境。当 GitLab Runner 不提供执行器（例如，LXC 容器）时，您可以向 GitLab Runner 提供自己的可执行文件，以配置和清理您想要使用的任何环境。
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>devops</category>
+        <category>k8s</category>
+        <category>cloudnative</category>
+        <category>git</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+        <tag>cicd</tag>
+        <tag>gitlab</tag>
       </tags>
   </entry>
   <entry>
@@ -6813,43 +6813,6 @@ mac和ipad之间，mac和iphone之间也可以使用隔空投送，非常方便�
       </tags>
   </entry>
   <entry>
-    <title>MacOS安装配置iTerm2</title>
-    <url>/dev-macos-iterm2/</url>
-    <content><![CDATA[iTerm2简介
-iTerm2 is a replacement for Terminal and the successor to iTerm. It works on Macs with macOS 10.14 or newer. iTerm2 brings the terminal into the modern age with features you never knew you always wanted.
-
-iTerm2是MacOS系统的一个终端工具。
-参考文档：iterm2
-
-
-安装iTerm2下载iTerm2，双击安装即可。
-配置iTerm2配置rzsz1、安装iterm2-zmodem
-brew install wgetbrew install lrzszgit clone https://github.com/aikuyun/iterm2-zmodem.gitcd iterm2-zmodemcp iterm2-* /usr/local/bincd /usr/local/binchmod +x iterm2-*
-
-2、iterm2配置项 
-Profiles-&gt;OpenProfiles-&gt;EditProfiles-&gt;Advanced-&gt;Tirgger，添加
-Regular expression:  /*/*B0100Action: Run Silent CoprocessParameters: /usr/local/bin/iterm2-send-zmodem.shInstant: trueRegular expression:  /*/*B00000000000000Action: Run Silent CoprocessParameters: /usr/local/bin/iterm2-recv-zmodem.shInstant: true
-
-配置clone session1、Iterm2-&gt;Preferences-&gt;Profiles-&gt;Working Directory勾选 Reuse previous session’s directory
-2、编辑 .ssh/config 文件，添加
-host *ControlMaster autoControlPath ~/.ssh/master-%r@%h:%pServerAliveInterval 60
-
-3、重新打开终端，第一次登录需要密码。第二次登录同一台机器，就不需要密码了，nice。
-更换主题和背景色更换主题：Iterm2 -&gt; Preferences -&gt; Appearance -&gt; General -&gt; Theme更换背景色：Iterm2 -&gt; Preferences -&gt; Profiles -&gt; Colors -&gt; Color Presets
-设置scrollback linesIterm2 -&gt; Preferences -&gt; Profiles -&gt; Terminal -&gt; 修改为更多的行数，或者直接勾选Unlimited scrollback
-全屏时显示TabView -&gt; Show Tabs in Fullscreen快捷键：Shift-Command-T
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>shell</category>
-        <category>computer</category>
-      </categories>
-      <tags>
-        <tag>macos</tag>
-        <tag>shell</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>MacOS安装配置Homebrew</title>
     <url>/dev-macos-homebrew/</url>
     <content><![CDATA[Homebrew简介
@@ -6891,6 +6854,43 @@ unset HOMEBREW_BREW_GIT_REMOTEunset HOMEBREW_CORE_GIT_REMOTEunset HOMEBREW_BOTTL
       <tags>
         <tag>macos</tag>
         <tag>问题排查</tag>
+        <tag>shell</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MacOS安装配置iTerm2</title>
+    <url>/dev-macos-iterm2/</url>
+    <content><![CDATA[iTerm2简介
+iTerm2 is a replacement for Terminal and the successor to iTerm. It works on Macs with macOS 10.14 or newer. iTerm2 brings the terminal into the modern age with features you never knew you always wanted.
+
+iTerm2是MacOS系统的一个终端工具。
+参考文档：iterm2
+
+
+安装iTerm2下载iTerm2，双击安装即可。
+配置iTerm2配置rzsz1、安装iterm2-zmodem
+brew install wgetbrew install lrzszgit clone https://github.com/aikuyun/iterm2-zmodem.gitcd iterm2-zmodemcp iterm2-* /usr/local/bincd /usr/local/binchmod +x iterm2-*
+
+2、iterm2配置项 
+Profiles-&gt;OpenProfiles-&gt;EditProfiles-&gt;Advanced-&gt;Tirgger，添加
+Regular expression:  /*/*B0100Action: Run Silent CoprocessParameters: /usr/local/bin/iterm2-send-zmodem.shInstant: trueRegular expression:  /*/*B00000000000000Action: Run Silent CoprocessParameters: /usr/local/bin/iterm2-recv-zmodem.shInstant: true
+
+配置clone session1、Iterm2-&gt;Preferences-&gt;Profiles-&gt;Working Directory勾选 Reuse previous session’s directory
+2、编辑 .ssh/config 文件，添加
+host *ControlMaster autoControlPath ~/.ssh/master-%r@%h:%pServerAliveInterval 60
+
+3、重新打开终端，第一次登录需要密码。第二次登录同一台机器，就不需要密码了，nice。
+更换主题和背景色更换主题：Iterm2 -&gt; Preferences -&gt; Appearance -&gt; General -&gt; Theme更换背景色：Iterm2 -&gt; Preferences -&gt; Profiles -&gt; Colors -&gt; Color Presets
+设置scrollback linesIterm2 -&gt; Preferences -&gt; Profiles -&gt; Terminal -&gt; 修改为更多的行数，或者直接勾选Unlimited scrollback
+全屏时显示TabView -&gt; Show Tabs in Fullscreen快捷键：Shift-Command-T
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>shell</category>
+        <category>computer</category>
+      </categories>
+      <tags>
+        <tag>macos</tag>
         <tag>shell</tag>
       </tags>
   </entry>
@@ -7311,6 +7311,10 @@ cd ..diskutil unmount /Volumes/WDdiskutil unmount force /Volumes/WD
 查看当前连接的wifi网络信息，包括信号强度、信道和加密类型等。
 /System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I
 其中agrCtlRSSI表示信号强度，这个值越接近0值，信号强度越好。
+问题记录雷电接口突然不可用问题问题描述：MacBook四个雷电3接口，其中一个接口突然不能用了，充电没反应，接显示器也没反应，另外三个接口正常。
+解决办法：将 Mac 关机并合上显示屏等待 30 秒，然后翻开显示屏以启动 Mac。
+command+space失效问题问题描述：command+space是打开聚焦搜索的快捷键，但是，有时候发现点击了command+space也不会出现聚焦搜索的窗口。查看系统偏好配置，快捷键也没有被更改。重启机器后，快捷键能够能够恢复正常。
+解决办法：看看另外一块屏幕！！！有时候聚焦搜索会跑到另外一块屏幕上。
 ]]></content>
       <categories>
         <category>computer</category>
@@ -9414,15 +9418,16 @@ package mainimport (  &quot;fmt&quot;  &quot;io/ioutil&quot;  &quot;github.com/g
 go get github.com/gin-gonic/gingo run main.go
 如上图，服务接收到了告警信息。
 grafanagrafana常被用来展示prometheus的数据，详情参考《使用Docker安装配置Grafana》。
-Prometheus服务发现static_configs: #静态服务发现，基于prometheus配置文件指定的监控目标file_sd_configs: #基于指定的文件实现服务发现，基于指定的文件发现监控目标kubernetes_sd_configs: #基于 Kubernetes API实现的服务发现，让prometheus动态发现kubernetes中被监控的目标 dns_sd_configs: #DNS服务发现监控目标consul_sd_configs: #Consul服务发现，基于consul服务动态发现监控目标
-
-参考文档：
+Prometheus服务发现参考文档：
 
 prometheus服务发现
 Prometheus - Configuration file
+深入浅出prometheus之服务发现(sd)
+Prometheus监控神器-服务发现篇（一）
 
-static_configs静态服务发现，基于prometheus配置文件指定的监控目标。示例参考上文【安装Prometheus server】一节。
-file_sd_configs基于指定的文件实现服务发现，基于指定的文件发现监控目标。
+static_configs静态服务发现，基于Prometheus配置文件指定监控目标。
+示例参考上文【安装Prometheus server】一节。
+file_sd_configs动态服务发现，基于指定的文件发现监控目标，Prometheus定期读取指定文件中的内容并更新监控目标。
 示例：scrape_configs配置为：
 scrape_configs:  - job_name: &#x27;file_sd_targets&#x27;    file_sd_configs:      - files:          - &#x27;/path/to/targets.yaml&#x27;
 
@@ -9431,6 +9436,10 @@ targets.yaml 内容为：
 
 PS：targets.yaml 可以改成 json 格式，效果是一样的。
 默认情况下，Prometheus每隔15秒会重新读取一次配置文件，因此修改了targets.yaml后，不需要重新Prometheus。
+kubernetes_sd_configs动态服务发现，基于 Kubernetes API发现监控目标，Prometheus Operator通过ServiceMonitor资源自动发现运行在集群中的服务，并根据定义的标签选择器将它们加入监控目标列表。
+dns_sd_configs动态服务发现，基于DNS发现监控目标。基于DNS的服务发现，有两种配置方法，第一种是使用DNA A记录来做自动发现，第二种方法是使用DNS SRV记录来做服务发现。
+使用DNA A记录来做服务发现，其实和基于指定文件的服务发现并没有太大差别。使用DNS SRV记录来做服务发现，监控目标的配置就从Prometheus转移到了DNS。
+consul_sd_configs动态服务发现，基于Consul这个服务注册与发现工具发现监控目标。
 后记以上，配置完成了promserver、exporter、pushgateway、alertmanager，跑通了数据的收集和显示，测试了告警信息的收集。但是，Prometheus也有不少问题，比如数据量大的时候需要拆分集群，聚合数据很难数据去重，可用性较低等。因此出现了Thanos，能够解决Prometheus的很多问题，详情参考 Thanos官网 和 分布式 Promethues 之 Thanos。
 ]]></content>
       <categories>
@@ -11127,7 +11136,7 @@ gomod实践篇安装client-go假设一个项目依赖client-go，那么参考官
 失败了，返回404，猜测是12.0版本在代理服务器不存在，使用另外一种下载方式。
 go get k8s.io/client-go@kubernetes-1.15.0
 此处下载了两个版本的client-go，我们使用v0.0.0版本。
-4、安装client-go相关依赖client-go默认下载到$GOPATH/pkg/mod/k8s.io目录下，把k8s.io目录移动到$GOPATH/src目录下。然后把&#x63;&#108;&#x69;&#x65;&#110;&#x74;&#x2d;&#103;&#111;&#64;&#118;&#x30;&#46;&#48;&#x2e;&#48;重命名为client-go，然后在client-go目录下执行安装依赖的命令：
+4、安装client-go相关依赖client-go默认下载到$GOPATH/pkg/mod/k8s.io目录下，把k8s.io目录移动到$GOPATH/src目录下。然后把&#99;&#108;&#x69;&#101;&#110;&#x74;&#45;&#x67;&#x6f;&#64;&#x76;&#48;&#x2e;&#48;&#x2e;&#x30;重命名为client-go，然后在client-go目录下执行安装依赖的命令：
 export GOPROXY=https://goproxy.ioexport GO111MODULE=ongo mod vendor
 完成之后，所有的依赖都下载到了client-go/vendor目录下，一个完整的client-go依赖库就准备好了。
 依赖库版本管理client-go依赖库准备好了，但是另一个问题来了：假设项目vk-project依赖client-go和库A，client-go依赖库A，两个依赖库A版本不一致，那么vk-project在编译时，会同时依赖两个不同的库A，导致编译出的二进制包有问题。
@@ -19545,11 +19554,11 @@ mkdir -p /root/.certs/echo -n | openssl s_client -connect smtp.163.com:465 | sed
 5、测试发送邮件echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com查看邮箱，正常的话应该已经收到邮件了。如果没有收到邮件，可以查看日志进行排查：tail /var/log/maillog
 macos参考文档：《MacOS配置发送邮件》
 mail命令命令格式mail [OPTION...] [address...]常用到的选项，一个是s，代表主题；一个是A，代表附件。其他的需要时查看help。
-发送普通邮件目标：给邮箱 &#x76;&#x6f;&#x69;&#x64;&#107;&#105;&#x6e;&#103;&#64;&#113;&#x71;&#46;&#99;&#111;&#x6d; 发送邮件，主题为“Hello VoidKing”，内容为“Welcome to mail world！”
+发送普通邮件目标：给邮箱 &#x76;&#111;&#x69;&#100;&#107;&#105;&#110;&#x67;&#x40;&#x71;&#x71;&#46;&#x63;&#111;&#x6d; 发送邮件，主题为“Hello VoidKing”，内容为“Welcome to mail world！”
 echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com
 但是，等待了几分钟，并没有收到邮件，垃圾箱也没有。mail，查看email的发送状态为Undelivered Mail Returned，原来没有投递出去。
 查看邮件系统日志：tail -n 50 /var/spool/mail/test提示host mx3.qq.com[183.57.48.35] said: 550 Mail content denied。看来qq邮箱的垃圾邮件防御机制做的不错，那就换个163邮箱，没想到依然失败。
-换一台服务器？发送给 &#118;&#111;&#x69;&#x64;&#x6b;&#x69;&#110;&#103;&#64;&#113;&#113;&#x2e;&#99;&#x6f;&#109; ，成功！很尴尬。。。就这么着吧
+换一台服务器？发送给 &#x76;&#x6f;&#x69;&#100;&#107;&#105;&#110;&#x67;&#x40;&#x71;&#113;&#46;&#x63;&#x6f;&#109; ，成功！很尴尬。。。就这么着吧
 发送高级邮件1、从文本读入内容发送邮件mail -s &#39;Error report&#39; voidking@qq.com &lt; /tmp/log/ganglia/error-20180524.log
 2、发送附件mail -s &#39;Error report&#39; voidking@qq.com -A /tmp/log/ganglia/ganglia-20180524.log &lt; /tmp/log/ganglia/error-20180524.log
 3、指定发件人echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com -aFrom:haojin@qq.com
@@ -22590,7 +22599,7 @@ linux下载好数据集后，把数据集下载到win10中nmt目录中，路径�
 训练model在根目录（nmt目录）下运行：
 python -m nmt.nmt --src=vi --tgt=en --vocab_prefix=./tmp/nmt_data/vocab  --train_prefix=./tmp/nmt_data/train --dev_prefix=./tmp/nmt_data/tst2012  --test_prefix=./tmp/nmt_data/tst2013 --out_dir=./tmp/nmt_model --num_train_steps=12000 --steps_per_stats=100 --num_layers=2 --num_units=128 --dropout=0.2 --metrics=bleu
 
-郝同学i5-3337U &#x43;&#x50;&#85;&#64;&#x31;&#46;&#x38;&#x30;&#x47;&#72;&#x7a;，8G内存，训练了将近两个小时才训练完成。下文我们要学习使用一下UCloud提供的免费GPU。
+郝同学i5-3337U &#x43;&#80;&#85;&#64;&#49;&#x2e;&#56;&#48;&#x47;&#x48;&#122;，8G内存，训练了将近两个小时才训练完成。下文我们要学习使用一下UCloud提供的免费GPU。
 我们可以使用 Tensorboard 在训练过程中查看模型的总结：
 tensorboard --port 22222 --logdir ./tmp/nmt_model/
 通过以下简单的变化，就能逆向完成英语到越南语的翻译。
@@ -23758,9 +23767,24 @@ location / &#123;      if ($uri ~ [A-Z])&#123;          rewrite_by_lua &#x27;ret
 
 mysql中SQL语句的大小写规则mysql中，数据库名、表名、列名、索引名、SQL关键字、函数名都不区分大小写详情参考MySQL中SQL语句的大小写规则
 权限相关参考《MySQL重置密码》。
-数据库相关-- 创建数据库create database vkdb default character set utf8 collate utf8_general_ci;-- 创建用户create user &#x27;vkuser&#x27;@&#x27;%&#x27; identified by &#x27;vkpassword&#x27;;-- orinsert into mysql.user(Host,User,Password) values(&#x27;%&#x27;,&#x27;vkuser&#x27;,&#x27;vkpassword&#x27;);-- 授权数据库给用户grant all privileges on vkdb.* to &#x27;vkuser&#x27;@&#x27;%&#x27; with grant option;# orinsert into mysql.user(HOST,Db,USER,Select_priv,Insert_priv,Update_priv,Delete_priv,Create_priv,Drop_priv)    VALUES(&#x27;%&#x27;,&#x27;vkdb&#x27;,&#x27;vkuser&#x27;,&#x27;Y&#x27;,&#x27;Y&#x27;,&#x27;Y&#x27;,&#x27;Y&#x27;,&#x27;Y&#x27;,&#x27;Y&#x27;);-- 授权数据库给用户，同时指定密码-- 危险！这条命令会同时修改vkuser的密码，不区分数据库！grant all privileges on vkdb.* to &#x27;vkuser&#x27;@&#x27;%&#x27; identified by &#x27;vkpassword2&#x27; with grant option; -- 授权数据库给用户，同时指定主机和密码-- 只有通过192.168.56.101访问数据库时，使用密码vkpassword2，其他主机访问数据库时还是使用vkpasswordgrant all privileges on vkdb.* to &#x27;vkuser&#x27;@&#x27;192.168.56.101&#x27; identified by &#x27;vkpassword2&#x27; with grant option;-- 取消授权revoke all on vkdb.* from &#x27;vkuser&#x27;@&#x27;%&#x27;;-- 授权用户只允许登录权限grant usage on *.* to &#x27;vkuser&#x27;@&#x27;%&#x27;;-- 查看用户和授权show grants for &#x27;vkuser&#x27;@&#x27;%&#x27;;select User,Host from mysql.user;-- 删除数据库drop database vkdb;-- 删除用户drop user &#x27;vkuser&#x27;;drop user &#x27;vkuser&#x27;@&#x27;192.168.56.101&#x27;;
+数据库相关创建/删除数据库-- 创建数据库create database vkdb default character set utf8 collate utf8_general_ci;-- 删除数据库drop database vkdb;
 
-数据表相关-- 创建数据表create table if not exists `user` (  `id` int(8) not null auto_increment,  `name` varchar(32) not null,  `password` varchar(32) not null default &#x27;&#x27;,  primary key (id)) engine=innodb default charset=utf8;-- 删除数据表drop table `user`;-- 删除所有数据表select concat(&#x27;drop table &#x27;,table_name,&#x27;;&#x27;) FROM information_schema.`TABLES` WHERE table_schema=&#x27;vkdb&#x27;;-- 添加columnalter table `user` add column `deleted1` bool not null default false;-- 修改columnalter table `user` change `deleted1` `deleted` bool not null default false;alter table `user` modify `deleted` int(1) not null default 0;alter table `user` modify column `deleted` int(1) not null default 0;-- 设置uniquealter table `user` modify `name` varchar(32) not null unique;alter table `user` modify column `name` varchar(32) not null unique;-- 删除columnalter table `user` drop `deleted`;alter table `user` drop column `deleted`;-- 插入数据insert into `user` (`name`,`password`) values(&#x27;haojin&#x27;,&#x27;voidking&#x27;);-- 查询数据select * from `user` where name=&#x27;haojin&#x27; and password=&#x27;voidking&#x27;;select * from `user` where name=&#x27;haojin&#x27; or password=&#x27;haojin&#x27;;select * from `user` where name&lt;&gt;&#x27;haojin0&#x27;;select * from `user` where name like &#x27;%ao%&#x27;;select * from `user` order by id asc;select * from `user` order by id desc;select * from `user` order by id desc limit 2;select * from `user` where unix_timestamp(update_time) &lt; unix_timestamp(&#x27;2020-03-01 10:14:51&#x27;);-- 修改数据update `user` set password=&#x27;haojin&#x27; where name=&#x27;haojin&#x27;;-- 删除数据delete from `user` where name=&#x27;haojin&#x27;;
+创建/删除用户-- 创建用户create user &#x27;vkuser&#x27;@&#x27;%&#x27; identified by &#x27;vkpassword&#x27;;-- orinsert into mysql.user(Host,User,Password) values(&#x27;%&#x27;,&#x27;vkuser&#x27;,&#x27;vkpassword&#x27;);-- 删除用户drop user &#x27;vkuser&#x27;;drop user &#x27;vkuser&#x27;@&#x27;192.168.56.101&#x27;;
+
+授权数据库给用户-- 授权数据库给用户grant all privileges on vkdb.* to &#x27;vkuser&#x27;@&#x27;%&#x27; with grant option;-- orinsert into mysql.user(HOST,Db,USER,Select_priv,Insert_priv,Update_priv,Delete_priv,Create_priv,Drop_priv)    VALUES(&#x27;%&#x27;,&#x27;vkdb&#x27;,&#x27;vkuser&#x27;,&#x27;Y&#x27;,&#x27;Y&#x27;,&#x27;Y&#x27;,&#x27;Y&#x27;,&#x27;Y&#x27;,&#x27;Y&#x27;);-- 授权数据库给用户，同时指定密码-- 危险！这条命令会同时修改vkuser的密码，不区分数据库！grant all privileges on vkdb.* to &#x27;vkuser&#x27;@&#x27;%&#x27; identified by &#x27;vkpassword2&#x27; with grant option; -- 授权数据库给用户，同时指定主机和密码-- 只有通过192.168.56.101访问数据库时，使用密码vkpassword2，其他主机访问数据库时还是使用vkpasswordgrant all privileges on vkdb.* to &#x27;vkuser&#x27;@&#x27;192.168.56.101&#x27; identified by &#x27;vkpassword2&#x27; with grant option;-- 取消授权revoke all on vkdb.* from &#x27;vkuser&#x27;@&#x27;%&#x27;;-- 授权用户只允许登录权限grant usage on *.* to &#x27;vkuser&#x27;@&#x27;%&#x27;;-- 查看用户和授权show grants for &#x27;vkuser&#x27;@&#x27;%&#x27;;select User,Host from mysql.user;
+
+数据表相关创建/删除数据表-- 创建数据表create table if not exists `user` (  `id` int(8) not null auto_increment,  `name` varchar(32) not null,  `password` varchar(32) not null default &#x27;&#x27;,  primary key (id)) engine=innodb default charset=utf8;-- 查看数据表describe table user;-- 删除数据表drop table `user`;-- 删除所有数据表select concat(&#x27;drop table &#x27;,table_name,&#x27;;&#x27;) FROM information_schema.`TABLES` WHERE table_schema=&#x27;vkdb&#x27;;
+
+
+添加/修改/删除column-- 添加columnalter table `user` add column `deleted1` bool not null default false;-- 修改columnalter table `user` change `deleted1` `deleted` bool not null default false;alter table `user` modify `deleted` int(1) not null default 0;alter table `user` modify column `deleted` int(1) not null default 0;-- 删除columnalter table `user` drop `deleted`;alter table `user` drop column `deleted`;
+
+设置unique-- 设置uniquealter table `user` modify `name` varchar(32) not null unique;alter table `user` modify column `name` varchar(32) not null unique;
+
+插入/修改/删除数据-- 插入数据insert into `user` (`name`,`password`) values(&#x27;haojin&#x27;,&#x27;voidking&#x27;);-- 修改数据update `user` set password=&#x27;haojin&#x27; where name=&#x27;haojin&#x27;;-- 删除数据delete from `user` where name=&#x27;haojin&#x27;;
+
+查询数据-- 查询数据select * from `user` where name=&#x27;haojin&#x27; and password=&#x27;voidking&#x27;;select * from `user` where name=&#x27;haojin&#x27; or password=&#x27;haojin&#x27;;select * from `user` where name&lt;&gt;&#x27;haojin0&#x27;;select * from `user` where name like &#x27;%ao%&#x27;;select * from `user` order by id asc;select * from `user` order by id desc;select * from `user` order by id desc limit 2;select * from `user` where unix_timestamp(update_time) &lt; unix_timestamp(&#x27;2020-03-01 10:14:51&#x27;);
+
+查看表是否被锁-- 查看表是否被锁SHOW OPEN TABLES;SHOW OPEN TABLES WHERE In_use &gt; 0;SHOW PROCESSLIST;SHOW TABLE STATUS LIKE &#x27;your_table_name&#x27;;
 
 导入导出数据导出数据库数据mysqldump -uroot -ppassword vkdb &gt; /root/vkdb.sql
 
@@ -29118,6 +29142,20 @@ ERROR 2059 (HY000): Authentication plugin &#x27;caching_sha2_password&#x27; cann
 [mysqld]default-authentication-plugin=mysql_native_password
 
 解决方法二：升级客户端，安装支持mysql8.0的client，参考文档《使用Docker安装配置MySQL》
+root无权grant问题问题描述root用户登录mysql后，执行命令 
+grant all privileges on *.* to &#x27;root&#x27;@&#x27;%&#x27; identified by &#x27;vkpassword2&#x27;;
+报错：Error 1045 (28000): Access denied for user ‘root‘@’localhost’ (Using password: YES)
+问题排查原因：root@localhost 不具备grant权限。
+show grants for root@&#x27;localhost&#x27;;
+
+如果具备grant权限，那么会看到下面的输出：
++---------------------------------------------------------------------+| Grants for root@localhost                                           |+---------------------------------------------------------------------+| GRANT ALL PRIVILEGES ON *.* TO &#x27;root&#x27;@&#x27;localhost&#x27; WITH GRANT OPTION || GRANT PROXY ON &#x27;&#x27;@&#x27;&#x27; TO &#x27;root&#x27;@&#x27;localhost&#x27; WITH GRANT OPTION        |+---------------------------------------------------------------------+
+
+如果没有grant权限，那么第一行不会出现 WITH GRANT OPTION。
+解决办法：
+update mysql.user set Grant_priv=&quot;Y&quot; where user=&quot;root&quot; and host=&quot;localhost&quot;;flush privileges;exit;
+
+重新登录后，就可以正常执行授权命令了。
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -30174,7 +30212,7 @@ t0 = time()&lt; 你的 clf.fit() 代码行 &gt;print &#x27;training time:&#x27;,
 代码运行说明文件。纯文本或markdown格式，写明运行你的代码所需要的库，他们的安装方法和运行方法
 预测结果: 纯文本或CSV文件。
 
-对项目要求有疑问请致信 &#x73;&#x75;&#112;&#x70;&#x6f;&#114;&#116;&#x40;&#121;&#x6f;&#x75;&#x64;&#x61;&#x78;&#x75;&#x65;&#x2e;&#x63;&#x6f;&#x6d;
+对项目要求有疑问请致信 &#x73;&#x75;&#112;&#x70;&#111;&#114;&#x74;&#x40;&#x79;&#111;&#x75;&#x64;&#x61;&#120;&#117;&#x65;&#46;&#99;&#111;&#109;
 准备好提交项目后，请点击下一项，在“项目提交”小节中提交。
 ]]></content>
       <categories>
@@ -30215,7 +30253,7 @@ Resume Builder
 项目导师会根据该评估准则（与你制作简历时遵循的清单相符）对你的简历项目进行审核。
 提交准备好提交求职信后，你需要：
 1、删除/匿名化你的求职信上的所有个人联系人信息，以防泄漏隐私。2、创建 PDF 格式的简历，这样你的简历在不同操作系统/软件/屏幕中有一致的版面样式。3、点击下方的“提交项目”按钮，并根据说明操作。4、在“告知审核员”中，请包括任何有关你的职业目标（如申请的工作或领域），或任何有意偏离评估准则情况的详细信息。
-注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#x73;&#x75;&#x70;&#x70;&#111;&#114;&#116;&#64;&#121;&#111;&#117;&#x64;&#97;&#x78;&#117;&#101;&#x2e;&#99;&#x6f;&#109;。
+注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#x73;&#117;&#112;&#112;&#111;&#x72;&#116;&#64;&#121;&#111;&#x75;&#x64;&#97;&#x78;&#x75;&#x65;&#46;&#99;&#x6f;&#x6d;。
 GitHub个人资料项目你的GitHub个人资料展示你创建的项目，并让他人了解你的工作风格和提交频率。通过展示你对 GitHub 的熟悉程度，其他开发人员和招聘经理能够知道你拥有他们需要能力，你就是他们正在寻找的人。你的代码库应表明你认真对待项目，并且能够编写干净、格式正确的代码。请查看 GitHub 上的这篇出色的博客文章，了解如何用 GitHub 帮助你持续学习，发展职业生涯。
 为何要完成此 GitHub 个人资料项目？GitHub 越来越多地被用作招聘平台以及潜在雇主查看你的作品的方式。它还是与其他开发人员建立联系和展示你的技能的好地方。
 我应该做什么？你应该以招聘人员或用人部门经理的眼光查看你的 GitHub 个人资料，重点关注你的个人资料、项目和代码如何将你描绘成公司的潜在候选人或项目的协作者。
@@ -30244,7 +30282,7 @@ GitHub项目提交你的 GitHub 主页是呈现给潜在雇主的“关键证据
 反馈优达学城项目导师会根据该标准（与你制作领英简介时遵循的清单相符）对你的领英简介项目进行审核。
 提交准备好提交领英个人资料后：
 1、若要提交，请点击下方的“提交项目”按钮，并根据说明操作。2、在“告知评审员”中，请包括任何有关你的职业目标（如预期工作领域）的详细信息。
-注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#115;&#x75;&#112;&#112;&#111;&#x72;&#x74;&#64;&#121;&#111;&#117;&#100;&#97;&#x78;&#x75;&#101;&#46;&#x63;&#x6f;&#x6d;。
+注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#115;&#117;&#x70;&#112;&#111;&#114;&#116;&#64;&#121;&#111;&#117;&#x64;&#97;&#120;&#x75;&#x65;&#46;&#x63;&#111;&#109;。
 技术面试项目对于此实战项目，你需要回答五个技术面试问题，这些问题涉及的是技术面试课程中讨论的各种主题。你应该用 Python 写出清晰高效的答案，并用文字解释代码的效率和设计理由。我们将安排合格的审核者检查你的答案，并针对任何精彩之处或欠缺的方面做出反馈：你的解决方案是最高效的吗？你很好地解释了你的想法吗？你的代码简洁易懂吗？
 请回答以下问题：
 问题 1: 假设有两个字符串 s 和 t，请判断 t 的变形词是否是 s 的子字符串。例如：如果 s = “udacity”，t = “ad”，则函数返回 True。你的函数定义应该为：“question1(s, t)”，并返回布尔值 True 或 False。 
@@ -30310,7 +30348,7 @@ Dice
 问题 5 - 通过一个情景举例说明正则化对学习好的模型的必要性，以及提供一个正则化没有意义的情景。
 问题 6 -你附近的杂货店想向顾客有针对性地发放对他们来说有用的优惠券。假设你可以访问每位顾客的购买历史和店铺商品目录，你将设计怎样一个系统，来决定发放哪些优惠券？你如何衡量这个系统的性能？
 问题 7 - 选择一个公司，然后描述你想应聘的该公司内的机器学习工程师职位（假设有）。现在，如果你已成功应聘，并从今天开始任职，在你看来，你的职位在下一年会有怎样的发展？你的长期职业目标是什么，这个职位如何帮助你实现长期目标？
-提交当你准备提交项目，点击下方“提交项目”，上传一份 PDF 文件。如果有任何与提交项目相关的疑问，或想查看提交状态，请向我们发送电子邮件询问（&#x73;&#117;&#112;&#x70;&#x6f;&#114;&#116;&#64;&#121;&#x6f;&#x75;&#x64;&#x61;&#120;&#117;&#101;&#46;&#x63;&#x6f;&#109;）。
+提交当你准备提交项目，点击下方“提交项目”，上传一份 PDF 文件。如果有任何与提交项目相关的疑问，或想查看提交状态，请向我们发送电子邮件询问（&#x73;&#117;&#112;&#x70;&#111;&#x72;&#x74;&#64;&#121;&#111;&#117;&#100;&#x61;&#120;&#x75;&#101;&#x2e;&#99;&#111;&#x6d;）。
 项目资源项目评审标准。优达学城的项目导师会依据此评审标准审阅你的项目。你可以在提交前自行检查自己是否已达到所有标准。职业资源中心。你可以在这里找到更多有关准备面试的资源和贴士。
 接下来面试练习并不是只在你求职时才需要做的事情， 在你的整个职业生涯中，你都需要继续提高自己的面试技巧。抓住每一个机会，思考和与人交流你的职业目标。在申请一个职位之前，请思考清楚自己为什么要申请——这将极大地帮助你为面试做好准备。
 书签Interview Guide: Machine Learninghttps://career-resource-center.udacity.com/interview-courses-and-guides/machine-learning
@@ -30764,7 +30802,7 @@ notebook 项目导出的 HTML 文件，命名为 report.html。
 
 注意：所提交文件的文件名名，包括zip压缩包内的文件名，都不能含有中文及任何ASCII之外的字符，否则会造成提交失败。
 如何导出HTML的说明在 notebook 的最下方。 你也许需要先在命令后通过 pip install mistune 命令安装 mistune 。当你准备好所有这些文件，并且依照项目要求核对过之后，就可以在下面的项目提交页面提交你的项目了。
-如果你是第一次在优达学城提交项目，点击提交之后，要等1分钟左右才能打开提交页面。如果长时间打不开，可以刷新。如果依然无法打开项目提交页面，可以联系客服微信或者邮件至 &#115;&#117;&#112;&#112;&#111;&#114;&#116;&#64;&#x79;&#111;&#117;&#100;&#x61;&#120;&#117;&#101;&#x2e;&#99;&#x6f;&#x6d;
+如果你是第一次在优达学城提交项目，点击提交之后，要等1分钟左右才能打开提交页面。如果长时间打不开，可以刷新。如果依然无法打开项目提交页面，可以联系客服微信或者邮件至 &#x73;&#117;&#x70;&#x70;&#111;&#x72;&#116;&#x40;&#x79;&#x6f;&#x75;&#x64;&#x61;&#x78;&#117;&#101;&#46;&#x63;&#111;&#x6d;
 后记这个项目，是优达学城《机器学习工程师》课程提供的第一个实战项目。摘录了全文，方便查看。郝同学的项目地址：https://github.com/voidking/udaciyty-machine-learning/tree/master/projects/titanic_survival_exploration
 书签机器学习工程师（中/英）https://cn.udacity.com/course/machine-learning-engineer-nanodegree--nd009
 数据科学入门https://cn.udacity.com/course/intro-to-data-science--ud359
@@ -34200,7 +34238,7 @@ Node端源码https://github.com/voidking/nodebase/blob/master/controllers/weixin
 
 
 nodebasea node framework designed for myselfversion: v1.0.0url: https://github.com/voidking/nodebase.git  
-作者相关author: haojin(voidking)e-mail: &#x76;&#x6f;&#x69;&#x64;&#x6b;&#105;&#x6e;&#x67;&#64;&#113;&#x71;&#x2e;&#x63;&#111;&#109;site: http://www.voidking.com   
+作者相关author: haojin(voidking)e-mail: &#118;&#111;&#x69;&#100;&#107;&#x69;&#x6e;&#103;&#x40;&#x71;&#x71;&#x2e;&#x63;&#111;&#109;site: http://www.voidking.com   
 开发环境说明1、安装5.6.0以上Node2、安装mongodb，不要配置密码3、安装sass4、全局安装bower5、全局安装supervisor6、全局安装node-inspector7、全局安装puer8、运行前执行命令
 npm installbower install
 
@@ -39326,7 +39364,7 @@ XMPP网络任何XMPP网络都是由若干角色组成的，这些角色可以分
 
 插件许多XMPP服务器支持插件扩展，这些插件通常使用与服务器自身相同的语言编写，并在服务器的进程内运行。他们的作用很大程度上与外部组件重叠，但插件还能够访问内部服务器数据结构并改变核心服务器行为。
 XMPP寻址XMPP网络上每个实体都有一个或多个地址（JID，jabber identifier）。JID有多种不同形式，但它们通常看上去就像是电子邮件。
-JID有两种类型，裸JID和完整JID，而裸JID是完整JID去除资源部分后的地址。例如，某个客户端的完整JID是&#x76;&#111;&#105;&#x64;&#107;&#x69;&#110;&#103;&#x40;&#118;&#111;&#x69;&#x64;&#107;&#x69;&#x6e;&#x67;&#46;&#108;&#105;&#x74;/library，那么它的裸JID就是&#x76;&#111;&#x69;&#x64;&#107;&#105;&#110;&#103;&#64;&#118;&#111;&#x69;&#x64;&#x6b;&#x69;&#110;&#x67;&#46;&#x6c;&#x69;&#116;。
+JID有两种类型，裸JID和完整JID，而裸JID是完整JID去除资源部分后的地址。例如，某个客户端的完整JID是&#118;&#x6f;&#x69;&#x64;&#x6b;&#105;&#110;&#103;&#64;&#x76;&#111;&#105;&#100;&#107;&#105;&#110;&#103;&#46;&#108;&#105;&#x74;/library，那么它的裸JID就是&#118;&#111;&#105;&#100;&#107;&#105;&#x6e;&#103;&#x40;&#x76;&#111;&#x69;&#100;&#107;&#x69;&#x6e;&#103;&#46;&#x6c;&#105;&#x74;。
 节在XMPP中，各项工作都是通过在一个XMPP流上发送和接收XMPP节来完成的。核心XMPP工具集由三种基本节组成，这三种节分别为&lt;presence&gt;、&lt;message&gt;、&lt;iq&gt;。
 XMPP流由两份XML文档组成，通信的每个方向均有一份文档。这份文档有一个根元素&lt;stream:stream&gt;，这个根元素的子元素由可路由的节以及与流相关的顶级子元素构成。下面给出一段简短的XMPP会话：
 &lt;stream:stream&gt;	&lt;iq type=&#x27;get&#x27;&gt;		&lt;query xmlns=&#x27;jabber:iq:roster&#x27;/&gt;	&lt;/iq&gt;		&lt;presence/&gt;		&lt;message to=&#x27;voidking@voidking.lit&#x27; from=&#x27;haojin@gmail.com/ballroom&#x27; type=&#x27;chat&#x27;&gt;		&lt;body&gt;I cannot talk of books in a ball-room; my head is always full of something else.&lt;/body&gt;	&lt;/message&gt;		&lt;presence type=&#x27;unavailable&#x27;/&gt;&lt;/stream:stream&gt;
@@ -44977,7 +45015,7 @@ mtools，显示所有支持MSDOS文件系统的命令。
 mutt
 mutt: mail user agent，文字界面的邮件工具
 
-mutt -s &quot;A test mail&quot; josfeng@gmail.com，将邮件寄给 &#x6a;&#111;&#115;&#x66;&#x65;&#110;&#103;&#64;&#x67;&#x6d;&#x61;&#105;&#x6c;&#x2e;&#99;&#x6f;&#109;，信件主题为A test mail。
+mutt -s &quot;A test mail&quot; josfeng@gmail.com，将邮件寄给 &#x6a;&#x6f;&#115;&#102;&#x65;&#110;&#103;&#64;&#103;&#109;&#x61;&#105;&#108;&#46;&#x63;&#x6f;&#x6d;，信件主题为A test mail。
 mv
 mv: move，移动或重命名文件或目录
 
