@@ -81,6 +81,338 @@ ChuanhuChatGPT - 使用教程
       </tags>
   </entry>
   <entry>
+    <title>Hexo配置GitHub Actions自动构建发布</title>
+    <url>/dev-hexo-github-actions/</url>
+    <content><![CDATA[Travis CI必须付费了2023年2月25日，使用travis ci部署hexo项目，发现并没有触发任务。
+登录travis ci，发现提示：
+
+Builds have been temporarily disabled for public repositories due to a negative credit balance. Please go to the Plan page to replenish your credit balance or alter your Consume paid credits for OSS setting.
+
+在travis ci plan页面关闭了Consume paid credits for OSS，但是依然提示：
+
+Builds have been temporarily disabled for private and public repositories due to a negative credit balance. Please go to the Plan page to replenish your credit balance.
+
+点击Change plan，发现已经没有免费的plan了，而最便宜的plan，也要$69/monthly，太贵了，放弃。不过可以理解，毕竟跑CI是需要服务器的，服务器是需要花钱的。
+那就换成GitHub Actions吧，有付费版，也有免费版。
+
+
+Quickstart for GitHub Actions参考文档：Quickstart for GitHub Actions
+1、 创建新的分支（因为原分支是适用于travis ci的）
+git checkout -b github-actiongit push origin HEAD:github-action
+
+2、 创建 github-actions-demo.yml 文件voidking/hexo-deploy项目中执行
+mkdir -p .github/workflowsvim .github/workflows/github-actions-demo.yml
+
+github-actions-demo.yml 文件内容如下：
+name: GitHub Actions Demorun-name: $&#123;&#123; github.actor &#125;&#125; is testing out GitHub Actions 🚀on: [push]jobs:  Explore-GitHub-Actions:    runs-on: ubuntu-latest    steps:      - run: echo &quot;🎉 The job was automatically triggered by a $&#123;&#123; github.event_name &#125;&#125; event.&quot;      - run: echo &quot;🐧 This job is now running on a $&#123;&#123; runner.os &#125;&#125; server hosted by GitHub!&quot;      - run: echo &quot;🔎 The name of your branch is $&#123;&#123; github.ref &#125;&#125; and your repository is $&#123;&#123; github.repository &#125;&#125;.&quot;      - name: Check out repository code        uses: actions/checkout@v3      - run: echo &quot;💡 The $&#123;&#123; github.repository &#125;&#125; repository has been cloned to the runner.&quot;      - run: echo &quot;🖥️ The workflow is now ready to test your code on the runner.&quot;      - name: List files in the repository        run: |          ls $&#123;&#123; github.workspace &#125;&#125;      - run: echo &quot;🍏 This job&#x27;s status is $&#123;&#123; job.status &#125;&#125;.&quot;
+
+3、 上传代码
+git add .git commit -m &quot;github action test&quot;git push
+
+报错：refusing to allow a Personal Access Token to create or update workflow .github/workflows/github-actions-demo.yml without workflow scope
+这是因为我们的Access Token需要具有create or update workflow的权限，因此需要重新创建一个Access Token。具体操作方法：访问Personal access tokens (classic)页面，Generate new token，生成token时一定要勾选repo和workflow。
+然后，使用新的token再次push即可。修改token的方法参考文档《Git实用命令》。
+4、查看Actions访问voidking/hexo-deploy Actions页面，即可看到CI workflows（相当于gitlab中的pipelines）。
+Hexo配置GitHub Actions参考文档：
+
+GitHub Actions
+Workflow syntax for GitHub Actions
+Hexo Action
+利用 Github Actions 自动部署 Hexo 博客
+GitHub Actions 教程：定时发送天气邮件
+
+CICD思路
+拉取负责部署的hexo-deploy repo，里面是hexo的配置文件（关于站点配置和构建配置等，详情参考《Hexo配置Travis CI自动构建发布》）
+拉取hexo theme repo，里面是站点主题
+拉取hexo-backup repo，里面是markdown文档
+hexo-backup中的文档放到hexo可以构建（编译）的位置
+安装nodejs
+安装hexo、gulp等依赖
+执行构建（编译）
+上传编译后的html等静态文件到两个pages repoa. github pages是国外流量的源站b. aliyun server是国内流量的源站c. aliyun server从gitee pages拉取最新版本d. gitee pages本身不对外提供服务，只是作为一个git仓库
+aliyun server从gitee pages拉取最新版本
+
+准备github-actions.ymlgithub-actions.yml内容如下：
+name: Hexo CICDrun-name: $&#123;&#123; github.actor &#125;&#125; build and deploy hexo!on:  push:    branches:      - master      - github-actionsenv:  GIT_USER: voidking  HEXO_BACKUP_REPO: voidking/hexo-backup  HEXO_BACKUP_REPO_BRANCH: master  HEXO_THEME_REPO: voidking/hexo-theme-next  HEXO_THEME_REPO_BRANCH: root  GITHUB_PAGES_REPO: github.com/voidking/voidking.github.io.git  GITEE_PAGES_REPO: gitee.com/voidking/voidking.git  GITHUB_PAGES_URL: &quot;https://$&#123;GIT_USER&#125;:$&#123;&#123; secrets.GH_TOKEN &#125;&#125;@$&#123;GITHUB_PAGES_REPO&#125;&quot;  GITEE_PAGES_URL: &quot;https://$&#123;GIT_USER&#125;:$&#123;&#123; secrets.GITEE_TOKEN &#125;&#125;@$&#123;GITEE_PAGES_REPO&#125;&quot;  ALI_IP: 8.136.13.58  ALI_USER: voidking  jobs:  build:    name: Build on node $&#123;&#123; matrix.node_version &#125;&#125; and $&#123;&#123; matrix.os &#125;&#125;    runs-on: ubuntu-latest    strategy:      matrix:        os: [ubuntu-latest]        node_version: [12.22.5]    steps:    - name: Checkout repo      uses: actions/checkout@v2    - name: Checkout theme repo      uses: actions/checkout@v2      with:        repository: $&#123;&#123; env.HEXO_THEME_REPO &#125;&#125;        ref: $&#123;&#123; env.HEXO_THEME_REPO_BRANCH &#125;&#125;        path: themes/next    - name: Checkout hexo-backup repo      uses: actions/checkout@v2      with:        repository: $&#123;&#123; env.HEXO_BACKUP_REPO &#125;&#125;        ref: $&#123;&#123; env.HEXO_BACKUP_REPO_BRANCH &#125;&#125;        path: hexo-backup        token: $&#123;&#123; secrets.GH_TOKEN &#125;&#125;    - name: Move markdown articles to current directory      run: mv hexo-backup/source . &amp;&amp; rm -rf source/private    - name: Install nodejs $&#123;&#123; matrix.node_version &#125;&#125;      uses: actions/setup-node@v3      with:        node-version: $&#123;&#123; matrix.node_version &#125;&#125;    - name: Install nodejs dependencies      run: npm install    - name: Build nodejs project      run: npm run build    - name: Push to voidking.github.io and gitee      run: |        git config --global user.name &quot;voidking&quot;        git config --global user.email &quot;voidking@qq.com&quot;        git clone https://$&#123;&#123; secrets.GH_TOKEN &#125;&#125;@$&#123;&#123; env.GITHUB_PAGES_REPO &#125;&#125; voidking        cd voidking        rm -rfv `ls -a | grep -vw &#x27;\.&#x27; | grep -vw &#x27;\.git&#x27; | xargs`        ls -al        # unalias cp         cp -rf ../public/. .        cp ../source/.travis.yml .        git add . &amp;&amp; git commit -m &quot;GitHub Actions Auto Builder&quot;        git push --force --quiet $&#123;&#123; env.GITHUB_PAGES_URL &#125;&#125; master:master        git push --force --quiet $&#123;&#123; env.GITEE_PAGES_URL &#125;&#125; master:master    deploy:    name: Deploy to Aliyun Server    needs: build    runs-on: ubuntu-latest    steps:    - name: Configure id_rsa      run: |        mkdir -p ~/.ssh/        echo $&#123;&#123; secrets.ID_RSA &#125;&#125; | base64 -d &gt; ~/.ssh/id_rsa        chmod 600 ~/.ssh/id_rsa    - name: Execute ssh command      run: |        ssh -o StrictHostKeyChecking=no \        -o PubkeyAcceptedKeyTypes=ssh-rsa \        $&#123;&#123; env.ALI_USER &#125;&#125;@$&#123;&#123; env.ALI_IP &#125;&#125; \        &quot;cd /opt/nginx/work/voidking/ &amp;&amp; git pull --force --quiet $&#123;&#123; env.GITEE_PAGES_URL &#125;&#125; master:master&quot;
+
+说明：
+
+github action中定义变量有三种方式：vars、secrets和env。
+vars/secrets在workflow触发前定义，env在workflow触发后定义。
+$&#123;&#123;&#125;&#125;双花括号表示上下文引用，详情参考Context availability。
+$&#123;&#125;单花括号表示shell方式使用中env变量。
+使用env中的变量有两种方式：上下文引用和shell方式使用。
+
+配置加密变量上面的workflow配置中，用到了一些敏感变量，GH_TOKEN、GITEE_TOKEN和ID_RSA，这些变量需要加密。
+配置加密变量的方法：
+
+repository级别变量：Project -&gt; Settings -&gt; Actions secrets and variables -&gt; New repository secret
+environments级别变量：Project -&gt; Settings -&gt; Actions secrets and variables -&gt; Manage enviroments -&gt; New enviroment -&gt; Environment secrets -&gt; Add secret
+
+其中ID_RSA的获取方法为：
+ssh-keygenALI_IP=&quot;8.136.13.58&quot;ssh-copy-id -i ~/.ssh/id_rsa.pub voidking@$&#123;ALI_IP&#125;cat .ssh/id_rsa | base64 | tr -d &#x27;\n&#x27;
+
+CICD测试git add .git commit -m &quot;github action test&quot;git push
+
+访问voidking/hexo-deploy Actions页面，即可看到最新的workflow。最开始难免出错，根据报错进行调整即可。
+最终，实现了和travis ci上一样的功能，nice。
+踩坑记录env不能用在job:if当使用job:if时，如下定义：
+env:  BUILD: &quot;false&quot;jobs:  build:    name: Build    if: $&#123;&#123; env.BUILD == &quot;true&quot; &#125;&#125;    runs-on: ubuntu-latest
+
+报错： Unrecognized named-value: ‘env’. Located at position 1 within expression: env.BUILD == “true” .github/workflows/github-actions.yml
+这是个github action的坑，参考文档：
+
+Workflow level env does not work properly in all fields.
+workflow level env. is unrecognised on job level’s ‘if’-expression when calling reusable workflow
+
+workflow_dispatch无效当使用job:if时，如下定义：
+on:  workflow_dispatch:    inputs:      build:        description: &quot;build project&quot;        required: true        default: true        type: booleanjobs:  build:    name: Build    if: $&#123;&#123; inputs.build &#125;&#125;    runs-on: ubuntu-latest
+
+无法触发build job。
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>devops</category>
+        <category>hexo</category>
+        <category>troubleshooting</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+        <tag>问题排查</tag>
+        <tag>git</tag>
+        <tag>cicd</tag>
+        <tag>travis-ci</tag>
+        <tag>github-actions</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Helm官方文档摘录</title>
+    <url>/dev-helm-doc-extract/</url>
+    <content><![CDATA[前言Helm官方文档写的很棒，本文会摘录Helm官方文档中的一些基础知识和最佳实践，备忘。更细致全面的内容，请移步阅读Helm官方文档。
+参考文档：
+
+《Helm入门篇》
+Helm - Getting Started
+
+
+
+Helm三大概念Chart 代表着 Helm 包。它包含在 Kubernetes 集群内部运行应用程序，工具或服务所需的所有资源定义。你可以把它看作是 Homebrew formula，Apt dpkg，或 Yum RPM 在Kubernetes 中的等价物。
+Repository（仓库） 是用来存放和共享 charts 的地方。它就像 Perl 的 CPAN 档案库网络 或是 Fedora 的 软件包仓库，只不过它是供 Kubernetes 包所使用的。
+Release 是运行在 Kubernetes 集群中的 chart 的实例。一个 chart 通常可以在同一个集群中安装多次。每一次安装都会创建一个新的 release。以 MySQL chart为例，如果你想在你的集群中运行两个数据库，你可以安装该chart两次。每一个数据库都会拥有它自己的 release 和 release name。
+在了解了上述这些概念以后，我们就可以这样来解释 Helm：Helm 安装 charts 到 Kubernetes 集群中，每次安装都会创建一个新的 release。你可以在 Helm 的 chart repositories 中寻找新的 chart。
+Helm安装资源的顺序Helm按照以下顺序安装资源：
+
+Namespace
+NetworkPolicy
+ResourceQuota
+LimitRange
+PodSecurityPolicy
+PodDisruptionBudget
+ServiceAccount
+Secret
+SecretList
+ConfigMap
+StorageClass
+PersistentVolume
+PersistentVolumeClaim
+CustomResourceDefinition
+ClusterRole
+ClusterRoleList
+ClusterRoleBinding
+ClusterRoleBindingList
+Role
+RoleList
+RoleBinding
+RoleBindingList
+Service
+DaemonSet
+Pod
+ReplicationController
+ReplicaSet
+Deployment
+HorizontalPodAutoscaler
+StatefulSet
+Job
+CronJob
+Ingress
+APIService
+
+Chart模板指南内容太多，建议直接阅读Helm官方文档 - Chart模板指南，了解基础概念和语法。
+本节只简单说明几个概念和语法。
+模板templates/目录中的.yaml文件和.tpl文件，就是模板。当Helm评估chart时，会通过模板渲染引擎将所有文件发送到templates/目录中。 然后收集模板的结果并发送给Kubernetes。
+values.yaml 文件也导入到了模板。这个文件包含了chart的 默认值 。这些值会在用户执行helm install 或 helm upgrade时被覆盖。
+Chart.yaml 文件包含了该chart的描述。你可以从模板中访问它。charts/目录 可以 包含其他的chart(称之为 子chart)。
+模板中横线的作用：
+
+&#123;&#123;-`：表示在模板渲染时要去掉前面的空白字符和换行符。
+- `-&#125;&#125;：表示在模板渲染时要去掉后面的空白字符和换行符。
+
+变量和作用域Helm模板中，变量是对另一个对象的命名引用。
+变量的作用域一般不是全局的，而是其声明所在的块。所谓块，是指if/else、with、range、define、template、block定义的范围。
+.代表对当前作用域的引用，.Values表示在当前作用域查找Values对象。每个模板中，默认可以访问到的内置对象有Release、Values、Chart、Files、Capabilities和Template。如果定义了块，那么在块中不可以通过.Values找到Values对象。
+$代表对根作用域的引用，$.Values表示在根作用域查找Values对象。如果定义了块，那么在块中可以通过$.Values找到Values对象。
+变量定义格式示例：&#123;&#123;- $name := .Release.Name -&#125;&#125;在模板顶层定义变量，变量的作用域会是整个模板；在块中定义变量，变量的作用域只在块内。
+变量类型Helm 模板语言是用强类型Go编程语言实现的。 因此，模板中的变量是 有类型的。大多数情况下，变量将作为以下类型之一显示：
+
+string: 文本字符串
+bool: true 或 false
+int: 整型值（包含8位，16位，32位，和64有符号和无符号整数）
+float64: 64位浮点数(也有8位，16位，32位类型)
+字节切片([]byte)，一般用于保存（可能的）二进制数据
+struct: 有属性和方法的对象
+上述某种类型的切片(索引列表)
+字符串键map (map[string]interface&#123;&#125;) 值是上述某种类型
+
+Go里面有很多其他类型，有时你需要在模板里转换。调试对象类型最简便的方式是在模板中传递给printf “%t”，这样会打印类型。 也可以使用 typeOf 和 kindOf 函数。
+命名模板命名模板（也被称作一个 部分 或一个 子模板）名称是全局的。一个常见的命名惯例是用chart名称作为模板前缀。使用特定chart名称作为前缀可以避免可能因为 两个不同chart使用了相同名称的模板而引起的冲突。
+用define和template声明和使用模板。按照惯例，define声明的命名模板一般放在_helpers.tpl文件中。因为是模板名称是全局的，因此可以被.yaml文件引用。
+template渲染时，一般传入.作为命名模板可以访问的范围。include是template的替代，只是为了更好地处理YAML文档的输出格式，方便缩进。
+NOTES.txt文件在helm install 或 helm upgrade命令的最后，Helm会打印出对用户有用的信息。 使用模板可以高度自定义这部分信息。要在chart添加安装说明，只需创建 templates/NOTES.txt 文件即可。该文件是纯文本，但会像模板一样处理， 所有正常的模板函数和对象都是可用的。
+.helmignore 文件.helmignore 文件用来指定你不想包含在你的helm chart中的文件。如果该文件存在，helm package 命令会在打包应用时忽略所有在 .helmignore 文件中匹配的文件。
+一些值得注意的和.gitignore不同之处：
+
+不支持**语法。
+globbing库是Go的 ‘filepath.Match’，不是fnmatch(3)
+末尾空格总会被忽略(不支持转义序列)
+不支持!作为特殊的引导序列
+默认不会排除自身，需要显式添加 .helmignore
+
+YAML技术参考文档：《YAML语言》
+Chart开发技巧模板方法Helm使用Go模板，同时增加了两个特殊模板方法：include和required。
+include方法允许你引入另一个模板，并将结果传递给其他模板方法。比如，这个模板片段包含了一个叫mytpl的模板，然后将其转成小写，并使用双引号括起来。
+value: &#123;&#123; include &quot;mytpl&quot; . | lower | quote &#125;&#125;
+
+required方法可以让你声明模板渲染所需的特定值。如果这个值是空的，模板渲染会出错并打印用户提交的错误信息。下面这个required方法的例子声明了一个.Values.who需要的条目，并且当这个条目不存在时会打印错误信息：
+value: &#123;&#123; required &quot;A valid .Values.who entry required!&quot; .Values.who &#125;&#125;
+
+tpl方法允许开发者在模板中使用字符串作为模板。将模板字符串作为值传给chart或渲染额外的配置文件时会很有用。语法： &#123;&#123; tpl TEMPLATE_STRING VALUES &#125;&#125;
+使用Partials和模板引用有时你想在chart中创建可以重复利用的部分，不管是块还是局部模板。通常将这些文件保存在自己的文件中会更干净。
+在 templates/ 目录中，任何以下划线(_)开始的文件不希望输出到Kubernetes清单文件中。因此按照惯例，辅助模板和局部模板会被放在_helpers.tpl文件中。
+创建镜像拉取密钥1、定义 values.yaml
+imageCredentials:  registry: quay.io  username: someone  password: sillyness  email: someone@host.com
+
+2、定义辅助模板（写在 _helpers.tpl 文件里）
+&#123;&#123;- define &quot;imagePullSecret&quot; &#125;&#125;&#123;&#123;- with .Values.imageCredentials &#125;&#125;&#123;&#123;- printf &quot;&#123;\&quot;auths\&quot;:&#123;\&quot;%s\&quot;:&#123;\&quot;username\&quot;:\&quot;%s\&quot;,\&quot;password\&quot;:\&quot;%s\&quot;,\&quot;email\&quot;:\&quot;%s\&quot;,\&quot;auth\&quot;:\&quot;%s\&quot;&#125;&#125;&#125;&quot; .registry .username .password .email (printf &quot;%s:%s&quot; .username .password | b64enc) | b64enc &#125;&#125;&#123;&#123;- end &#125;&#125;&#123;&#123;- end &#125;&#125;
+
+3、模板中使用辅助模板
+apiVersion: v1kind: Secretmetadata:  name: myregistrykeytype: kubernetes.io/dockerconfigjsondata:  .dockerconfigjson: &#123;&#123; template &quot;imagePullSecret&quot; . &#125;&#125;
+
+YAML是JSON的超集根据YAML规范，YAML是JSON的超集。这意味着任意的合法JSON结构在YAML中应该是合法的。
+这有个优势：有时候模板开发者会发现使用类JSON语法更容易表达数据结构而不是处理YAML的空白敏感度。
+作为最佳实践，模板应遵循类YAML语法 除非 JSON语法大大降低了格式问题的风险。
+构建复杂Chart在CNCF的 Artifact Hub 中的很多chart是创建更先进应用的“组成部分”。但是chart可能被用于创建大规模应用实例。 在这种场景中，一个总的chart会有很多子chart，每一个是整体功能的一部分。
+当前从离散组件组成一个复杂应用的最佳实践是创建一个顶层总体chart构建全局配置，然后使用charts子目录嵌入每个组件。
+最佳实践一般惯例chart名称chart名称必须是小写字母和数字。单词之间可以使用横杠分隔(-)。
+版本号Helm尽可能使用 SemVer 2来表示版本号。（注意Docker镜像的tag不一定遵循SemVer， 因此被认为是一个不幸的例外规则。）
+当SemVer版本存储在Kubernetes标签中时，我们通常把+字符改成_，因为标签不允许使用+作为值进行签名。
+格式化YAMLYAML 文件应该按照 双空格 缩进(绝不要使用tab键)。
+Helm 和 Chart的用法以下是几个 Helm 和 helm 的惯用方法。
+
+Helm 是指整个项目
+helm 是指客户端命令
+chart 不是专有名词，不需要首字母大写
+Chart.yaml 需要首字母大写，因为文件名大小写敏感
+
+若有疑问，使用 Helm (‘H’大写)。
+Values命名规范变量名称以小写字母开头，单词按驼峰区分
+扁平或嵌套的ValueYAML是一种灵活格式，值可以嵌套得很深，也可以是扁平的。大多数场景中，扁平的优于嵌套的。因为对模板开发者和用户来说更加简单。
+类型清楚YAML的类型强制规则有时候是很反常的。比如，foo: false 和 foo: “false” 是不一样的。大整型数如：foo: 12345678 有时会被转换成科学计数法。
+避免类型强制规则错误最简单的方式是字符串明确定义，其他都是不明确的。或者，简单来讲， 给所有字符串打引号。
+通常，为了避免整数转换问题，将整型存储为字符串更好，并用 &#123;&#123; int $value &#125;&#125; 在模板中将字符串转回整型。
+在大多数场景中，显式的类型标记更好，所以 foo: !!string 1234 会将1234作为字符串对待。 但是，YAML解析器会消耗标记，因此类型数据在一次解析后会丢失。
+考虑用户使用value有三种value来源:
+
+chart的values.yaml文件
+由helm install -f提供的values文件
+在执行helm install 时传递给–set 或 –set-string 参数的values
+
+当设计values的结构时，记得你的chart用户可能会通过-f 参数或–set选项覆盖他们。由于–set在表现上更有限，编写你values.yaml文件的第一指导原则是确保它容易被–set覆盖。因此使用map构建values文件更好。
+给values.yaml写文档values.yaml中每个定义的属性都应该文档化。文档字符串应该以它要描述的属性开头，并至少给出一句描述。
+模板templates 结构templates/目录结构应该如下：
+
+如果生成YAML输出，模板文件应该有扩展名.yaml。 扩展名是.tpl可用于生成非格式化内容的模板文件。
+模板文件名称应该使用横杠符号(my-example-configmap.yaml)，不用驼峰记法。
+每个资源的定义应该在它自己的模板文件中。
+模板文件的名称应该反映名称中的资源类型。比如：foo-pod.yaml， bar-svc.yaml
+
+定义模板的名称定义的模板(在&#123;&#123; define &#125;&#125;命令中定义的模板)是可全局访问的。这就意味着chart和所有的子chart都可以访问用&#123;&#123; define &#125;&#125;创建的所有模板。
+因此， 所有定义的模板名称应该被命名空间化。
+正确的：
+&#123;&#123;- define &quot;nginx.fullname&quot; &#125;&#125;&#123;&#123;/* ... */&#125;&#125;&#123;&#123; end -&#125;&#125;
+
+不正确的：
+&#123;&#123;- define &quot;fullname&quot; -&#125;&#125;&#123;&#123;/* ... */&#125;&#125;&#123;&#123; end -&#125;&#125;
+
+强烈建议通过helm create命令创建新chart，因为模板名称是根据此最佳实践自动定义的。
+格式化模板模板应该使用两个 空格 缩进（永远不要用tab）。模板命令的大括号前后应该使用空格。正确的：
+&#123;&#123; .foo &#125;&#125;&#123;&#123; print &quot;foo&quot; &#125;&#125;&#123;&#123;- print &quot;bar&quot; -&#125;&#125;
+
+不正确的：
+&#123;&#123;.foo&#125;&#125;&#123;&#123;print &quot;foo&quot;&#125;&#125;&#123;&#123;-print &quot;bar&quot;-&#125;&#125;
+
+生成模板中的空格最好在生成的模板中将空格量保持在最小值。尤其是大量的空行不应该相邻出现。但偶尔有空行（尤其在逻辑块之间）是没问题的。
+注释YAML和Helm模板都有注释标记符。YAML注释：
+# This is a commenttype: sprocket
+
+模板注释：
+&#123;&#123;- /*This is a comment.*/&#125;&#125;type: frobnitz
+
+在模板和模板输出中使用JSONYAML是JSON的超集。在某些情况下，使用JSON语法比其他YAML表示更具可读性。
+比如，这个YAML更接近表示列表的普通YAML方法：
+arguments:  - &quot;--dirname&quot;  - &quot;/foo&quot;
+
+但是折叠成JSON列表样式时会更易阅读:
+arguments: [&quot;--dirname&quot;, &quot;/foo&quot;]
+
+使用JSON可以很好地提高易读性。然而，JSON语法不应用于表示更复杂的结构。
+标签和注释建议使用 helm.sh/chart: NAME-VERSION 作为标签，以便操作员可以找到特定chart的所有实例。
+如果元数据项不是用于查询，就应该设置为注释。
+标准标签参考文档：标签和注释
+Pod和Pod模板Pod指的是Pod，Pod模板指的是Deployment、ReplicationController、ReplicaSet、DaemonSet、StatefulSet等。
+容器镜像应该使用固定的tag或镜像SHA。不应该使用latest, head, canary等标签或其他被设计为“浮动的”标签。
+所有的Pod模板部分应该指定一个selector。比如：
+selector:  matchLabels:      app.kubernetes.io/name: MyNametemplate:  metadata:    labels:      app.kubernetes.io/name: MyName
+
+基于角色的访问控制RBAC 资源有：
+
+ServiceAccount (namespaced)
+Role (namespaced)
+ClusterRole
+RoleBinding (namespaced)
+ClusterRoleBinding
+
+RBAC和服务账户配置应该使用独立的key。它们是独立的内容。在YAML中将这两个概念分开可以消除歧义使其更加清晰。
+rbac:  # Specifies whether RBAC resources should be created  create: trueserviceAccount:  # Specifies whether a ServiceAccount should be created  create: true  # The name of the ServiceAccount to use.  # If not set and create is true, a name is generated using the fullname template  name:
+
+rbac.create 应该是布尔值，用于控制RBAC资源是否被创建。默认是 true。用户想自己管理RBAC访问控制时可以设置为false (示例如下)。
+serviceAccount.name 要设置为由chart创建的访问控制资源的ServiceAccount的名称。 如果serviceAccount.create是true，则使用该名称的ServiceAccount会被创建。如果没有设置名称， 则会使用fullname模板生成一个名称。如果serviceAccount.create是false，则不会被创建，但仍然会与相同的资源关联， 以便后续手动创建的引用它的RBAC资源可以正常工作。如果serviceAccount.create是false且没有指定名称， 会使用默认的ServiceAccount。
+&#123;&#123;/*Create the name of the service account to use*/&#125;&#125;&#123;&#123;- define &quot;mychart.serviceAccountName&quot; -&#125;&#125;&#123;&#123;- if .Values.serviceAccount.create -&#125;&#125;    &#123;&#123; default (include &quot;mychart.fullname&quot; .) .Values.serviceAccount.name &#125;&#125;&#123;&#123;- else -&#125;&#125;    &#123;&#123; default &quot;default&quot; .Values.serviceAccount.name &#125;&#125;&#123;&#123;- end -&#125;&#125;&#123;&#123;- end -&#125;&#125;
+
+调试语法检查helm lint
+
+测试本地渲染helm template --debug
+
+测试服务器渲染helm install --dry-run --debug
+
+忽略检查测试服务器渲染helm install --dry-run --disable-openapi-validation
+
+查看安装在服务上的模板helm get manifest
+
+
+
+
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>k8s</category>
+        <category>cloudnative</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
+        <tag>helm</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>搭建Spark on Yarn集群</title>
     <url>/dev-spark-on-yarn/</url>
     <content><![CDATA[前言计划在三台Linux主机中搭建Spark on Yarn集群，Spark版本3.2.3，Hadoop版本3.2.3。
@@ -365,111 +697,6 @@ pipeline的失败率
         <tag>cicd</tag>
         <tag>gitlab</tag>
         <tag>chatgpt</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Hexo配置GitHub Actions自动构建发布</title>
-    <url>/dev-hexo-github-actions/</url>
-    <content><![CDATA[Travis CI必须付费了2023年2月25日，使用travis ci部署hexo项目，发现并没有触发任务。
-登录travis ci，发现提示：
-
-Builds have been temporarily disabled for public repositories due to a negative credit balance. Please go to the Plan page to replenish your credit balance or alter your Consume paid credits for OSS setting.
-
-在travis ci plan页面关闭了Consume paid credits for OSS，但是依然提示：
-
-Builds have been temporarily disabled for private and public repositories due to a negative credit balance. Please go to the Plan page to replenish your credit balance.
-
-点击Change plan，发现已经没有免费的plan了，而最便宜的plan，也要$69/monthly，太贵了，放弃。不过可以理解，毕竟跑CI是需要服务器的，服务器是需要花钱的。
-那就换成GitHub Actions吧，有付费版，也有免费版。
-
-
-Quickstart for GitHub Actions参考文档：Quickstart for GitHub Actions
-1、 创建新的分支（因为原分支是适用于travis ci的）
-git checkout -b github-actiongit push origin HEAD:github-action
-
-2、 创建 github-actions-demo.yml 文件voidking/hexo-deploy项目中执行
-mkdir -p .github/workflowsvim .github/workflows/github-actions-demo.yml
-
-github-actions-demo.yml 文件内容如下：
-name: GitHub Actions Demorun-name: $&#123;&#123; github.actor &#125;&#125; is testing out GitHub Actions 🚀on: [push]jobs:  Explore-GitHub-Actions:    runs-on: ubuntu-latest    steps:      - run: echo &quot;🎉 The job was automatically triggered by a $&#123;&#123; github.event_name &#125;&#125; event.&quot;      - run: echo &quot;🐧 This job is now running on a $&#123;&#123; runner.os &#125;&#125; server hosted by GitHub!&quot;      - run: echo &quot;🔎 The name of your branch is $&#123;&#123; github.ref &#125;&#125; and your repository is $&#123;&#123; github.repository &#125;&#125;.&quot;      - name: Check out repository code        uses: actions/checkout@v3      - run: echo &quot;💡 The $&#123;&#123; github.repository &#125;&#125; repository has been cloned to the runner.&quot;      - run: echo &quot;🖥️ The workflow is now ready to test your code on the runner.&quot;      - name: List files in the repository        run: |          ls $&#123;&#123; github.workspace &#125;&#125;      - run: echo &quot;🍏 This job&#x27;s status is $&#123;&#123; job.status &#125;&#125;.&quot;
-
-3、 上传代码
-git add .git commit -m &quot;github action test&quot;git push
-
-报错：refusing to allow a Personal Access Token to create or update workflow .github/workflows/github-actions-demo.yml without workflow scope
-这是因为我们的Access Token需要具有create or update workflow的权限，因此需要重新创建一个Access Token。具体操作方法：访问Personal access tokens (classic)页面，Generate new token，生成token时一定要勾选repo和workflow。
-然后，使用新的token再次push即可。修改token的方法参考文档《Git实用命令》。
-4、查看Actions访问voidking/hexo-deploy Actions页面，即可看到CI workflows（相当于gitlab中的pipelines）。
-Hexo配置GitHub Actions参考文档：
-
-GitHub Actions
-Workflow syntax for GitHub Actions
-Hexo Action
-利用 Github Actions 自动部署 Hexo 博客
-GitHub Actions 教程：定时发送天气邮件
-
-CICD思路
-拉取负责部署的hexo-deploy repo，里面是hexo的配置文件（关于站点配置和构建配置等，详情参考《Hexo配置Travis CI自动构建发布》）
-拉取hexo theme repo，里面是站点主题
-拉取hexo-backup repo，里面是markdown文档
-hexo-backup中的文档放到hexo可以构建（编译）的位置
-安装nodejs
-安装hexo、gulp等依赖
-执行构建（编译）
-上传编译后的html等静态文件到两个pages repoa. github pages是国外流量的源站b. aliyun server是国内流量的源站c. aliyun server从gitee pages拉取最新版本d. gitee pages本身不对外提供服务，只是作为一个git仓库
-aliyun server从gitee pages拉取最新版本
-
-准备github-actions.ymlgithub-actions.yml内容如下：
-name: Hexo CICDrun-name: $&#123;&#123; github.actor &#125;&#125; build and deploy hexo!on:  push:    branches:      - master      - github-actionsenv:  GIT_USER: voidking  HEXO_BACKUP_REPO: voidking/hexo-backup  HEXO_BACKUP_REPO_BRANCH: master  HEXO_THEME_REPO: voidking/hexo-theme-next  HEXO_THEME_REPO_BRANCH: root  GITHUB_PAGES_REPO: github.com/voidking/voidking.github.io.git  GITEE_PAGES_REPO: gitee.com/voidking/voidking.git  GITHUB_PAGES_URL: &quot;https://$&#123;GIT_USER&#125;:$&#123;&#123; secrets.GH_TOKEN &#125;&#125;@$&#123;GITHUB_PAGES_REPO&#125;&quot;  GITEE_PAGES_URL: &quot;https://$&#123;GIT_USER&#125;:$&#123;&#123; secrets.GITEE_TOKEN &#125;&#125;@$&#123;GITEE_PAGES_REPO&#125;&quot;  ALI_IP: 8.136.13.58  ALI_USER: voidking  jobs:  build:    name: Build on node $&#123;&#123; matrix.node_version &#125;&#125; and $&#123;&#123; matrix.os &#125;&#125;    runs-on: ubuntu-latest    strategy:      matrix:        os: [ubuntu-latest]        node_version: [12.22.5]    steps:    - name: Checkout repo      uses: actions/checkout@v2    - name: Checkout theme repo      uses: actions/checkout@v2      with:        repository: $&#123;&#123; env.HEXO_THEME_REPO &#125;&#125;        ref: $&#123;&#123; env.HEXO_THEME_REPO_BRANCH &#125;&#125;        path: themes/next    - name: Checkout hexo-backup repo      uses: actions/checkout@v2      with:        repository: $&#123;&#123; env.HEXO_BACKUP_REPO &#125;&#125;        ref: $&#123;&#123; env.HEXO_BACKUP_REPO_BRANCH &#125;&#125;        path: hexo-backup        token: $&#123;&#123; secrets.GH_TOKEN &#125;&#125;    - name: Move markdown articles to current directory      run: mv hexo-backup/source . &amp;&amp; rm -rf source/private    - name: Install nodejs $&#123;&#123; matrix.node_version &#125;&#125;      uses: actions/setup-node@v3      with:        node-version: $&#123;&#123; matrix.node_version &#125;&#125;    - name: Install nodejs dependencies      run: npm install    - name: Build nodejs project      run: npm run build    - name: Push to voidking.github.io and gitee      run: |        git config --global user.name &quot;voidking&quot;        git config --global user.email &quot;voidking@qq.com&quot;        git clone https://$&#123;&#123; secrets.GH_TOKEN &#125;&#125;@$&#123;&#123; env.GITHUB_PAGES_REPO &#125;&#125; voidking        cd voidking        rm -rfv `ls -a | grep -vw &#x27;\.&#x27; | grep -vw &#x27;\.git&#x27; | xargs`        ls -al        # unalias cp         cp -rf ../public/. .        cp ../source/.travis.yml .        git add . &amp;&amp; git commit -m &quot;GitHub Actions Auto Builder&quot;        git push --force --quiet $&#123;&#123; env.GITHUB_PAGES_URL &#125;&#125; master:master        git push --force --quiet $&#123;&#123; env.GITEE_PAGES_URL &#125;&#125; master:master    deploy:    name: Deploy to Aliyun Server    needs: build    runs-on: ubuntu-latest    steps:    - name: Configure id_rsa      run: |        mkdir -p ~/.ssh/        echo $&#123;&#123; secrets.ID_RSA &#125;&#125; | base64 -d &gt; ~/.ssh/id_rsa        chmod 600 ~/.ssh/id_rsa    - name: Execute ssh command      run: |        ssh -o StrictHostKeyChecking=no \        -o PubkeyAcceptedKeyTypes=ssh-rsa \        $&#123;&#123; env.ALI_USER &#125;&#125;@$&#123;&#123; env.ALI_IP &#125;&#125; \        &quot;cd /opt/nginx/work/voidking/ &amp;&amp; git pull --force --quiet $&#123;&#123; env.GITEE_PAGES_URL &#125;&#125; master:master&quot;
-
-说明：
-
-github action中定义变量有三种方式：vars、secrets和env。
-vars/secrets在workflow触发前定义，env在workflow触发后定义。
-$&#123;&#123;&#125;&#125;双花括号表示上下文引用，详情参考Context availability。
-$&#123;&#125;单花括号表示shell方式使用中env变量。
-使用env中的变量有两种方式：上下文引用和shell方式使用。
-
-配置加密变量上面的workflow配置中，用到了一些敏感变量，GH_TOKEN、GITEE_TOKEN和ID_RSA，这些变量需要加密。
-配置加密变量的方法：
-
-repository级别变量：Project -&gt; Settings -&gt; Actions secrets and variables -&gt; New repository secret
-environments级别变量：Project -&gt; Settings -&gt; Actions secrets and variables -&gt; Manage enviroments -&gt; New enviroment -&gt; Environment secrets -&gt; Add secret
-
-其中ID_RSA的获取方法为：
-ssh-keygenALI_IP=&quot;8.136.13.58&quot;ssh-copy-id -i ~/.ssh/id_rsa.pub voidking@$&#123;ALI_IP&#125;cat .ssh/id_rsa | base64 | tr -d &#x27;\n&#x27;
-
-CICD测试git add .git commit -m &quot;github action test&quot;git push
-
-访问voidking/hexo-deploy Actions页面，即可看到最新的workflow。最开始难免出错，根据报错进行调整即可。
-最终，实现了和travis ci上一样的功能，nice。
-踩坑记录env不能用在job:if当使用job:if时，如下定义：
-env:  BUILD: &quot;false&quot;jobs:  build:    name: Build    if: $&#123;&#123; env.BUILD == &quot;true&quot; &#125;&#125;    runs-on: ubuntu-latest
-
-报错： Unrecognized named-value: ‘env’. Located at position 1 within expression: env.BUILD == “true” .github/workflows/github-actions.yml
-这是个github action的坑，参考文档：
-
-Workflow level env does not work properly in all fields.
-workflow level env. is unrecognised on job level’s ‘if’-expression when calling reusable workflow
-
-workflow_dispatch无效当使用job:if时，如下定义：
-on:  workflow_dispatch:    inputs:      build:        description: &quot;build project&quot;        required: true        default: true        type: booleanjobs:  build:    name: Build    if: $&#123;&#123; inputs.build &#125;&#125;    runs-on: ubuntu-latest
-
-无法触发build job。
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>devops</category>
-        <category>hexo</category>
-        <category>troubleshooting</category>
-      </categories>
-      <tags>
-        <tag>hexo</tag>
-        <tag>问题排查</tag>
-        <tag>git</tag>
-        <tag>cicd</tag>
-        <tag>travis-ci</tag>
-        <tag>github-actions</tag>
       </tags>
   </entry>
   <entry>
@@ -3144,233 +3371,6 @@ options：可选的对象列表，其中每个对象可能具有 name 属性（�
         <tag>网络</tag>
         <tag>dns</tag>
         <tag>kubesphere</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Helm官方文档摘录</title>
-    <url>/dev-helm-doc-extract/</url>
-    <content><![CDATA[前言Helm官方文档写的很棒，本文会摘录Helm官方文档中的一些基础知识和最佳实践，备忘。更细致全面的内容，请移步阅读Helm官方文档。
-参考文档：
-
-《Helm入门篇》
-Helm - Getting Started
-
-
-
-Helm三大概念Chart 代表着 Helm 包。它包含在 Kubernetes 集群内部运行应用程序，工具或服务所需的所有资源定义。你可以把它看作是 Homebrew formula，Apt dpkg，或 Yum RPM 在Kubernetes 中的等价物。
-Repository（仓库） 是用来存放和共享 charts 的地方。它就像 Perl 的 CPAN 档案库网络 或是 Fedora 的 软件包仓库，只不过它是供 Kubernetes 包所使用的。
-Release 是运行在 Kubernetes 集群中的 chart 的实例。一个 chart 通常可以在同一个集群中安装多次。每一次安装都会创建一个新的 release。以 MySQL chart为例，如果你想在你的集群中运行两个数据库，你可以安装该chart两次。每一个数据库都会拥有它自己的 release 和 release name。
-在了解了上述这些概念以后，我们就可以这样来解释 Helm：Helm 安装 charts 到 Kubernetes 集群中，每次安装都会创建一个新的 release。你可以在 Helm 的 chart repositories 中寻找新的 chart。
-Helm安装资源的顺序Helm按照以下顺序安装资源：
-
-Namespace
-NetworkPolicy
-ResourceQuota
-LimitRange
-PodSecurityPolicy
-PodDisruptionBudget
-ServiceAccount
-Secret
-SecretList
-ConfigMap
-StorageClass
-PersistentVolume
-PersistentVolumeClaim
-CustomResourceDefinition
-ClusterRole
-ClusterRoleList
-ClusterRoleBinding
-ClusterRoleBindingList
-Role
-RoleList
-RoleBinding
-RoleBindingList
-Service
-DaemonSet
-Pod
-ReplicationController
-ReplicaSet
-Deployment
-HorizontalPodAutoscaler
-StatefulSet
-Job
-CronJob
-Ingress
-APIService
-
-Chart模板指南内容太多，建议直接阅读Helm官方文档 - Chart模板指南，了解基础概念和语法。
-本节只简单说明几个概念和语法。
-模板templates/目录中的.yaml文件和.tpl文件，就是模板。当Helm评估chart时，会通过模板渲染引擎将所有文件发送到templates/目录中。 然后收集模板的结果并发送给Kubernetes。
-values.yaml 文件也导入到了模板。这个文件包含了chart的 默认值 。这些值会在用户执行helm install 或 helm upgrade时被覆盖。
-Chart.yaml 文件包含了该chart的描述。你可以从模板中访问它。charts/目录 可以 包含其他的chart(称之为 子chart)。
-模板中横线的作用：
-
-&#123;&#123;-`：表示在模板渲染时要去掉前面的空白字符和换行符。
-- `-&#125;&#125;：表示在模板渲染时要去掉后面的空白字符和换行符。
-
-变量和作用域Helm模板中，变量是对另一个对象的命名引用。
-变量的作用域一般不是全局的，而是其声明所在的块。所谓块，是指if/else、with、range、define、template、block定义的范围。
-.代表对当前作用域的引用，.Values表示在当前作用域查找Values对象。每个模板中，默认可以访问到的内置对象有Release、Values、Chart、Files、Capabilities和Template。如果定义了块，那么在块中不可以通过.Values找到Values对象。
-$代表对根作用域的引用，$.Values表示在根作用域查找Values对象。如果定义了块，那么在块中可以通过$.Values找到Values对象。
-变量定义格式示例：&#123;&#123;- $name := .Release.Name -&#125;&#125;在模板顶层定义变量，变量的作用域会是整个模板；在块中定义变量，变量的作用域只在块内。
-变量类型Helm 模板语言是用强类型Go编程语言实现的。 因此，模板中的变量是 有类型的。大多数情况下，变量将作为以下类型之一显示：
-
-string: 文本字符串
-bool: true 或 false
-int: 整型值（包含8位，16位，32位，和64有符号和无符号整数）
-float64: 64位浮点数(也有8位，16位，32位类型)
-字节切片([]byte)，一般用于保存（可能的）二进制数据
-struct: 有属性和方法的对象
-上述某种类型的切片(索引列表)
-字符串键map (map[string]interface&#123;&#125;) 值是上述某种类型
-
-Go里面有很多其他类型，有时你需要在模板里转换。调试对象类型最简便的方式是在模板中传递给printf “%t”，这样会打印类型。 也可以使用 typeOf 和 kindOf 函数。
-命名模板命名模板（也被称作一个 部分 或一个 子模板）名称是全局的。一个常见的命名惯例是用chart名称作为模板前缀。使用特定chart名称作为前缀可以避免可能因为 两个不同chart使用了相同名称的模板而引起的冲突。
-用define和template声明和使用模板。按照惯例，define声明的命名模板一般放在_helpers.tpl文件中。因为是模板名称是全局的，因此可以被.yaml文件引用。
-template渲染时，一般传入.作为命名模板可以访问的范围。include是template的替代，只是为了更好地处理YAML文档的输出格式，方便缩进。
-NOTES.txt文件在helm install 或 helm upgrade命令的最后，Helm会打印出对用户有用的信息。 使用模板可以高度自定义这部分信息。要在chart添加安装说明，只需创建 templates/NOTES.txt 文件即可。该文件是纯文本，但会像模板一样处理， 所有正常的模板函数和对象都是可用的。
-.helmignore 文件.helmignore 文件用来指定你不想包含在你的helm chart中的文件。如果该文件存在，helm package 命令会在打包应用时忽略所有在 .helmignore 文件中匹配的文件。
-一些值得注意的和.gitignore不同之处：
-
-不支持**语法。
-globbing库是Go的 ‘filepath.Match’，不是fnmatch(3)
-末尾空格总会被忽略(不支持转义序列)
-不支持!作为特殊的引导序列
-默认不会排除自身，需要显式添加 .helmignore
-
-YAML技术参考文档：《YAML语言》
-Chart开发技巧模板方法Helm使用Go模板，同时增加了两个特殊模板方法：include和required。
-include方法允许你引入另一个模板，并将结果传递给其他模板方法。比如，这个模板片段包含了一个叫mytpl的模板，然后将其转成小写，并使用双引号括起来。
-value: &#123;&#123; include &quot;mytpl&quot; . | lower | quote &#125;&#125;
-
-required方法可以让你声明模板渲染所需的特定值。如果这个值是空的，模板渲染会出错并打印用户提交的错误信息。下面这个required方法的例子声明了一个.Values.who需要的条目，并且当这个条目不存在时会打印错误信息：
-value: &#123;&#123; required &quot;A valid .Values.who entry required!&quot; .Values.who &#125;&#125;
-
-tpl方法允许开发者在模板中使用字符串作为模板。将模板字符串作为值传给chart或渲染额外的配置文件时会很有用。语法： &#123;&#123; tpl TEMPLATE_STRING VALUES &#125;&#125;
-使用Partials和模板引用有时你想在chart中创建可以重复利用的部分，不管是块还是局部模板。通常将这些文件保存在自己的文件中会更干净。
-在 templates/ 目录中，任何以下划线(_)开始的文件不希望输出到Kubernetes清单文件中。因此按照惯例，辅助模板和局部模板会被放在_helpers.tpl文件中。
-创建镜像拉取密钥1、定义 values.yaml
-imageCredentials:  registry: quay.io  username: someone  password: sillyness  email: someone@host.com
-
-2、定义辅助模板（写在 _helpers.tpl 文件里）
-&#123;&#123;- define &quot;imagePullSecret&quot; &#125;&#125;&#123;&#123;- with .Values.imageCredentials &#125;&#125;&#123;&#123;- printf &quot;&#123;\&quot;auths\&quot;:&#123;\&quot;%s\&quot;:&#123;\&quot;username\&quot;:\&quot;%s\&quot;,\&quot;password\&quot;:\&quot;%s\&quot;,\&quot;email\&quot;:\&quot;%s\&quot;,\&quot;auth\&quot;:\&quot;%s\&quot;&#125;&#125;&#125;&quot; .registry .username .password .email (printf &quot;%s:%s&quot; .username .password | b64enc) | b64enc &#125;&#125;&#123;&#123;- end &#125;&#125;&#123;&#123;- end &#125;&#125;
-
-3、模板中使用辅助模板
-apiVersion: v1kind: Secretmetadata:  name: myregistrykeytype: kubernetes.io/dockerconfigjsondata:  .dockerconfigjson: &#123;&#123; template &quot;imagePullSecret&quot; . &#125;&#125;
-
-YAML是JSON的超集根据YAML规范，YAML是JSON的超集。这意味着任意的合法JSON结构在YAML中应该是合法的。
-这有个优势：有时候模板开发者会发现使用类JSON语法更容易表达数据结构而不是处理YAML的空白敏感度。
-作为最佳实践，模板应遵循类YAML语法 除非 JSON语法大大降低了格式问题的风险。
-构建复杂Chart在CNCF的 Artifact Hub 中的很多chart是创建更先进应用的“组成部分”。但是chart可能被用于创建大规模应用实例。 在这种场景中，一个总的chart会有很多子chart，每一个是整体功能的一部分。
-当前从离散组件组成一个复杂应用的最佳实践是创建一个顶层总体chart构建全局配置，然后使用charts子目录嵌入每个组件。
-最佳实践一般惯例chart名称chart名称必须是小写字母和数字。单词之间可以使用横杠分隔(-)。
-版本号Helm尽可能使用 SemVer 2来表示版本号。（注意Docker镜像的tag不一定遵循SemVer， 因此被认为是一个不幸的例外规则。）
-当SemVer版本存储在Kubernetes标签中时，我们通常把+字符改成_，因为标签不允许使用+作为值进行签名。
-格式化YAMLYAML 文件应该按照 双空格 缩进(绝不要使用tab键)。
-Helm 和 Chart的用法以下是几个 Helm 和 helm 的惯用方法。
-
-Helm 是指整个项目
-helm 是指客户端命令
-chart 不是专有名词，不需要首字母大写
-Chart.yaml 需要首字母大写，因为文件名大小写敏感
-
-若有疑问，使用 Helm (‘H’大写)。
-Values命名规范变量名称以小写字母开头，单词按驼峰区分
-扁平或嵌套的ValueYAML是一种灵活格式，值可以嵌套得很深，也可以是扁平的。大多数场景中，扁平的优于嵌套的。因为对模板开发者和用户来说更加简单。
-类型清楚YAML的类型强制规则有时候是很反常的。比如，foo: false 和 foo: “false” 是不一样的。大整型数如：foo: 12345678 有时会被转换成科学计数法。
-避免类型强制规则错误最简单的方式是字符串明确定义，其他都是不明确的。或者，简单来讲， 给所有字符串打引号。
-通常，为了避免整数转换问题，将整型存储为字符串更好，并用 &#123;&#123; int $value &#125;&#125; 在模板中将字符串转回整型。
-在大多数场景中，显式的类型标记更好，所以 foo: !!string 1234 会将1234作为字符串对待。 但是，YAML解析器会消耗标记，因此类型数据在一次解析后会丢失。
-考虑用户使用value有三种value来源:
-
-chart的values.yaml文件
-由helm install -f提供的values文件
-在执行helm install 时传递给–set 或 –set-string 参数的values
-
-当设计values的结构时，记得你的chart用户可能会通过-f 参数或–set选项覆盖他们。由于–set在表现上更有限，编写你values.yaml文件的第一指导原则是确保它容易被–set覆盖。因此使用map构建values文件更好。
-给values.yaml写文档values.yaml中每个定义的属性都应该文档化。文档字符串应该以它要描述的属性开头，并至少给出一句描述。
-模板templates 结构templates/目录结构应该如下：
-
-如果生成YAML输出，模板文件应该有扩展名.yaml。 扩展名是.tpl可用于生成非格式化内容的模板文件。
-模板文件名称应该使用横杠符号(my-example-configmap.yaml)，不用驼峰记法。
-每个资源的定义应该在它自己的模板文件中。
-模板文件的名称应该反映名称中的资源类型。比如：foo-pod.yaml， bar-svc.yaml
-
-定义模板的名称定义的模板(在&#123;&#123; define &#125;&#125;命令中定义的模板)是可全局访问的。这就意味着chart和所有的子chart都可以访问用&#123;&#123; define &#125;&#125;创建的所有模板。
-因此， 所有定义的模板名称应该被命名空间化。
-正确的：
-&#123;&#123;- define &quot;nginx.fullname&quot; &#125;&#125;&#123;&#123;/* ... */&#125;&#125;&#123;&#123; end -&#125;&#125;
-
-不正确的：
-&#123;&#123;- define &quot;fullname&quot; -&#125;&#125;&#123;&#123;/* ... */&#125;&#125;&#123;&#123; end -&#125;&#125;
-
-强烈建议通过helm create命令创建新chart，因为模板名称是根据此最佳实践自动定义的。
-格式化模板模板应该使用两个 空格 缩进（永远不要用tab）。模板命令的大括号前后应该使用空格。正确的：
-&#123;&#123; .foo &#125;&#125;&#123;&#123; print &quot;foo&quot; &#125;&#125;&#123;&#123;- print &quot;bar&quot; -&#125;&#125;
-
-不正确的：
-&#123;&#123;.foo&#125;&#125;&#123;&#123;print &quot;foo&quot;&#125;&#125;&#123;&#123;-print &quot;bar&quot;-&#125;&#125;
-
-生成模板中的空格最好在生成的模板中将空格量保持在最小值。尤其是大量的空行不应该相邻出现。但偶尔有空行（尤其在逻辑块之间）是没问题的。
-注释YAML和Helm模板都有注释标记符。YAML注释：
-# This is a commenttype: sprocket
-
-模板注释：
-&#123;&#123;- /*This is a comment.*/&#125;&#125;type: frobnitz
-
-在模板和模板输出中使用JSONYAML是JSON的超集。在某些情况下，使用JSON语法比其他YAML表示更具可读性。
-比如，这个YAML更接近表示列表的普通YAML方法：
-arguments:  - &quot;--dirname&quot;  - &quot;/foo&quot;
-
-但是折叠成JSON列表样式时会更易阅读:
-arguments: [&quot;--dirname&quot;, &quot;/foo&quot;]
-
-使用JSON可以很好地提高易读性。然而，JSON语法不应用于表示更复杂的结构。
-标签和注释建议使用 helm.sh/chart: NAME-VERSION 作为标签，以便操作员可以找到特定chart的所有实例。
-如果元数据项不是用于查询，就应该设置为注释。
-标准标签参考文档：标签和注释
-Pod和Pod模板Pod指的是Pod，Pod模板指的是Deployment、ReplicationController、ReplicaSet、DaemonSet、StatefulSet等。
-容器镜像应该使用固定的tag或镜像SHA。不应该使用latest, head, canary等标签或其他被设计为“浮动的”标签。
-所有的Pod模板部分应该指定一个selector。比如：
-selector:  matchLabels:      app.kubernetes.io/name: MyNametemplate:  metadata:    labels:      app.kubernetes.io/name: MyName
-
-基于角色的访问控制RBAC 资源有：
-
-ServiceAccount (namespaced)
-Role (namespaced)
-ClusterRole
-RoleBinding (namespaced)
-ClusterRoleBinding
-
-RBAC和服务账户配置应该使用独立的key。它们是独立的内容。在YAML中将这两个概念分开可以消除歧义使其更加清晰。
-rbac:  # Specifies whether RBAC resources should be created  create: trueserviceAccount:  # Specifies whether a ServiceAccount should be created  create: true  # The name of the ServiceAccount to use.  # If not set and create is true, a name is generated using the fullname template  name:
-
-rbac.create 应该是布尔值，用于控制RBAC资源是否被创建。默认是 true。用户想自己管理RBAC访问控制时可以设置为false (示例如下)。
-serviceAccount.name 要设置为由chart创建的访问控制资源的ServiceAccount的名称。 如果serviceAccount.create是true，则使用该名称的ServiceAccount会被创建。如果没有设置名称， 则会使用fullname模板生成一个名称。如果serviceAccount.create是false，则不会被创建，但仍然会与相同的资源关联， 以便后续手动创建的引用它的RBAC资源可以正常工作。如果serviceAccount.create是false且没有指定名称， 会使用默认的ServiceAccount。
-&#123;&#123;/*Create the name of the service account to use*/&#125;&#125;&#123;&#123;- define &quot;mychart.serviceAccountName&quot; -&#125;&#125;&#123;&#123;- if .Values.serviceAccount.create -&#125;&#125;    &#123;&#123; default (include &quot;mychart.fullname&quot; .) .Values.serviceAccount.name &#125;&#125;&#123;&#123;- else -&#125;&#125;    &#123;&#123; default &quot;default&quot; .Values.serviceAccount.name &#125;&#125;&#123;&#123;- end -&#125;&#125;&#123;&#123;- end -&#125;&#125;
-
-调试语法检查helm lint
-
-测试本地渲染helm template --debug
-
-测试服务器渲染helm install --dry-run --debug
-
-忽略检查测试服务器渲染helm install --dry-run --disable-openapi-validation
-
-查看安装在服务上的模板helm get manifest
-
-
-
-
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>k8s</category>
-        <category>cloudnative</category>
-      </categories>
-      <tags>
-        <tag>k8s</tag>
-        <tag>helm</tag>
       </tags>
   </entry>
   <entry>
@@ -7018,6 +7018,7 @@ KeepingYouAwake，macos屏幕常亮工具
 Amphetamine，macos屏幕常亮工具
 RealVNC Viewer，vnc client
 TigerVNC Viewer，vnc client
+TinyPNG4Mac，开源图片压缩工具
 
 
 
@@ -7230,8 +7231,13 @@ yum install -y iperfiperf -s
 3、使用iperf客户端测试网速
 iperf -c 192.168.56.112 -i 3
 
+图片压缩参考文档：TinyPNG4Mac
+1、注册一个TinyPNG账号
+2、安装TinyPNG4Mac（TinyPNG客户端）
+brew install --cask tinypng4mac
 
-
+3、使用TinyPNG4Mac打开TinyPNG4Mac，拖拽要压缩的图片到软件中即可。
+PS：如果使用Python进行图片压缩，推荐使用项目GGTinypng，它是TinyPNG的一个Python客户端。
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -11136,7 +11142,7 @@ gomod实践篇安装client-go假设一个项目依赖client-go，那么参考官
 失败了，返回404，猜测是12.0版本在代理服务器不存在，使用另外一种下载方式。
 go get k8s.io/client-go@kubernetes-1.15.0
 此处下载了两个版本的client-go，我们使用v0.0.0版本。
-4、安装client-go相关依赖client-go默认下载到$GOPATH/pkg/mod/k8s.io目录下，把k8s.io目录移动到$GOPATH/src目录下。然后把&#x63;&#108;&#105;&#101;&#110;&#x74;&#x2d;&#103;&#x6f;&#x40;&#x76;&#48;&#x2e;&#x30;&#x2e;&#48;重命名为client-go，然后在client-go目录下执行安装依赖的命令：
+4、安装client-go相关依赖client-go默认下载到$GOPATH/pkg/mod/k8s.io目录下，把k8s.io目录移动到$GOPATH/src目录下。然后把&#99;&#x6c;&#105;&#x65;&#110;&#116;&#45;&#x67;&#111;&#x40;&#118;&#48;&#46;&#x30;&#x2e;&#x30;重命名为client-go，然后在client-go目录下执行安装依赖的命令：
 export GOPROXY=https://goproxy.ioexport GO111MODULE=ongo mod vendor
 完成之后，所有的依赖都下载到了client-go/vendor目录下，一个完整的client-go依赖库就准备好了。
 依赖库版本管理client-go依赖库准备好了，但是另一个问题来了：假设项目vk-project依赖client-go和库A，client-go依赖库A，两个依赖库A版本不一致，那么vk-project在编译时，会同时依赖两个不同的库A，导致编译出的二进制包有问题。
@@ -19554,11 +19560,11 @@ mkdir -p /root/.certs/echo -n | openssl s_client -connect smtp.163.com:465 | sed
 5、测试发送邮件echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com查看邮箱，正常的话应该已经收到邮件了。如果没有收到邮件，可以查看日志进行排查：tail /var/log/maillog
 macos参考文档：《MacOS配置发送邮件》
 mail命令命令格式mail [OPTION...] [address...]常用到的选项，一个是s，代表主题；一个是A，代表附件。其他的需要时查看help。
-发送普通邮件目标：给邮箱 &#x76;&#111;&#x69;&#100;&#x6b;&#x69;&#x6e;&#103;&#64;&#113;&#x71;&#46;&#x63;&#x6f;&#x6d; 发送邮件，主题为“Hello VoidKing”，内容为“Welcome to mail world！”
+发送普通邮件目标：给邮箱 &#x76;&#x6f;&#105;&#x64;&#107;&#105;&#x6e;&#103;&#x40;&#113;&#113;&#x2e;&#99;&#x6f;&#109; 发送邮件，主题为“Hello VoidKing”，内容为“Welcome to mail world！”
 echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com
 但是，等待了几分钟，并没有收到邮件，垃圾箱也没有。mail，查看email的发送状态为Undelivered Mail Returned，原来没有投递出去。
 查看邮件系统日志：tail -n 50 /var/spool/mail/test提示host mx3.qq.com[183.57.48.35] said: 550 Mail content denied。看来qq邮箱的垃圾邮件防御机制做的不错，那就换个163邮箱，没想到依然失败。
-换一台服务器？发送给 &#x76;&#x6f;&#105;&#100;&#x6b;&#105;&#110;&#x67;&#x40;&#x71;&#113;&#46;&#99;&#x6f;&#109; ，成功！很尴尬。。。就这么着吧
+换一台服务器？发送给 &#x76;&#111;&#x69;&#x64;&#x6b;&#x69;&#x6e;&#x67;&#x40;&#113;&#113;&#46;&#99;&#x6f;&#x6d; ，成功！很尴尬。。。就这么着吧
 发送高级邮件1、从文本读入内容发送邮件mail -s &#39;Error report&#39; voidking@qq.com &lt; /tmp/log/ganglia/error-20180524.log
 2、发送附件mail -s &#39;Error report&#39; voidking@qq.com -A /tmp/log/ganglia/ganglia-20180524.log &lt; /tmp/log/ganglia/error-20180524.log
 3、指定发件人echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com -aFrom:haojin@qq.com
@@ -22599,7 +22605,7 @@ linux下载好数据集后，把数据集下载到win10中nmt目录中，路径�
 训练model在根目录（nmt目录）下运行：
 python -m nmt.nmt --src=vi --tgt=en --vocab_prefix=./tmp/nmt_data/vocab  --train_prefix=./tmp/nmt_data/train --dev_prefix=./tmp/nmt_data/tst2012  --test_prefix=./tmp/nmt_data/tst2013 --out_dir=./tmp/nmt_model --num_train_steps=12000 --steps_per_stats=100 --num_layers=2 --num_units=128 --dropout=0.2 --metrics=bleu
 
-郝同学i5-3337U &#x43;&#80;&#85;&#x40;&#x31;&#46;&#56;&#x30;&#71;&#72;&#x7a;，8G内存，训练了将近两个小时才训练完成。下文我们要学习使用一下UCloud提供的免费GPU。
+郝同学i5-3337U &#x43;&#x50;&#85;&#64;&#49;&#x2e;&#x38;&#x30;&#x47;&#x48;&#122;，8G内存，训练了将近两个小时才训练完成。下文我们要学习使用一下UCloud提供的免费GPU。
 我们可以使用 Tensorboard 在训练过程中查看模型的总结：
 tensorboard --port 22222 --logdir ./tmp/nmt_model/
 通过以下简单的变化，就能逆向完成英语到越南语的翻译。
@@ -30212,7 +30218,7 @@ t0 = time()&lt; 你的 clf.fit() 代码行 &gt;print &#x27;training time:&#x27;,
 代码运行说明文件。纯文本或markdown格式，写明运行你的代码所需要的库，他们的安装方法和运行方法
 预测结果: 纯文本或CSV文件。
 
-对项目要求有疑问请致信 &#115;&#x75;&#x70;&#112;&#111;&#114;&#116;&#x40;&#121;&#x6f;&#x75;&#100;&#97;&#x78;&#x75;&#101;&#46;&#99;&#x6f;&#x6d;
+对项目要求有疑问请致信 &#x73;&#x75;&#x70;&#112;&#111;&#114;&#x74;&#x40;&#121;&#x6f;&#x75;&#x64;&#x61;&#x78;&#117;&#101;&#x2e;&#x63;&#x6f;&#109;
 准备好提交项目后，请点击下一项，在“项目提交”小节中提交。
 ]]></content>
       <categories>
@@ -30253,7 +30259,7 @@ Resume Builder
 项目导师会根据该评估准则（与你制作简历时遵循的清单相符）对你的简历项目进行审核。
 提交准备好提交求职信后，你需要：
 1、删除/匿名化你的求职信上的所有个人联系人信息，以防泄漏隐私。2、创建 PDF 格式的简历，这样你的简历在不同操作系统/软件/屏幕中有一致的版面样式。3、点击下方的“提交项目”按钮，并根据说明操作。4、在“告知审核员”中，请包括任何有关你的职业目标（如申请的工作或领域），或任何有意偏离评估准则情况的详细信息。
-注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#115;&#x75;&#x70;&#x70;&#111;&#114;&#116;&#64;&#x79;&#111;&#117;&#100;&#97;&#x78;&#117;&#x65;&#46;&#x63;&#x6f;&#109;。
+注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#115;&#x75;&#x70;&#112;&#x6f;&#114;&#x74;&#x40;&#x79;&#x6f;&#x75;&#x64;&#97;&#x78;&#x75;&#x65;&#x2e;&#x63;&#111;&#x6d;。
 GitHub个人资料项目你的GitHub个人资料展示你创建的项目，并让他人了解你的工作风格和提交频率。通过展示你对 GitHub 的熟悉程度，其他开发人员和招聘经理能够知道你拥有他们需要能力，你就是他们正在寻找的人。你的代码库应表明你认真对待项目，并且能够编写干净、格式正确的代码。请查看 GitHub 上的这篇出色的博客文章，了解如何用 GitHub 帮助你持续学习，发展职业生涯。
 为何要完成此 GitHub 个人资料项目？GitHub 越来越多地被用作招聘平台以及潜在雇主查看你的作品的方式。它还是与其他开发人员建立联系和展示你的技能的好地方。
 我应该做什么？你应该以招聘人员或用人部门经理的眼光查看你的 GitHub 个人资料，重点关注你的个人资料、项目和代码如何将你描绘成公司的潜在候选人或项目的协作者。
@@ -30282,7 +30288,7 @@ GitHub项目提交你的 GitHub 主页是呈现给潜在雇主的“关键证据
 反馈优达学城项目导师会根据该标准（与你制作领英简介时遵循的清单相符）对你的领英简介项目进行审核。
 提交准备好提交领英个人资料后：
 1、若要提交，请点击下方的“提交项目”按钮，并根据说明操作。2、在“告知评审员”中，请包括任何有关你的职业目标（如预期工作领域）的详细信息。
-注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#115;&#117;&#x70;&#x70;&#x6f;&#x72;&#116;&#64;&#121;&#x6f;&#x75;&#x64;&#x61;&#x78;&#117;&#101;&#x2e;&#x63;&#x6f;&#x6d;。
+注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#115;&#117;&#112;&#112;&#x6f;&#114;&#x74;&#64;&#121;&#111;&#x75;&#100;&#x61;&#120;&#117;&#101;&#x2e;&#x63;&#x6f;&#x6d;。
 技术面试项目对于此实战项目，你需要回答五个技术面试问题，这些问题涉及的是技术面试课程中讨论的各种主题。你应该用 Python 写出清晰高效的答案，并用文字解释代码的效率和设计理由。我们将安排合格的审核者检查你的答案，并针对任何精彩之处或欠缺的方面做出反馈：你的解决方案是最高效的吗？你很好地解释了你的想法吗？你的代码简洁易懂吗？
 请回答以下问题：
 问题 1: 假设有两个字符串 s 和 t，请判断 t 的变形词是否是 s 的子字符串。例如：如果 s = “udacity”，t = “ad”，则函数返回 True。你的函数定义应该为：“question1(s, t)”，并返回布尔值 True 或 False。 
@@ -30348,7 +30354,7 @@ Dice
 问题 5 - 通过一个情景举例说明正则化对学习好的模型的必要性，以及提供一个正则化没有意义的情景。
 问题 6 -你附近的杂货店想向顾客有针对性地发放对他们来说有用的优惠券。假设你可以访问每位顾客的购买历史和店铺商品目录，你将设计怎样一个系统，来决定发放哪些优惠券？你如何衡量这个系统的性能？
 问题 7 - 选择一个公司，然后描述你想应聘的该公司内的机器学习工程师职位（假设有）。现在，如果你已成功应聘，并从今天开始任职，在你看来，你的职位在下一年会有怎样的发展？你的长期职业目标是什么，这个职位如何帮助你实现长期目标？
-提交当你准备提交项目，点击下方“提交项目”，上传一份 PDF 文件。如果有任何与提交项目相关的疑问，或想查看提交状态，请向我们发送电子邮件询问（&#115;&#x75;&#112;&#112;&#x6f;&#x72;&#x74;&#64;&#x79;&#111;&#117;&#x64;&#97;&#x78;&#117;&#101;&#x2e;&#x63;&#111;&#x6d;）。
+提交当你准备提交项目，点击下方“提交项目”，上传一份 PDF 文件。如果有任何与提交项目相关的疑问，或想查看提交状态，请向我们发送电子邮件询问（&#x73;&#117;&#112;&#112;&#111;&#114;&#x74;&#x40;&#121;&#x6f;&#x75;&#100;&#x61;&#x78;&#x75;&#101;&#x2e;&#99;&#x6f;&#109;）。
 项目资源项目评审标准。优达学城的项目导师会依据此评审标准审阅你的项目。你可以在提交前自行检查自己是否已达到所有标准。职业资源中心。你可以在这里找到更多有关准备面试的资源和贴士。
 接下来面试练习并不是只在你求职时才需要做的事情， 在你的整个职业生涯中，你都需要继续提高自己的面试技巧。抓住每一个机会，思考和与人交流你的职业目标。在申请一个职位之前，请思考清楚自己为什么要申请——这将极大地帮助你为面试做好准备。
 书签Interview Guide: Machine Learninghttps://career-resource-center.udacity.com/interview-courses-and-guides/machine-learning
@@ -30802,7 +30808,7 @@ notebook 项目导出的 HTML 文件，命名为 report.html。
 
 注意：所提交文件的文件名名，包括zip压缩包内的文件名，都不能含有中文及任何ASCII之外的字符，否则会造成提交失败。
 如何导出HTML的说明在 notebook 的最下方。 你也许需要先在命令后通过 pip install mistune 命令安装 mistune 。当你准备好所有这些文件，并且依照项目要求核对过之后，就可以在下面的项目提交页面提交你的项目了。
-如果你是第一次在优达学城提交项目，点击提交之后，要等1分钟左右才能打开提交页面。如果长时间打不开，可以刷新。如果依然无法打开项目提交页面，可以联系客服微信或者邮件至 &#115;&#117;&#x70;&#112;&#x6f;&#114;&#x74;&#64;&#x79;&#x6f;&#117;&#x64;&#x61;&#x78;&#117;&#101;&#46;&#99;&#x6f;&#109;
+如果你是第一次在优达学城提交项目，点击提交之后，要等1分钟左右才能打开提交页面。如果长时间打不开，可以刷新。如果依然无法打开项目提交页面，可以联系客服微信或者邮件至 &#x73;&#x75;&#x70;&#x70;&#x6f;&#114;&#116;&#64;&#x79;&#111;&#117;&#100;&#x61;&#120;&#x75;&#101;&#46;&#x63;&#111;&#109;
 后记这个项目，是优达学城《机器学习工程师》课程提供的第一个实战项目。摘录了全文，方便查看。郝同学的项目地址：https://github.com/voidking/udaciyty-machine-learning/tree/master/projects/titanic_survival_exploration
 书签机器学习工程师（中/英）https://cn.udacity.com/course/machine-learning-engineer-nanodegree--nd009
 数据科学入门https://cn.udacity.com/course/intro-to-data-science--ud359
@@ -34238,7 +34244,7 @@ Node端源码https://github.com/voidking/nodebase/blob/master/controllers/weixin
 
 
 nodebasea node framework designed for myselfversion: v1.0.0url: https://github.com/voidking/nodebase.git  
-作者相关author: haojin(voidking)e-mail: &#x76;&#x6f;&#105;&#100;&#x6b;&#x69;&#x6e;&#103;&#64;&#113;&#x71;&#46;&#x63;&#x6f;&#x6d;site: http://www.voidking.com   
+作者相关author: haojin(voidking)e-mail: &#118;&#x6f;&#105;&#100;&#107;&#105;&#x6e;&#x67;&#64;&#x71;&#x71;&#46;&#x63;&#x6f;&#x6d;site: http://www.voidking.com   
 开发环境说明1、安装5.6.0以上Node2、安装mongodb，不要配置密码3、安装sass4、全局安装bower5、全局安装supervisor6、全局安装node-inspector7、全局安装puer8、运行前执行命令
 npm installbower install
 
@@ -39364,7 +39370,7 @@ XMPP网络任何XMPP网络都是由若干角色组成的，这些角色可以分
 
 插件许多XMPP服务器支持插件扩展，这些插件通常使用与服务器自身相同的语言编写，并在服务器的进程内运行。他们的作用很大程度上与外部组件重叠，但插件还能够访问内部服务器数据结构并改变核心服务器行为。
 XMPP寻址XMPP网络上每个实体都有一个或多个地址（JID，jabber identifier）。JID有多种不同形式，但它们通常看上去就像是电子邮件。
-JID有两种类型，裸JID和完整JID，而裸JID是完整JID去除资源部分后的地址。例如，某个客户端的完整JID是&#118;&#111;&#105;&#x64;&#x6b;&#105;&#x6e;&#x67;&#64;&#118;&#x6f;&#105;&#100;&#x6b;&#105;&#x6e;&#103;&#46;&#x6c;&#105;&#116;/library，那么它的裸JID就是&#x76;&#x6f;&#x69;&#100;&#107;&#105;&#110;&#103;&#x40;&#118;&#111;&#105;&#100;&#107;&#x69;&#110;&#x67;&#46;&#x6c;&#x69;&#x74;。
+JID有两种类型，裸JID和完整JID，而裸JID是完整JID去除资源部分后的地址。例如，某个客户端的完整JID是&#118;&#111;&#105;&#100;&#x6b;&#105;&#x6e;&#103;&#64;&#118;&#x6f;&#x69;&#100;&#107;&#105;&#x6e;&#103;&#x2e;&#108;&#105;&#116;/library，那么它的裸JID就是&#118;&#111;&#105;&#x64;&#x6b;&#105;&#110;&#x67;&#64;&#118;&#111;&#x69;&#100;&#107;&#105;&#110;&#x67;&#46;&#108;&#105;&#116;。
 节在XMPP中，各项工作都是通过在一个XMPP流上发送和接收XMPP节来完成的。核心XMPP工具集由三种基本节组成，这三种节分别为&lt;presence&gt;、&lt;message&gt;、&lt;iq&gt;。
 XMPP流由两份XML文档组成，通信的每个方向均有一份文档。这份文档有一个根元素&lt;stream:stream&gt;，这个根元素的子元素由可路由的节以及与流相关的顶级子元素构成。下面给出一段简短的XMPP会话：
 &lt;stream:stream&gt;	&lt;iq type=&#x27;get&#x27;&gt;		&lt;query xmlns=&#x27;jabber:iq:roster&#x27;/&gt;	&lt;/iq&gt;		&lt;presence/&gt;		&lt;message to=&#x27;voidking@voidking.lit&#x27; from=&#x27;haojin@gmail.com/ballroom&#x27; type=&#x27;chat&#x27;&gt;		&lt;body&gt;I cannot talk of books in a ball-room; my head is always full of something else.&lt;/body&gt;	&lt;/message&gt;		&lt;presence type=&#x27;unavailable&#x27;/&gt;&lt;/stream:stream&gt;
@@ -45015,7 +45021,7 @@ mtools，显示所有支持MSDOS文件系统的命令。
 mutt
 mutt: mail user agent，文字界面的邮件工具
 
-mutt -s &quot;A test mail&quot; josfeng@gmail.com，将邮件寄给 &#x6a;&#111;&#x73;&#x66;&#x65;&#110;&#x67;&#x40;&#103;&#x6d;&#x61;&#105;&#108;&#46;&#x63;&#111;&#109;，信件主题为A test mail。
+mutt -s &quot;A test mail&quot; josfeng@gmail.com，将邮件寄给 &#106;&#111;&#115;&#x66;&#101;&#110;&#x67;&#x40;&#103;&#x6d;&#x61;&#x69;&#x6c;&#46;&#99;&#111;&#109;，信件主题为A test mail。
 mv
 mv: move，移动或重命名文件或目录
 
