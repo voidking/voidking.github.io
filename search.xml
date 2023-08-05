@@ -693,10 +693,10 @@ pipeline的失败率
         <category>git</category>
       </categories>
       <tags>
+        <tag>chatgpt</tag>
         <tag>git</tag>
         <tag>cicd</tag>
         <tag>gitlab</tag>
-        <tag>chatgpt</tag>
       </tags>
   </entry>
   <entry>
@@ -855,9 +855,9 @@ Git项目管理，代码规范pre-commit使用详解
       </categories>
       <tags>
         <tag>python</tag>
+        <tag>chatgpt</tag>
         <tag>git</tag>
         <tag>gitlab</tag>
-        <tag>chatgpt</tag>
         <tag>测试</tag>
       </tags>
   </entry>
@@ -3233,8 +3233,8 @@ Command-Line Client
       </categories>
       <tags>
         <tag>macos</tag>
-        <tag>数据库</tag>
         <tag>chatgpt</tag>
+        <tag>数据库</tag>
         <tag>clickhouse</tag>
       </tags>
   </entry>
@@ -3371,6 +3371,36 @@ options：可选的对象列表，其中每个对象可能具有 name 属性（�
         <tag>网络</tag>
         <tag>dns</tag>
         <tag>kubesphere</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>VSCode配置Python Debug</title>
+    <url>/dev-vscode-python-debug/</url>
+    <content><![CDATA[前言本文学习在VSCode中配置Python Debug的方法，备忘。
+
+
+配置调试1、点击VSCode左侧带虫子的三角形，进入RUN AND DEBUG页面
+2、点击齿轮，编辑 launch.json 文件
+假设程序启动命令为 python startup.py &quot;write a cli snake game&quot;，那么配置如下：
+&#123;    // Use IntelliSense to learn about possible attributes.    // Hover to view descriptions of existing attributes.    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387    &quot;version&quot;: &quot;0.2.0&quot;,    &quot;configurations&quot;: [        &#123;            &quot;name&quot;: &quot;startup debug&quot;,            &quot;type&quot;: &quot;python&quot;,            &quot;request&quot;: &quot;launch&quot;,            &quot;program&quot;: &quot;startup.py&quot;,            &quot;cwd&quot;: &quot;$&#123;workspaceFolder&#125;&quot;,            &quot;args&quot;: [                &quot;write a cli snake game&quot;            ],            &quot;console&quot;: &quot;integratedTerminal&quot;,            &quot;justMyCode&quot;: true        &#125;    ]&#125;
+
+假设每个脚本都能直接运行 python xxx.py，那么配置如下：
+&#123;    &quot;version&quot;: &quot;0.2.0&quot;,    &quot;configurations&quot;: [        &#123;            &quot;name&quot;: &quot;python debug&quot;,            &quot;type&quot;: &quot;python&quot;,            &quot;request&quot;: &quot;launch&quot;,            &quot;program&quot;: &quot;$&#123;file&#125;&quot;,            &quot;cwd&quot;: &quot;$&#123;workspaceFolder&#125;&quot;,            &quot;console&quot;: &quot;integratedTerminal&quot;,            &quot;justMyCode&quot;: true        &#125;    ]&#125;
+
+切换Python解释器1、点击 command+shift+P，打开快捷配置。
+2、输入 Python: Select Interpreter，选择当前代码需要的解释器版本。
+注意：如果是使用pyenv安装的python环境，请选择带有版本的路径，例如 ~/.pyenv/versions/3.9.7/bin/python ；不要选择当前在用python的路径 ~/.pyenv/shims/python，否则会找不到pip安装的包。
+开始调试1、点击VSCode左侧带虫子的三角形，进入RUN AND DEBUG页面
+2、点击齿轮左边的三角形，即可进入调试，这时我们就可以打断点看程序的执行了。
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>python</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>vscode</tag>
+        <tag>编辑器</tag>
       </tags>
   </entry>
   <entry>
@@ -6995,6 +7025,7 @@ IINA，视频播放器
 DBeaver，通用数据库客户端，能够连接mysql、postgresql、sqlite、oracle等等数据库
 sequelpro，mysql客户端。sequelpro测试版解决了退出报错问题
 Mounty，磁盘挂载工具
+EasyRes，调节屏幕分辨率工具
 postman，接口测试工具
 typora，markdown编辑器
 Stretchly，提醒休息工具
@@ -7274,16 +7305,17 @@ WindowServer占用资源过多系统偏好设置，辅助功能，显示，勾�
 当然， /etc 这种文件夹是看不到的。
 设置默认文件排序打开Finder，点击家目录，command＋J，选择排序方式（种类），用做默认。家目录下的所有目录，都会继承这种默认排序方式。
 禁止生成 .DS_Store.DS_Store(Desktop Services Store)文件目的在于存贮目录的自定义属性，例如显示方式为图标还是列表。
-禁止：defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool TRUE开启：defaults delete com.apple.desktopservices DSDontWriteNetworkStores
+禁止：
+defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool TRUE
+
+开启：
+defaults delete com.apple.desktopservices DSDontWriteNetworkStores
+
 注意：禁止生成 .DS_Store 后，已经存在的 .DS_Store 不受影响。
 清除最近项目点击左上角苹果图标，最近使用的项目，清除菜单。
 但是，上面的方法并不会清除“最近项目”这个目录下的文件记录，这是因为“最近项目”是spotlight管理的。解决办法：1、点击左上角苹果图标，系统偏好设置，聚焦，隐私，点击+号。2、选择目录A，点击选取。3、再看“最近项目”，已经不再显示目录A里的文件。需要注意的是，如果从隐私里去掉目录A，那么目录A里的文件还会慢慢出现在“最近项目”。
 如果想要改变“最近项目”目录筛选文件的规则，按照如下方法处理：1、给“最近项目”添加一个搜索条件，让其只显示最近三天内打开或修改过的项目2、在“最近项目”窗口中点击工具栏的齿轮按钮然后选择“显示搜索条件”3、在搜索项目里选择“上次打开日期”4、然后设定好相应的搜索条件，点击“存储”5、最后为其命名，切记勾选“添加到边栏”再点击“存储”6、边栏就会新增这个只显示最近 3 天项目的选项，然后把原来的“最近项目”从边栏移除掉。
 预览清除最近项目打开预览，菜单栏，文件，打开最近使用，清除菜单。
-打不开软件从网络下载的软件，安装时提示：打不开“xxx”，因为它来自身份不明的开发者。
-解决办法：系统偏好设置，安全性和隐私，点锁按钮以进行更改，任何来源，允许来自任何来源。
-解锁屏幕后卡住解锁屏幕后卡住：蓝牙键盘设置 没有连接好的键盘
-解决办法：系统偏好设置，蓝牙，高级，取消勾选 “如果未检测到键盘，则在启动时打开蓝牙设置助理”
 安装字体1、从windows系统 C:\Windows\Fonts 目录中拷贝需要的字体。2、command+shift+G，输入 /Library/Fonts，前往。3、字体放入 Fonts 目录。
 启动sftp1、系统偏好设置，共享，勾选远程登录
 2、测试
@@ -7317,7 +7349,13 @@ cd ..diskutil unmount /Volumes/WDdiskutil unmount force /Volumes/WD
 查看当前连接的wifi网络信息，包括信号强度、信道和加密类型等。
 /System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I
 其中agrCtlRSSI表示信号强度，这个值越接近0值，信号强度越好。
-问题记录雷电接口突然不可用问题问题描述：MacBook四个雷电3接口，其中一个接口突然不能用了，充电没反应，接显示器也没反应，另外三个接口正常。
+问题记录安装软件提示身份不明开发者问题从网络下载的软件，安装时提示：打不开“xxx”，因为它来自身份不明的开发者。
+解决办法：系统偏好设置，安全性和隐私，点锁按钮以进行更改，任何来源，允许来自任何来源。
+解锁屏幕后卡住提示连接键盘问题解锁屏幕后卡住：蓝牙键盘设置 没有连接好的键盘
+解决办法：系统偏好设置，蓝牙，高级，取消勾选 “如果未检测到键盘，则在启动时打开蓝牙设置助理”
+解锁屏幕后卡住两分钟问题解锁屏幕后卡住：鼠标、键盘都没反应，过一两分钟才能恢复正常
+解决办法：重置系统管理控制器（SMC）。具体操作：关机，按住左边shift+control+option7秒，出现开机Apple图标后按住电源键，此时电脑会关机，保持7秒后松开所有按键，此时电脑会开机，重置SMC完成。
+雷电接口突然不可用问题问题描述：MacBook四个雷电3接口，其中一个接口突然不能用了，充电没反应，接显示器也没反应，另外三个接口正常。
 解决办法：将 Mac 关机并合上显示屏等待 30 秒，然后翻开显示屏以启动 Mac。
 command+space失效问题问题描述：command+space是打开聚焦搜索的快捷键，但是，有时候发现点击了command+space也不会出现聚焦搜索的窗口。查看系统偏好配置，快捷键也没有被更改。重启机器后，快捷键能够能够恢复正常。
 解决办法：看看另外一块屏幕！！！有时候聚焦搜索会跑到另外一块屏幕上。
@@ -10265,9 +10303,9 @@ systemctl start redis
         <category>database</category>
       </categories>
       <tags>
+        <tag>chatgpt</tag>
         <tag>数据库</tag>
         <tag>问题排查</tag>
-        <tag>chatgpt</tag>
         <tag>redis</tag>
         <tag>缓存</tag>
       </tags>
@@ -10361,9 +10399,9 @@ redis-cli -c -h 192.168.56.101 -p 7002 -a &#x27;xxx&#x27; shutdownredis-server /
       </categories>
       <tags>
         <tag>docker</tag>
+        <tag>chatgpt</tag>
         <tag>数据库</tag>
         <tag>问题排查</tag>
-        <tag>chatgpt</tag>
         <tag>redis</tag>
         <tag>缓存</tag>
       </tags>
@@ -11142,7 +11180,7 @@ gomod实践篇安装client-go假设一个项目依赖client-go，那么参考官
 失败了，返回404，猜测是12.0版本在代理服务器不存在，使用另外一种下载方式。
 go get k8s.io/client-go@kubernetes-1.15.0
 此处下载了两个版本的client-go，我们使用v0.0.0版本。
-4、安装client-go相关依赖client-go默认下载到$GOPATH/pkg/mod/k8s.io目录下，把k8s.io目录移动到$GOPATH/src目录下。然后把&#99;&#108;&#105;&#x65;&#x6e;&#x74;&#x2d;&#103;&#x6f;&#64;&#118;&#x30;&#46;&#48;&#x2e;&#48;重命名为client-go，然后在client-go目录下执行安装依赖的命令：
+4、安装client-go相关依赖client-go默认下载到$GOPATH/pkg/mod/k8s.io目录下，把k8s.io目录移动到$GOPATH/src目录下。然后把&#99;&#x6c;&#105;&#101;&#x6e;&#x74;&#45;&#103;&#111;&#64;&#x76;&#48;&#x2e;&#x30;&#x2e;&#48;重命名为client-go，然后在client-go目录下执行安装依赖的命令：
 export GOPROXY=https://goproxy.ioexport GO111MODULE=ongo mod vendor
 完成之后，所有的依赖都下载到了client-go/vendor目录下，一个完整的client-go依赖库就准备好了。
 依赖库版本管理client-go依赖库准备好了，但是另一个问题来了：假设项目vk-project依赖client-go和库A，client-go依赖库A，两个依赖库A版本不一致，那么vk-project在编译时，会同时依赖两个不同的库A，导致编译出的二进制包有问题。
@@ -19560,11 +19598,11 @@ mkdir -p /root/.certs/echo -n | openssl s_client -connect smtp.163.com:465 | sed
 5、测试发送邮件echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com查看邮箱，正常的话应该已经收到邮件了。如果没有收到邮件，可以查看日志进行排查：tail /var/log/maillog
 macos参考文档：《MacOS配置发送邮件》
 mail命令命令格式mail [OPTION...] [address...]常用到的选项，一个是s，代表主题；一个是A，代表附件。其他的需要时查看help。
-发送普通邮件目标：给邮箱 &#118;&#111;&#x69;&#x64;&#107;&#105;&#x6e;&#x67;&#x40;&#x71;&#113;&#x2e;&#x63;&#x6f;&#x6d; 发送邮件，主题为“Hello VoidKing”，内容为“Welcome to mail world！”
+发送普通邮件目标：给邮箱 &#x76;&#x6f;&#x69;&#100;&#x6b;&#x69;&#110;&#103;&#64;&#113;&#113;&#46;&#99;&#111;&#x6d; 发送邮件，主题为“Hello VoidKing”，内容为“Welcome to mail world！”
 echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com
 但是，等待了几分钟，并没有收到邮件，垃圾箱也没有。mail，查看email的发送状态为Undelivered Mail Returned，原来没有投递出去。
 查看邮件系统日志：tail -n 50 /var/spool/mail/test提示host mx3.qq.com[183.57.48.35] said: 550 Mail content denied。看来qq邮箱的垃圾邮件防御机制做的不错，那就换个163邮箱，没想到依然失败。
-换一台服务器？发送给 &#118;&#111;&#105;&#x64;&#x6b;&#105;&#110;&#x67;&#x40;&#x71;&#113;&#x2e;&#x63;&#111;&#x6d; ，成功！很尴尬。。。就这么着吧
+换一台服务器？发送给 &#x76;&#x6f;&#105;&#x64;&#x6b;&#105;&#x6e;&#103;&#x40;&#113;&#x71;&#x2e;&#x63;&#x6f;&#x6d; ，成功！很尴尬。。。就这么着吧
 发送高级邮件1、从文本读入内容发送邮件mail -s &#39;Error report&#39; voidking@qq.com &lt; /tmp/log/ganglia/error-20180524.log
 2、发送附件mail -s &#39;Error report&#39; voidking@qq.com -A /tmp/log/ganglia/ganglia-20180524.log &lt; /tmp/log/ganglia/error-20180524.log
 3、指定发件人echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com -aFrom:haojin@qq.com
@@ -22298,8 +22336,8 @@ dataDir=D:\\Server\\zookeeper-3.4.10\\data
         <category>java</category>
       </categories>
       <tags>
-        <tag>java</tag>
         <tag>chatgpt</tag>
+        <tag>java</tag>
         <tag>zookeeper</tag>
       </tags>
   </entry>
@@ -22605,7 +22643,7 @@ linux下载好数据集后，把数据集下载到win10中nmt目录中，路径�
 训练model在根目录（nmt目录）下运行：
 python -m nmt.nmt --src=vi --tgt=en --vocab_prefix=./tmp/nmt_data/vocab  --train_prefix=./tmp/nmt_data/train --dev_prefix=./tmp/nmt_data/tst2012  --test_prefix=./tmp/nmt_data/tst2013 --out_dir=./tmp/nmt_model --num_train_steps=12000 --steps_per_stats=100 --num_layers=2 --num_units=128 --dropout=0.2 --metrics=bleu
 
-郝同学i5-3337U &#67;&#x50;&#85;&#x40;&#49;&#x2e;&#56;&#x30;&#71;&#72;&#122;，8G内存，训练了将近两个小时才训练完成。下文我们要学习使用一下UCloud提供的免费GPU。
+郝同学i5-3337U &#67;&#80;&#85;&#64;&#x31;&#46;&#x38;&#x30;&#71;&#72;&#122;，8G内存，训练了将近两个小时才训练完成。下文我们要学习使用一下UCloud提供的免费GPU。
 我们可以使用 Tensorboard 在训练过程中查看模型的总结：
 tensorboard --port 22222 --logdir ./tmp/nmt_model/
 通过以下简单的变化，就能逆向完成英语到越南语的翻译。
@@ -25460,9 +25498,9 @@ modify.sh内容为：
         <category>shell</category>
       </categories>
       <tags>
+        <tag>chatgpt</tag>
         <tag>linux</tag>
         <tag>shell</tag>
-        <tag>chatgpt</tag>
       </tags>
   </entry>
   <entry>
@@ -25559,9 +25597,9 @@ async-child.sh
         <category>shell</category>
       </categories>
       <tags>
+        <tag>chatgpt</tag>
         <tag>linux</tag>
         <tag>shell</tag>
-        <tag>chatgpt</tag>
       </tags>
   </entry>
   <entry>
@@ -30218,7 +30256,7 @@ t0 = time()&lt; 你的 clf.fit() 代码行 &gt;print &#x27;training time:&#x27;,
 代码运行说明文件。纯文本或markdown格式，写明运行你的代码所需要的库，他们的安装方法和运行方法
 预测结果: 纯文本或CSV文件。
 
-对项目要求有疑问请致信 &#x73;&#x75;&#112;&#112;&#111;&#x72;&#116;&#x40;&#121;&#x6f;&#117;&#x64;&#x61;&#120;&#117;&#101;&#x2e;&#99;&#x6f;&#109;
+对项目要求有疑问请致信 &#x73;&#117;&#x70;&#112;&#x6f;&#x72;&#x74;&#64;&#121;&#111;&#117;&#x64;&#97;&#x78;&#x75;&#x65;&#x2e;&#99;&#111;&#109;
 准备好提交项目后，请点击下一项，在“项目提交”小节中提交。
 ]]></content>
       <categories>
@@ -30259,7 +30297,7 @@ Resume Builder
 项目导师会根据该评估准则（与你制作简历时遵循的清单相符）对你的简历项目进行审核。
 提交准备好提交求职信后，你需要：
 1、删除/匿名化你的求职信上的所有个人联系人信息，以防泄漏隐私。2、创建 PDF 格式的简历，这样你的简历在不同操作系统/软件/屏幕中有一致的版面样式。3、点击下方的“提交项目”按钮，并根据说明操作。4、在“告知审核员”中，请包括任何有关你的职业目标（如申请的工作或领域），或任何有意偏离评估准则情况的详细信息。
-注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#115;&#117;&#x70;&#x70;&#x6f;&#x72;&#x74;&#x40;&#121;&#x6f;&#117;&#x64;&#97;&#x78;&#117;&#101;&#46;&#99;&#111;&#109;。
+注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#x73;&#x75;&#x70;&#112;&#x6f;&#x72;&#116;&#x40;&#121;&#x6f;&#x75;&#100;&#97;&#x78;&#117;&#x65;&#x2e;&#99;&#111;&#109;。
 GitHub个人资料项目你的GitHub个人资料展示你创建的项目，并让他人了解你的工作风格和提交频率。通过展示你对 GitHub 的熟悉程度，其他开发人员和招聘经理能够知道你拥有他们需要能力，你就是他们正在寻找的人。你的代码库应表明你认真对待项目，并且能够编写干净、格式正确的代码。请查看 GitHub 上的这篇出色的博客文章，了解如何用 GitHub 帮助你持续学习，发展职业生涯。
 为何要完成此 GitHub 个人资料项目？GitHub 越来越多地被用作招聘平台以及潜在雇主查看你的作品的方式。它还是与其他开发人员建立联系和展示你的技能的好地方。
 我应该做什么？你应该以招聘人员或用人部门经理的眼光查看你的 GitHub 个人资料，重点关注你的个人资料、项目和代码如何将你描绘成公司的潜在候选人或项目的协作者。
@@ -30288,7 +30326,7 @@ GitHub项目提交你的 GitHub 主页是呈现给潜在雇主的“关键证据
 反馈优达学城项目导师会根据该标准（与你制作领英简介时遵循的清单相符）对你的领英简介项目进行审核。
 提交准备好提交领英个人资料后：
 1、若要提交，请点击下方的“提交项目”按钮，并根据说明操作。2、在“告知评审员”中，请包括任何有关你的职业目标（如预期工作领域）的详细信息。
-注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#115;&#x75;&#112;&#112;&#x6f;&#x72;&#x74;&#64;&#121;&#x6f;&#x75;&#x64;&#x61;&#120;&#117;&#101;&#46;&#x63;&#x6f;&#109;。
+注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#115;&#x75;&#112;&#112;&#111;&#114;&#116;&#x40;&#x79;&#x6f;&#x75;&#100;&#x61;&#x78;&#x75;&#101;&#x2e;&#x63;&#x6f;&#x6d;。
 技术面试项目对于此实战项目，你需要回答五个技术面试问题，这些问题涉及的是技术面试课程中讨论的各种主题。你应该用 Python 写出清晰高效的答案，并用文字解释代码的效率和设计理由。我们将安排合格的审核者检查你的答案，并针对任何精彩之处或欠缺的方面做出反馈：你的解决方案是最高效的吗？你很好地解释了你的想法吗？你的代码简洁易懂吗？
 请回答以下问题：
 问题 1: 假设有两个字符串 s 和 t，请判断 t 的变形词是否是 s 的子字符串。例如：如果 s = “udacity”，t = “ad”，则函数返回 True。你的函数定义应该为：“question1(s, t)”，并返回布尔值 True 或 False。 
@@ -30354,7 +30392,7 @@ Dice
 问题 5 - 通过一个情景举例说明正则化对学习好的模型的必要性，以及提供一个正则化没有意义的情景。
 问题 6 -你附近的杂货店想向顾客有针对性地发放对他们来说有用的优惠券。假设你可以访问每位顾客的购买历史和店铺商品目录，你将设计怎样一个系统，来决定发放哪些优惠券？你如何衡量这个系统的性能？
 问题 7 - 选择一个公司，然后描述你想应聘的该公司内的机器学习工程师职位（假设有）。现在，如果你已成功应聘，并从今天开始任职，在你看来，你的职位在下一年会有怎样的发展？你的长期职业目标是什么，这个职位如何帮助你实现长期目标？
-提交当你准备提交项目，点击下方“提交项目”，上传一份 PDF 文件。如果有任何与提交项目相关的疑问，或想查看提交状态，请向我们发送电子邮件询问（&#x73;&#117;&#x70;&#112;&#x6f;&#114;&#116;&#64;&#121;&#x6f;&#117;&#x64;&#97;&#120;&#x75;&#x65;&#x2e;&#x63;&#x6f;&#x6d;）。
+提交当你准备提交项目，点击下方“提交项目”，上传一份 PDF 文件。如果有任何与提交项目相关的疑问，或想查看提交状态，请向我们发送电子邮件询问（&#115;&#117;&#112;&#112;&#x6f;&#114;&#x74;&#64;&#121;&#x6f;&#x75;&#x64;&#x61;&#x78;&#x75;&#x65;&#x2e;&#99;&#x6f;&#109;）。
 项目资源项目评审标准。优达学城的项目导师会依据此评审标准审阅你的项目。你可以在提交前自行检查自己是否已达到所有标准。职业资源中心。你可以在这里找到更多有关准备面试的资源和贴士。
 接下来面试练习并不是只在你求职时才需要做的事情， 在你的整个职业生涯中，你都需要继续提高自己的面试技巧。抓住每一个机会，思考和与人交流你的职业目标。在申请一个职位之前，请思考清楚自己为什么要申请——这将极大地帮助你为面试做好准备。
 书签Interview Guide: Machine Learninghttps://career-resource-center.udacity.com/interview-courses-and-guides/machine-learning
@@ -30764,8 +30802,8 @@ Pyenv 是另一个 Python 版本管理器，它可以让您在同一系统中轻
         <category>python</category>
       </categories>
       <tags>
-        <tag>conda</tag>
         <tag>chatgpt</tag>
+        <tag>conda</tag>
       </tags>
   </entry>
   <entry>
@@ -30808,7 +30846,7 @@ notebook 项目导出的 HTML 文件，命名为 report.html。
 
 注意：所提交文件的文件名名，包括zip压缩包内的文件名，都不能含有中文及任何ASCII之外的字符，否则会造成提交失败。
 如何导出HTML的说明在 notebook 的最下方。 你也许需要先在命令后通过 pip install mistune 命令安装 mistune 。当你准备好所有这些文件，并且依照项目要求核对过之后，就可以在下面的项目提交页面提交你的项目了。
-如果你是第一次在优达学城提交项目，点击提交之后，要等1分钟左右才能打开提交页面。如果长时间打不开，可以刷新。如果依然无法打开项目提交页面，可以联系客服微信或者邮件至 &#x73;&#x75;&#x70;&#x70;&#111;&#114;&#116;&#x40;&#x79;&#111;&#117;&#100;&#x61;&#x78;&#x75;&#101;&#x2e;&#x63;&#x6f;&#x6d;
+如果你是第一次在优达学城提交项目，点击提交之后，要等1分钟左右才能打开提交页面。如果长时间打不开，可以刷新。如果依然无法打开项目提交页面，可以联系客服微信或者邮件至 &#x73;&#117;&#x70;&#x70;&#111;&#x72;&#x74;&#x40;&#121;&#111;&#117;&#x64;&#x61;&#120;&#117;&#101;&#46;&#99;&#111;&#109;
 后记这个项目，是优达学城《机器学习工程师》课程提供的第一个实战项目。摘录了全文，方便查看。郝同学的项目地址：https://github.com/voidking/udaciyty-machine-learning/tree/master/projects/titanic_survival_exploration
 书签机器学习工程师（中/英）https://cn.udacity.com/course/machine-learning-engineer-nanodegree--nd009
 数据科学入门https://cn.udacity.com/course/intro-to-data-science--ud359
@@ -34244,7 +34282,7 @@ Node端源码https://github.com/voidking/nodebase/blob/master/controllers/weixin
 
 
 nodebasea node framework designed for myselfversion: v1.0.0url: https://github.com/voidking/nodebase.git  
-作者相关author: haojin(voidking)e-mail: &#118;&#x6f;&#105;&#x64;&#107;&#x69;&#110;&#103;&#64;&#x71;&#x71;&#x2e;&#x63;&#x6f;&#x6d;site: http://www.voidking.com   
+作者相关author: haojin(voidking)e-mail: &#118;&#x6f;&#105;&#x64;&#107;&#x69;&#110;&#103;&#x40;&#113;&#113;&#x2e;&#99;&#111;&#x6d;site: http://www.voidking.com   
 开发环境说明1、安装5.6.0以上Node2、安装mongodb，不要配置密码3、安装sass4、全局安装bower5、全局安装supervisor6、全局安装node-inspector7、全局安装puer8、运行前执行命令
 npm installbower install
 
@@ -39370,7 +39408,7 @@ XMPP网络任何XMPP网络都是由若干角色组成的，这些角色可以分
 
 插件许多XMPP服务器支持插件扩展，这些插件通常使用与服务器自身相同的语言编写，并在服务器的进程内运行。他们的作用很大程度上与外部组件重叠，但插件还能够访问内部服务器数据结构并改变核心服务器行为。
 XMPP寻址XMPP网络上每个实体都有一个或多个地址（JID，jabber identifier）。JID有多种不同形式，但它们通常看上去就像是电子邮件。
-JID有两种类型，裸JID和完整JID，而裸JID是完整JID去除资源部分后的地址。例如，某个客户端的完整JID是&#118;&#x6f;&#105;&#x64;&#x6b;&#105;&#x6e;&#103;&#x40;&#x76;&#111;&#x69;&#x64;&#x6b;&#105;&#110;&#103;&#46;&#108;&#105;&#116;/library，那么它的裸JID就是&#x76;&#x6f;&#x69;&#100;&#107;&#105;&#110;&#103;&#x40;&#118;&#x6f;&#x69;&#100;&#107;&#105;&#x6e;&#x67;&#46;&#108;&#105;&#116;。
+JID有两种类型，裸JID和完整JID，而裸JID是完整JID去除资源部分后的地址。例如，某个客户端的完整JID是&#x76;&#x6f;&#105;&#100;&#x6b;&#x69;&#x6e;&#x67;&#64;&#118;&#x6f;&#x69;&#100;&#x6b;&#x69;&#110;&#x67;&#46;&#x6c;&#x69;&#116;/library，那么它的裸JID就是&#118;&#x6f;&#105;&#x64;&#107;&#x69;&#110;&#x67;&#64;&#x76;&#x6f;&#x69;&#x64;&#x6b;&#105;&#110;&#103;&#x2e;&#108;&#x69;&#x74;。
 节在XMPP中，各项工作都是通过在一个XMPP流上发送和接收XMPP节来完成的。核心XMPP工具集由三种基本节组成，这三种节分别为&lt;presence&gt;、&lt;message&gt;、&lt;iq&gt;。
 XMPP流由两份XML文档组成，通信的每个方向均有一份文档。这份文档有一个根元素&lt;stream:stream&gt;，这个根元素的子元素由可路由的节以及与流相关的顶级子元素构成。下面给出一段简短的XMPP会话：
 &lt;stream:stream&gt;	&lt;iq type=&#x27;get&#x27;&gt;		&lt;query xmlns=&#x27;jabber:iq:roster&#x27;/&gt;	&lt;/iq&gt;		&lt;presence/&gt;		&lt;message to=&#x27;voidking@voidking.lit&#x27; from=&#x27;haojin@gmail.com/ballroom&#x27; type=&#x27;chat&#x27;&gt;		&lt;body&gt;I cannot talk of books in a ball-room; my head is always full of something else.&lt;/body&gt;	&lt;/message&gt;		&lt;presence type=&#x27;unavailable&#x27;/&gt;&lt;/stream:stream&gt;
@@ -45021,7 +45059,7 @@ mtools，显示所有支持MSDOS文件系统的命令。
 mutt
 mutt: mail user agent，文字界面的邮件工具
 
-mutt -s &quot;A test mail&quot; josfeng@gmail.com，将邮件寄给 &#106;&#x6f;&#115;&#102;&#101;&#110;&#x67;&#x40;&#x67;&#109;&#97;&#105;&#x6c;&#x2e;&#x63;&#111;&#x6d;，信件主题为A test mail。
+mutt -s &quot;A test mail&quot; josfeng@gmail.com，将邮件寄给 &#x6a;&#111;&#x73;&#102;&#101;&#x6e;&#x67;&#64;&#x67;&#109;&#x61;&#x69;&#108;&#x2e;&#99;&#x6f;&#109;，信件主题为A test mail。
 mv
 mv: move，移动或重命名文件或目录
 
