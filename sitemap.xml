@@ -4,9 +4,9 @@
   <url>  
     <loc>https://www.voidking.com/tags/index.html</loc>  
       
-    <lastmod>2023-08-05T11:19:38.100Z</lastmod>  
+    <lastmod>2023-08-05T11:37:42.218Z</lastmod>  
       
-    <date>1691234378100</date>  
+    <date>1691235462218</date>  
     <title>tags | 好好学习的郝</title>  
       
     <desc></desc>  
@@ -15,7 +15,7 @@
   <url>  
     <loc>https://www.voidking.com/categories/index.html</loc>  
       
-    <lastmod>2023-08-05T11:19:38.076Z</lastmod>  
+    <lastmod>2023-08-05T11:37:42.198Z</lastmod>  
       
     <date>1528712001000</date>  
     <title>文章分类 | 好好学习的郝</title>  
@@ -43,6 +43,17 @@
     <title>MacOS系统配置 | 好好学习的郝</title>  
       
     <desc>用户名配置系统偏好设置，用户与群组，点按锁按钮以进行修改。右键用户，高级选项。修改账户名称为vk，这个名称是shell中显示的用户名。修改全名为voidking，这个名称是mac系统显示的名称。个人目录，修改为 /Users/vk ，这个目录是新的home目录。 修改完成后点击“好”，系统重启，然后整个系统恢复到出厂状态。</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-hexo-gitalk-comment-plugin/</loc>  
+      
+    <lastmod>2023-08-05T08:00:00.000Z</lastmod>  
+      
+    <date>1532615400000</date>  
+    <title>Hexo使用gitalk作为评论插件 | 好好学习的郝</title>  
+      
+    <desc>gitalk简介 Gitalk 是一个基于 GitHub Issue 和 Preact 开发的评论插件。 特点： 使用 GitHub 登录 支持多语言（en, zh-CN, zh-TW, es-ES, fr, ru） 支持个人或组织 无干扰模式（设置 distractionFreeMode 为 true 开启） 快捷键提交评论 （cmd|ctrl + enter） 本文中，我们学习使用gitalk</desc>  
   </url> 
   
   <url>  
@@ -200,17 +211,6 @@
   </url> 
   
   <url>  
-    <loc>https://www.voidking.com/dev-hexo-gitalk-comment-plugin/</loc>  
-      
-    <lastmod>2023-07-01T08:00:00.000Z</lastmod>  
-      
-    <date>1532615400000</date>  
-    <title>Hexo使用gitalk作为评论插件 | 好好学习的郝</title>  
-      
-    <desc>gitalk简介 Gitalk 是一个基于 GitHub Issue 和 Preact 开发的评论插件。 特点： 使用 GitHub 登录 支持多语言（en, zh-CN, zh-TW, es-ES, fr, ru） 支持个人或组织 无干扰模式（设置 distractionFreeMode 为 true 开启） 快捷键提交评论 （cmd|ctrl + enter） 本文中，我们学习使用gitalk</desc>  
-  </url> 
-  
-  <url>  
     <loc>https://www.voidking.com/dev-shell-redirect/</loc>  
       
     <lastmod>2023-07-01T08:00:00.000Z</lastmod>  
@@ -218,7 +218,7 @@
     <date>1496390400000</date>  
     <title>shell命令之重定向 | 好好学习的郝</title>  
       
-    <desc>重定向语法文件描述符 0：标准输入 1：标准输出，默认指向屏幕 2：错误输出，默认指向屏幕 /dev/null： 黑洞 重定向操作符 &gt;：将命令的标准输出重定向到指定文件 &gt;&gt;：将命令的标准输出追加到指定文件的末尾 &lt;：将命令的标准输入重定向为指定文件的内容 |：将一个命令的标准输出作为另一个命令的标准输入 &amp;&gt;：将命令的标准输出和错误输出重定向到指定文件</desc>  
+    <desc>重定向语法文件描述符 0：标准输入 1：标准输出，默认指向屏幕 2：错误输出，默认指向屏幕 /dev/null： 黑洞 重定向操作符 gt;：将命令的标准输出重定向到指定文件 gt;gt;：将命令的标准输出追加到指定文件的末尾 lt;：将命令的标准输入重定向为指定文件的内容 |：将一个命令的标准输出作为另一个命令的标准输入 amp;gt;：将命令的标准输出和错误输出重定向到指定文件</desc>  
   </url> 
   
   <url>  
@@ -229,7 +229,7 @@
     <date>1496390400000</date>  
     <title>shell命令之系统管理 | 好好学习的郝</title>  
       
-    <desc>查看硬件配置查看服务器型号12dmidecodedmidecode | grep &quot;System Information&quot; -A16 查看CPU物理CPU数（physical id）：主板上实际插入的cpu数量，可以数不重复的 physical id 有几个。CPU核心数（cpu cores）：单块CPU上面能处理数据的芯片组的数量，如双核、四核等逻辑CPU数：一般情况下，逻辑</desc>  
+    <desc>查看硬件配置查看服务器型号12dmidecodedmidecode | grep quot;System Informationquot; -A16 查看CPU物理CPU数（physical id）：主板上实际插入的cpu数量，可以数不重复的 physical id 有几个。CPU核心数（cpu cores）：单块CPU上面能处理数据的芯片组的数量，如双核、四核等逻辑CPU数：一般情况下，逻辑</desc>  
   </url> 
   
   <url>  
@@ -647,7 +647,7 @@
     <date>1568552400000</date>  
     <title>Kustomize工具 | 好好学习的郝</title>  
       
-    <desc>Kustomize简介Kustomize是一个独立的工具，用来通过kustomization文件定制Kubernetes对象。从 1.14 版本开始，kubectl 也开始支持使用 kustomization 文件来管理 Kubernetes 对象。要查看包含 kustomization 文件的目录中的资源，执行下面的命令： 1kubectl kustomize &lt;kustomization</desc>  
+    <desc>Kustomize简介Kustomize是一个独立的工具，用来通过kustomization文件定制Kubernetes对象。从 1.14 版本开始，kubectl 也开始支持使用 kustomization 文件来管理 Kubernetes 对象。要查看包含 kustomization 文件的目录中的资源，执行下面的命令： 1kubectl kustomize lt;kustomization</desc>  
   </url> 
   
   <url>  
@@ -1032,7 +1032,7 @@
     <date>1636315200000</date>  
     <title>Python小技巧 | 好好学习的郝</title>  
       
-    <desc>查找文件在指定目录中，根据文件前缀查找文件。 12345678import globdef find_files_by_prefix(prefix, dir_path): file_list = list() file_pattern = os.path.join(dir_path, &#x27;&#123;&#125;*&#x27;.format(prefix)) for f in glob.g</desc>  
+    <desc>查找文件在指定目录中，根据文件前缀查找文件。 12345678import globdef find_files_by_prefix(prefix, dir_path): file_list = list() file_pattern = os.path.join(dir_path, #x27;#123;#125;*#x27;.format(prefix)) for f in glob.g</desc>  
   </url> 
   
   <url>  
@@ -1263,7 +1263,7 @@
     <date>1437472800000</date>  
     <title>github下载加速 | 好好学习的郝</title>  
       
-    <desc>替换加速网址1、github.com 替换为 hub.fastgit.org2、raw.githubusercontent.com 替换为 raw.staticdn.net 以macos安装brew为例： 123curl -L https://raw.staticdn.net/Homebrew/install/HEAD/install.sh -o brew.shsed -i &#x27;s#htt</desc>  
+    <desc>替换加速网址1、github.com 替换为 hub.fastgit.org2、raw.githubusercontent.com 替换为 raw.staticdn.net 以macos安装brew为例： 123curl -L https://raw.staticdn.net/Homebrew/install/HEAD/install.sh -o brew.shsed -i #x27;s#htt</desc>  
   </url> 
   
   <url>  
@@ -1428,7 +1428,7 @@
     <date>1496318400000</date>  
     <title>Shell脚本编程——下 | 好好学习的郝</title>  
       
-    <desc>运算符算术运算符1234567891011121314151617181920212223#!/bin/sha=10b=20echo &quot;a=$a, b=$b&quot;val=`expr $a + $b`echo &quot;a + b : $val&quot;val=`expr $a - $b`echo &quot;a - b : $val&quot;val=`expr $a \* $</desc>  
+    <desc>运算符算术运算符1234567891011121314151617181920212223#!/bin/sha=10b=20echo quot;a=$a, b=$bquot;val=`expr $a + $b`echo quot;a + b : $valquot;val=`expr $a - $b`echo quot;a - b : $valquot;val=`expr $a \* $</desc>  
   </url> 
   
   <url>  
@@ -1450,7 +1450,7 @@
     <date>1479641097000</date>  
     <title>MySQL重置密码 | 好好学习的郝</title>  
       
-    <desc>mysql5.6设置密码通过修改表数据设置密码一般mysql的root默认密码为空，如果之前没有设置过root密码，我们可以使用空密码登录后设置密码。 1、启动mysql 1service start mysql 2、进入mysql控制台 1mysql -u root 3、修改密码 123use mysql;update mysql.user set password=password(&#x27</desc>  
+    <desc>mysql5.6设置密码通过修改表数据设置密码一般mysql的root默认密码为空，如果之前没有设置过root密码，我们可以使用空密码登录后设置密码。 1、启动mysql 1service start mysql 2、进入mysql控制台 1mysql -u root 3、修改密码 123use mysql;update mysql.user set password=password(#x27</desc>  
   </url> 
   
   <url>  
@@ -1505,7 +1505,7 @@
     <date>1496390400000</date>  
     <title>shell命令之grep/awk/sed | 好好学习的郝</title>  
       
-    <desc>awk注意事项awk命令格式：awk [选项参数] &#39;script&#39; var=value file(s) 这里需要特别注意的是，包裹script的是单引号，单引号，单引号！参考文档Linux awk 命令</desc>  
+    <desc>awk注意事项awk命令格式：awk [选项参数] #39;script#39; var=value file(s) 这里需要特别注意的是，包裹script的是单引号，单引号，单引号！参考文档Linux awk 命令</desc>  
   </url> 
   
   <url>  
@@ -1582,7 +1582,7 @@
     <date>1663012800000</date>  
     <title>Linux中搭建Spark集群 | 好好学习的郝</title>  
       
-    <desc>前言计划在三台Linux主机中搭建Spark 3.3.1集群，主机配置为4C8G，操作系统为CentOS7。三台主机的IP为： 123192.168.56.101192.168.56.102192.168.56.103 选择101作为master节点，另外两个作为worker节点。 参考文档： spark3.3.0安装&amp;部署过程 Spark Overview Spark Standalon</desc>  
+    <desc>前言计划在三台Linux主机中搭建Spark 3.3.1集群，主机配置为4C8G，操作系统为CentOS7。三台主机的IP为： 123192.168.56.101192.168.56.102192.168.56.103 选择101作为master节点，另外两个作为worker节点。 参考文档： spark3.3.0安装amp;部署过程 Spark Overview Spark Standalon</desc>  
   </url> 
   
   <url>  
@@ -1648,7 +1648,7 @@
     <date>1583704800000</date>  
     <title>K8S集群中etcd备份和恢复 | 好好学习的郝</title>  
       
-    <desc>前言就像备份数据库一样，很多时候，我们也想对k8s资源配置进行备份。 1kubectl get all --all-namespaces -o yaml &gt; all-deploy-services.yaml 上面的方法，可以实现对k8s资源配置的备份。但是更好的办法，是对etcd进行备份。本文就学习一下k8s中etcd的备份和恢复方法。</desc>  
+    <desc>前言就像备份数据库一样，很多时候，我们也想对k8s资源配置进行备份。 1kubectl get all --all-namespaces -o yaml gt; all-deploy-services.yaml 上面的方法，可以实现对k8s资源配置的备份。但是更好的办法，是对etcd进行备份。本文就学习一下k8s中etcd的备份和恢复方法。</desc>  
   </url> 
   
   <url>  
@@ -2033,7 +2033,7 @@
     <date>1636315200000</date>  
     <title>Python打印日志 | 好好学习的郝</title>  
       
-    <desc>输出日志到控制台12345678import sysimport logginglog = logging.getLogger(__name__)log.setLevel(logging.DEBUG)log.addHandler(logging.StreamHandler(sys.stdout)) #默认sys.errorlog.info(&#x27;print info level log to</desc>  
+    <desc>输出日志到控制台12345678import sysimport logginglog = logging.getLogger(__name__)log.setLevel(logging.DEBUG)log.addHandler(logging.StreamHandler(sys.stdout)) #默认sys.errorlog.info(#x27;print info level log to</desc>  
   </url> 
   
   <url>  
@@ -2660,7 +2660,7 @@
     <date>1574110800000</date>  
     <title>Docker内部使用Supervisor | 好好学习的郝</title>  
       
-    <desc>问题描述使用docker run启动一个beego服务，命令为： 1docker run --name bservice -d -p 8080:8080 voidking/bservice:v1 &quot;/bin/bash&quot; &quot;-c&quot; &quot;cd /opt/bservice &amp;&amp; nohup ./bservice&quot; 启动后，beeg</desc>  
+    <desc>问题描述使用docker run启动一个beego服务，命令为： 1docker run --name bservice -d -p 8080:8080 voidking/bservice:v1 quot;/bin/bashquot; quot;-cquot; quot;cd /opt/bservice amp;amp; nohup ./bservicequot; 启动后，beeg</desc>  
   </url> 
   
   <url>  
@@ -3859,7 +3859,7 @@
     <date>1505656800000</date>  
     <title>从零开始打造自己的PHP框架——第7章 | 好好学习的郝</title>  
       
-    <desc>前言《thinkphp部署到nginx服务器》一文中，小生提到过，nginx默认情况下不支持pathinfo模式，从而不能支持ThinkPHP。能访问的，只有首页，其他函数的路径，都无法访问。 这是因为，PHP中的全局变量$_SERVER[&#39;PATH_INFO&#39;]，常常被用来优化url路径格式，比如thinkphp，而nginx是不支持pathinfo的。 同样的，小生开发的vkp</desc>  
+    <desc>前言《thinkphp部署到nginx服务器》一文中，小生提到过，nginx默认情况下不支持pathinfo模式，从而不能支持ThinkPHP。能访问的，只有首页，其他函数的路径，都无法访问。 这是因为，PHP中的全局变量$_SERVER[#39;PATH_INFO#39;]，常常被用来优化url路径格式，比如thinkphp，而nginx是不支持pathinfo的。 同样的，小生开发的vkp</desc>  
   </url> 
   
   <url>  
@@ -4068,7 +4068,7 @@
     <date>1500109200000</date>  
     <title>Linux修改命令提示符信息(PS1) | 好好学习的郝</title>  
       
-    <desc>问题如何将 root@izwz94j3dpfuv8pcrn1qitz 修改成 root@voidking-ali？ 解决办法1、查看原PS1，echo $PS1，显示结果为： 1[\u@\h \W]\$ 2、编辑.bashrc，vi ~/.bashrc 3、添加 1export PS1=&#x27;[\u@voidking-ali \W]\$&#x27; 或者 1export PS1=&quot;</desc>  
+    <desc>问题如何将 root@izwz94j3dpfuv8pcrn1qitz 修改成 root@voidking-ali？ 解决办法1、查看原PS1，echo $PS1，显示结果为： 1[\u@\h \W]\$ 2、编辑.bashrc，vi ~/.bashrc 3、添加 1export PS1=#x27;[\u@voidking-ali \W]\$#x27; 或者 1export PS1=quot;</desc>  
   </url> 
   
   <url>  
@@ -4145,7 +4145,7 @@
     <date>1496660400000</date>  
     <title>行为型模式之模板方法模式 | 好好学习的郝</title>  
       
-    <desc>场景有一个报表打印程序，用户规定必须要打印表头、正文、表尾三个部分。 一般思路： 1234567891011121314151617181920212223public class Report &#123; public void print() &#123; printTitle(); printBody(); printTail(); &#125; public void printTitl</desc>  
+    <desc>场景有一个报表打印程序，用户规定必须要打印表头、正文、表尾三个部分。 一般思路： 1234567891011121314151617181920212223public class Report #123; public void print() #123; printTitle(); printBody(); printTail(); #125; public void printTitl</desc>  
   </url> 
   
   <url>  
@@ -4167,7 +4167,7 @@
     <date>1496404800000</date>  
     <title>Shell脚本之循环读取文本 | 好好学习的郝</title>  
       
-    <desc>需求已知mobile.txt为： 12haojin 17625160000voidking 17625160001 需求：根据 mobile.txt 中的内容拼接成SQL，修改不同用户的手机号。例如： 1update user set mobile=&quot;17625160000&quot; where name=&quot;haojin&quot;;</desc>  
+    <desc>需求已知mobile.txt为： 12haojin 17625160000voidking 17625160001 需求：根据 mobile.txt 中的内容拼接成SQL，修改不同用户的手机号。例如： 1update user set mobile=quot;17625160000quot; where name=quot;haojinquot;;</desc>  
   </url> 
   
   <url>  
@@ -4387,7 +4387,7 @@
     <date>1489507200000</date>  
     <title>Hexo中使用Mathjax的冲突问题 | 好好学习的郝</title>  
       
-    <desc>问题描述写《信息量&amp;信息熵&amp;信息增益》时，用到了一些数学公式。但是，在使用hexo生成页面后，这些数学公式并没有被正确显示。查找资料发现markdwon本身的特殊符号与latex中的符号会出现冲突: 1、在markdown中，_是斜体，但是在latex中，却有下标的意思。2、在markdown中，\\会被转义为\,这样也会影响影响mathjax对公式中的\\进行渲染。 解决办法有三</desc>  
+    <desc>问题描述写《信息量amp;信息熵amp;信息增益》时，用到了一些数学公式。但是，在使用hexo生成页面后，这些数学公式并没有被正确显示。查找资料发现markdwon本身的特殊符号与latex中的符号会出现冲突: 1、在markdown中，_是斜体，但是在latex中，却有下标的意思。2、在markdown中，\\会被转义为\,这样也会影响影响mathjax对公式中的\\进行渲染。 解决办法有三</desc>  
   </url> 
   
   <url>  
@@ -4396,7 +4396,7 @@
     <lastmod>2017-03-12T20:00:00.000Z</lastmod>  
       
     <date>1489348800000</date>  
-    <title>信息量&信息熵&信息增益 | 好好学习的郝</title>  
+    <title>信息量信息熵信息增益 | 好好学习的郝</title>  
       
     <desc>信息量确定性是指事先可以准确知道某个事件或某种决策的结果。或者说，如果事件或决策的可能结果只有一种，就会产生确定性。 信息论创始人香农对信息的定义：信息是确定性的增加。 信息量是信息多少的度量，也就是确定性增加的多少的度量，单位是比特。 如何计算信息量的多少？在日常生活中，极少发生的事件一旦发生是容易引起人们关注的，而司空见惯的事不会引起注意，也就是说，极少见的事件所带来的信息量多。如果用统计学的</desc>  
   </url> 
@@ -5091,7 +5091,7 @@
     <date>1469787334000</date>  
     <title>支付宝手机网站支付流程 | 好好学习的郝</title>  
       
-    <desc>前言公司M站要接入支付宝，借机研究了一下支付宝的支付流程。毕竟，只有公司才能拿到支付接口权限。 主要参考文档：https://doc.open.alipay.com/doc2/detail?treeId=60&amp;articleId=103564&amp;docType=1https://b.alipay.com/order/productDetail.htm?productId=201511</desc>  
+    <desc>前言公司M站要接入支付宝，借机研究了一下支付宝的支付流程。毕竟，只有公司才能拿到支付接口权限。 主要参考文档：https://doc.open.alipay.com/doc2/detail?treeId=60amp;articleId=103564amp;docType=1https://b.alipay.com/order/productDetail.htm?productId=201511</desc>  
   </url> 
   
   <url>  
@@ -5201,7 +5201,7 @@
     <date>1467023203000</date>  
     <title>input绑定回车事件 | 好好学习的郝</title>  
       
-    <desc>html部分： 1&lt;input id=&quot;search-key&quot; type=&quot;text&quot; placeholder=&quot;请输入关键字&quot;&gt;</desc>  
+    <desc>html部分： 1lt;input id=quot;search-keyquot; type=quot;textquot; placeholder=quot;请输入关键字quot;gt;</desc>  
   </url> 
   
   <url>  
@@ -5212,7 +5212,7 @@
     <date>1466791070000</date>  
     <title>横向滚动效果 | 好好学习的郝</title>  
       
-    <desc>html部分： 1234567891011&lt;div class=&quot;tab-body&quot;&gt; &lt;ul&gt; &lt;li data-key=&quot;0&quot;&gt;全部&lt;/li&gt; &lt;li data-key=&quot;1&quot;&gt;攻略&lt;/li&gt; &lt;li data-key=&quot;2&quot;&gt;案例</desc>  
+    <desc>html部分： 1234567891011lt;div class=quot;tab-bodyquot;gt; lt;ulgt; lt;li data-key=quot;0quot;gt;全部lt;/ligt; lt;li data-key=quot;1quot;gt;攻略lt;/ligt; lt;li data-key=quot;2quot;gt;案例</desc>  
   </url> 
   
   <url>  
@@ -5245,7 +5245,7 @@
     <date>1466679070000</date>  
     <title>使用accessToken记录登录状态 | 好好学习的郝</title>  
       
-    <desc>js设置cookie海哥的插件浏览器端用到了海哥写的Cookie插件：https://github.com/voidking/jquery-cookie ，值得好好学习一下。 1cookie.prototype.setCookie(&#x27;accessToken&#x27;, accessToken,7); jquery官方插件如果使用jquery官方给的cookie插件，用法如下： 1$.c</desc>  
+    <desc>js设置cookie海哥的插件浏览器端用到了海哥写的Cookie插件：https://github.com/voidking/jquery-cookie ，值得好好学习一下。 1cookie.prototype.setCookie(#x27;accessToken#x27;, accessToken,7); jquery官方插件如果使用jquery官方给的cookie插件，用法如下： 1$.c</desc>  
   </url> 
   
   <url>  
@@ -5311,7 +5311,7 @@
     <date>1466102768000</date>  
     <title>JS转换HTML转义符 | 好好学习的郝</title>  
       
-    <desc>去掉html标签123function removeHtmlTab(tab) &#123; return tab.replace(/&lt;[^&lt;&gt;]+?&gt;/g,&#x27;&#x27;);//删除所有HTML标签&#125;</desc>  
+    <desc>去掉html标签123function removeHtmlTab(tab) #123; return tab.replace(/lt;[^lt;gt;]+?gt;/g,#x27;#x27;);//删除所有HTML标签#125;</desc>  
   </url> 
   
   <url>  
@@ -5333,7 +5333,7 @@
     <date>1466005735000</date>  
     <title>基于JQuery实现滚动到页面底端时自动加载更多信息 | 好好学习的郝</title>  
       
-    <desc>这篇文章主要介绍了基于JQuery实现滚动到页面底端时自动加载更多信息，类似微博，新浪新闻的评论等，都采用了这方法,需要的朋友可以参考下关键代码： 12345678910111213var stop=true; $(window).scroll(function()&#123; totalheight = parseFloat($(window).height()) + parseFloat($(</desc>  
+    <desc>这篇文章主要介绍了基于JQuery实现滚动到页面底端时自动加载更多信息，类似微博，新浪新闻的评论等，都采用了这方法,需要的朋友可以参考下关键代码： 12345678910111213var stop=true; $(window).scroll(function()#123; totalheight = parseFloat($(window).height()) + parseFloat($(</desc>  
   </url> 
   
   <url>  
@@ -5672,7 +5672,7 @@
     <lastmod>2015-07-24T23:21:39.000Z</lastmod>  
       
     <date>1437780099000</date>  
-    <title>Android开发——-Android Source&SDK的国内镜像 | 好好学习的郝</title>  
+    <title>Android开发——-Android SourceSDK的国内镜像 | 好好学习的郝</title>  
       
     <desc>前言谷歌被墙，在下载安卓源码和SDK时，各种没有进度。这时，就要感谢国内镜像站了。 Android Source清华大学TUNA镜像源https://aosp.tuna.tsinghua.edu.cn/https://wiki.tuna.tsinghua.edu.cn/MirrorUsage/android 为什么要下载Android Source研究Android尤其是Android系统核心或者</desc>  
   </url> 
@@ -5982,7 +5982,7 @@
     <date>1430750576000</date>  
     <title>Oracle实验记录——数据库的安全性 | 好好学习的郝</title>  
       
-    <desc>创建数据库表空间（永久表空间）123456create tablespace test datafile &#x27;D:\oracle\oradata\test.dbf&#x27;size 100mautoextend on next 100mmaxsize unlimited;</desc>  
+    <desc>创建数据库表空间（永久表空间）123456create tablespace test datafile #x27;D:\oracle\oradata\test.dbf#x27;size 100mautoextend on next 100mmaxsize unlimited;</desc>  
   </url> 
   
   <url>  
@@ -5993,7 +5993,7 @@
     <date>1430683140000</date>  
     <title>Oracle实验记录——创建和管理表空间 | 好好学习的郝</title>  
       
-    <desc>创建临时表空间123456create temporary tablespace user_temp tempfile &#x27;D:\oracle\oradata\user_temp.dbf&#x27; size 10m autoextend on next 5m maxsize 50m extent management local; PS：临时表空间主要用于存储用户在执行order by等</desc>  
+    <desc>创建临时表空间123456create temporary tablespace user_temp tempfile #x27;D:\oracle\oradata\user_temp.dbf#x27; size 10m autoextend on next 5m maxsize 50m extent management local; PS：临时表空间主要用于存储用户在执行order by等</desc>  
   </url> 
   
   <url>  
@@ -6004,7 +6004,7 @@
     <date>1430674411000</date>  
     <title>Oracle实验记录——利用SQL命令创建表 | 好好学习的郝</title>  
       
-    <desc>创建表create table userbase(username varchar2(8),passwd varchar2(16)); 插入一行insert into userbase values(&#39;voidking&#39;,&#39;voidking&#39;); 查看数据select * from userbase;</desc>  
+    <desc>创建表create table userbase(username varchar2(8),passwd varchar2(16)); 插入一行insert into userbase values(#39;voidking#39;,#39;voidking#39;); 查看数据select * from userbase;</desc>  
   </url> 
   
   <url>  
@@ -6092,7 +6092,7 @@
     <date>1423766289000</date>  
     <title>常用正则表达式 | 好好学习的郝</title>  
       
-    <desc>正则表达式用于字符串处理、表单验证等场合，实用高效。现将一些常用的表达式收集于此，以备不时之需。 匹配中文字符的正则表达式： [\u4e00-\u9fa5] 匹配双字节字符(包括汉字在内)：[^\x00-\xff] 应用：计算字符串的长度（一个双字节字符长度计2，ASCII字符计1） 1String.prototype.len=function()&#123;return this.replace</desc>  
+    <desc>正则表达式用于字符串处理、表单验证等场合，实用高效。现将一些常用的表达式收集于此，以备不时之需。 匹配中文字符的正则表达式： [\u4e00-\u9fa5] 匹配双字节字符(包括汉字在内)：[^\x00-\xff] 应用：计算字符串的长度（一个双字节字符长度计2，ASCII字符计1） 1String.prototype.len=function()#123;return this.replace</desc>  
   </url> 
   
   <url>  
@@ -6345,7 +6345,7 @@
     <date>1416669014000</date>  
     <title>jQuery学习笔记——Ajax篇 | 好好学习的郝</title>  
       
-    <desc>显示欢迎信息Ajax的优点我们已经说过了，上个例子先！ 12345678910111213141516171819202122232425262728293031323334&lt;!--显示欢迎信息.html--&gt;&lt;html&gt; &lt;head&gt; &lt;title&gt;显示欢迎信息&lt;/title&gt; &lt;meta charset=&quot;UTF-8&</desc>  
+    <desc>显示欢迎信息Ajax的优点我们已经说过了，上个例子先！ 12345678910111213141516171819202122232425262728293031323334lt;!--显示欢迎信息.html--gt;lt;htmlgt; lt;headgt; lt;titlegt;显示欢迎信息lt;/titlegt; lt;meta charset=quot;UTF-8</desc>  
   </url> 
   
   <url>  
@@ -6367,7 +6367,7 @@
     <date>1416182725000</date>  
     <title>jQuery学习笔记——选择器篇 | 好好学习的郝</title>  
       
-    <desc>选择器语法jQuery选择元素的语法为：$(selector,[content]); 如果第一个参数是选择器，那么第二个参数就是指示该操作的上下文，默认为整个DOM文档。上下文参数可以是DOM元素的引用，也可以包含jQuery选择器的字符串，或者是DOM元素包装集。 上文hello voidking中的html文件内容修改为： 1234567891011121314151617181920&lt;</desc>  
+    <desc>选择器语法jQuery选择元素的语法为：$(selector,[content]); 如果第一个参数是选择器，那么第二个参数就是指示该操作的上下文，默认为整个DOM文档。上下文参数可以是DOM元素的引用，也可以包含jQuery选择器的字符串，或者是DOM元素包装集。 上文hello voidking中的html文件内容修改为： 1234567891011121314151617181920lt;</desc>  
   </url> 
   
   <url>  
@@ -6389,7 +6389,7 @@
     <date>1415993240000</date>  
     <title>Javascript学习笔记——实践篇 | 好好学习的郝</title>  
       
-    <desc>注释本文中的文件名，写在了代码注释中。既然用到了三种文件，就把这三种文件的注释方法先说明一下。 HTML注释语法&lt;!--注释的内容--&gt;,示例如下： 1&lt;!--欢迎来到VoidKing的主页--&gt; CSS注释语法/*注释的内容*/，示例如下： 12345/*这是注释*//*这也是注释可以分段*/</desc>  
+    <desc>注释本文中的文件名，写在了代码注释中。既然用到了三种文件，就把这三种文件的注释方法先说明一下。 HTML注释语法lt;!--注释的内容--gt;,示例如下： 1lt;!--欢迎来到VoidKing的主页--gt; CSS注释语法/*注释的内容*/，示例如下： 12345/*这是注释*//*这也是注释可以分段*/</desc>  
   </url> 
   
   <url>  
@@ -6400,7 +6400,7 @@
     <date>1415876222000</date>  
     <title>Javascript学习笔记——基础篇 | 好好学习的郝</title>  
       
-    <desc>什么是JavascriptJavascript是一种基于对象的脚本语言。 基于对象（Object-Based）不提供抽象、继承、重载等有关面向对象语言的功能。而是把其他语言创建的对象统一起来，形成一个对象系统，以供使用。 脚本语言最大的特点就是不需要编译和链接。传统编程语言有四个步骤“编写-&gt;编译-&gt;链接-&gt;运行”，而脚本语言只有两个步骤“编写 -&gt; 运行”。 脚本语言是解</desc>  
+    <desc>什么是JavascriptJavascript是一种基于对象的脚本语言。 基于对象（Object-Based）不提供抽象、继承、重载等有关面向对象语言的功能。而是把其他语言创建的对象统一起来，形成一个对象系统，以供使用。 脚本语言最大的特点就是不需要编译和链接。传统编程语言有四个步骤“编写-gt;编译-gt;链接-gt;运行”，而脚本语言只有两个步骤“编写 -gt; 运行”。 脚本语言是解</desc>  
   </url> 
   
   <url>  
@@ -6455,7 +6455,7 @@
     <date>1414015322000</date>  
     <title>团队博客项目（二） | 好好学习的郝</title>  
       
-    <desc>hello voidking查看效果1、单击webstorm右上角的绿色三角形（或者shift+f10），运行项目。 2、打开浏览器，输入localhost:3000，有没有看到welcome to express ？ 修改文字下面我们把welcome to express修改为hello voidking！1、打开views文件夹下的index.ejs，诶？这不是html代码吗？发现有个&lt;</desc>  
+    <desc>hello voidking查看效果1、单击webstorm右上角的绿色三角形（或者shift+f10），运行项目。 2、打开浏览器，输入localhost:3000，有没有看到welcome to express ？ 修改文字下面我们把welcome to express修改为hello voidking！1、打开views文件夹下的index.ejs，诶？这不是html代码吗？发现有个lt;</desc>  
   </url> 
   
   <url>  
@@ -6532,7 +6532,7 @@
     <date>1411563141000</date>  
     <title>如何引入另一个html文件 | 好好学习的郝</title>  
       
-    <desc>iframe方式123&lt;iframe name=&quot;content_frame&quot; width=100% height=30 marginwidth=0 marginheight=0 src=&quot;import.htm&quot; mce_src=&quot;import.htm&quot; &gt;&lt;/iframe&gt;</desc>  
+    <desc>iframe方式123lt;iframe name=quot;content_framequot; width=100% height=30 marginwidth=0 marginheight=0 src=quot;import.htmquot; mce_src=quot;import.htmquot; gt;lt;/iframegt;</desc>  
   </url> 
   
   <url>  
@@ -6598,7 +6598,7 @@
     <date>1402154347000</date>  
     <title>Windows的一些技巧 | 好好学习的郝</title>  
       
-    <desc>realtek高清晰音频管理器，关闭图标开始&gt;运行&gt;输入msconfig&gt;启动&gt;取消勾选”realtek高清晰音频管理器”的开机自启动项&gt;OK&gt;重启生效 菜单栏消失控制面板-外观和个性化-文件夹选项-查看-始终显示菜单 删除用户开始-控制面板-性能和维护-管理工具-计算机管理-本地用户和组-用户删掉你不想要的用户。 切换管理员账户计算机右击-管理-本地用户和组-</desc>  
+    <desc>realtek高清晰音频管理器，关闭图标开始gt;运行gt;输入msconfiggt;启动gt;取消勾选”realtek高清晰音频管理器”的开机自启动项gt;OKgt;重启生效 菜单栏消失控制面板-外观和个性化-文件夹选项-查看-始终显示菜单 删除用户开始-控制面板-性能和维护-管理工具-计算机管理-本地用户和组-用户删掉你不想要的用户。 切换管理员账户计算机右击-管理-本地用户和组-</desc>  
   </url> 
   
   <url>  
@@ -6642,7 +6642,7 @@
     <date>1393323024000</date>  
     <title>Maven之pom.xml | 好好学习的郝</title>  
       
-    <desc>pom.xml速览12345678910111213141516171819202122232425262728293031323334&lt;project&gt; &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt; &lt;groupId&gt;...&lt;/groupId&gt; &lt;artifactId&gt;...&lt;/artifact</desc>  
+    <desc>pom.xml速览12345678910111213141516171819202122232425262728293031323334lt;projectgt; lt;modelVersiongt;4.0.0lt;/modelVersiongt; lt;groupIdgt;...lt;/groupIdgt; lt;artifactIdgt;...lt;/artifact</desc>  
   </url> 
   
   <url>  
@@ -6686,7 +6686,7 @@
     <date>1393085424000</date>  
     <title>Spring与Struts2整合应用 | 好好学习的郝</title>  
       
-    <desc>新建项目新建Dynamic Web Project，命名为struts2_spring。 添加struts2框架添加struts2五个核心jar包到lib文件夹。 web.xml1234567891011121314151617&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;web-app id=&quot;W</desc>  
+    <desc>新建项目新建Dynamic Web Project，命名为struts2_spring。 添加struts2框架添加struts2五个核心jar包到lib文件夹。 web.xml1234567891011121314151617lt;?xml version=quot;1.0quot; encoding=quot;UTF-8quot;?gt;lt;web-app id=quot;W</desc>  
   </url> 
   
   <url>  
@@ -6708,7 +6708,7 @@
     <date>1393071024000</date>  
     <title>Spring AOP | 好好学习的郝</title>  
       
-    <desc>从代理机制初探AOP1234567891011121314package com.voidking.aop;import java.util.logging.*;public class HelloSpeaker &#123; private Logger logger = Logger.getLogger(this.getClass().getName()); public void hello</desc>  
+    <desc>从代理机制初探AOP1234567891011121314package com.voidking.aop;import java.util.logging.*;public class HelloSpeaker #123; private Logger logger = Logger.getLogger(this.getClass().getName()); public void hello</desc>  
   </url> 
   
   <url>  
@@ -6741,7 +6741,7 @@
     <date>1392988224000</date>  
     <title>Hibernate高级应用 | 好好学习的郝</title>  
       
-    <desc>Hibernate批量处理批量插入Hibernate直接处理首先在hibernate.cfg.xml中设置批量尺寸属性hibernate.jdbc.batch_size，最好关闭Hibernate的二级缓存以提高效率。 123456&lt;hibernate-configuration&gt; &lt;session-factory&gt; &lt;property name=&quot;hibe</desc>  
+    <desc>Hibernate批量处理批量插入Hibernate直接处理首先在hibernate.cfg.xml中设置批量尺寸属性hibernate.jdbc.batch_size，最好关闭Hibernate的二级缓存以提高效率。 123456lt;hibernate-configurationgt; lt;session-factorygt; lt;property name=quot;hibe</desc>  
   </url> 
   
   <url>  
@@ -6884,7 +6884,7 @@
     <date>1385575297000</date>  
     <title>Win7不用软件开wifi热点 | 好好学习的郝</title>  
       
-    <desc>标准设置流程首先win+R，输入cmd，打开命令符提示界面，然后用以下命令来完成设置 12345netsh wlan set hostednetwork mode=allownetsh wlan set hostednetwork ssid=&quot;ihelloworld&quot;netsh wlan set hostednetwork key=&quot;helloworld&quot;n</desc>  
+    <desc>标准设置流程首先win+R，输入cmd，打开命令符提示界面，然后用以下命令来完成设置 12345netsh wlan set hostednetwork mode=allownetsh wlan set hostednetwork ssid=quot;ihelloworldquot;netsh wlan set hostednetwork key=quot;helloworldquot;n</desc>  
   </url> 
   
   <url>  
@@ -6939,7 +6939,7 @@
     <date>1385219937000</date>  
     <title>CentOS的一些小技巧 | 好好学习的郝</title>  
       
-    <desc>安装中文输入法1、安装中文支持包yum install &quot;@Chinese Support&quot; 2、回到桌面，system-&gt;preferences-&gt;input method 3、如果没有，先注销一下。</desc>  
+    <desc>安装中文输入法1、安装中文支持包yum install quot;@Chinese Supportquot; 2、回到桌面，system-gt;preferences-gt;input method 3、如果没有，先注销一下。</desc>  
   </url> 
   
   <url>  
