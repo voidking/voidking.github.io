@@ -1,71 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Python调用OpenAI API</title>
-    <url>/dev-python-openai-api/</url>
-    <content><![CDATA[1. 前言本文学习使用Python调用OpenAI API的方法。
-参考文档：
-
-OpenAI - Introduction
-OpenAI - Python library
-
-
-
-2. 安装OpenAI客户端pip install openai
-
-3. 命令行访问OpenAI3.1. 命令行参数usage: openai [-h] [-V] [-v] [-b API_BASE] [-k API_KEY] [-p PROXY [PROXY ...]] [-o ORGANIZATION] &#123;api,tools,wandb&#125; ...positional arguments:  &#123;api,tools,wandb&#125;    api                 Direct API calls    tools               Client side tools for convenience    wandb               Logging with Weights &amp; Biasesoptional arguments:  -h, --help            show this help message and exit  -V, --version         show program&#x27;s version number and exit  -v, --verbose         Set verbosity.  -b API_BASE, --api-base API_BASE                        What API base url to use.  -k API_KEY, --api-key API_KEY                        What API key to use.  -p PROXY [PROXY ...], --proxy PROXY [PROXY ...]                        What proxy to use.  -o ORGANIZATION, --organization ORGANIZATION                        Which organization to run as (will use your default organization if not specified)
-
-3.2. Hello worldexport OPENAI_API_KEY=&quot;sk-xxx&quot;openai api chat_completions.create -m gpt-3.5-turbo -g user &quot;Hello world&quot;
-
-
-3.3. 可能的问题3.3.1. 配置KEY问题执行openai命令前，需要先配置KEY，否则会报错：
-Error: No API key provided. You can set your API key in code using &#x27;openai.api_key = &lt;API-KEY&gt;&#x27;, or you can set the environment variable OPENAI_API_KEY=&lt;API-KEY&gt;). If your API key is stored in a file, you can point the openai module at it with &#x27;openai.api_key_path = &lt;PATH&gt;&#x27;. You can generate API keys in the OpenAI web interface. See https://platform.openai.com/account/api-keys for details.
-
-或者，执行openai命令时，使用参数-k配置KEY。
-3.3.2. 网络问题执行可能会卡住一段时间后报错：
-[2023-08-05 08:55:26,852] Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by &#x27;NewConnectionError(&#x27;&lt;urllib3.connection.HTTPSConnection object at 0x7f94afde5d30&gt;: Failed to establish a new connection: [Errno 110] Connection timed out&#x27;)&#x27;: /v1/chat/completions
-
-也可能会直接报错：
-Error: Error communicating with OpenAI: (&#x27;Connection aborted.&#x27;, ConnectionResetError(54, &#x27;Connection reset by peer&#x27;))
-
-解决办法一：配置全局代理（推荐）
-export https_proxy=http://127.0.0.1:7890 http_proxy=http://127.0.0.1:7890 all_proxy=socks5://127.0.0.1:7890openai api chat_completions.create -m gpt-3.5-turbo -g user &quot;Hello world&quot;
-
-解决办法二：执行命令时指定代理（验证时没有生效）
-openai -p http://127.0.0.1:7890 -k sk-xxx api chat_completions.create -m gpt-3.5-turbo -g user &quot;Hello world&quot;
-
-使用-p参数时，必须配合使用-k参数，否则报错：
-usage: openai [-h] [-V] [-v] [-b API_BASE] [-k API_KEY] [-p PROXY [PROXY ...]] [-o ORGANIZATION] &#123;api,tools,wandb&#125; ...openai: error: argument &#123;api,tools,wandb&#125;: invalid choice: &#x27;gpt-3.5-turbo&#x27; (choose from &#x27;api&#x27;, &#x27;tools&#x27;, &#x27;wandb&#x27;)
-
-4. Python访问OpenAI4.1. Hello world1、配置KEY的环境变量
-export OPENAI_API_KEY=&quot;sk-xxx&quot;
-
-2、新建文件 hello.py
-import osimport openai# Load your API key from an environment variable or secret management serviceopenai.api_key = os.getenv(&quot;OPENAI_API_KEY&quot;)chat_completion = openai.ChatCompletion.create(model=&quot;gpt-3.5-turbo&quot;, messages=[&#123;&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Hello world&quot;&#125;])print(chat_completion)
-
-3、执行 hello.py
-python hello.py
-
-返回值json结构：
-&#123;  &quot;id&quot;: &quot;chatcmpl-7ksejsnNZEmq7Q0YPGQ1iRa1x5LHf&quot;,  &quot;object&quot;: &quot;chat.completion&quot;,  &quot;created&quot;: 1691407541,  &quot;model&quot;: &quot;gpt-3.5-turbo-0613&quot;,  &quot;choices&quot;: [    &#123;      &quot;index&quot;: 0,      &quot;message&quot;: &#123;        &quot;role&quot;: &quot;assistant&quot;,        &quot;content&quot;: &quot;Hello! How can I assist you today?&quot;      &#125;,      &quot;finish_reason&quot;: &quot;stop&quot;    &#125;  ],  &quot;usage&quot;: &#123;    &quot;prompt_tokens&quot;: 9,    &quot;completion_tokens&quot;: 9,    &quot;total_tokens&quot;: 18  &#125;&#125;
-
-4.2. 可能的问题4.2.1. 文件名问题测试文件，不要命名为 openai.py ，否则会报错：
-AttributeError: partially initialized module &#x27;openai&#x27; has no attribute &#x27;ChatCompletion&#x27; (most likely due to a circular import)
-
-
-
-
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>python</category>
-      </categories>
-      <tags>
-        <tag>python</tag>
-        <tag>chatgpt</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>MetaGPT快速体验</title>
     <url>/dev-metagpt-quickstart/</url>
     <content><![CDATA[1. 前言MetaGPT是一个多智能体编程框架。我们提出需求，MetaGPT能够通过模拟出公司里的各种角色，把产品做出来。
@@ -378,6 +313,145 @@ python bot.py
       </categories>
       <tags>
         <tag>docker</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Markdown使用Mermaid绘图入门篇</title>
+    <url>/dev-markdown-mermaid-start/</url>
+    <content><![CDATA[1. 前言Mermaid是一种用于描述图表的文本语言，它支持多种图表类型，如流程图、序列图、甘特图等。通过简单的文本描述，就可以生成复杂的图表，而不需要手动绘制。
+Mermaid可以与Markdown结合使用，方便快捷地在文档中插入图表。本文将介绍如何使用Mermaid语言在Markdown文档中绘制各种类型的图表。
+参考文档：
+
+github - mermaid-js/mermaid
+Mermaid官方文档
+使用 markdown 画流程图、时序图
+Markdown流程图语法示例
+
+
+
+2. 安装与配置Mermaid通常不需要额外的安装，因为它是在浏览器中渲染的。想要在Markdown中使用Mermaid语言，需要Markdown编辑器支持Mermaid语法，并启用了Mermaid渲染插件。
+3. 在Markdown中插入Mermaid图表在Markdown文档中插入Mermaid图表非常简单。只需使用三个反引号（```）将Mermaid代码块括起来，并在反引号后指定Mermaid语言。
+​&lt;pre class=&quot;mermaid&quot;&gt;图表代码...​&lt;/pre&gt;
+
+3.1. Hexo Next主题启用Mermaid参考文档：
+
+Next - Mermaid
+Hexo NexT 主题渲染 Mermaid 绘图
+
+1、安装 hexo-filter-mermaid-diagrams 插件
+npm install hexo-filter-mermaid-diagrams --save
+
+2、Next主题启用Mermaid
+# Mermaid tagmermaid:  enable: true  # Available themes: default | dark | forest | neutral  theme: default
+
+具体修改参考next主题修改commit/0790595d。
+4. 绘制图表4.1. 绘制流程图流程图是描述流程、决策和步骤的图表。以下是一个简单的流程图示例：
+graph LR    A[开始] --&gt; B[中间步骤]    B --&gt; C[结束]
+
+上述代码使用Mermaid语法绘制了一个由三个节点组成的流程图。
+graph LR
+    A[开始] --> B[中间步骤]
+    B --> C[结束]
+
+
+4.2. 绘制序列图序列图用于展示多个参与者之间的交互过程。以下是一个简单的序列图示例：
+sequenceDiagram    participant Alice    participant Bob    Alice -&gt;&gt; Bob: 你好，Bob！    Bob --&gt;&gt; Alice: 你好，Alice！
+
+上述代码使用Mermaid语法绘制了Alice和Bob之间的简单交互过程。
+sequenceDiagram
+    participant Alice
+    participant Bob
+    Alice ->> Bob: 你好，Bob！
+    Bob -->> Alice: 你好，Alice！
+
+4.3. 绘制甘特图甘特图用于展示任务的时间轴和进度。以下是一个简单的甘特图示例：
+gantt    title 项目计划    dateFormat  YYYY-MM-DD    section 项目A    任务1      :a1, 2023-08-01, 7d    任务2      :after a1, 3d    section 项目B    任务3      :2023-08-10, 5d    任务4      :2023-08-15, 4d
+
+上述代码使用Mermaid语法绘制了一个包含两个项目的甘特图，每个项目有多个任务。
+gantt
+    title 项目计划
+    dateFormat  YYYY-MM-DD
+    section 项目A
+    任务1      :a1, 2023-08-01, 7d
+    任务2      :after a1, 3d
+    section 项目B
+    任务3      :2023-08-10, 5d
+    任务4      :2023-08-15, 4d
+
+4.4. 高级用法与样式Mermaid支持许多高级用法和样式设置，例如节点样式、连接线样式、图表方向等。更多信息请参考Mermaid官方文档。
+5. 小结通过Mermaid语言，我们可以在Markdown文档中轻松绘制流程图、序列图、甘特图等各种类型的图表。只需按照本教程的指导，使用Mermaid语法编写图表代码，并确保我们的Markdown编辑器支持Mermaid渲染，即可轻松创建复杂的图表内容。
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>hexo</category>
+      </categories>
+      <tags>
+        <tag>markdown</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Python调用OpenAI API</title>
+    <url>/dev-python-openai-api/</url>
+    <content><![CDATA[1. 前言本文学习使用Python调用OpenAI API的方法。
+参考文档：
+
+OpenAI - Introduction
+OpenAI - Python library
+
+
+
+2. 安装OpenAI客户端pip install openai
+
+3. 命令行访问OpenAI3.1. 命令行参数usage: openai [-h] [-V] [-v] [-b API_BASE] [-k API_KEY] [-p PROXY [PROXY ...]] [-o ORGANIZATION] &#123;api,tools,wandb&#125; ...positional arguments:  &#123;api,tools,wandb&#125;    api                 Direct API calls    tools               Client side tools for convenience    wandb               Logging with Weights &amp; Biasesoptional arguments:  -h, --help            show this help message and exit  -V, --version         show program&#x27;s version number and exit  -v, --verbose         Set verbosity.  -b API_BASE, --api-base API_BASE                        What API base url to use.  -k API_KEY, --api-key API_KEY                        What API key to use.  -p PROXY [PROXY ...], --proxy PROXY [PROXY ...]                        What proxy to use.  -o ORGANIZATION, --organization ORGANIZATION                        Which organization to run as (will use your default organization if not specified)
+
+3.2. Hello worldexport OPENAI_API_KEY=&quot;sk-xxx&quot;openai api chat_completions.create -m gpt-3.5-turbo -g user &quot;Hello world&quot;
+
+
+3.3. 可能的问题3.3.1. 配置KEY问题执行openai命令前，需要先配置KEY，否则会报错：
+Error: No API key provided. You can set your API key in code using &#x27;openai.api_key = &lt;API-KEY&gt;&#x27;, or you can set the environment variable OPENAI_API_KEY=&lt;API-KEY&gt;). If your API key is stored in a file, you can point the openai module at it with &#x27;openai.api_key_path = &lt;PATH&gt;&#x27;. You can generate API keys in the OpenAI web interface. See https://platform.openai.com/account/api-keys for details.
+
+或者，执行openai命令时，使用参数-k配置KEY。
+3.3.2. 网络问题执行可能会卡住一段时间后报错：
+[2023-08-05 08:55:26,852] Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by &#x27;NewConnectionError(&#x27;&lt;urllib3.connection.HTTPSConnection object at 0x7f94afde5d30&gt;: Failed to establish a new connection: [Errno 110] Connection timed out&#x27;)&#x27;: /v1/chat/completions
+
+也可能会直接报错：
+Error: Error communicating with OpenAI: (&#x27;Connection aborted.&#x27;, ConnectionResetError(54, &#x27;Connection reset by peer&#x27;))
+
+解决办法一：配置全局代理（推荐）
+export https_proxy=http://127.0.0.1:7890 http_proxy=http://127.0.0.1:7890 all_proxy=socks5://127.0.0.1:7890openai api chat_completions.create -m gpt-3.5-turbo -g user &quot;Hello world&quot;
+
+解决办法二：执行命令时指定代理（验证时没有生效）
+openai -p http://127.0.0.1:7890 -k sk-xxx api chat_completions.create -m gpt-3.5-turbo -g user &quot;Hello world&quot;
+
+使用-p参数时，必须配合使用-k参数，否则报错：
+usage: openai [-h] [-V] [-v] [-b API_BASE] [-k API_KEY] [-p PROXY [PROXY ...]] [-o ORGANIZATION] &#123;api,tools,wandb&#125; ...openai: error: argument &#123;api,tools,wandb&#125;: invalid choice: &#x27;gpt-3.5-turbo&#x27; (choose from &#x27;api&#x27;, &#x27;tools&#x27;, &#x27;wandb&#x27;)
+
+4. Python访问OpenAI4.1. Hello world1、配置KEY的环境变量
+export OPENAI_API_KEY=&quot;sk-xxx&quot;
+
+2、新建文件 hello.py
+import osimport openai# Load your API key from an environment variable or secret management serviceopenai.api_key = os.getenv(&quot;OPENAI_API_KEY&quot;)chat_completion = openai.ChatCompletion.create(model=&quot;gpt-3.5-turbo&quot;, messages=[&#123;&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Hello world&quot;&#125;])print(chat_completion)
+
+3、执行 hello.py
+python hello.py
+
+返回值json结构：
+&#123;  &quot;id&quot;: &quot;chatcmpl-7ksejsnNZEmq7Q0YPGQ1iRa1x5LHf&quot;,  &quot;object&quot;: &quot;chat.completion&quot;,  &quot;created&quot;: 1691407541,  &quot;model&quot;: &quot;gpt-3.5-turbo-0613&quot;,  &quot;choices&quot;: [    &#123;      &quot;index&quot;: 0,      &quot;message&quot;: &#123;        &quot;role&quot;: &quot;assistant&quot;,        &quot;content&quot;: &quot;Hello! How can I assist you today?&quot;      &#125;,      &quot;finish_reason&quot;: &quot;stop&quot;    &#125;  ],  &quot;usage&quot;: &#123;    &quot;prompt_tokens&quot;: 9,    &quot;completion_tokens&quot;: 9,    &quot;total_tokens&quot;: 18  &#125;&#125;
+
+4.2. 可能的问题4.2.1. 文件名问题测试文件，不要命名为 openai.py ，否则会报错：
+AttributeError: partially initialized module &#x27;openai&#x27; has no attribute &#x27;ChatCompletion&#x27; (most likely due to a circular import)
+
+
+
+
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>python</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>chatgpt</tag>
       </tags>
   </entry>
   <entry>
@@ -11391,7 +11465,7 @@ modules和传统的GOPATH不同，不需要包含例如src，bin这样的子目�
 失败了，返回404，猜测是12.0版本在代理服务器不存在，使用另外一种下载方式。
 go get k8s.io/client-go@kubernetes-1.15.0
 此处下载了两个版本的client-go，我们使用v0.0.0版本。
-4、安装client-go相关依赖client-go默认下载到$GOPATH/pkg/mod/k8s.io目录下，把k8s.io目录移动到$GOPATH/src目录下。然后把&#99;&#x6c;&#105;&#101;&#110;&#x74;&#x2d;&#103;&#111;&#x40;&#x76;&#x30;&#46;&#x30;&#46;&#x30;重命名为client-go，然后在client-go目录下执行安装依赖的命令：
+4、安装client-go相关依赖client-go默认下载到$GOPATH/pkg/mod/k8s.io目录下，把k8s.io目录移动到$GOPATH/src目录下。然后把&#99;&#108;&#x69;&#x65;&#x6e;&#116;&#45;&#x67;&#x6f;&#64;&#118;&#x30;&#x2e;&#48;&#x2e;&#48;重命名为client-go，然后在client-go目录下执行安装依赖的命令：
 export GOPROXY=https://goproxy.ioexport GO111MODULE=ongo mod vendor
 完成之后，所有的依赖都下载到了client-go/vendor目录下，一个完整的client-go依赖库就准备好了。
 3.2. 依赖库版本管理client-go依赖库准备好了，但是另一个问题来了：假设项目vk-project依赖client-go和库A，client-go依赖库A，两个依赖库A版本不一致，那么vk-project在编译时，会同时依赖两个不同的库A，导致编译出的二进制包有问题。
@@ -19802,11 +19876,11 @@ mkdir -p /root/.certs/echo -n | openssl s_client -connect smtp.163.com:465 | sed
 5、测试发送邮件echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com查看邮箱，正常的话应该已经收到邮件了。如果没有收到邮件，可以查看日志进行排查：tail /var/log/maillog
 2.3. macos参考文档：《MacOS配置发送邮件》
 3. mail命令3.1. 命令格式mail [OPTION...] [address...]常用到的选项，一个是s，代表主题；一个是A，代表附件。其他的需要时查看help。
-3.2. 发送普通邮件目标：给邮箱 &#118;&#x6f;&#105;&#x64;&#107;&#x69;&#x6e;&#103;&#64;&#113;&#113;&#x2e;&#99;&#111;&#109; 发送邮件，主题为“Hello VoidKing”，内容为“Welcome to mail world！”
+3.2. 发送普通邮件目标：给邮箱 &#118;&#x6f;&#x69;&#100;&#107;&#x69;&#x6e;&#x67;&#64;&#x71;&#x71;&#x2e;&#x63;&#111;&#x6d; 发送邮件，主题为“Hello VoidKing”，内容为“Welcome to mail world！”
 echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com
 但是，等待了几分钟，并没有收到邮件，垃圾箱也没有。mail，查看email的发送状态为Undelivered Mail Returned，原来没有投递出去。
 查看邮件系统日志：tail -n 50 /var/spool/mail/test提示host mx3.qq.com[183.57.48.35] said: 550 Mail content denied。看来qq邮箱的垃圾邮件防御机制做的不错，那就换个163邮箱，没想到依然失败。
-换一台服务器？发送给 &#118;&#111;&#105;&#100;&#x6b;&#x69;&#x6e;&#x67;&#64;&#x71;&#113;&#x2e;&#99;&#111;&#x6d; ，成功！很尴尬。。。就这么着吧
+换一台服务器？发送给 &#118;&#111;&#105;&#100;&#107;&#x69;&#110;&#103;&#x40;&#113;&#x71;&#46;&#99;&#x6f;&#109; ，成功！很尴尬。。。就这么着吧
 3.3. 发送高级邮件1、从文本读入内容发送邮件mail -s &#39;Error report&#39; voidking@qq.com &lt; /tmp/log/ganglia/error-20180524.log
 2、发送附件mail -s &#39;Error report&#39; voidking@qq.com -A /tmp/log/ganglia/ganglia-20180524.log &lt; /tmp/log/ganglia/error-20180524.log
 3、指定发件人echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com -aFrom:haojin@qq.com
@@ -22847,7 +22921,7 @@ linux下载好数据集后，把数据集下载到win10中nmt目录中，路径�
 4.2. 训练model在根目录（nmt目录）下运行：
 python -m nmt.nmt --src=vi --tgt=en --vocab_prefix=./tmp/nmt_data/vocab  --train_prefix=./tmp/nmt_data/train --dev_prefix=./tmp/nmt_data/tst2012  --test_prefix=./tmp/nmt_data/tst2013 --out_dir=./tmp/nmt_model --num_train_steps=12000 --steps_per_stats=100 --num_layers=2 --num_units=128 --dropout=0.2 --metrics=bleu
 
-郝同学i5-3337U &#x43;&#x50;&#85;&#64;&#49;&#46;&#56;&#x30;&#71;&#x48;&#x7a;，8G内存，训练了将近两个小时才训练完成。下文我们要学习使用一下UCloud提供的免费GPU。
+郝同学i5-3337U &#x43;&#x50;&#x55;&#x40;&#x31;&#x2e;&#x38;&#48;&#x47;&#x48;&#x7a;，8G内存，训练了将近两个小时才训练完成。下文我们要学习使用一下UCloud提供的免费GPU。
 我们可以使用 Tensorboard 在训练过程中查看模型的总结：
 tensorboard --port 22222 --logdir ./tmp/nmt_model/
 通过以下简单的变化，就能逆向完成英语到越南语的翻译。
@@ -30463,7 +30537,7 @@ t0 = time()&lt; 你的 clf.fit() 代码行 &gt;print &#x27;training time:&#x27;,
 代码运行说明文件。纯文本或markdown格式，写明运行你的代码所需要的库，他们的安装方法和运行方法
 预测结果: 纯文本或CSV文件。
 
-对项目要求有疑问请致信 &#115;&#117;&#112;&#x70;&#111;&#x72;&#x74;&#64;&#121;&#111;&#117;&#x64;&#97;&#120;&#x75;&#x65;&#x2e;&#99;&#x6f;&#x6d;
+对项目要求有疑问请致信 &#x73;&#117;&#112;&#112;&#x6f;&#114;&#116;&#x40;&#x79;&#111;&#x75;&#x64;&#97;&#x78;&#117;&#x65;&#x2e;&#99;&#x6f;&#109;
 准备好提交项目后，请点击下一项，在“项目提交”小节中提交。
 ]]></content>
       <categories>
@@ -30504,7 +30578,7 @@ Resume Builder
 项目导师会根据该评估准则（与你制作简历时遵循的清单相符）对你的简历项目进行审核。
 4.1. 提交准备好提交求职信后，你需要：
 1、删除/匿名化你的求职信上的所有个人联系人信息，以防泄漏隐私。2、创建 PDF 格式的简历，这样你的简历在不同操作系统/软件/屏幕中有一致的版面样式。3、点击下方的“提交项目”按钮，并根据说明操作。4、在“告知审核员”中，请包括任何有关你的职业目标（如申请的工作或领域），或任何有意偏离评估准则情况的详细信息。
-注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#115;&#117;&#x70;&#112;&#111;&#x72;&#116;&#x40;&#x79;&#111;&#117;&#x64;&#97;&#120;&#117;&#x65;&#x2e;&#99;&#111;&#109;。
+注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#115;&#x75;&#x70;&#112;&#111;&#114;&#116;&#x40;&#x79;&#111;&#117;&#100;&#x61;&#120;&#117;&#x65;&#46;&#x63;&#x6f;&#109;。
 5. GitHub个人资料项目你的GitHub个人资料展示你创建的项目，并让他人了解你的工作风格和提交频率。通过展示你对 GitHub 的熟悉程度，其他开发人员和招聘经理能够知道你拥有他们需要能力，你就是他们正在寻找的人。你的代码库应表明你认真对待项目，并且能够编写干净、格式正确的代码。请查看 GitHub 上的这篇出色的博客文章，了解如何用 GitHub 帮助你持续学习，发展职业生涯。
 为何要完成此 GitHub 个人资料项目？GitHub 越来越多地被用作招聘平台以及潜在雇主查看你的作品的方式。它还是与其他开发人员建立联系和展示你的技能的好地方。
 我应该做什么？你应该以招聘人员或用人部门经理的眼光查看你的 GitHub 个人资料，重点关注你的个人资料、项目和代码如何将你描绘成公司的潜在候选人或项目的协作者。
@@ -30533,7 +30607,7 @@ Resume Builder
 8.1. 反馈优达学城项目导师会根据该标准（与你制作领英简介时遵循的清单相符）对你的领英简介项目进行审核。
 8.2. 提交准备好提交领英个人资料后：
 1、若要提交，请点击下方的“提交项目”按钮，并根据说明操作。2、在“告知评审员”中，请包括任何有关你的职业目标（如预期工作领域）的详细信息。
-注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#x73;&#x75;&#112;&#112;&#x6f;&#x72;&#116;&#x40;&#x79;&#111;&#117;&#x64;&#x61;&#x78;&#117;&#x65;&#46;&#99;&#x6f;&#109;。
+注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#x73;&#x75;&#x70;&#x70;&#111;&#x72;&#116;&#64;&#x79;&#111;&#117;&#100;&#97;&#x78;&#x75;&#x65;&#46;&#99;&#x6f;&#x6d;。
 9. 技术面试项目对于此实战项目，你需要回答五个技术面试问题，这些问题涉及的是技术面试课程中讨论的各种主题。你应该用 Python 写出清晰高效的答案，并用文字解释代码的效率和设计理由。我们将安排合格的审核者检查你的答案，并针对任何精彩之处或欠缺的方面做出反馈：你的解决方案是最高效的吗？你很好地解释了你的想法吗？你的代码简洁易懂吗？
 请回答以下问题：
 问题 1: 假设有两个字符串 s 和 t，请判断 t 的变形词是否是 s 的子字符串。例如：如果 s = “udacity”，t = “ad”，则函数返回 True。你的函数定义应该为：“question1(s, t)”，并返回布尔值 True 或 False。 
@@ -30599,7 +30673,7 @@ Dice
 问题 5 - 通过一个情景举例说明正则化对学习好的模型的必要性，以及提供一个正则化没有意义的情景。
 问题 6 -你附近的杂货店想向顾客有针对性地发放对他们来说有用的优惠券。假设你可以访问每位顾客的购买历史和店铺商品目录，你将设计怎样一个系统，来决定发放哪些优惠券？你如何衡量这个系统的性能？
 问题 7 - 选择一个公司，然后描述你想应聘的该公司内的机器学习工程师职位（假设有）。现在，如果你已成功应聘，并从今天开始任职，在你看来，你的职位在下一年会有怎样的发展？你的长期职业目标是什么，这个职位如何帮助你实现长期目标？
-13.3. 提交当你准备提交项目，点击下方“提交项目”，上传一份 PDF 文件。如果有任何与提交项目相关的疑问，或想查看提交状态，请向我们发送电子邮件询问（&#x73;&#117;&#112;&#x70;&#x6f;&#x72;&#116;&#x40;&#121;&#x6f;&#x75;&#x64;&#97;&#x78;&#x75;&#x65;&#46;&#99;&#x6f;&#109;）。
+13.3. 提交当你准备提交项目，点击下方“提交项目”，上传一份 PDF 文件。如果有任何与提交项目相关的疑问，或想查看提交状态，请向我们发送电子邮件询问（&#x73;&#117;&#x70;&#x70;&#x6f;&#114;&#116;&#x40;&#121;&#x6f;&#117;&#100;&#97;&#x78;&#117;&#x65;&#46;&#99;&#111;&#109;）。
 13.4. 项目资源项目评审标准。优达学城的项目导师会依据此评审标准审阅你的项目。你可以在提交前自行检查自己是否已达到所有标准。职业资源中心。你可以在这里找到更多有关准备面试的资源和贴士。
 13.5. 接下来面试练习并不是只在你求职时才需要做的事情， 在你的整个职业生涯中，你都需要继续提高自己的面试技巧。抓住每一个机会，思考和与人交流你的职业目标。在申请一个职位之前，请思考清楚自己为什么要申请——这将极大地帮助你为面试做好准备。
 14. 书签Interview Guide: Machine Learninghttps://career-resource-center.udacity.com/interview-courses-and-guides/machine-learning
@@ -31053,7 +31127,7 @@ notebook 项目导出的 HTML 文件，命名为 report.html。
 
 注意：所提交文件的文件名名，包括zip压缩包内的文件名，都不能含有中文及任何ASCII之外的字符，否则会造成提交失败。
 如何导出HTML的说明在 notebook 的最下方。 你也许需要先在命令后通过 pip install mistune 命令安装 mistune 。当你准备好所有这些文件，并且依照项目要求核对过之后，就可以在下面的项目提交页面提交你的项目了。
-如果你是第一次在优达学城提交项目，点击提交之后，要等1分钟左右才能打开提交页面。如果长时间打不开，可以刷新。如果依然无法打开项目提交页面，可以联系客服微信或者邮件至 &#x73;&#x75;&#112;&#x70;&#111;&#x72;&#116;&#x40;&#121;&#x6f;&#x75;&#100;&#x61;&#120;&#117;&#101;&#46;&#x63;&#111;&#109;
+如果你是第一次在优达学城提交项目，点击提交之后，要等1分钟左右才能打开提交页面。如果长时间打不开，可以刷新。如果依然无法打开项目提交页面，可以联系客服微信或者邮件至 &#x73;&#x75;&#x70;&#112;&#x6f;&#x72;&#116;&#x40;&#x79;&#111;&#117;&#x64;&#x61;&#120;&#x75;&#101;&#x2e;&#x63;&#111;&#x6d;
 6. 后记这个项目，是优达学城《机器学习工程师》课程提供的第一个实战项目。摘录了全文，方便查看。郝同学的项目地址：https://github.com/voidking/udaciyty-machine-learning/tree/master/projects/titanic_survival_exploration
 7. 书签机器学习工程师（中/英）https://cn.udacity.com/course/machine-learning-engineer-nanodegree--nd009
 数据科学入门https://cn.udacity.com/course/intro-to-data-science--ud359
@@ -34499,7 +34573,7 @@ https://api.weixin.qq.com/sns/userinfo?access_token=ACCESS_TOKEN&amp;openid=OPEN
 
 
 2. nodebasea node framework designed for myselfversion: v1.0.0url: https://github.com/voidking/nodebase.git  
-3. 作者相关author: haojin(voidking)e-mail: &#118;&#111;&#105;&#100;&#x6b;&#105;&#110;&#x67;&#x40;&#113;&#113;&#46;&#99;&#111;&#x6d;site: http://www.voidking.com   
+3. 作者相关author: haojin(voidking)e-mail: &#118;&#111;&#105;&#100;&#x6b;&#105;&#110;&#103;&#64;&#x71;&#x71;&#x2e;&#99;&#111;&#109;site: http://www.voidking.com   
 4. 开发环境说明1、安装5.6.0以上Node2、安装mongodb，不要配置密码3、安装sass4、全局安装bower5、全局安装supervisor6、全局安装node-inspector7、全局安装puer8、运行前执行命令
 npm installbower install
 
@@ -39625,7 +39699,7 @@ PRIM（出席和即时信息协议，Presence and Instant Messaging Protocol）�
 
 .3.4. 插件许多XMPP服务器支持插件扩展，这些插件通常使用与服务器自身相同的语言编写，并在服务器的进程内运行。他们的作用很大程度上与外部组件重叠，但插件还能够访问内部服务器数据结构并改变核心服务器行为。
 .4. XMPP寻址XMPP网络上每个实体都有一个或多个地址（JID，jabber identifier）。JID有多种不同形式，但它们通常看上去就像是电子邮件。
-JID有两种类型，裸JID和完整JID，而裸JID是完整JID去除资源部分后的地址。例如，某个客户端的完整JID是&#118;&#111;&#x69;&#100;&#x6b;&#105;&#x6e;&#x67;&#64;&#118;&#x6f;&#105;&#100;&#x6b;&#105;&#110;&#x67;&#x2e;&#108;&#x69;&#x74;/library，那么它的裸JID就是&#118;&#x6f;&#x69;&#100;&#107;&#x69;&#110;&#x67;&#x40;&#118;&#x6f;&#x69;&#x64;&#x6b;&#x69;&#110;&#x67;&#46;&#108;&#x69;&#x74;。
+JID有两种类型，裸JID和完整JID，而裸JID是完整JID去除资源部分后的地址。例如，某个客户端的完整JID是&#118;&#x6f;&#x69;&#x64;&#107;&#105;&#x6e;&#x67;&#64;&#118;&#x6f;&#x69;&#x64;&#x6b;&#105;&#x6e;&#x67;&#46;&#x6c;&#105;&#116;/library，那么它的裸JID就是&#x76;&#x6f;&#x69;&#x64;&#107;&#105;&#x6e;&#103;&#64;&#x76;&#x6f;&#105;&#x64;&#x6b;&#105;&#x6e;&#103;&#x2e;&#x6c;&#x69;&#116;。
 .5. 节在XMPP中，各项工作都是通过在一个XMPP流上发送和接收XMPP节来完成的。核心XMPP工具集由三种基本节组成，这三种节分别为&lt;presence&gt;、&lt;message&gt;、&lt;iq&gt;。
 XMPP流由两份XML文档组成，通信的每个方向均有一份文档。这份文档有一个根元素&lt;stream:stream&gt;，这个根元素的子元素由可路由的节以及与流相关的顶级子元素构成。下面给出一段简短的XMPP会话：
 &lt;stream:stream&gt;	&lt;iq type=&#x27;get&#x27;&gt;		&lt;query xmlns=&#x27;jabber:iq:roster&#x27;/&gt;	&lt;/iq&gt;		&lt;presence/&gt;		&lt;message to=&#x27;voidking@voidking.lit&#x27; from=&#x27;haojin@gmail.com/ballroom&#x27; type=&#x27;chat&#x27;&gt;		&lt;body&gt;I cannot talk of books in a ball-room; my head is always full of something else.&lt;/body&gt;	&lt;/message&gt;		&lt;presence type=&#x27;unavailable&#x27;/&gt;&lt;/stream:stream&gt;
@@ -45276,7 +45350,7 @@ mtools，显示所有支持MSDOS文件系统的命令。
 .2.23. mutt
 mutt: mail user agent，文字界面的邮件工具
 
-mutt -s &quot;A test mail&quot; josfeng@gmail.com，将邮件寄给 &#x6a;&#111;&#115;&#x66;&#x65;&#110;&#103;&#x40;&#x67;&#109;&#97;&#x69;&#108;&#46;&#x63;&#111;&#x6d;，信件主题为A test mail。
+mutt -s &quot;A test mail&quot; josfeng@gmail.com，将邮件寄给 &#106;&#x6f;&#x73;&#102;&#x65;&#110;&#x67;&#x40;&#x67;&#x6d;&#x61;&#x69;&#x6c;&#46;&#99;&#x6f;&#x6d;，信件主题为A test mail。
 .2.24. mv
 mv: move，移动或重命名文件或目录
 
