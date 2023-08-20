@@ -1793,10 +1793,10 @@ KubeSphere学习视频
 
 
 2. 安装准备参考在 Kubernetes 上安装 KubeSphere - 准备工作，确认环境满足ks安装需求。
-2.1. k8s版本计划安装kubesphere-v3.3.0版本，需要确认 Kubernetes 版本必须为：v1.19.x，v1.20.x，v1.21.x，v1.22.x 或 v1.23.x（实验性支持）。
-2.2. 资源可用 CPU &gt; 1 核；内存 &gt; 2 G。CPU 必须为 x86_64，暂时不支持 Arm 架构的 CPU。
-2.3. StorageClassKubernetes 集群已配置默认 StorageClass（请使用 kubectl get sc 进行确认）。这一条是最重要的，因为k8s集群默认并不会配置storageclass，需要我们自己单独配置。storage安装配置方法参考《K8S中安装配置StorageClass》
-3. 安装ks参考在 Kubernetes 上安装 KubeSphere - 概述，安装kubesphere-v3.3.0版本
+2.1. K8S版本需求计划安装kubesphere-v3.3.0版本，需要确认 Kubernetes 版本必须为：v1.19.x，v1.20.x，v1.21.x，v1.22.x 或 v1.23.x（实验性支持）。
+2.2. 资源需求CPU &gt; 1 核；内存 &gt; 2 G。CPU 必须为 x86_64，暂时不支持 Arm 架构的 CPU。
+2.3. StorageClass需求Kubernetes 集群已配置默认 StorageClass（请使用 kubectl get sc 进行确认）。这一条是最重要的，因为k8s集群默认并不会配置storageclass，需要我们自己单独配置。storage安装配置方法参考《K8S中安装配置StorageClass》
+3. 安装KubeSphere参考在 Kubernetes 上安装 KubeSphere - 概述，安装kubesphere-v3.3.0版本
 1、下载manifests
 wget https://github.com/kubesphere/ks-installer/releases/download/v3.3.0/kubesphere-installer.yamlwget https://github.com/kubesphere/ks-installer/releases/download/v3.3.0/cluster-configuration.yaml
 
@@ -1815,7 +1815,7 @@ k describe pod/ks-installer-xxx-xxx -n kubesphere-systemkubectl logs -n kubesphe
 5、查看ks状态
 kubectl get all -n kubesphere-systemkubectl get svc/ks-console -n kubesphere-system
 
-4. storageclass问题排查redis没有ready，一直处于pending状态，查看详情
+4. StorageClass问题排查ks的redis没有ready，一直处于pending状态，查看详情
 kubectl describe pod/redis-d744b7468-45sh4 -n kubesphere-system
 报错：0/x nodes are available: x pod has unbound immediate PersistentVolumeClaims.
 查看nfs-client-provisioner日志
@@ -1833,53 +1833,47 @@ spec:  containers:  - command:    - kube-apiserver    - --...    - --feature-gat
 unexpected error getting claim reference: selfLink was empty, can’t make reference
 kubernetes1.20版本 nfs-provisioner报错问题:”selfLink was empty”
 
-5. 验证ksKS默认对外开放 30880 端口，通过 NodePort (IP:30880) 使用默认帐户和密码 (admin/P@88w0rd) 访问 Web 控制台。http://192.168.56.101:30880/login第一次登录时，会提示修改密码。
-6. 修改ks配置如果ks已经安装完成，想要修改ks集群配置的话，可以通过修改clusterconfiguration配置来实现。
-kubectl get cm kubesphere-config -n kubesphere-system -oyamlkubectl get clusterconfiguration ks-installer -n kubesphere-system -oyamlkubectl edit clusterconfiguration ks-installer -n kubesphere-system
+5. 验证KubeSphereKS默认对外开放 30880 端口，通过 NodePort (IP:30880) 使用默认帐户和密码 (admin/P@88w0rd) 访问 Web 控制台。http://192.168.56.101:30880/login第一次登录时，会提示修改密码。
+6. KubeSphere常用操作6.1. 修改KubeSphere配置如果ks已经安装完成，想要修改ks集群配置的话，可以通过修改 kubesphere-config 和 ks-installer 配置来实现。
+kubectl get cm kubesphere-config -n kubesphere-system -oyamlkubectl edit cm kubesphere-config -n kubesphere-system # 例如修改使用集群外部的Prometheuskubectl get clusterconfiguration ks-installer -n kubesphere-system -oyamlkubectl edit clusterconfiguration ks-installer -n kubesphere-system # 例如修改Pod资源
 修改ks-installer配置后，相关pod会自动重启（请耐心等待，大概5分钟内会自动重启）。
-参考文档KubeSphere - LDAP身份提供者
-7. 重置ks密码如果忘记了ks的密码，可以通过kubectl命令进行重置。参考文档Reset the Account Password
+参考文档：
+
+KubeSphere - LDAP身份提供者
+集成您自己的 Prometheus
+
+6.2. 修改使用外部Prometheuskubectl edit cm -n kubesphere-system kubesphere-config
+
+monitoring 部分修改为：
+monitoring:  endpoint: http://prometheus-operated.kubesphere-monitoring-system.svc:9090
+
+参考文档：集成您自己的 Prometheus
+6.3. 重置KubeSphere密码如果忘记了ks的密码，可以通过kubectl命令进行重置。参考文档Reset the Account Password
 kubectl patch users &lt;USERNAME&gt; -p &#x27;&#123;&quot;spec&quot;:&#123;&quot;password&quot;:&quot;&lt;YOURPASSWORD&gt;&quot;&#125;&#125;&#x27; --type=&#x27;merge&#x27; &amp;&amp; kubectl annotate users &lt;USERNAME&gt; iam.kubesphere.io/password-encrypted-
 
-8. nginx配置配置好nginx，通过域名访问ks正常，但是在ks页面上访问容器终端时可能报错：
-Could not connect to the container. Do you have sufficient privileges?
-
-这是因为页面访问终端需要websocket支持，所以nginx配置中需要添加websocket支持，配置方法参考《Nginx入门篇》。
-9. 添加项目到企业空间Kubernetes命名空间就是KubeSphere项目，这些项目可以在 平台管理-&gt;集群管理-&gt;具体集群-&gt;项目 中查看到。
+6.4. 添加项目到企业空间Kubernetes命名空间就是KubeSphere项目，这些项目可以在 平台管理-&gt;集群管理-&gt;具体集群-&gt;项目 中查看到。
 添加现有KubeSphere项目到企业空间：1、以管理员身份登录KubeSphere控制台，转到集群管理页面。点击项目，可以查看在当前集群中运行的所有项目。2、通过 kubectl 创建的命名空间不属于任何企业空间。请点击右侧的三个点，选择分配企业空间。3、在弹出的对话框中，为该项目选择一个企业空间和项目管理员，然后点击确定。4、转到企业空间，可以在项目页面看到该项目已显示。
 参考文档：
 
 添加现有 Kubernetes 命名空间至 KubeSphere 企业空间
 
-10. 批量添加项目到企业空间kubectl get ns |grep voidking | awk &#x27;&#123;print $1&#125;&#x27; | xargs kubectl patch ns -p &#x27;metadata: &#123;labels: &#123;kubesphere.io/workspace: &quot;voidking&quot;&#125;, annotations: &#123;kubesphere.io/creator: &quot;haojin&quot;&#125;&#125;&#x27;
+6.5. 批量添加项目到企业空间kubectl get ns |grep voidking | awk &#x27;&#123;print $1&#125;&#x27; | xargs kubectl patch ns -p &#x27;metadata: &#123;labels: &#123;kubesphere.io/workspace: &quot;voidking&quot;&#125;, annotations: &#123;kubesphere.io/creator: &quot;haojin&quot;&#125;&#125;&#x27;
 
-11. ks多集群参考文档：
+7. KubeSphere问题记录7.1. Could not connect to the container问题描述：配置好nginx，通过域名访问ks正常，但是在ks页面上访问容器终端时报错：
+Could not connect to the container. Do you have sufficient privileges?
+
+解决办法：因为页面访问终端需要websocket支持，所以nginx配置中需要添加websocket支持，配置方法参考《Nginx入门篇》。
+7.2. Pod详情页没有监控数据问题描述：安装了Prometheus套装后，Pod详情页看不到监控数据。访问获取监控数据的API，看到报错：
+error: &quot;execution: found duplicate series for the match group &#123;namespace=&quot;xxx&quot;, pod=&quot;xxx&quot;&#125; on the right hand-side of the operation: [&#123;__name__=&quot;kube_pod_owner&quot;, container=&quot;kube-rbac-proxy-main&quot;, instance=&quot;10.244.92.200:8443&quot;, job=&quot;kube-state-metrics&quot;, namespace=&quot;xxx&quot;, owner_is_controller=&quot;true&quot;, owner_kind=&quot;ReplicaSet&quot;, owner_name=&quot;xxx&quot;, pod=&quot;xxx&quot;, uid=&quot;xxx&quot;&#125;, &#123;__name__=&quot;kube_pod_owner&quot;, container=&quot;kube-rbac-proxy-main&quot;, instance=&quot;10.244.218.131:8443&quot;, job=&quot;kube-state-metrics&quot;, namespace=&quot;act&quot;, owner_is_controller=&quot;true&quot;, owner_kind=&quot;ReplicaSet&quot;, owner_name=&quot;xxx&quot;, pod=&quot;xxx&quot;&#125;];many-to-many matching not allowed: matching labels must be unique on one side&quot;
+
+原因分析：ks自带的Prometheus，和Prometheus套装，两个Prometheus的serviceMonitor存在重合，导致获取了两遍数据。解决办法：删除两个Prometheus的其中一份serviceMonitor。
+kubectl get servicemonitor -n kubesphere-monitoring-system -oyaml &gt; servicemonitor.yamlkubectl get servicemonitor -n kubesphere-monitoring-system | awk &#x27;&#123;print $1&#125;&#x27; | grep -v &quot;NAME&quot; | xargs kubectl delete servicemonitor -n kubesphere-monitoring-system
+
+参考文档：pod监控都没有数据展示
+8. KubeSphere多集群参考文档：
 
 Kubernetes 多集群在开源项目 KubeSphere 的应用
 
-12. 多租户管理12.1. 基本概念
-集群：k8s集群。
-企业空间：业务管理基本单元。
-公司部门：公司内部的部门和ks部门没有必然联系。
-ks部门：企业空间中权限划分的单位，每个企业空间包含多个ks部门，每个ks部门包含多个用户，方便批量授权。
-ks用户：每个公司成员，对应一个ks用户，一个ks用户可以属于多个ks部门。
-项目：项目对应k8s中的namespace，一个项目可以同时分配给不同的ks部门。
-
-集群和企业空间，是多对多的关系。一个企业空间可以包含多个集群，一个集群可以被多个企业空间包含。
-ks中每个项目只能添加到一个企业空间，因此企业空间按照业务来划分，作为业务管理的基本单位。
-企业空间作为操作kubesphere的唯一入口，在企业空间授权一个项目的管理权限后，如果用户通过集群管理找到一个项目，是没有权限的。
-每个企业空间，建议设置1-3个管理员。管理员负责本企业空间的具体权限管理，例如添加管理员、新建部门、给新成员授权等
-ks部门划分的目的，是为了项目的权限管理，因此需要先对集群和项目权限进行规划。通过ks部门，授权可以精确到每个项目和每个人。
-参考文档：
-
-KubeSphere 中的多租户
-添加现有 Kubernetes 命名空间至 KubeSphere 企业空间
-
-12.2. 多租户管理操作流程1、创建企业空间，并关联集群
-2、添加现有项目到企业空间
-3、创建部门，针对部门精细化授权
-4、添加用户到部门
-5、通知ks入口都使用企业空间，不要使用集群管理
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -1987,6 +1981,67 @@ E1104 08:10:15.107249       1 controller.go:512] failed to delete FederatedGloba
         <tag>存储</tag>
         <tag>kubesphere</tag>
         <tag>storageclass</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>KubeSphere中的多租户管理</title>
+    <url>/dev-multi-tenancy-in-kubesphere/</url>
+    <content><![CDATA[1. Kubernetes 多租户面临的挑战使用 Kubernetes 的过程中，企业和个人用户在资源共享和安全性方面均面临着诸多挑战。首当其冲的就是企业环境中多租户形态该如何定义，租户的安全边界该如何划分。
+多租户是一种常见的软件架构，简单概括就是在多用户环境下实现资源共享，并保证各用户间数据的隔离性。
+多租户要解决两大问题：逻辑层面的资源隔离；物理资源的隔离。
+逻辑层面的资源隔离主要包括 API 的访问控制，针对用户的权限控制。Kubernetes 中的 RBAC 和命名空间 (namespace) 提供了基本的逻辑隔离能力，但在大部分企业环境中并不适用。企业中的租户往往需要跨多个命名空间甚至是多个集群进行资源管理。除此之外，针对用户的行为审计、租户隔离的日志、事件查询也是不可或缺的能力。
+物理资源的隔离主要包括节点、网络的隔离，当然也包括容器运行时安全。您可以通过 NetworkPolicy 对网络进行划分，通过 PodSecurityPolicy 限制容器的行为，Kata Containers 也提供了更安全的容器运行时。
+为了解决上述问题，KubeSphere 提供了基于 Kubernetes 的多租户管理方案。
+参考文档：
+
+KubeSphere 中的多租户
+添加现有 Kubernetes 命名空间至 KubeSphere 企业空间
+
+
+
+2. KubeSphere 中的多租户简介在 KubeSphere 中企业空间是最小的租户单元，企业空间提供了跨集群、跨项目（即 Kubernetes 中的命名空间）共享资源的能力。企业空间中的成员可以在授权集群中创建项目，并通过邀请授权的方式参与项目协同。
+用户是 KubeSphere 的帐户实例，可以被设置为平台层面的管理员参与集群的管理，也可以被添加到企业空间中参与项目协同。
+多级的权限控制和资源配额限制是 KubeSphere 中资源隔离的基础，奠定了多租户最基本的形态。
+3. KubeSphere 中的逻辑隔离与 Kubernetes 相同，KubeSphere 通过 RBAC 对用户的权限加以控制，实现逻辑层面的资源隔离。
+KubeSphere 中的权限控制分为平台、企业空间、项目三个层级，通过角色来控制用户在不同层级的资源访问权限。
+
+平台角色：主要控制用户对平台资源的访问权限，如集群的管理、企业空间的管理、平台用户的管理等。
+企业空间角色：主要控制企业空间成员在企业空间下的资源访问权限，如企业空间下项目、DevOps 项目的管理等。
+项目角色：主要控制项目下资源的访问权限，如工作负载的管理、流水线的管理等。
+
+4. KubeSphere 中的物理隔离
+KubeSphere 中可以针对企业空间和项目设置网络隔离策略
+KubeSphere 提供了针对用户的操作审计
+KubeSphere 完整的认证鉴权链路如下图所示，可以通过 OPA 拓展 Kubernetes 的 RBAC 规则。
+
+
+5. KubeSphere 多租户配置实践5.1. 明确概念
+集群：K8S集群。
+企业空间：业务管理基本单元。
+公司部门：公司内部的部门和KubeSphere部门没有必然联系。
+KubeSphere部门：企业空间中权限划分的单位，每个企业空间包含多个KubeSphere部门，每个KubeSphere部门包含多个用户，方便批量授权。
+KubeSphere用户：每个公司成员，对应一个KubeSphere用户，一个KubeSphere用户可以属于多个KubeSphere部门。
+项目：项目对应k8s中的namespace，一个项目可以同时分配给不同的KubeSphere部门。
+
+集群和企业空间，是多对多的关系。一个企业空间可以包含多个集群，一个集群可以被多个企业空间包含。
+KubeSphere中每个项目只能添加到一个企业空间，因此企业空间按照业务来划分，作为业务管理的基本单位。
+企业空间作为操作kubesphere的唯一入口，在企业空间授权一个项目的管理权限后，如果用户通过集群管理找到一个项目，是没有权限的。
+每个企业空间，建议设置1-3个管理员。管理员负责本企业空间的具体权限管理，例如添加管理员、新建部门、给新成员授权等
+KubeSphere部门划分的目的，是为了项目的权限管理，因此需要先对集群和项目权限进行规划。通过KubeSphere部门，授权可以精确到每个项目和每个人。
+5.2. 多租户管理操作流程1、创建企业空间，并关联集群
+2、添加现有项目到企业空间
+3、创建部门，针对部门精细化授权
+4、添加用户到部门
+5、入口都使用企业空间，不要使用集群管理
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>k8s</category>
+        <category>cloudnative</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
+        <tag>kubesphere</tag>
       </tags>
   </entry>
   <entry>
@@ -2493,10 +2548,8 @@ Clash是一个非常流行的科学上网客户端，适用于windows、macos、
 参考文档：
 
 github - Dreamacro/clash
-Clash外部控制
-github - Dreamacro/clash-dashboard
-github - wanhebin/clash-for-linux
 在 Linux 中使用 Clash
+如何在 Linux 上优雅的使用 Clash？
 
 
 
@@ -2532,6 +2585,7 @@ vim /etc/systemd/system/clash.service
 4. 使用Clash代理1、配置使用Clash代理
 export https_proxy=http://127.0.0.1:7890 http_proxy=http://127.0.0.1:7890 all_proxy=socks5://127.0.0.1:7891
 
+其中7890是mixed port，支持http(s)，也支持socks5。
 2、测试
 curl www.google.com -L
 
@@ -2540,32 +2594,36 @@ curl www.google.com -L
 unset  http_proxy  https_proxy  all_proxy
 
 参考文档：《Linux配置网络代理》
-5. Web GUI管理5.1. 局域网管理Clash 提供了默认的 9090 端口作为GUI管理端口。
-1、测试管理端口
-curl 127.0.0.1:9090
+5. Web GUI管理参考文档：
 
-2、访问管理界面访问Clash外部控制，填入Clash的配置信息。
+Clash外部控制
+github - Dreamacro/clash-dashboard
+github - haishanh/yacd
+
+5.1. 使用外部管理页面使用外部Clash管理页面，Clash所在主机上就不用做额外配置了，最简单。
+1、访问外部管理页面访问Clash外部控制，填入Clash的配置信息。
 
 Host：填入Clash所在主机的局域网IP或者局域网域名，本机要和Clash所在主机连通
 端口：7890
 密钥：密钥配置在 /etc/clash/config.yaml 文件中，字段为secret，默认为空。
 
 依次点击 添加，确定，就可以对Clash进行配置了。
+2、退出外部管理页面Clash的Web GUI默认是没有退出选项的，要想退出，可以手动清除下 Local Storage 中的缓存。具体操作：F12打开调试工具，Application，Storage，Local Storage，选中网址，右键，Clear。
+5.2. 自己安装管理页面Clash 提供了默认的 9090 端口作为GUI管理端口。
+1、测试管理端口
+curl 127.0.0.1:9090
 
-3、退出管理页面Clash的Web GUI默认是没有退出选项的，要想退出，可以手动清除下 Local Storage 中的缓存。具体操作：F12打开调试工具，Application，Storage，Local Storage，选中网址，右键，Clear。
-5.2. 广域网管理1、开放端口开放端口9090，使外网可以访问。
-2、测试管理端口
-curl $PUBLIC_IP:9090
+2、下载管理页面项目
+cd /etc/clash/git clone -b gh-pages https://github.com/Dreamacro/clash-dashboard ui
 
-3、访问管理界面Host填入Clash所在主机的公网IP，其他选项和局域网配置方法相同。
-5.3. 配置域名（可选）1、添加解析clash.voidking.com 域名解析到主机。
-2、准备nginx配置文件 clash.voidking.com.conf
-server &#123;    listen 80;    server_name clash.voidking.com;    charset utf-8;    location / &#123;        proxy_set_header   Host             $host;        proxy_set_header   X-Real-IP        $remote_addr;        proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;        # proxy_pass http://172.17.12.85:9090;        proxy_pass http://127.0.0.1:9090;    &#125;&#125;
+3、修改clash配置vim /etc/clash/config.yaml
+新增配置：
+external-ui: /etc/clash/ui
 
-3、重新加载nginx
-docker exec -it vk-nginx nginx -tdocker exec -it vk-nginx nginx -s reload
+4、重启clash
+systemctl restart clash
 
-4、访问管理界面Host填入域名 clash.voidking.com ，其他选项和局域网配置方法相同。
+5、访问管理页面假设Clash所在主机IP为 192.168.56.101 ，那么浏览器访问 http://192.168.56.101:9090/ui自己安装的管理页面，效果和外部管理页面相同，因为它们是同一个项目。
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -3669,10 +3727,10 @@ options：可选的对象列表，其中每个对象可能具有 name 属性（�
     <content><![CDATA[1. 前言本文学习在VSCode中配置Python Debug的方法，备忘。
 
 
-2. 配置调试1、点击VSCode左侧带虫子的三角形，进入RUN AND DEBUG页面
-2、点击齿轮，编辑 launch.json 文件
-假设程序启动命令为 python startup.py &quot;write a cli snake game&quot;，那么配置如下：
-&#123;    // Use IntelliSense to learn about possible attributes.    // Hover to view descriptions of existing attributes.    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387    &quot;version&quot;: &quot;0.2.0&quot;,    &quot;configurations&quot;: [        &#123;            &quot;name&quot;: &quot;startup debug&quot;,            &quot;type&quot;: &quot;python&quot;,            &quot;request&quot;: &quot;launch&quot;,            &quot;program&quot;: &quot;startup.py&quot;,            &quot;cwd&quot;: &quot;$&#123;workspaceFolder&#125;&quot;,            &quot;args&quot;: [                &quot;write a cli snake game&quot;            ],            &quot;console&quot;: &quot;integratedTerminal&quot;,            &quot;justMyCode&quot;: false        &#125;    ]&#125;
+2. 配置调试2.1. 打开 laungch.json方法一：直接打开 .vscode/launch.json 文件
+方法二：点击VSCode左侧带虫子的三角形，进入RUN AND DEBUG页面，点击齿轮，打开 launch.json 文件
+2.2. 配置 launch.json假设程序启动命令为 python startup.py &quot;write a cli snake game&quot;，那么配置如下：
+&#123;    // Use IntelliSense to learn about possible attributes.    // Hover to view descriptions of existing attributes.    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387    &quot;version&quot;: &quot;0.2.0&quot;,    &quot;configurations&quot;: [        &#123;            &quot;name&quot;: &quot;startup debug&quot;,            &quot;type&quot;: &quot;python&quot;,            &quot;request&quot;: &quot;launch&quot;,            &quot;program&quot;: &quot;startup.py&quot;,            &quot;cwd&quot;: &quot;$&#123;workspaceFolder&#125;&quot;,            &quot;args&quot;: [                &quot;write a cli snake game&quot;            ],            &quot;env&quot;: &#123;                &quot;OPENAI_API_KEY&quot;: &quot;sk-xxx&quot;            &#125;,            &quot;console&quot;: &quot;integratedTerminal&quot;,            &quot;justMyCode&quot;: false        &#125;    ]&#125;
 
 假设每个脚本都能直接运行 python xxx.py，那么配置如下：
 &#123;    &quot;version&quot;: &quot;0.2.0&quot;,    &quot;configurations&quot;: [        &#123;            &quot;name&quot;: &quot;python debug&quot;,            &quot;type&quot;: &quot;python&quot;,            &quot;request&quot;: &quot;launch&quot;,            &quot;program&quot;: &quot;$&#123;file&#125;&quot;,            &quot;cwd&quot;: &quot;$&#123;workspaceFolder&#125;&quot;,            &quot;console&quot;: &quot;integratedTerminal&quot;,            &quot;justMyCode&quot;: false        &#125;    ]&#125;
@@ -3718,22 +3776,25 @@ pip install autopep8
 
 
 
-3. 配置3.1. 打开配置文件command-shift-P，输入settings.json，选择Open User Settings
-3.2. terminal配置Code，Preferences，Settings，User，Features，Terminal
-3.3. 设置terminal背景颜色打开Settings，搜索workbench.colorCustomizations，点击 Edit in settings.json
+3. 配置3.1. 打开全局配置文件command-shift-P，输入settings.json，选择Open User Settings
+3.2. 打开当前项目配置文件当前项目配置文件的优先级，高于全局配置文件。
+方法一：直接打开 .vscode/settings.json 文件
+方法二：command-shift-P，输入settings.json，选择Open Workspace Settings
+3.3. terminal配置Code，Preferences，Settings，User，Features，Terminal
+3.4. 设置terminal背景颜色打开Settings，搜索workbench.colorCustomizations，点击 Edit in settings.json
 添加如下内容：
 &#123;    &quot;terminal.integrated.allowChords&quot;: false,    &quot;workbench.colorCustomizations&quot;: &#123;        &quot;terminal.foreground&quot; : &quot;#D3D7CF&quot;,        &quot;terminal.background&quot; : &quot;#2E3436&quot;    &#125;&#125;
 
-3.4. 解决terminal中文乱码问题vscode中使用terminal时发现中文乱码，echo $LANG查看locale，值为zh_HANS_cn.UTF-8，需要改成zh_CN.UTF-8。
+3.5. 解决terminal中文乱码问题vscode中使用terminal时发现中文乱码，echo $LANG查看locale，值为zh_HANS_cn.UTF-8，需要改成zh_CN.UTF-8。
 vim ~/.zshrc# orvim ~/.bash_profile
 
 添加：
 export LANG=zh_CN.UTF-8
 
-3.5. 安装插件左侧边栏，Extensions，搜索插件安装即可。
+3.6. 安装插件左侧边栏，Extensions，搜索插件安装即可。
 插件配置方法：Code，Preferences，Settings，搜索插件名称。
-3.6. 保存文件时自动格式化Code，Preferences，Settings，Text Editor，Formatting，勾选Format On Save。当 command-S 保存文件时，会自动执行一次代码格式化。
-3.7. 粘贴时正确缩进复制一整块代码进行粘贴时，缩进往往不对，需要手动调整，这点还是jetbrains好用。不过好在vscode插件很多，“Paste and Indent”这个插件就能解决这个问题。
+3.7. 保存文件时自动格式化Code，Preferences，Settings，Text Editor，Formatting，勾选Format On Save。当 command-S 保存文件时，会自动执行一次代码格式化。
+3.8. 粘贴时正确缩进复制一整块代码进行粘贴时，缩进往往不对，需要手动调整，这点还是jetbrains好用。不过好在vscode插件很多，“Paste and Indent”这个插件就能解决这个问题。
 1、安装“Paste and Indent”
 2、command-shift-P，打开命令面板。
 3、输入keyboard，选择 References: Open Keyboard Shortcuts(JSON)
@@ -3741,8 +3802,8 @@ export LANG=zh_CN.UTF-8
 // Place your key bindings in this file to override the defaults[    &#123;        &quot;key&quot;: &quot;ctrl+v&quot;,        &quot;command&quot;: &quot;pasteAndIndent.action&quot;,        &quot;when&quot;: &quot;editorTextFocus &amp;&amp; !editorReadonly&quot;    &#125;,    &#123;        &quot;key&quot;: &quot;ctrl+v&quot;,        &quot;command&quot;: &quot;editor.action.clipboardPasteAction&quot;,        &quot;when&quot;: &quot;!editorTextFocus&quot;    &#125;,    &#123;        &quot;key&quot;: &quot;ctrl+shift+v&quot;,        &quot;command&quot;: &quot;editor.action.clipboardPasteAction&quot;,        &quot;when&quot;: &quot;editorTextFocus &amp;&amp; !editorReadonly&quot;    &#125;]
 
 重启vscode，复制粘贴时，使用ctrl+v就能够自动缩进了。但是，ctrl+v有时候的表现反而不如常规粘贴（cmd+v），这时可以使用cmd+z进行撤销，就变成了常规粘贴的效果。这个插件的原理应该是先进行了常规的粘贴，然后进行了缩进格式化，因此cmd+z可以还原常规粘贴的效果。
-3.8. python代码检查参考文档：《Python代码质量检查》
-3.9. 设置Python代码片段1、打开代码片段配置Code，Preferences，User Snippets，选择Python此时会打开一个python.json文件，这就是代码片段模板配置文件。不止可以配置文件头部注释，还可以配置通用内容。
+3.9. python代码检查参考文档：《Python代码质量检查》
+3.10. 设置Python代码片段1、打开代码片段配置Code，Preferences，User Snippets，选择Python此时会打开一个python.json文件，这就是代码片段模板配置文件。不止可以配置文件头部注释，还可以配置通用内容。
 2、填入代码片段配置百度风格的Python Header Docstring：
 &#123;    // Place your snippets for python here. Each snippet is defined under a snippet name and has a prefix, body and     // description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:    // $1, $2 for tab stops, $0 for the final cursor position, and $&#123;1:label&#125;, $&#123;2:another&#125; for placeholders. Placeholders with the     // same ids are connected.    // Example:    // &quot;Print to console&quot;: &#123;    //  &quot;prefix&quot;: &quot;log&quot;,    //  &quot;body&quot;: [    //      &quot;console.log(&#x27;$1&#x27;);&quot;,    //      &quot;$2&quot;    //  ],    //  &quot;description&quot;: &quot;Log output to console&quot;    // &#125;    &quot;header&quot;: &#123;        &quot;prefix&quot;: &quot;pythonheader&quot;,        &quot;body&quot;: [            &quot;#!/usr/bin/env python3&quot;,            &quot;# -*- coding:utf-8 -*-&quot;,            &quot;#&quot;,            &quot;# Copyright (c) $CURRENT_YEAR voidking.com, Inc. All Rights Reserved&quot;,            &quot;#&quot;,            &quot;\&quot;\&quot;\&quot;&quot;,            &quot;Authors: voidking&quot;,            &quot;Date:    $CURRENT_YEAR/$CURRENT_MONTH/$CURRENT_DATE&quot;,            &quot;\&quot;\&quot;\&quot;&quot;        ]    &#125;&#125;
 
@@ -3756,12 +3817,12 @@ Google Python Style Guide - Comments and Docstrings
 Snippets in Visual Studio Code - Variables
 
 3、使用代码片段新建Python文件，文件头部不会出现注释。输入pythonheader，根据提示回车，就会自动添加注释了。这种用法和sublime的Emmet插件很像，!+tab自动生成html5框架。
-3.10. 自动生成Docstring1、安装插件 autoDocstring - Python Docstring Generator 
+3.11. 自动生成Docstring1、安装插件 autoDocstring - Python Docstring Generator 
 2、使用 autoDocstring在某个函数名下面的第一行，输入command+shift+2，就会自动添加Docstring模板或者右键，选择Generate Docstring，就会自动添加Docstring模板
 默认是风格是google python style，一般不用修改。
 修改风格的方法：Code，Preferences，Settings，搜索autoDocstring，找到Auto Docstring: Docstring Format，选择其他风格（例如pep257）。
 参考文档：《Python代码风格指南》
-3.11. git分支代码比较git分支代码比较合并，JetBrains中的Show Diff with Working Tree非常好用。vscode上没有能够完美替代这个功能的插件，gitlens只能算差强人意。
+3.12. git分支代码比较git分支代码比较合并，JetBrains中的Show Diff with Working Tree非常好用。vscode上没有能够完美替代这个功能的插件，gitlens只能算差强人意。
 1、安装gitlens插件
 2、左边栏显示gitlens插件command-shift-P，打开命令面板。输入gitlenss，找到 Gitlens: Set Views Layout，点击它。选择Gitlens Layout，这时gitlens插件就会显示在左边栏。
 3、选择分支进行比较点击gitlens插件，BRANCHS，当前分支会有一个对号。选中想要对比的分支，option+单击，Compare with Working Tree就会出现在 SEARCH&amp;COMPARE。
@@ -7807,21 +7868,35 @@ PS：如果使用Python进行图片压缩，推荐使用项目GGTinypng，它是
 2. 密码系统偏好设置，用户与群组，更改密码。
 3. 触控板系统偏好设置，触控板，光标与点按。勾选 轻点来点按，勾选 辅助点按，跟踪速度调整为喜欢的速度。 
 4. 电脑名称系统偏好设置，共享，电脑名称，编辑。
-5. 开机声音1、关闭开机声音
+5. 禁止系统更新系统偏好设置，系统更新，取消勾选 自动保持我的Mac运行最新版本。高级，取消勾选 所有选项。
+点击 有其他更新可用 下面的 更多信息 ，取消更新计划。
+6. 删除系统更新文件系统更新文件放在/Library/Updates目录中，但是普通模式下是没有权限删除该目录下的文件的。
+1、重启电脑，同时按下cmd+R，看到白苹果的进度条时松开手，然后会进入恢复模式。
+2、关闭系统完整性保护（SIP）
+csrutil disablereboot
+
+3、重启后，删除升级文件
+cd /Library/Updatessudo rm -rf *
+
+4、重新进入恢复模式，打开系统完整性保护
+csrutil enablereboot
+
+7. 开机声音1、关闭开机声音
 sudo nvram BootAudio=%00sudo nvram SystemAudioVolume=%80
 
 2、打开开机声音
 sudo nvram BootAudio=%01sudo nvram -d SystemAudioVolume
 
-6. WindowServer占用资源过多系统偏好设置，辅助功能，显示，勾选减弱动态效果和减少透明度
-7. 临时设置不关闭屏幕sudo supmset -g | grep sleeppmset -a displaysleep 30pmset -g | grep sleeppmset -a displaysleep 10pmset -g | grep sleep
+8. WindowServer占用资源过多系统偏好设置，辅助功能，显示，勾选减弱动态效果和减少透明度
+9. 临时设置不关闭屏幕sudo supmset -g | grep sleeppmset -a displaysleep 30pmset -g | grep sleeppmset -a displaysleep 10pmset -g | grep sleep
 
-8. 菜单快捷键右上角苹果按钮，点击会出现“睡眠”、“重新启动…”、“关机…”等菜单选项，这些选项可以设置对应的快捷键。以设置“睡眠”快捷键为例：右上角苹果按钮，系统偏好设置，键盘，快捷键，App快捷键，加号，菜单标题输入“睡眠”，键盘快捷键按下“control+command+S”。以上，就设置好了睡眠的快捷键。
-9. 查看文件使用mac系统的Finder，可以查看“我的所有文件”，但是这是假的，点击这个选项只能看到最近使用的一些文件。
+或者使用Amphetamine，macos屏幕常亮工具
+10. 菜单快捷键右上角苹果按钮，点击会出现“睡眠”、“重新启动…”、“关机…”等菜单选项，这些选项可以设置对应的快捷键。以设置“睡眠”快捷键为例：右上角苹果按钮，系统偏好设置，键盘，快捷键，App快捷键，加号，菜单标题输入“睡眠”，键盘快捷键按下“control+command+S”。以上，就设置好了睡眠的快捷键。
+11. 查看文件使用mac系统的Finder，可以查看“我的所有文件”，但是这是假的，点击这个选项只能看到最近使用的一些文件。
 解决办法：打开Finder，command＋逗号，出现Finder偏好设置，边栏，设备中勾选硬盘。然后在侧边栏中，就可以打开硬盘，看到所有文件了。
 当然， /etc 这种文件夹是看不到的。
-10. 设置默认文件排序打开Finder，点击家目录，command＋J，选择排序方式（种类），用做默认。家目录下的所有目录，都会继承这种默认排序方式。
-11. 禁止生成 .DS_Store.DS_Store(Desktop Services Store)文件目的在于存贮目录的自定义属性，例如显示方式为图标还是列表。
+12. 设置默认文件排序打开Finder，点击家目录，command＋J，选择排序方式（种类），用做默认。家目录下的所有目录，都会继承这种默认排序方式。
+13. 禁止生成 .DS_Store.DS_Store(Desktop Services Store)文件目的在于存贮目录的自定义属性，例如显示方式为图标还是列表。
 禁止：
 defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool TRUE
 
@@ -7829,23 +7904,23 @@ defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool TRUE
 defaults delete com.apple.desktopservices DSDontWriteNetworkStores
 
 注意：禁止生成 .DS_Store 后，已经存在的 .DS_Store 不受影响。
-12. 清除最近项目点击左上角苹果图标，最近使用的项目，清除菜单。
+14. 清除最近项目点击左上角苹果图标，最近使用的项目，清除菜单。
 但是，上面的方法并不会清除“最近项目”这个目录下的文件记录，这是因为“最近项目”是spotlight管理的。解决办法：1、点击左上角苹果图标，系统偏好设置，聚焦，隐私，点击+号。2、选择目录A，点击选取。3、再看“最近项目”，已经不再显示目录A里的文件。需要注意的是，如果从隐私里去掉目录A，那么目录A里的文件还会慢慢出现在“最近项目”。
 如果想要改变“最近项目”目录筛选文件的规则，按照如下方法处理：1、给“最近项目”添加一个搜索条件，让其只显示最近三天内打开或修改过的项目2、在“最近项目”窗口中点击工具栏的齿轮按钮然后选择“显示搜索条件”3、在搜索项目里选择“上次打开日期”4、然后设定好相应的搜索条件，点击“存储”5、最后为其命名，切记勾选“添加到边栏”再点击“存储”6、边栏就会新增这个只显示最近 3 天项目的选项，然后把原来的“最近项目”从边栏移除掉。
-13. 预览清除最近项目打开预览，菜单栏，文件，打开最近使用，清除菜单。
-14. 安装字体1、从windows系统 C:\Windows\Fonts 目录中拷贝需要的字体。2、command+shift+G，输入 /Library/Fonts，前往。3、字体放入 Fonts 目录。
-15. 启动sftp1、系统偏好设置，共享，勾选远程登录
+15. 预览清除最近项目打开预览，菜单栏，文件，打开最近使用，清除菜单。
+16. 安装字体1、从windows系统 C:\Windows\Fonts 目录中拷贝需要的字体。2、command+shift+G，输入 /Library/Fonts，前往。3、字体放入 Fonts 目录。
+17. 启动sftp1、系统偏好设置，共享，勾选远程登录
 2、测试
 sftp localhost
 
-16. 启动ftp使用QuickFTP Server
-17. 目录规划$&#123;HOME&#125;目录下，创建以下目录：
+18. 启动ftp使用QuickFTP Server
+19. 目录规划$&#123;HOME&#125;目录下，创建以下目录：
 
 tmp：在该目录中执行命令、测试脚本等，随时可删。
 scripts：成熟的脚本放在该目录下。
 git：在该目录中存放git仓库。
 
-18. 读写ntfsmac不借助第三方软件，也是可以读写ntfs文件系统的移动硬盘的。1、查看移动硬盘名称在桌面上查看硬盘名称，或者通过diskutil list命令查看硬盘名称。
+20. 读写ntfsmac不借助第三方软件，也是可以读写ntfs文件系统的移动硬盘的。1、查看移动硬盘名称在桌面上查看硬盘名称，或者通过diskutil list命令查看硬盘名称。
 2、修改fstab配置比如硬盘名称为WD，那么在/etc/fstab中添加配置：
 LABEL=WD none ntfs rw,auto,nobrowse
 
@@ -7859,29 +7934,32 @@ cd ..open .# 界面点击推出移动硬盘
 方法二：
 cd ..diskutil unmount /Volumes/WDdiskutil unmount force /Volumes/WD
 
-19. 检查wifi信号强度19.1. 图形界面打开wireless Diagnostics（无线诊断），忽略打开的窗口。菜单栏点击窗口，扫描，看到网络信息中，RSSI表示信号强度，这个值越接近0值，信号强度越好。
-19.2. 命令行显示附近可用wifi网络列表，包括信号强度、信道和加密类型等。
+21. 检查wifi信号强度21.1. 图形界面打开wireless Diagnostics（无线诊断），忽略打开的窗口。菜单栏点击窗口，扫描，看到网络信息中，RSSI表示信号强度，这个值越接近0值，信号强度越好。
+21.2. 命令行显示附近可用wifi网络列表，包括信号强度、信道和加密类型等。
 /System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -s
 其中RSSI表示信号强度，这个值越接近0值，信号强度越好。
 查看当前连接的wifi网络信息，包括信号强度、信道和加密类型等。
 /System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I
 其中agrCtlRSSI表示信号强度，这个值越接近0值，信号强度越好。
-20. 问题记录21. 安装软件提示身份不明开发者问题从网络下载的软件，安装时提示：打不开“xxx”，因为它来自身份不明的开发者。
+22. 问题记录23. 安装软件提示身份不明开发者问题从网络下载的软件，安装时提示：打不开“xxx”，因为它来自身份不明的开发者。
 解决办法：系统偏好设置，安全性和隐私，点锁按钮以进行更改，任何来源，允许来自任何来源。
-22. 解锁屏幕后卡住提示连接键盘问题解锁屏幕后卡住：蓝牙键盘设置 没有连接好的键盘
+24. 解锁屏幕后卡住提示连接键盘问题解锁屏幕后卡住：蓝牙键盘设置 没有连接好的键盘
 解决办法：系统偏好设置，蓝牙，高级，取消勾选 “如果未检测到键盘，则在启动时打开蓝牙设置助理”
-23. 解锁屏幕后卡住两分钟问题解锁屏幕后卡住：鼠标、键盘都没反应，过一两分钟才能恢复正常
+25. 解锁屏幕后卡住两分钟问题解锁屏幕后卡住：鼠标、键盘都没反应，过一两分钟才能恢复正常
 解决办法：重置系统管理控制器（SMC）。具体操作：关机，按住左边shift+control+option7秒，出现开机Apple图标后按住电源键，此时电脑会关机，保持7秒后松开所有按键，此时电脑会开机，重置SMC完成。
-23.1. 雷电接口突然不可用问题问题描述：MacBook四个雷电3接口，其中一个接口突然不能用了，充电没反应，接显示器也没反应，另外三个接口正常。
+25.1. 雷电接口突然不可用问题问题描述：MacBook四个雷电3接口，其中一个接口突然不能用了，充电没反应，接显示器也没反应，另外三个接口正常。
 解决办法：将 Mac 关机并合上显示屏等待 30 秒，然后翻开显示屏以启动 Mac。
-23.2. command+space失效问题问题描述：command+space是打开聚焦搜索的快捷键，但是，有时候发现点击了command+space也不会出现聚焦搜索的窗口。查看系统偏好配置，快捷键也没有被更改。重启机器后，快捷键能够能够恢复正常。
+25.2. command+space失效问题问题描述：command+space是打开聚焦搜索的快捷键，但是，有时候发现点击了command+space也不会出现聚焦搜索的窗口。查看系统偏好配置，快捷键也没有被更改。重启机器后，快捷键能够能够恢复正常。
 解决办法：看看另外一块屏幕！！！有时候聚焦搜索会跑到另外一块屏幕上。
 ]]></content>
       <categories>
+        <category>engineering</category>
+        <category>shell</category>
         <category>computer</category>
       </categories>
       <tags>
         <tag>macos</tag>
+        <tag>shell</tag>
       </tags>
   </entry>
   <entry>
@@ -9810,14 +9888,59 @@ curl localhost:3000
 3、选择dashboard点击Dashboards，点击三个Import，引入三个dashboard。
 4、引入其他dashboard比如可以填入URL https://grafana.com/grafana/dashboards/405 ，点击Load，就可以下载Node Exporter的dashboard。选择Folder，选择Prometheus数据源，Import。
 5、查看dashboard左上角HOME，出现下拉框，即可选择dashboard。
-6. Grafana问答6.1. 数据源和Dashboard问：一个prometheus数据源中，会包含不同类型exporter采集的metrics数据，grafana中的一个dashboard怎样知道哪些数据是自己应该展示的？答：和exporter无关，grafana只关心metrics，grafana根据指标名称和标签过滤自己需要的数据。
-6.2. label_values问：Grafana的Dashboard中，可以创建Variables用来筛选数据，其中Query经常使用 label_values ，这个函数是Grafana自带的，还是PromQL自带的？答：Grafana自带的，PromQL中用不了。
+6. Grafana问答6.1. 常用的Dashboard问：Grafana常用的Dashboard有哪些？
+答：
+
+node exporter：1860
+cAdvisor：3125
+dcgm exporter：12239
+
+6.2. Node Exporter Full 显示问题问：Node Exporter Full 中，当选择的时间范围小于24小时的时候，CPU Basic和Network Traffic Basic的内容为空，该怎么解决？
+答：修改Grafana数据源抓取时间间隔为30s或者1m。
+Grafana中默认的数据源抓取数据时间间隔是15s，而Prometheus中抓取数据时间间隔可能是1m，这时就会出现问题。
+参考文档：No data available when interval is less than 24 hours
+6.3. Docker monitoring 显示问题问：Docker monitoring - alicek106 revision中，一个容器的 Network Rx 和 Network Tx 对应两条线，是怎么回事？
+答：正常现象，说明该容器存在多个网卡。
+查看query语句
+irate(container_network_receive_bytes_total&#123;image!=&quot;&quot;, instance=~&quot;$server&quot;, name=~&quot;$container&quot;&#125;[5m])irate(container_network_transmit_bytes_total&#123;image!=&quot;&quot;, instance=~&quot;$server&quot;, name=~&quot;$container&quot;&#125;[5m])
+
+在explore页面使用PromQL查询，可以发现指定容器查询可以查询出两个结果，分别有 eth0 和 tunl0 两张卡。
+container_network_receive_bytes_total&#123;id=&quot;/system.slice/docker-cff8168986d12d8399fde55d3e65a056af56bcf6e67187d926a9d974b4a2c1c2.scope&quot;, image=&quot;gcr.dockerproxy.com/cadvisor/cadvisor:v0.47.1&quot;, instance=&quot;192.168.56.101:9101&quot;, interface=&quot;eth0&quot;, job=&quot;cadvisor&quot;, name=&quot;cadvisor&quot;&#125;container_network_receive_bytes_total&#123;id=&quot;/system.slice/docker-cff8168986d12d8399fde55d3e65a056af56bcf6e67187d926a9d974b4a2c1c2.scope&quot;, image=&quot;gcr.dockerproxy.com/cadvisor/cadvisor:v0.47.1&quot;, instance=&quot;192.168.56.101:9101&quot;, interface=&quot;tunl0&quot;, job=&quot;cadvisor&quot;, name=&quot;cadvisor&quot;&#125;
+
+比较好的处理方式：修改Options中的Legend，修改为 &#123;&#123;name&#125;&#125;-&#123;&#123;interface&#125;&#125; ，这样图表就清晰了。
+6.4. 数据源和Dashboard问：一个prometheus数据源中，会包含不同类型exporter采集的metrics数据，grafana中的一个dashboard怎样知道哪些数据是自己应该展示的？
+答：和exporter无关，grafana只关心metrics，grafana根据指标名称和标签过滤自己需要的数据。
+6.5. Variables label_values问：Grafana的Dashboard中，可以创建Variables用来筛选数据，其中Query经常使用 label_values ，这个函数是Grafana自带的，还是PromQL自带的？
+答：Grafana自带的，PromQL中用不了。
 label_values(node_uname_info, job)详解：
 
 label_values() 函数用于从指定指标中提取指定标签的唯一值列表。
 node_uname_info 是一个指标名称，代表了包含有关节点操作系统和内核的信息的指标。
 job 是要提取的标签名称，这里表示作业或服务的标识。
 
+label_values的一个典型应用：在cAdvisor的3125的dashboard中增加一个根据容器名称的二级筛选。
+3125的dashboard，默认有一个变量为server，能够根据主机筛选出主机上的所有容器。但是容器时不方便观察，最好能够根据容器名称再进行一层筛选。
+1、新增一个变量Settings，Variables，New
+2、配置变量
+
+Name：container
+Type：Query
+Data source：prometheus
+Refresh：On dashboard load
+Query：label_values(container_cpu_usage_seconds_total&#123;instance=&quot;$server&quot;&#125;,name)
+
+3、调整PromQL配置
+rate(container_cpu_user_seconds_total&#123;image!=&quot;&quot;, instance=~&quot;$server&quot;, name=~&quot;$container&quot;&#125;[5m]) * 100
+
+6.6. Variables Regex问：配置Variables时，Query Options中有一个Regex，它的作用是什么？
+答：使用Query中的表达式筛选出的数据，可能不符合预期，这时可以使用Regex对这些数据进一步过滤。
+6.7. 怎样允许多选？问：在dashboard页面，想要选中多个主机，该怎样配置？
+答：修改Variables配置，启用 Selection options 中的 Multi-value
+6.8. 怎样显示所有选项？问：在dashboard页面，通过变量筛选一个主机后，想要返回查看全部的主机，但是并没有这个选项，该怎样配置？
+答：修改Variables配置，启用 Selection options 中的 Include All option， Custom all value 设置一个值。Custom all value 一般设置为 blank = auto，能够根据用户的选择动态地显示或隐藏”全部”选项。Custom all value 也会经常设置 .+ ，以便dashboard中的PromQL能否匹配到所有的主机。
+6.9. 复制Dashboard后，怎样更换数据源？问：Dashboard的设置中，选择Save As保存到另外一个文件夹，但是数据源并不会发生变化。如果想要替换数据源，应该怎样配置？
+答：编辑JSON Model，查找uid对应的value，全部替换成新的数据源uid。
+数据源uid获取方法：打开配置，数据源配置，点击数据源进入编辑页面，此时浏览器地址栏 /edit/ 后面的就是数据源的uid。
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -9979,29 +10102,7 @@ package mainimport (  &quot;fmt&quot;  &quot;io/ioutil&quot;  &quot;github.com/g
 go get github.com/gin-gonic/gingo run main.go
 如上图，服务接收到了告警信息。
 10. grafanagrafana常被用来展示prometheus的数据，详情参考《使用Docker安装配置Grafana》。
-11. Prometheus服务发现参考文档：
-
-prometheus服务发现
-Prometheus - Configuration file
-深入浅出prometheus之服务发现(sd)
-Prometheus监控神器-服务发现篇（一）
-
-11.1. static_configs静态服务发现，基于Prometheus配置文件指定监控目标。
-示例参考上文【安装Prometheus server】一节。
-11.2. file_sd_configs动态服务发现，基于指定的文件发现监控目标，Prometheus定期读取指定文件中的内容并更新监控目标。
-示例：scrape_configs配置为：
-scrape_configs:  - job_name: &#x27;file_sd_targets&#x27;    file_sd_configs:      - files:          - &#x27;/path/to/targets.yaml&#x27;
-
-targets.yaml 内容为：
-- targets:    - localhost:9090  labels:    job: prometheus- targets:    - localhost:9100  labels:    job: node_exporter- targets:    - localhost:8080  labels:    job: my_app
-
-PS：targets.yaml 可以改成 json 格式，效果是一样的。
-默认情况下，Prometheus每隔15秒会重新读取一次配置文件，因此修改了targets.yaml后，不需要重新Prometheus。
-11.3. kubernetes_sd_configs动态服务发现，基于 Kubernetes API发现监控目标，Prometheus Operator通过ServiceMonitor资源自动发现运行在集群中的服务，并根据定义的标签选择器将它们加入监控目标列表。
-11.4. dns_sd_configs动态服务发现，基于DNS发现监控目标。基于DNS的服务发现，有两种配置方法，第一种是使用DNA A记录来做自动发现，第二种方法是使用DNS SRV记录来做服务发现。
-使用DNA A记录来做服务发现，其实和基于指定文件的服务发现并没有太大差别。使用DNS SRV记录来做服务发现，监控目标的配置就从Prometheus转移到了DNS。
-11.5. consul_sd_configs动态服务发现，基于Consul这个服务注册与发现工具发现监控目标。
-12. 后记以上，配置完成了promserver、exporter、pushgateway、alertmanager，跑通了数据的收集和显示，测试了告警信息的收集。但是，Prometheus也有不少问题，比如数据量大的时候需要拆分集群，聚合数据很难数据去重，可用性较低等。因此出现了Thanos，能够解决Prometheus的很多问题，详情参考 Thanos官网 和 分布式 Promethues 之 Thanos。
+11. 后记以上，配置完成了promserver、exporter、pushgateway、alertmanager，跑通了数据的收集和显示，测试了告警信息的收集。但是，Prometheus也有不少问题，比如数据量大的时候需要拆分集群，聚合数据很难数据去重，可用性较低等。因此出现了Thanos，能够解决Prometheus的很多问题，详情参考 Thanos官网 和 分布式 Promethues 之 Thanos。
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -10012,6 +10113,58 @@ PS：targets.yaml 可以改成 json 格式，效果是一样的。
         <tag>prometheus</tag>
         <tag>监控</tag>
         <tag>docker</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Prometheus服务发现</title>
+    <url>/dev-prometheus-service-discovery/</url>
+    <content><![CDATA[1. 什么是Prometheus服务发现？在一个复杂的分布式系统中，监控目标可能会频繁变化。虚拟机、容器、云服务等的启动、停止或扩缩容，都会导致监控目标的变化。如果靠手动配置来添加或删除这些目标，将会非常繁琐且容易出错。服务发现机制通过自动识别和注册这些目标，大大简化了这一过程。
+Prometheus服务发现是一种自动发现和注册监控目标的机制，它使得Prometheus能够动态地识别和监控系统中新增、删除或变化的目标。这种机制大大减轻了手动管理监控目标的负担，使得监控系统能够自适应地适应基础架构的变化。
+参考文档：
+
+prometheus服务发现
+Prometheus - Configuration file
+深入浅出prometheus之服务发现(sd)
+Prometheus监控神器-服务发现篇（一）
+
+
+
+2. Prometheus的服务发现方式Prometheus提供了多种服务发现的方式，以适应不同场景的需求。以下是其中一些常用的方式：
+2.1. 静态配置静态配置（static_configs）：这是最简单的服务发现方式，将监控目标的配置直接写在Prometheus的配置文件中。
+这种方式适用于目标不经常变化的情况。
+示例参考《使用Docker安装配置Prometheus》一文。
+2.2. 文件服务发现文件服务发现（file_sd_configs）：Prometheus周期性地读取存储在指定文件中的监控目标列表。
+这种方式适用于一些需要批量生成监控目标的场景。
+示例：scrape_configs配置为：
+scrape_configs:  - job_name: &#x27;file_sd_targets&#x27;    file_sd_configs:      - files:          - &#x27;/path/to/targets.yaml&#x27;
+
+targets.yaml 内容为：
+- targets:    - localhost:9090  labels:    job: prometheus- targets:    - localhost:9100  labels:    job: node_exporter- targets:    - localhost:8080  labels:    job: my_app
+
+PS：targets.yaml 可以改成 json 格式，效果是一样的。
+默认情况下，Prometheus每隔15秒会重新读取一次配置文件，因此修改了targets.yaml后，不需要重新Prometheus。
+2.3. Kubernetes服务发现Kubernetes服务发现（kubernetes_sd_configs）：在Kubernetes集群中，Prometheus可以通过查询Kubernetes API来自动发现和监控Pod、Service等资源。
+Prometheus Operator通过ServiceMonitor资源自动发现运行在集群中的服务，并根据定义的标签选择器将它们加入监控目标列表。
+这种方式适用于K8S集群，同时也可以监控K8S集群外部服务，配置非常方便。
+2.4. DNS服务发现DNS服务发现（dns_sd_configs）：基于DNS发现监控目标。基于DNS的服务发现，有两种配置方法，第一种是使用DNA A记录来做自动发现，第二种方法是使用DNS SRV记录来做服务发现。
+使用DNA A记录来做服务发现，其实和基于指定文件的服务发现并没有太大差别。使用DNS SRV记录来做服务发现，监控目标的配置就从Prometheus转移到了DNS。
+2.5. Consul服务发现Consul服务发现（consul_sd_configs）：Prometheus可以与Consul等服务发现工具集成，通过查询服务注册表来获取监控目标的信息。
+2.6. 云厂商集成云厂商集成：对于使用云服务的场景，Prometheus可以与云厂商的服务发现机制集成，如AWS的EC2实例标签、GCP的GCE服务发现等。
+3. 实现Prometheus服务发现的步骤无论采用哪种服务发现方式，实现Prometheus的服务发现通常包括以下几个步骤：
+1、配置服务发现：在Prometheus的配置文件中，指定使用哪种服务发现方式。不同的方式需要不同的配置参数。
+2、配置目标标签：对于从服务发现获得的监控目标，通常会自动附加一些标签信息，如实例名称、环境等。这些标签将有助于后续查询和区分不同的目标。
+3、启用自动发现：配置Prometheus定时从服务发现源获取监控目标，并将其添加到监控目标列表中。
+4、数据采集与存储：Prometheus会根据配置的采样频率，定期从监控目标获取指标数据，并将其存储在时间序列数据库中。
+5、数据查询与可视化：用户可以通过Prometheus提供的查询语言PromQL来查询和分析监控数据，并通过Grafana等工具进行可视化展示。
+4. 小结Prometheus服务发现机制为分布式系统的监控提供了灵活、自动化的解决方案。它使得监控目标的管理变得更加简单、可靠，为工程团队提供了更好的运维体验。无论是在传统的虚拟机环境还是现代的容器化、云原生环境中，Prometheus的服务发现都能为监控系统的搭建和维护带来便利和高效。
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>monitoring</category>
+      </categories>
+      <tags>
+        <tag>prometheus</tag>
+        <tag>监控</tag>
       </tags>
   </entry>
   <entry>
@@ -10888,7 +11041,7 @@ redis-cli -c -h 192.168.56.101 -p 7002 -a &#x27;xxx&#x27; cluster failover TAKEO
 5、手动故障转移，从节点升级为主节点
 redis-cli -c -h 192.168.56.101 -p 7001 -a &#x27;xxx&#x27; cluster failover TAKEOVERredis-cli -c -h 192.168.56.102 -p 7001 -a &#x27;xxx&#x27; cluster failover TAKEOVERredis-cli -c -h 192.168.56.103 -p 7001 -a &#x27;xxx&#x27; cluster failover TAKEOVER
 
-5. Redis集群异常排查Redis集群模式，Java访问Redis集群报错：
+5. 节点不可用问题Redis集群模式，Java访问Redis集群报错：
 io.lettuce.core.RedisCommandExecutionException: CLUSTERDOWN The cluster is down
 
 排查方法：
@@ -10897,14 +11050,18 @@ redis-cli -c -h 192.168.56.101 -p 7001 -a &#x27;xxx&#x27; cluster nodesredis-cli
 发现报错：
 [ERR] Nodes don&#x27;t agree about configuration!&gt;&gt;&gt; Check for open slots...[WARNING] Node 192.168.56.101:7002 has slots in importing state ...
 
-解决办法一：重新握手。
-redis-cli -c -h 192.168.56.101 -p 7002 -a &#x27;xxx&#x27; cluster meet 192.168.56.101 7001redis-cli -c -h 192.168.56.101 -p 7002 -a &#x27;xxx&#x27; cluster meet 192.168.56.102 7001redis-cli -c -h 192.168.56.101 -p 7002 -a &#x27;xxx&#x27; cluster meet 192.168.56.102 7002redis-cli -c -h 192.168.56.101 -p 7002 -a &#x27;xxx&#x27; cluster meet 192.168.56.103 7001redis-cli -c -h 192.168.56.101 -p 7002 -a &#x27;xxx&#x27; cluster meet 192.168.56.103 7001
-参考文档：Redis [ERR] Nodes don’t agree about configuration!
-解决办法二（推荐）：重启redis节点。
+这个报错实际上有两个问题：1）有一个节点报错ERR，处于不可用状态，经查是192.168.56.103:7001；2）192.168.56.101:7002节点有一些槽位处于导入状态还未完成。
+对于192.168.56.101:7002，解决办法是重启redis节点。
 redis-cli -c -h 192.168.56.101 -p 7002 -a &#x27;xxx&#x27; shutdownredis-server /path/to/conf/7002.confredis-cli --cluster check 192.168.56.101:7001 -a &#x27;xxx&#x27;
+重启成功。
+对于192.168.56.103:7001，也是首先尝试重启redis节点。重启失败，查看日志发现报错：
+15914:C 12 Aug 2023 19:07:36.383 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo15914:C 12 Aug 2023 19:07:36.383 # Redis version=6.2.4, bits=64, commit=00000000, modified=0, pid=15914, just started15914:C 12 Aug 2023 19:07:36.383 # Configuration loaded15914:M 12 Aug 2023 19:07:36.384 * monotonic clock: POSIX clock_gettime15914:M 12 Aug 2023 19:07:36.384 # Unrecoverable error: corrupted cluster config file.
 
+解决办法：删除数据目录中的文件，然后重新启动。
+重新启动成功，但是该节点启动后独立了，不在原本的集群中，这时需要重新握手加入到集群。
+redis-cli --cluster check 192.168.56.103:7002 -a &#x27;xxx&#x27;redis-cli -c -h 192.168.56.101 -p 7001 -a &#x27;xxx&#x27; cluster meet 192.168.56.103 7002redis-cli --cluster check 192.168.56.103:7002 -a &#x27;xxx&#x27;
 
-
+参考文档：Redis [ERR] Nodes don’t agree about configuration!
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -11697,7 +11854,7 @@ modules和传统的GOPATH不同，不需要包含例如src，bin这样的子目�
 失败了，返回404，猜测是12.0版本在代理服务器不存在，使用另外一种下载方式。
 go get k8s.io/client-go@kubernetes-1.15.0
 此处下载了两个版本的client-go，我们使用v0.0.0版本。
-4、安装client-go相关依赖client-go默认下载到$GOPATH/pkg/mod/k8s.io目录下，把k8s.io目录移动到$GOPATH/src目录下。然后把&#99;&#x6c;&#105;&#x65;&#x6e;&#x74;&#45;&#103;&#x6f;&#x40;&#x76;&#x30;&#46;&#x30;&#x2e;&#x30;重命名为client-go，然后在client-go目录下执行安装依赖的命令：
+4、安装client-go相关依赖client-go默认下载到$GOPATH/pkg/mod/k8s.io目录下，把k8s.io目录移动到$GOPATH/src目录下。然后把&#99;&#x6c;&#105;&#101;&#x6e;&#116;&#x2d;&#103;&#x6f;&#x40;&#x76;&#x30;&#x2e;&#x30;&#46;&#48;重命名为client-go，然后在client-go目录下执行安装依赖的命令：
 export GOPROXY=https://goproxy.ioexport GO111MODULE=ongo mod vendor
 完成之后，所有的依赖都下载到了client-go/vendor目录下，一个完整的client-go依赖库就准备好了。
 3.2. 依赖库版本管理client-go依赖库准备好了，但是另一个问题来了：假设项目vk-project依赖client-go和库A，client-go依赖库A，两个依赖库A版本不一致，那么vk-project在编译时，会同时依赖两个不同的库A，导致编译出的二进制包有问题。
@@ -20108,11 +20265,11 @@ mkdir -p /root/.certs/echo -n | openssl s_client -connect smtp.163.com:465 | sed
 5、测试发送邮件echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com查看邮箱，正常的话应该已经收到邮件了。如果没有收到邮件，可以查看日志进行排查：tail /var/log/maillog
 2.3. macos参考文档：《MacOS配置发送邮件》
 3. mail命令3.1. 命令格式mail [OPTION...] [address...]常用到的选项，一个是s，代表主题；一个是A，代表附件。其他的需要时查看help。
-3.2. 发送普通邮件目标：给邮箱 &#118;&#x6f;&#x69;&#x64;&#x6b;&#105;&#110;&#103;&#x40;&#113;&#113;&#46;&#99;&#111;&#x6d; 发送邮件，主题为“Hello VoidKing”，内容为“Welcome to mail world！”
+3.2. 发送普通邮件目标：给邮箱 &#x76;&#x6f;&#x69;&#x64;&#107;&#x69;&#x6e;&#x67;&#x40;&#x71;&#113;&#46;&#x63;&#111;&#x6d; 发送邮件，主题为“Hello VoidKing”，内容为“Welcome to mail world！”
 echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com
 但是，等待了几分钟，并没有收到邮件，垃圾箱也没有。mail，查看email的发送状态为Undelivered Mail Returned，原来没有投递出去。
 查看邮件系统日志：tail -n 50 /var/spool/mail/test提示host mx3.qq.com[183.57.48.35] said: 550 Mail content denied。看来qq邮箱的垃圾邮件防御机制做的不错，那就换个163邮箱，没想到依然失败。
-换一台服务器？发送给 &#118;&#x6f;&#x69;&#x64;&#107;&#105;&#110;&#x67;&#x40;&#x71;&#113;&#46;&#x63;&#x6f;&#x6d; ，成功！很尴尬。。。就这么着吧
+换一台服务器？发送给 &#118;&#111;&#x69;&#100;&#107;&#105;&#110;&#103;&#64;&#x71;&#113;&#46;&#x63;&#111;&#109; ，成功！很尴尬。。。就这么着吧
 3.3. 发送高级邮件1、从文本读入内容发送邮件mail -s &#39;Error report&#39; voidking@qq.com &lt; /tmp/log/ganglia/error-20180524.log
 2、发送附件mail -s &#39;Error report&#39; voidking@qq.com -A /tmp/log/ganglia/ganglia-20180524.log &lt; /tmp/log/ganglia/error-20180524.log
 3、指定发件人echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com -aFrom:haojin@qq.com
@@ -23153,7 +23310,7 @@ linux下载好数据集后，把数据集下载到win10中nmt目录中，路径�
 4.2. 训练model在根目录（nmt目录）下运行：
 python -m nmt.nmt --src=vi --tgt=en --vocab_prefix=./tmp/nmt_data/vocab  --train_prefix=./tmp/nmt_data/train --dev_prefix=./tmp/nmt_data/tst2012  --test_prefix=./tmp/nmt_data/tst2013 --out_dir=./tmp/nmt_model --num_train_steps=12000 --steps_per_stats=100 --num_layers=2 --num_units=128 --dropout=0.2 --metrics=bleu
 
-郝同学i5-3337U &#x43;&#x50;&#x55;&#x40;&#49;&#x2e;&#x38;&#48;&#71;&#72;&#x7a;，8G内存，训练了将近两个小时才训练完成。下文我们要学习使用一下UCloud提供的免费GPU。
+郝同学i5-3337U &#67;&#x50;&#x55;&#64;&#x31;&#46;&#56;&#x30;&#71;&#72;&#x7a;，8G内存，训练了将近两个小时才训练完成。下文我们要学习使用一下UCloud提供的免费GPU。
 我们可以使用 Tensorboard 在训练过程中查看模型的总结：
 tensorboard --port 22222 --logdir ./tmp/nmt_model/
 通过以下简单的变化，就能逆向完成英语到越南语的翻译。
@@ -26551,39 +26708,60 @@ Linux系统管理员应该知道的journalctl知识
 
 
 
-2. journalctl常用命令2.1. 帮助journalctl --helpman journalctl
+2. journalctl基本用法2.1. 查看帮助journalctl --helpman journalctl
 
-2.2. 查看所有日志查看所有日志消息
+2.2. 查看所有日志查看系统的全部日志信息，从最早的日志条目到最新的日志条目。
 journalctl
 
-以易读的格式显示日志消息
+将日志条目的内容以“cat”的形式（原始文本）显示，而不是默认的格式化展示。使用原始文本格式可能会使输出看起来不太结构化，但它能够显示更详细的信息，对于某些问题的追踪会更有帮助。
 journalctl -o cat
+
+2.3. 查看最新的日志直接跳转到最新的日志条目，从日志的末尾开始浏览。
+journalctl -e
 
 实时跟踪日志消息
 journalctl -f
 
-查看特定时间范围内的日志消息
-journalctl --since &quot;YYYY-MM-DD HH:MM:SS&quot; --until &quot;YYYY-MM-DD HH:MM:SS&quot;
-
-2.3. 查看引导日志查看引导日志
-journalctl -b
-
-查看详细引导日志
-journalctl -xb
-
-2.4. 查看程序日志查看特定程序日志
+2.4. 翻页journalctl查看日志时翻页：fn + 上下
+3. journalctl高级用法3.1. 按程序（单元）过滤使用 -u 选项，后接单元名称（如服务名称），可以过滤出特定单元产生的日志。
+查看特定程序日志
 journalctl -xeu kubelet
 
 逆序查看程序日志
 journalctl -xeu kubelet -r
 
-2.5. 清理日志清理2天前的日志
+逆序查看程序日志，并进行二次过滤
+journalctl -xeu kubelet -r | grep -v &quot;Search Line limits were exceeded&quot; | head -n 100
+
+3.2. 按时间过滤使用 –since 和 –until 选项，可以限定日志显示的时间范围。
+查看特定时间范围内的日志消息
+journalctl --since &quot;1 hour ago&quot;journalctl --since &quot;YYYY-MM-DD HH:MM:SS&quot; --until &quot;YYYY-MM-DD HH:MM:SS&quot;
+
+3.3. 按优先级过滤使用 -p 选项，后接优先级数字或关键词，可以过滤出指定优先级的日志。
+查看所有错误日志
+journalctl -p err
+
+3.4. 按关键词过滤使用 -t 选项，后接关键词，可以过滤出包含指定关键词的日志条目。
+查看包含 “error” 的日志
+journalctl -t error
+
+3.5. 查看引导日志查看引导日志
+journalctl -b
+
+查看详细引导日志
+journalctl -xb
+
+3.6. 查看内核日志查看内核日志
+journalctl -k
+
+3.7. 清理日志清理2天前的日志
 journalctl --vacuum-time=2d
 
 清理超过500M的日志
 journalctl --vacuum-size=500M
 
-2.6. 翻页journalctl查看日志时翻页：fn + 上下
+
+
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -30769,7 +30947,7 @@ t0 = time()&lt; 你的 clf.fit() 代码行 &gt;print &#x27;training time:&#x27;,
 代码运行说明文件。纯文本或markdown格式，写明运行你的代码所需要的库，他们的安装方法和运行方法
 预测结果: 纯文本或CSV文件。
 
-对项目要求有疑问请致信 &#x73;&#117;&#112;&#112;&#x6f;&#114;&#116;&#64;&#x79;&#x6f;&#x75;&#100;&#97;&#x78;&#x75;&#101;&#x2e;&#99;&#x6f;&#x6d;
+对项目要求有疑问请致信 &#115;&#x75;&#x70;&#112;&#111;&#114;&#x74;&#x40;&#x79;&#111;&#x75;&#x64;&#x61;&#120;&#x75;&#x65;&#46;&#99;&#111;&#x6d;
 准备好提交项目后，请点击下一项，在“项目提交”小节中提交。
 ]]></content>
       <categories>
@@ -30810,7 +30988,7 @@ Resume Builder
 项目导师会根据该评估准则（与你制作简历时遵循的清单相符）对你的简历项目进行审核。
 4.1. 提交准备好提交求职信后，你需要：
 1、删除/匿名化你的求职信上的所有个人联系人信息，以防泄漏隐私。2、创建 PDF 格式的简历，这样你的简历在不同操作系统/软件/屏幕中有一致的版面样式。3、点击下方的“提交项目”按钮，并根据说明操作。4、在“告知审核员”中，请包括任何有关你的职业目标（如申请的工作或领域），或任何有意偏离评估准则情况的详细信息。
-注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#x73;&#117;&#x70;&#x70;&#x6f;&#x72;&#x74;&#64;&#121;&#111;&#x75;&#x64;&#97;&#x78;&#117;&#101;&#46;&#x63;&#x6f;&#109;。
+注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#x73;&#117;&#x70;&#112;&#111;&#114;&#x74;&#64;&#121;&#x6f;&#x75;&#x64;&#x61;&#120;&#x75;&#x65;&#x2e;&#x63;&#111;&#109;。
 5. GitHub个人资料项目你的GitHub个人资料展示你创建的项目，并让他人了解你的工作风格和提交频率。通过展示你对 GitHub 的熟悉程度，其他开发人员和招聘经理能够知道你拥有他们需要能力，你就是他们正在寻找的人。你的代码库应表明你认真对待项目，并且能够编写干净、格式正确的代码。请查看 GitHub 上的这篇出色的博客文章，了解如何用 GitHub 帮助你持续学习，发展职业生涯。
 为何要完成此 GitHub 个人资料项目？GitHub 越来越多地被用作招聘平台以及潜在雇主查看你的作品的方式。它还是与其他开发人员建立联系和展示你的技能的好地方。
 我应该做什么？你应该以招聘人员或用人部门经理的眼光查看你的 GitHub 个人资料，重点关注你的个人资料、项目和代码如何将你描绘成公司的潜在候选人或项目的协作者。
@@ -30839,7 +31017,7 @@ Resume Builder
 8.1. 反馈优达学城项目导师会根据该标准（与你制作领英简介时遵循的清单相符）对你的领英简介项目进行审核。
 8.2. 提交准备好提交领英个人资料后：
 1、若要提交，请点击下方的“提交项目”按钮，并根据说明操作。2、在“告知评审员”中，请包括任何有关你的职业目标（如预期工作领域）的详细信息。
-注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#x73;&#x75;&#112;&#112;&#x6f;&#x72;&#x74;&#64;&#121;&#111;&#x75;&#x64;&#x61;&#x78;&#x75;&#x65;&#46;&#x63;&#x6f;&#x6d;。
+注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#x73;&#117;&#x70;&#112;&#111;&#x72;&#x74;&#64;&#x79;&#x6f;&#117;&#x64;&#97;&#120;&#117;&#x65;&#x2e;&#99;&#x6f;&#109;。
 9. 技术面试项目对于此实战项目，你需要回答五个技术面试问题，这些问题涉及的是技术面试课程中讨论的各种主题。你应该用 Python 写出清晰高效的答案，并用文字解释代码的效率和设计理由。我们将安排合格的审核者检查你的答案，并针对任何精彩之处或欠缺的方面做出反馈：你的解决方案是最高效的吗？你很好地解释了你的想法吗？你的代码简洁易懂吗？
 请回答以下问题：
 问题 1: 假设有两个字符串 s 和 t，请判断 t 的变形词是否是 s 的子字符串。例如：如果 s = “udacity”，t = “ad”，则函数返回 True。你的函数定义应该为：“question1(s, t)”，并返回布尔值 True 或 False。 
@@ -30905,7 +31083,7 @@ Dice
 问题 5 - 通过一个情景举例说明正则化对学习好的模型的必要性，以及提供一个正则化没有意义的情景。
 问题 6 -你附近的杂货店想向顾客有针对性地发放对他们来说有用的优惠券。假设你可以访问每位顾客的购买历史和店铺商品目录，你将设计怎样一个系统，来决定发放哪些优惠券？你如何衡量这个系统的性能？
 问题 7 - 选择一个公司，然后描述你想应聘的该公司内的机器学习工程师职位（假设有）。现在，如果你已成功应聘，并从今天开始任职，在你看来，你的职位在下一年会有怎样的发展？你的长期职业目标是什么，这个职位如何帮助你实现长期目标？
-13.3. 提交当你准备提交项目，点击下方“提交项目”，上传一份 PDF 文件。如果有任何与提交项目相关的疑问，或想查看提交状态，请向我们发送电子邮件询问（&#115;&#x75;&#112;&#x70;&#111;&#x72;&#116;&#x40;&#121;&#x6f;&#x75;&#x64;&#x61;&#x78;&#x75;&#101;&#46;&#x63;&#x6f;&#x6d;）。
+13.3. 提交当你准备提交项目，点击下方“提交项目”，上传一份 PDF 文件。如果有任何与提交项目相关的疑问，或想查看提交状态，请向我们发送电子邮件询问（&#x73;&#117;&#x70;&#112;&#111;&#114;&#116;&#64;&#121;&#111;&#x75;&#x64;&#97;&#x78;&#117;&#x65;&#x2e;&#x63;&#111;&#x6d;）。
 13.4. 项目资源项目评审标准。优达学城的项目导师会依据此评审标准审阅你的项目。你可以在提交前自行检查自己是否已达到所有标准。职业资源中心。你可以在这里找到更多有关准备面试的资源和贴士。
 13.5. 接下来面试练习并不是只在你求职时才需要做的事情， 在你的整个职业生涯中，你都需要继续提高自己的面试技巧。抓住每一个机会，思考和与人交流你的职业目标。在申请一个职位之前，请思考清楚自己为什么要申请——这将极大地帮助你为面试做好准备。
 14. 书签Interview Guide: Machine Learninghttps://career-resource-center.udacity.com/interview-courses-and-guides/machine-learning
@@ -31359,7 +31537,7 @@ notebook 项目导出的 HTML 文件，命名为 report.html。
 
 注意：所提交文件的文件名名，包括zip压缩包内的文件名，都不能含有中文及任何ASCII之外的字符，否则会造成提交失败。
 如何导出HTML的说明在 notebook 的最下方。 你也许需要先在命令后通过 pip install mistune 命令安装 mistune 。当你准备好所有这些文件，并且依照项目要求核对过之后，就可以在下面的项目提交页面提交你的项目了。
-如果你是第一次在优达学城提交项目，点击提交之后，要等1分钟左右才能打开提交页面。如果长时间打不开，可以刷新。如果依然无法打开项目提交页面，可以联系客服微信或者邮件至 &#x73;&#117;&#x70;&#112;&#111;&#x72;&#x74;&#64;&#121;&#111;&#117;&#x64;&#x61;&#x78;&#117;&#x65;&#x2e;&#99;&#111;&#x6d;
+如果你是第一次在优达学城提交项目，点击提交之后，要等1分钟左右才能打开提交页面。如果长时间打不开，可以刷新。如果依然无法打开项目提交页面，可以联系客服微信或者邮件至 &#115;&#x75;&#112;&#x70;&#111;&#114;&#116;&#64;&#x79;&#x6f;&#x75;&#x64;&#x61;&#x78;&#x75;&#101;&#x2e;&#x63;&#x6f;&#x6d;
 6. 后记这个项目，是优达学城《机器学习工程师》课程提供的第一个实战项目。摘录了全文，方便查看。郝同学的项目地址：https://github.com/voidking/udaciyty-machine-learning/tree/master/projects/titanic_survival_exploration
 7. 书签机器学习工程师（中/英）https://cn.udacity.com/course/machine-learning-engineer-nanodegree--nd009
 数据科学入门https://cn.udacity.com/course/intro-to-data-science--ud359
@@ -34805,7 +34983,7 @@ https://api.weixin.qq.com/sns/userinfo?access_token=ACCESS_TOKEN&amp;openid=OPEN
 
 
 2. nodebasea node framework designed for myselfversion: v1.0.0url: https://github.com/voidking/nodebase.git  
-3. 作者相关author: haojin(voidking)e-mail: &#118;&#111;&#x69;&#100;&#107;&#105;&#x6e;&#x67;&#64;&#113;&#x71;&#x2e;&#99;&#111;&#109;site: http://www.voidking.com   
+3. 作者相关author: haojin(voidking)e-mail: &#x76;&#111;&#105;&#100;&#107;&#105;&#110;&#x67;&#64;&#x71;&#x71;&#46;&#99;&#x6f;&#109;site: http://www.voidking.com   
 4. 开发环境说明1、安装5.6.0以上Node2、安装mongodb，不要配置密码3、安装sass4、全局安装bower5、全局安装supervisor6、全局安装node-inspector7、全局安装puer8、运行前执行命令
 npm installbower install
 
@@ -39931,7 +40109,7 @@ PRIM（出席和即时信息协议，Presence and Instant Messaging Protocol）�
 
 .3.4. 插件许多XMPP服务器支持插件扩展，这些插件通常使用与服务器自身相同的语言编写，并在服务器的进程内运行。他们的作用很大程度上与外部组件重叠，但插件还能够访问内部服务器数据结构并改变核心服务器行为。
 .4. XMPP寻址XMPP网络上每个实体都有一个或多个地址（JID，jabber identifier）。JID有多种不同形式，但它们通常看上去就像是电子邮件。
-JID有两种类型，裸JID和完整JID，而裸JID是完整JID去除资源部分后的地址。例如，某个客户端的完整JID是&#118;&#x6f;&#x69;&#100;&#x6b;&#x69;&#x6e;&#x67;&#64;&#x76;&#x6f;&#x69;&#x64;&#x6b;&#105;&#x6e;&#103;&#x2e;&#x6c;&#105;&#x74;/library，那么它的裸JID就是&#118;&#x6f;&#x69;&#x64;&#x6b;&#x69;&#110;&#x67;&#64;&#118;&#x6f;&#x69;&#100;&#x6b;&#105;&#110;&#103;&#46;&#108;&#105;&#x74;。
+JID有两种类型，裸JID和完整JID，而裸JID是完整JID去除资源部分后的地址。例如，某个客户端的完整JID是&#118;&#x6f;&#x69;&#100;&#x6b;&#105;&#x6e;&#x67;&#x40;&#x76;&#111;&#105;&#x64;&#107;&#x69;&#x6e;&#x67;&#x2e;&#108;&#x69;&#116;/library，那么它的裸JID就是&#118;&#x6f;&#105;&#x64;&#x6b;&#x69;&#x6e;&#x67;&#x40;&#x76;&#x6f;&#x69;&#x64;&#x6b;&#x69;&#x6e;&#x67;&#x2e;&#x6c;&#105;&#116;。
 .5. 节在XMPP中，各项工作都是通过在一个XMPP流上发送和接收XMPP节来完成的。核心XMPP工具集由三种基本节组成，这三种节分别为&lt;presence&gt;、&lt;message&gt;、&lt;iq&gt;。
 XMPP流由两份XML文档组成，通信的每个方向均有一份文档。这份文档有一个根元素&lt;stream:stream&gt;，这个根元素的子元素由可路由的节以及与流相关的顶级子元素构成。下面给出一段简短的XMPP会话：
 &lt;stream:stream&gt;	&lt;iq type=&#x27;get&#x27;&gt;		&lt;query xmlns=&#x27;jabber:iq:roster&#x27;/&gt;	&lt;/iq&gt;		&lt;presence/&gt;		&lt;message to=&#x27;voidking@voidking.lit&#x27; from=&#x27;haojin@gmail.com/ballroom&#x27; type=&#x27;chat&#x27;&gt;		&lt;body&gt;I cannot talk of books in a ball-room; my head is always full of something else.&lt;/body&gt;	&lt;/message&gt;		&lt;presence type=&#x27;unavailable&#x27;/&gt;&lt;/stream:stream&gt;
@@ -45582,7 +45760,7 @@ mtools，显示所有支持MSDOS文件系统的命令。
 .2.23. mutt
 mutt: mail user agent，文字界面的邮件工具
 
-mutt -s &quot;A test mail&quot; josfeng@gmail.com，将邮件寄给 &#x6a;&#111;&#115;&#102;&#101;&#110;&#x67;&#64;&#x67;&#x6d;&#97;&#105;&#x6c;&#46;&#99;&#x6f;&#109;，信件主题为A test mail。
+mutt -s &quot;A test mail&quot; josfeng@gmail.com，将邮件寄给 &#106;&#x6f;&#115;&#x66;&#101;&#110;&#x67;&#x40;&#x67;&#x6d;&#x61;&#105;&#x6c;&#x2e;&#x63;&#x6f;&#109;，信件主题为A test mail。
 .2.24. mv
 mv: move，移动或重命名文件或目录
 
