@@ -69,7 +69,7 @@ python -m http.server 9999
 
 
 
-2. 整体部署思路1、注册ChatGPT账号2、获取OpenAI API Key3、准备国外主机4、准备Docker环境5、部署ChatGPT镜像站6、配置域名
+2. 整体部署思路1、注册ChatGPT账号2、获取OpenAI API Key3、准备国外主机（或者代理）4、准备Docker环境5、部署ChatGPT镜像站6、配置域名
 3. 注册ChatGPT账号参考文档：
 
 国内开通Chat GPT Plus保姆级教程【典藏】
@@ -77,7 +77,7 @@ ChatGPT学习手册
 推荐一个方便好用的 ChatGPT 客户端
 
 4. 获取OpenAI API Key访问OpenAI - API keys，Create new secret key
-5. 准备国外主机选择一个提供国外主机的云厂商，购买一台国外主机（推荐美国），并且主机的IP国内可以访问，安装Linux系统。
+5. 准备国外主机（或者代理）选择一个提供国外主机的云厂商，购买一台国外主机（推荐美国），并且主机的IP国内可以访问，安装Linux系统。
 微软作为openai的大股东，选择微软azure的云主机，可能更不容易被封号。azure注册需要visa或者master信用卡。注册后azure提供$200的免费试用额度，期限一个月，升级到即用即付订阅，可以延长免费期限到一年。
 相关文档：
 
@@ -86,8 +86,13 @@ Azure 中的虚拟机
 定价计算器
 虚拟机选择器
 
+如果没有国外主机的话，那么可以在国内主机上配置使用代理。
+
+方案一：使用openai专用代理，例如beidongjiedeguang/openai-forward
+方案二：使用可以访问openai的通用代理，配置方法参考《Linux配置网络代理》
+
 6. 准备Docker环境安装Docker，参考文档：《Docker入门篇》
-7. 部署ChatGPT镜像站ChatGPT镜像站源码很多，本文中选择Star数很高的ChuanhuChatGPT。
+7. 部署ChatGPT镜像站7.1. ChuanhuChatGPT简介ChatGPT镜像站源码很多，本文中选择Star数很高的ChuanhuChatGPT。
 ChuanhuChatGPT优点：
 
 流式传输 / 无限对话 / 保存对话 / 预设Prompt集 / 联网搜索 / 根据文件回答
@@ -98,35 +103,37 @@ ChuanhuChatGPT优点：
 
 GaiZhenbiao/ChuanhuChatGPT
 ChuanhuChatGPT - 使用教程
+API host选项
 
-7.1. 打包服务镜像1、克隆ChuanhuChatGPT项目，切换到指定版本
-git clone https://github.com/GaiZhenbiao/ChuanhuChatGPT.gitcd ChuanhuChatGPTgit checkout 20230409
+7.2. 部署ChuanhuChatGPT这里我们使用Docker方式部署。
+1、拉取镜像
+docker pull tuchuanhuhuhu/chuanhuchatgpt:23.08.30
 
-2、打包镜像
-docker build -t voidking/chuanhuchatgpt:20230409 .
+更多版本，请访问：tuchuanhuhuhu/chuanhuchatgpt版本对应配置，请访问：GaiZhenbiao/ChuanhuChatGPT
+2、准备配置文件
+mkdir -p /opt/chuanhuchatgpt/docker run --rm \    tuchuanhuhuhu/chuanhuchatgpt:23.08.30 \    cat /app/config_example.json &gt; /opt/chuanhuchatgpt/config.jsonvim /opt/chuanhuchatgpt/config.json
 
-7.2. 启动服务1、准备配置文件复制 config_example.json 为 /opt/chuanhuchatgpt/config.json，按照提示修改参数配置
-&#123;    // 你的OpenAI API Key，一般必填，    // 若缺省填为 &quot;openai_api_key&quot;: &quot;&quot; 则必须再在图形界面中填入API Key    &quot;openai_api_key&quot;: &quot;sk-xxxxxxxxxxxxxxxxxxxxxxxxx&quot;,    // 如果使用代理，请取消注释下面的两行，并替换代理URL    // &quot;https_proxy&quot;: &quot;http://127.0.0.1:1079&quot;,    // &quot;http_proxy&quot;: &quot;http://127.0.0.1:1079&quot;,    &quot;users&quot;: [        [&quot;用户1的用户名&quot;, &quot;用户1的密码&quot;],        [&quot;用户2的用户名&quot;, &quot;用户2的密码&quot;]    ],    &quot;advance_docs&quot;: &#123;        &quot;pdf&quot;: &#123;            // 是否认为PDF是双栏的            &quot;two_column&quot;: false,            // 是否使用OCR识别PDF中的公式            &quot;formula_ocr&quot;: true        &#125;    &#125;,    // 是否多个API Key轮换使用    &quot;multi_api_key&quot;: false,    &quot;api_key_list&quot;: [        &quot;sk-xxxxxxxxxxxxxxxxxxxxxxxx1&quot;,        &quot;sk-xxxxxxxxxxxxxxxxxxxxxxxx2&quot;,        &quot;sk-xxxxxxxxxxxxxxxxxxxxxxxx3&quot;    ]&#125;
+如下修改：
 
-其中users参数可以为空，&quot;users&quot;: []，表示不设置用户名密码。
-建议配置：
+openai_api_key：改为自己的key
+openai_api_base：改为openai专用代理地址，例如 https://api.openai-forward.com
+users：改为想要配置的用户名和密码，例如 [[&quot;myname&quot;,&quot;mypassword&quot;]]
 
-openai_api_key不用填，因为docker run时会覆盖这个参数。
-填入用户名密码，避免被盗用。
-启用multi_api_key，不用在页面输入key，而且拥有多个key时能够负载均衡。
+更多配置参考文档：配置 config.json
+3、启动ChuanhuChatGPT
+docker run --name chuanhuchatgpt -d \    -v /opt/chuanhuchatgpt/history:/app/history \    -v /opt/chuanhuchatgpt/config.json:/app/config.json \    -p 7860:7860 \    tuchuanhuhuhu/chuanhuchatgpt:23.08.30
 
-2、启动服务
-docker run --name chuanhuchatgpt -d \    -e my_api_key=&quot;替换成API&quot; \    -e api_host=&quot;替换成自定义的api请求地址&quot; \    -v /opt/chuanhuchatgpt/history:/app/history \    -v /opt/chuanhuchatgpt/config.json:/app/config.json \    -p 7860:7860 \    voidking/chuanhuchatgpt:20230409
-
-其中 my_api_key 必填，api_host 可省略。config.json中配置的openai_api_key无效，因为my_api_key这里必填，会覆盖config.json中的配置。
-3、查看服务状态
+4、查看服务状态
 docker logs chuanhuchatgptdocker update --restart=always chuanhuchatgpt
 
-4、访问服务浏览器访问 http://&lt;主机IP&gt;:7860
-8. 配置域名参考文档：
+5、访问服务浏览器访问 http://&lt;主机IP&gt;:7860
+8. 配置域名注意：配置域名时，需要配置支持websocket，否则会出现 Connection errored out 
+参考文档：
 
 《Nginx入门篇》
 ChuanhuChatGPT - 使用教程
+设置登录账号密码后Connection errored out
+连接错误Connection errored out
 
 ]]></content>
       <categories>
@@ -241,6 +248,45 @@ on:  workflow_dispatch:    inputs:      build:        description: &quot;build p
         <tag>cicd</tag>
         <tag>travis-ci</tag>
         <tag>github-actions</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hexo本地搜索加速（七牛版）</title>
+    <url>/dev-hexo-local-search-accelerate-qiniu/</url>
+    <content><![CDATA[1. 前言《Hexo本地搜索加速》一文中，给 search.xml 文件配置了 jsdelivr CDN。但是，jsdelivr CDN 目前国内已经无法访问了，只能另外寻找一个替代。
+可选的替代包括：
+
+statically.io
+githack.com
+
+配置方法可以参考hexo-theme-next/commit/2ff6c11，但是，这些替代CDN，国内也无法访问。找来找去，最终锁定了七牛，一直用它作为图床，其实用做 search.xml 文件的存储仓库，也很合适。
+本文就来学习一下使用七牛作为 search.xml 存储仓库的方法。
+
+
+2. 准备工作2.1. 安装配置hexo环境参考文档《Hexo环境搭建2021年8月版》，安装配置hexo环境。
+执行 hexo g 命令，在 public 目录中生成要部署的静态文件，其中包含 search.xml 。
+2.2. 获取七牛api key访问七牛密钥管理页面，创建一个密钥对（AccessKey/SecretKey）。
+2.3. 安装七牛依赖npm install qiniu --save
+
+3. 上传 search.xml参考文档：对象存储 - Node.js SDK
+1、实现上传脚本 upload-qiniu.js
+const qiniu = require(&#x27;qiniu&#x27;);const fs = require(&#x27;fs&#x27;);// 七牛配置const accessKey = &#x27;您的七牛Access Key&#x27;;const secretKey = &#x27;您的七牛Secret Key&#x27;;const bucketName = &#x27;您的存储空间名称&#x27;;const key = &#x27;上传的图片在七牛中的存储路径/文件名&#x27;; // 如果需要覆盖之前的图片，使用相同的keyconst mac = new qiniu.auth.digest.Mac(accessKey, secretKey);const config = new qiniu.conf.Config();config.zone = qiniu.zone.Zone_z0; // 华东地区，根据需要选择合适的地区const formUploader = new qiniu.form_up.FormUploader(config);const putExtra = new qiniu.form_up.PutExtra();// 上传图片const uploadImage = () =&gt; &#123;  // 读取本地图片文件  const localFile = &#x27;./path/to/your/local/image.jpg&#x27;;  const readStream = fs.createReadStream(localFile);  // 生成上传凭证  const options = &#123;    scope: `$&#123;bucketName&#125;:$&#123;key&#125;`,    force: true, // 强制覆盖同名文件  &#125;;  const putPolicy = new qiniu.rs.PutPolicy(options);  const uploadToken = putPolicy.uploadToken(mac);  // 开始上传  formUploader.putStream(uploadToken, key, readStream, putExtra, (respErr, respBody, respInfo) =&gt; &#123;    if (respErr) &#123;      throw respErr;    &#125;    if (respInfo.statusCode === 200) &#123;      console.log(&#x27;上传成功&#x27;, respBody);    &#125; else &#123;      console.log(&#x27;上传失败&#x27;, respInfo.statusCode, respBody);    &#125;  &#125;);&#125;;uploadImage();
+
+2、测试上传脚本
+node upload-qiniu.js
+
+上传成功后出现提示：
+上传成功 &#123; hash: &#x27;FkYxkyrsSytBGvgYgEvPs28lVI40&#x27;, key: &#x27;doc/search.xml&#x27; &#125;
+
+4. 主题中配置使用七牛CDNNext主题中，配置使用七牛CDN中的 search.xml，具体配置方法参考hexo-theme-next/commit/2ff6c11
+5. 整合到自动部署参考《Hexo配置GitHub Actions自动构建发布》，配置自动部署。
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>hexo</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -1848,16 +1894,59 @@ monitoring 部分修改为：
 monitoring:  endpoint: http://prometheus-operated.kubesphere-monitoring-system.svc:9090
 
 参考文档：集成您自己的 Prometheus
-6.3. 重置KubeSphere密码如果忘记了ks的密码，可以通过kubectl命令进行重置。参考文档Reset the Account Password
+6.3. 安装GrafanaKubeSphere 3.3.0 版本的Grafana需要自行安装。
+1、添加helm chart仓库
+helm repo add bitnami https://charts.bitnami.com/bitnami
+
+2、获取redis的配置这里选择chart版本9.0.7，app版本10.0.3
+helm search repo bitnami/grafana -lhelm pull bitnami/grafana --version 9.0.7tar -xzvf grafana-9.0.7.tgzvim grafana/values.yaml
+
+3、values.yaml 修改配置
+
+global.storageClass 修改为期望的storageclass
+admin.user 改为期望的用户名
+admin.password 改为期望的密码
+service.type 改为NodePort
+
+4、安装grafana
+helm install grafana grafana \    -n grafana --create-namespace
+
+5、查看安装
+kubectl get all -n grafana
+
+6.4. 重置KubeSphere密码如果忘记了ks的密码，可以通过kubectl命令进行重置。参考文档Reset the Account Password
 kubectl patch users &lt;USERNAME&gt; -p &#x27;&#123;&quot;spec&quot;:&#123;&quot;password&quot;:&quot;&lt;YOURPASSWORD&gt;&quot;&#125;&#125;&#x27; --type=&#x27;merge&#x27; &amp;&amp; kubectl annotate users &lt;USERNAME&gt; iam.kubesphere.io/password-encrypted-
 
-6.4. 添加项目到企业空间Kubernetes命名空间就是KubeSphere项目，这些项目可以在 平台管理-&gt;集群管理-&gt;具体集群-&gt;项目 中查看到。
+6.5. 添加项目到企业空间Kubernetes命名空间就是KubeSphere项目，这些项目可以在 平台管理-&gt;集群管理-&gt;具体集群-&gt;项目 中查看到。
 添加现有KubeSphere项目到企业空间：1、以管理员身份登录KubeSphere控制台，转到集群管理页面。点击项目，可以查看在当前集群中运行的所有项目。2、通过 kubectl 创建的命名空间不属于任何企业空间。请点击右侧的三个点，选择分配企业空间。3、在弹出的对话框中，为该项目选择一个企业空间和项目管理员，然后点击确定。4、转到企业空间，可以在项目页面看到该项目已显示。
 参考文档：
 
 添加现有 Kubernetes 命名空间至 KubeSphere 企业空间
 
-6.5. 批量添加项目到企业空间kubectl get ns |grep voidking | awk &#x27;&#123;print $1&#125;&#x27; | xargs kubectl patch ns -p &#x27;metadata: &#123;labels: &#123;kubesphere.io/workspace: &quot;voidking&quot;&#125;, annotations: &#123;kubesphere.io/creator: &quot;haojin&quot;&#125;&#125;&#x27;
+6.6. 批量添加项目到企业空间kubectl get ns |grep voidking | awk &#x27;&#123;print $1&#125;&#x27; | xargs kubectl patch ns -p &#x27;metadata: &#123;labels: &#123;kubesphere.io/workspace: &quot;voidking&quot;&#125;, annotations: &#123;kubesphere.io/creator: &quot;haojin&quot;&#125;&#125;&#x27;
+
+6.7. 修改KS组件亲和性安装KS时，是不支持配置KS组件的亲和性的。如果自己通过脚本批量修改，会被ks-intaller自动改回，并且不同资源修改的方法是不同的。
+下面是一个可行的办法：
+1、关闭 ks-intaller
+kubectl scale --replicas=0 deployment ks-installer -n kubesphere-system
+
+2、准备亲和性配置 data.yaml
+spec:  template:    spec:      nodeSelector:        nodetype: infra      tolerations:        - key: &quot;nodetype&quot;          operator: &quot;Equal&quot;          value: &quot;infra&quot;          effect: &quot;NoSchedule&quot;
+
+3、deployment批量添加节点亲和性
+kubectl get deployment -n kubesphere-system -o=jsonpath=&#x27;&#123;.items[*].metadata.name&#125;&#x27; | xargs kubectl patch deployment --type=merge --patch-file data.yaml -n kubesphere-systemkubectl get deployment -n kubesphere-monitoring-system -o=jsonpath=&#x27;&#123;.items[*].metadata.name&#125;&#x27; | xargs kubectl patch deployment --type=merge --patch-file data.yaml -n kubesphere-monitoring-system
+
+
+4、准备亲和性配置 data2.yaml
+spec:  nodeSelector:    nodetype: infra  tolerations:    - key: &quot;nodetype&quot;      operator: &quot;Equal&quot;      value: &quot;infra&quot;      effect: &quot;NoSchedule&quot;
+
+4、自定义资源添加节点亲和性
+kubectl get prometheus k8s -n kubesphere-monitoring-systemkubectl patch prometheus k8s --type=merge --patch-file=data2.yaml -n kubesphere-monitoring-systemkubectl get alertmanager main -n kubesphere-monitoring-systemkubectl patch alertmanager main --type=merge --patch-file=data2.yaml -n kubesphere-monitoring-systemkubectl get notificationmanager -n kubesphere-monitoring-systemkubectl patch notificationmanager/notification-manager --type=merge --patch-file=data2.yaml -n kubesphere-monitoring-system
+
+参考文档：
+
+《kubectl命令——资源对象增删查改篇》
+如何配置 cluster-configuration.yaml 将kubesphere安装到指定节点上？
 
 7. KubeSphere问题记录7.1. Could not connect to the container问题描述：配置好nginx，通过域名访问ks正常，但是在ks页面上访问容器终端时报错：
 Could not connect to the container. Do you have sufficient privileges?
@@ -1886,6 +1975,7 @@ Kubernetes 多集群在开源项目 KubeSphere 的应用
         <tag>k8s</tag>
         <tag>问题排查</tag>
         <tag>存储</tag>
+        <tag>bitnami</tag>
         <tag>kubesphere</tag>
         <tag>storageclass</tag>
       </tags>
@@ -4168,7 +4258,14 @@ python main.pyc
 
 8. pyc反编译pypip install uncompyle6uncompyle6 -o filename.py filename.pyc
 
-9. 参考文档
+9. py文件加密pip install pyarmorpyarmor gen test.py
+
+参考文档：
+
+Pyarmor  Documentation
+使用PyArmor保护Python代码
+
+10. 参考文档
 Python官方文档
 Python官方文档下载
 Python官方文档下载-chm格式
@@ -6961,11 +7058,11 @@ https://www.baidu.com
   <entry>
     <title>git commit问题详解</title>
     <url>/dev-git-commit/</url>
-    <content><![CDATA[1. 怎样修改 commit user ？1.1. 问题描述git的 user.name 和 user.email 配置错了，然后还提交了很多commit，怎么办？不要慌，git支持修改历史commit记录的用户名和邮箱。
+    <content><![CDATA[1. 前言本文记录使用 git commit 时遇到的一些问题，备忘。
 
 
-1.2. 思路参考Changing author info，使用脚本进行修改。
-1.3. 实现以macos上操作为例。
+2. 怎样修改 commit user ？2.1. 问题描述git的 user.name 和 user.email 配置错了，然后还提交了很多commit，怎么办？不要慌，git支持修改历史commit记录的用户名和邮箱。
+2.2. 解决办法参考Changing author info，使用脚本进行修改。
 1、clone项目
 git clone --bare https://github.com/user/repo.gitcd repo
 
@@ -6973,37 +7070,55 @@ git clone --bare https://github.com/user/repo.gitcd repo
 #!/bin/shgit filter-branch -f --env-filter &#x27;OLD_EMAIL=&quot;your-old-email@example.com&quot;CORRECT_NAME=&quot;Your Correct Name&quot;CORRECT_EMAIL=&quot;your-correct-email@example.com&quot;if [ &quot;$GIT_COMMITTER_EMAIL&quot; = &quot;$OLD_EMAIL&quot; ]thenexport GIT_COMMITTER_NAME=&quot;$CORRECT_NAME&quot;export GIT_COMMITTER_EMAIL=&quot;$CORRECT_EMAIL&quot;fiif [ &quot;$GIT_AUTHOR_EMAIL&quot; = &quot;$OLD_EMAIL&quot; ]thenexport GIT_AUTHOR_NAME=&quot;$CORRECT_NAME&quot;export GIT_AUTHOR_EMAIL=&quot;$CORRECT_EMAIL&quot;fi&#x27; --tag-name-filter cat -- --branches --tags
 
 其中 OLD_EMAIL、CORRECT_NAME、CORRECT_EMAIL 三个变量需要替换。
-3、执行脚本sh change-author.sh
+3、执行脚本
+sh change-author.sh
+
 4、检查结果，强制同步到远程仓库
 git loggit push --force --tags origin &#x27;refs/heads/*&#x27;
 
-2. 怎样修改上次 commit message ？2.1. 问题描述git commit -m &quot;something&quot;，之后，想要修改“something”为“something_new”。
-2.2. 解决办法使用git commit --amend，可以修改最后一次commit的附加信息。
-3. 怎样合并多次 commit ？3.1. 需求最近三次提交：
+3. 怎样修改上次 commit message ？3.1. 问题描述git commit -m &quot;something&quot;，之后，想要修改“something”为“something_new”，该怎样修改？
+3.2. 解决办法使用git commit --amend，可以修改最后一次commit的附加信息。
+4. 怎样修改最近几次的commit message？4.1. 问题描述已知最近几次提交记录为（最新的commit为efaec33）：
+commit efaec33c2a081e427c5201898b3fc61179475f69commit 5fdf644e089dcb245b1f3dde5e8942fc935ffccccommit 550ae58fc222c5c4cd99027a580423d2567969e6commit f3e9a940df8371d5282f151a5c6e6e74a1e3dead
 
-第一次以为完成了，commit message写了“完成了xxx功能”。
-结果发现有bug，修复后第二次提交，commit message写了“修复xxx功能的bug”。
-结果发现还有bug，修复后第三次提交，commit message写了“修复xxx功能的bug”。
+最近三次的commit message描述都有问题，该怎样修改？
+4.2. 解决办法1、rebase到想要修改记录的前一条commit
+git rebase -i HEAD~3# orgit loggit rebase -i f3e9a94
 
-这样的三次提交，没毛病，但是可以美化一下，合并成一次提交。
-3.2. 操作步骤1、合并最新三次的提交
-git rebase -i HEAD~3# orgit loggit rebase -i 0861a7db58
-自动进入vi编辑模式，此时看到的commit信息是按照时间顺序排列的，最新的commit在最下面。按照提示的命令编辑commit信息，一般改成p s s即可。
+2、按照提示的命令编辑commit信息，改成e e e，保存。
+e 550ae58 add: xxxe 5fdf644 modify: xxxe efaec33 modify: xxx
+
+3、修改commit信息
+git commit --amend # 修改 550ae58# GIT_COMMITTER_DATE=&quot;2023-09-02T08:00:00&quot; git commit --amend --date=&quot;2023-09-02T08:00:00&quot; # 修改 550ae58 ，同时修改时间戳git rebase --continue git commit --amend # 修改 5fdf644git rebase --continue git commit --amend # 修改 efaec33git rebase --continue # Successfully rebased and updated refs/heads/main.
+
+和修改上次commit信息相比，修改多次commit信息也是使用 git commit --amend ，只不过变成了挨个处理。
+PS：取消rebase
+git rebase --abort
+
+参考文档：Git修改旧提交的时间
+5. 怎样合并多次 commit ？5.1. 问题描述已知最近几次提交记录为（最新的commit为efaec33）：
+commit efaec33c2a081e427c5201898b3fc61179475f69commit 5fdf644e089dcb245b1f3dde5e8942fc935ffccccommit 550ae58fc222c5c4cd99027a580423d2567969e6commit f3e9a940df8371d5282f151a5c6e6e74a1e3dead
+
+最近三条的提交记录，commit message相同或者意思相近，想要合并成一条commit，该怎样操作？
+5.2. 解决办法1、rebase到想要合并记录的前一条commit
+git rebase -i HEAD~3# orgit loggit rebase -i f3e9a94
+自动进入vi编辑模式，此时看到的commit信息是按照时间顺序排列的，最新的commit在最下面。
+2、按照提示的命令编辑commit信息，改成p s s，保存。
+pick 550ae58 add: xxxs 5fdf644 modify: xxxs efaec33 modify: xxx
+
 如果修改完报错：error: cannot ‘squash’ without a previous commit那么可以继续修改：
 git rebase --edit-todo
 
-2、解决冲突后提交（不使用git commit）
+3、解决冲突后提交（不使用git commit）
 git add .git rebase --continue
 
-3、取消rebase
-git rebase --abort
-
-4. 怎样删除某次 commit ？4.1. 需求已知一些提交记录为：
+6. 怎样删除某次 commit ？6.1. 问题描述已知最近几次提交记录为（最新的commit为efaec33）：
 commit efaec33c2a081e427c5201898b3fc61179475f69commit 5fdf644e089dcb245b1f3dde5e8942fc935ffccccommit 550ae58fc222c5c4cd99027a580423d2567969e6commit f3e9a940df8371d5282f151a5c6e6e74a1e3dead
 现在想要删除 550ae58fc222c5c4cd99027a580423d2567969e6 这次commit，该怎么操作？
-4.2. 操作步骤1、rebase到要删除的commit的前一个commit
+6.2. 解决办法1、rebase到要删除的commit的前一个commit
 git rebase -i f3e9a940df8371d5282f151a5c6e6e74a1e3dead
 
+自动进入vi编辑模式，此时看到的commit信息是按照时间顺序排列的，最新的commit在最下面。
 2、找到删除的commit（第一个），标记为 drop，保存
 drop 550ae58 add: xxxpick 5fdf644 modify: xxxpick efaec33 modify: xxx
 
@@ -9300,6 +9415,110 @@ kubectl exec -it ingress-nginx-controller-xxx -- /bin/bashcd /etc/nginxcat nginx
       </tags>
   </entry>
   <entry>
+    <title>K8S中的admissionWebhooks</title>
+    <url>/dev-k8s-admissionwebhooks/</url>
+    <content><![CDATA[1. 什么是admissionWebhooks？admissionWebhooks是Kubernetes的一种高级特性，它允许集群管理员通过Webhook服务来验证和修改提交到Kubernetes API服务器的资源请求。这些资源请求可以包括创建、更新或删除Kubernetes对象，如Pod、Service、Deployment等。
+参考文档：
+
+
+2. admissionWebhooks类型admissionWebhooks分为两种主要类型：
+
+Validating Webhooks：这些Webhooks用于验证资源请求是否符合自定义规则。如果请求不符合规则，它将被拒绝。这有助于防止不正确或不安全的配置进入集群。例如，我们可以强制执行名称约定、安全策略或其他最佳实践。
+
+Mutating Webhooks：这些Webhooks用于自动修改或补充资源请求。它们可以用于自动添加默认值、生成TLS证书、自动注入侧边车（sidecar）容器等。Mutating Webhooks允许我们以自动化的方式改善和定制资源配置。
+
+
+3. 使用场景admissionWebhooks在Kubernetes中有广泛的应用场景，以下是一些常见的用例：
+
+安全性强制执行：管理员可以使用Validating Webhooks来确保Kubernetes资源遵循安全性最佳实践。例如，我们可以拒绝未经授权的镜像或容器访问。
+
+默认值注入：使用Mutating Webhooks，我们可以自动向Pod或其他资源添加默认配置。这有助于简化配置，降低人为错误的风险。
+
+自动TLS证书管理：通过Mutating Webhooks，我们可以自动为Ingress或其他资源生成和管理TLS证书，从而简化了HTTPS配置。
+
+自动扩展功能：通过自定义验证规则和变更配置，我们可以增强Kubernetes的功能。例如，我们可以强制执行自定义认证、流量控制或其他策略。
+
+
+4. 部署和配置要配置和部署admissionWebhooks，我们需要执行以下一般步骤：
+1、创建Webhook服务：首先，我们需要创建一个Webhook服务，它将处理资源请求的验证或变更。这个服务通常运行在Kubernetes集群中，并能够接收来自Kubernetes API服务器的HTTP请求。
+2、创建Webhook资源：创建一个ValidatingWebhookConfiguration或MutatingWebhookConfiguration资源，以定义Webhook的配置。这个资源将包含Webhook的名称、URL、验证规则和选择器等信息。
+3、部署Webhook服务：确保Webhook服务能够正常运行并监听来自Kubernetes API服务器的请求。
+4、测试和验证：测试Webhook配置，确保它们按预期工作。创建或更新资源，并检查验证规则或配置变更是否按预期生效。
+5、绑定ClusterRole和ClusterRoleBinding：为Webhook服务创建必要的ClusterRole和ClusterRoleBinding，以确保它具有适当的权限。
+6、监控和日志：设置监控和日志以监视Webhook服务的性能和运行状况，以及及时发现和解决问题。
+5. 小结admissionWebhooks是Kubernetes中强大的安全性和验证机制，允许管理员通过自定义验证规则和配置变更来增强集群的安全性和功能。它们可以用于强制执行安全性策略、添加默认配置、自动生成证书等多种用途。虽然配置和部署admissionWebhooks可能需要一些工作，但它们为Kubernetes提供了更大的灵活性和可定制性，以满足不同环境和应用程序的需求。因此，对于需要强大的安全性和配置管理的Kubernetes集群来说，admissionWebhooks是不可或缺的工具之一。
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>k8s</category>
+        <category>cloudnative</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ingress配置使用宿主机80/443端口</title>
+    <url>/dev-k8s-ingress-80-443/</url>
+    <content><![CDATA[1. 前言《K8S中安装使用Ingress》一文中，我们安装配置了Ingress。安装Ingress后，默认的服务端口是NodePort，范围 30000-32767 。因为端口不是80和443，所以我们无法直接把域名解析到节点IP上，上层还需要增加一个LB或者Nginx进行转发。而增加了上层，整个链路就变长了，增加了响应耗时和出现问题的概率。
+本文中，我们学习一种Ingress配置方法，能够使Ingress直接使用宿主机的80和443端口。
+
+
+2. 安装配置思路K8S中有一个机制是 hostNetwork，允许Pod使用宿主机网络，也就是说可以直接将Pod的80和443直接绑定到K8S宿主机网络上。基于此，可以使用 DaemonSet+hostNetwork 部署Ingress。
+参考文档：
+
+DNS for Services and Pods
+Kubernetes进阶训练营 ingress-nginx
+适合ingress-nginx接入外部负载均衡的部署
+
+3. 安装配置实践1、添加chart仓库
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginxhelm repo updatehelm repo list
+
+2、下载chart（chart4.1.4 对应 app1.2.1）
+helm search repo ingress-nginx/ingress-nginx -lhelm fetch ingress-nginx/ingress-nginx --version 4.1.4tar -xzvf ingress-nginx-4.1.4.tgzvim ingress-nginx/values.yaml
+
+3、修改 values.yaml 配置
+
+controller.image.registry：改为k8s.dockerproxy.com
+controller.image.tag：保持不变v1.2.1
+controller.image.digest：注释掉
+controller.image.digestChroot：注释掉
+controller.admissionWebhooks.enabled：保持 true，避免创建的错误 Ingress 等资源对象影响控制器重新加载
+defaultBackend.enabled：按需修改
+controller.hostNetwork：改为 true
+controller.publishService.enabled：改为 false
+controller.dnsPolicy：改为 ClusterFirstWithHostNet
+controller.kind：改为 DaemonSet
+controller.nodeSeletor：按需修改
+controller.tolerations：按需修改
+controller.service.enabled：改为 false
+
+4、安装ingress nginx controller
+helm install ingress-nginx ingress-nginx -n ingress-nginx --create-namespace --dry-run --debughelm install ingress-nginx ingress-nginx -n ingress-nginx --create-namespace
+
+5、查看安装
+kubectl get all -n ingress-nginxkubectl get ingressclass
+
+
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>k8s</category>
+        <category>network</category>
+        <category>cloudnative</category>
+        <category>architecture</category>
+      </categories>
+      <tags>
+        <tag>架构</tag>
+        <tag>k8s</tag>
+        <tag>nginx</tag>
+        <tag>网络</tag>
+        <tag>helm</tag>
+        <tag>ingress</tag>
+        <tag>kubesphere</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>K8S中安装使用Ingress</title>
     <url>/dev-k8s-ingress/</url>
     <content><![CDATA[1. Ingress简介ingress是k8s中的一个七层的负载均衡，可以把流量路由到service。如果没有ingress，我们可以通过外部的nginx、haproxy等也可以实现七层负载均衡，但是配置nginx比较麻烦，因为想要配置nginx的upstream必须先查询service的ip，那如果使用service的name，还要维护一个dns；如果想要换成haproxy，成本也比较高。而有了ingress，实际上就是把nginx等七层负载均衡集成到了k8s中，配置就更加简单也更加通用。
@@ -9329,13 +9548,14 @@ helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginxhelm repo 
 2、下载chart（chart4.1.4 对应 app1.2.1）
 helm search repo ingress-nginx/ingress-nginx -lhelm fetch ingress-nginx/ingress-nginx --version 4.1.4tar -xzvf ingress-nginx-4.1.4.tgzvim ingress-nginx/values.yaml
 
-3、修改配置values.yaml按需修改，这里主要修改一下镜像： 
+3、修改 values.yaml 配置
 
-controller.image.registry ，改为k8s.dockerproxy.com
-controller.image.tag，保持不变v1.2.1
-controller.image.digest，注释掉
-controller.image.digestChroot，注释掉
-admissionWebhooks.enabled 改为 false
+controller.image.registry：改为k8s.dockerproxy.com
+controller.image.tag：保持不变v1.2.1
+controller.image.digest：注释掉
+controller.image.digestChroot：注释掉
+controller.admissionWebhooks.enabled：保持 true，避免创建的错误 Ingress 等资源对象影响控制器重新加载
+defaultBackend.enabled：按需修改
 
 4、安装ingress nginx controller
 helm install ingress-nginx ingress-nginx -n ingress-nginx --create-namespace --dry-run --debughelm install ingress-nginx ingress-nginx -n ingress-nginx --create-namespace
@@ -10511,7 +10731,7 @@ docker run -it --name vk-php -d \-p 8080:80 \-v /opt/w7/mysql:/var/lib/mysql \-v
     <title>使用Docker安装配置Nginx</title>
     <url>/dev-docker-nginx/</url>
     <content><![CDATA[1. 前言《CentOS7设置nginx开机自启动》一文中学习了在CentOS7中安装配置Nginx的方法，本文学习一下使用Docker安装配置Nginx的方法。
-前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。已知docker宿主机IP为8.136.13.58。
+前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。
 
 
 2. 安装Nginx1、登录dockerhub查看需要的Nginx - Docker Official Images。
@@ -10547,11 +10767,17 @@ docker run --name vk-nginx -d --privileged=true \-p 80:80 -p 443:443 \-v /opt/ng
 
 3.3. 重启nginxdocker restart vk-nginx
 
-4. 配置Web服务以配置 www.voidking.com 域名的Web服务为例，参考《Hexo启用https加密连接》和《Hexo加速访问》。
+4. 配置Web服务参考文档：
+
+《Nginx入门篇》
+《Hexo启用https加密连接》
+《Hexo加速访问》
+
+以配置 www.voidking.com 域名的Web服务为例。
 1、下载博客项目
 mkdir /opt/nginx/workgit clone https://gitee.com/voidking/voidking.github.io.git voidking
 
-2、上传证书上传 1_www.voidking.com_bundle.crt 和 2_www.voidking.com.key 到/opt/nginx/conf.d/ssl目录
+2、上传证书上传 1_www.voidking.com_bundle.crt 和 2_www.voidking.com.key 到 /opt/nginx/conf.d/ssl 目录
 3、创建配置文件
 cd /opt/nginx/conf/conf.dvim www.voidking.com.conf 
 
@@ -10565,29 +10791,17 @@ docker restart vk-nginx
 docker psdocker logs vk-nginxdocker logs --tail 10 vk-nginx
 
 至此， www.voidking.com 域名配置完成，在dnspod添加好解析即可访问，nice。
-5. 配置七牛图床反向代理七牛图床，http访问不收费，https收费。为了给图床省钱，使用nginx配置了一层代理，添加了域名 cdn.voidking.com.conf 的配置：
-server &#123;    listen 80;    listen 443 ssl;    server_name cdn.voidking.com;    charset utf-8;    #ssl配置    ssl_certificate /etc/nginx/ssl/1_cdn.voidking.com_bundle.crt;    ssl_certificate_key  /etc/nginx/ssl/2_cdn.voidking.com.key;    ssl_session_timeout  5m;    ssl_protocols SSLv3 TLSv1 TLSv1.1 TLSv1.2;    ssl_ciphers  HIGH:!ADH:!EXPORT56:RC4+RSA:+MEDIUM;    if ($ssl_protocol = &quot;&quot;) &#123;        return 301 https://$host$request_uri;    &#125;    location / &#123;        proxy_set_header   Host             $host;        proxy_set_header   X-Real-IP        $remote_addr;        proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;        proxy_pass http://qiniu.cdn.voidking.com;    &#125;&#125;
-
-6. 重定向问题排查有一天，通过chrome浏览器访问 http://8.136.13.58 ，发现报错 403
-仔细看了下地址栏，原来是 http 自动转到了 https。本地curl验证一下是否是chrome的问题：
-curl http://8.136.13.58curl http://8.136.13.58 -L
-由上图可以看出，确实是nginx对请求进行了重定向。
-那么，为什么通过ip访问会进行重定向？在 default.conf 的配置中，没有进行修改，没有配置任何重定向！这样看来，问题只能出在 www.voidking.com.conf 和 cdn.voidking.com.conf 这两个文件。
-删除 www.voidking.com.conf ，重启nginx，问题依然存在。删除 cdn.voidking.com.conf ，重启nginx，问题解决！那么，问题就肯定出在 cdn.voidking.com.conf 这个文件上。从配置上看，没有任何问题，但是为什么会导致IP访问nginx被重定向呢？找了很多资料，没有找到答案。后来灵光一现：cdn.voidking.com.conf 比 default.conf 优先级更高！因为c开头的配置文件要比d开头的配置文件先加载，而 default.conf 并没有特殊的优先级配置。所以，最终结果就是 cdn.voidking.com.conf 才是真正意义上的 default ！
-解决方案：重命名 default.conf 为 0.default.conf 。
 ]]></content>
       <categories>
         <category>engineering</category>
         <category>devops</category>
         <category>hexo</category>
         <category>docker</category>
-        <category>troubleshooting</category>
       </categories>
       <tags>
         <tag>hexo</tag>
         <tag>nginx</tag>
         <tag>docker</tag>
-        <tag>问题排查</tag>
       </tags>
   </entry>
   <entry>
@@ -11987,7 +12201,7 @@ modules和传统的GOPATH不同，不需要包含例如src，bin这样的子目�
 失败了，返回404，猜测是12.0版本在代理服务器不存在，使用另外一种下载方式。
 go get k8s.io/client-go@kubernetes-1.15.0
 此处下载了两个版本的client-go，我们使用v0.0.0版本。
-4、安装client-go相关依赖client-go默认下载到$GOPATH/pkg/mod/k8s.io目录下，把k8s.io目录移动到$GOPATH/src目录下。然后把&#99;&#x6c;&#x69;&#101;&#110;&#116;&#45;&#103;&#x6f;&#64;&#118;&#x30;&#x2e;&#x30;&#x2e;&#x30;重命名为client-go，然后在client-go目录下执行安装依赖的命令：
+4、安装client-go相关依赖client-go默认下载到$GOPATH/pkg/mod/k8s.io目录下，把k8s.io目录移动到$GOPATH/src目录下。然后把&#99;&#108;&#105;&#x65;&#110;&#x74;&#45;&#x67;&#x6f;&#64;&#118;&#48;&#46;&#48;&#46;&#48;重命名为client-go，然后在client-go目录下执行安装依赖的命令：
 export GOPROXY=https://goproxy.ioexport GO111MODULE=ongo mod vendor
 完成之后，所有的依赖都下载到了client-go/vendor目录下，一个完整的client-go依赖库就准备好了。
 3.2. 依赖库版本管理client-go依赖库准备好了，但是另一个问题来了：假设项目vk-project依赖client-go和库A，client-go依赖库A，两个依赖库A版本不一致，那么vk-project在编译时，会同时依赖两个不同的库A，导致编译出的二进制包有问题。
@@ -13073,7 +13287,7 @@ kubectl create -f deploy.yaml
 7. 更新资源对象以deployment资源对象为例，其他资源对象操作方法相同。
 7.1. 基本操作# 编辑集群中的资源kubectl edit deployment deployment-name# 比较manifest与集群中当前资源的不同kubectl diff -f deploy.yaml# 应用最新定义kubectl replace -f deploy.yamlkubectl apply -f deploy.yaml# 添加labelkubectl label deployment deployment-name new-label=awesome# 添加annotationkubectl annotate deployment deployment-name icon-url=http://goo.gl/XXBTWq 
 
-7.2. patch操作kubectl patch: Update field(s) of a resource using strategic merge patch.
+7.2. patch操作7.2.1. patch简介kubectl patch: Update field(s) of a resource using strategic merge patch.
 用法：
 kubectl patch (-f FILENAME | TYPE NAME) -p PATCH
 
@@ -13101,13 +13315,17 @@ kubectl patch
 详解 kubectl patch 命令 – strategic、json 和 merge 区别
 《Kustomize工具》
 
-7.2.1. 添加节点亲和性kubectl patch deployment deployment-name --type=merge -p &quot;$(cat data.yaml)&quot;# orkubectl patch deployment deployment-name --type=merge --patch-file data.yaml
+7.2.2. patch添加节点亲和性1、准备亲和性配置，例如 data.yaml
+spec:  template:    spec:      # affinity:      #   nodeAffinity:      #     requiredDuringSchedulingIgnoredDuringExecution:      #       nodeSelectorTerms:      #         - matchExpressions:      #             - key: nodetype      #               operator: In      #               values:      #                 - infra      nodeSelector:        nodetype: infra      tolerations:        - key: &quot;nodetype&quot;          operator: &quot;Equal&quot;          value: &quot;infra&quot;          effect: &quot;NoSchedule&quot;
 
-data.yaml内容为：
-spec:  template:    spec:      affinity:        nodeAffinity:          requiredDuringSchedulingIgnoredDuringExecution:            nodeSelectorTerms:              - matchExpressions:                  - key: key1                    operator: In                    values:                      - value1
+或者json格式的配置文件，也是支持的。
+2、添加节点亲和性
+kubectl patch deployment deployment-name --type=merge -p &quot;$(cat data.yaml)&quot;# orkubectl patch deployment deployment-name --type=merge --patch-file data.yaml
 
-json格式的文件也是支持的。
-7.2.2. 删除存活探针kubectl patch deployment deployment-name --type json \    -p=&#x27;[&#123;&quot;op&quot;: &quot;remove&quot;, &quot;path&quot;: &quot;/spec/template/spec/containers/0/livenessProbe&quot;&#125;]&#x27;
+3、批量添加节点亲和性
+kubectl get deployment -n $namesapce -o=jsonpath=&#x27;&#123;.items[*].metadata.name&#125;&#x27; | xargs kubectl patch deployment --type=merge --patch-file data.yaml -n $namesapcekubectl get statefulset -n $namesapce -o=jsonpath=&#x27;&#123;.items[*].metadata.name&#125;&#x27; | xargs kubectl patch statefulset --type=merge --patch-file data.yaml -n $namesapce
+
+7.2.3. patch删除存活探针kubectl patch deployment deployment-name --type json \    -p=&#x27;[&#123;&quot;op&quot;: &quot;remove&quot;, &quot;path&quot;: &quot;/spec/template/spec/containers/0/livenessProbe&quot;&#125;]&#x27;
 
 8. 删除资源对象以deployment资源对象为例，其他资源对象操作方法相同。
 删除单个deployment：
@@ -16083,6 +16301,55 @@ echo &#x27;options kvm_intel nested=1&#x27; &gt;&gt; /etc/modprobe.d/qemu-system
         <tag>ubuntu</tag>
         <tag>libvirt</tag>
         <tag>virsh</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用Libvirt创建Win10虚拟机</title>
+    <url>/dev-libvirt-create-win10/</url>
+    <content><![CDATA[1. 前言本文中，我们使用Libvirt相关命令，在Linux系统中创建一个Win10虚拟机。
+参考文档：
+
+《使用Libvirt创建虚拟机》
+《virsh常用命令》
+KVM–虚拟机Windows10系统安装
+linux + virsh + kvm虚拟机安装windows
+
+
+
+2. 下载系统镜像1、下载Win10镜像参考文档下载Windows 10 光盘映像(ISO 文件)Win10正式版官方原版镜像下载，下载镜像 cn_windows_10_multiple_editions_x64_dvd_6848463.iso ，并重命名为 cn_windows.iso 。
+2、上传Win10镜像上传Win10镜像到Linux系统的 /opt/vm 目录
+3. 下载virtio驱动1、下载 virtio-win 驱动镜像访问 virtio-win下载页，下载镜像 virtio-win-0.1.215.iso
+该镜像包含磁盘驱动和网卡驱动。
+2、上传驱动镜像上传驱动镜像到Linux系统的 /opt/vm 目录
+4. 创建磁盘创建一个100G的磁盘，用于安装Win10系统。
+qemu-img create -f qcow2 /opt/vm/win10.qcow2 100G
+
+5. 创建Win10虚拟机创建Win10虚拟机，指定磁盘，指定系统镜像，指定驱动镜像，启动vnc以便远程。
+virt-install --name win10 --os-type=windows \    --ram 8192 --vcpus=4 \    --disk path=/opt/vm/win10.qcow2,format=qcow2,size=100,bus=virtio \    --disk device=cdrom,path=/opt/vm/cn_windows.iso \    --disk device=cdrom,path=/opt/vm/virtio-win-0.1.215.iso \    --accelerate --network bridge=br0 \    --graphics vnc,listen=0.0.0.0,port=5922  --noautoconsole
+
+6. 安装Win10系统1、使用VNC Client远程连接Linux输入Linux的IP加5922端口，连接VNC
+
+2、选择安装专业版
+3、加载驱动程序，浏览选择驱动镜像中的w10
+4、出现驱动器后，新建分区，并对主分区格式化，然后点击下一步
+注意：一定要新建分区并格式化，否则安装完成后在启动时可能会一直卡在“请稍等”页面。
+安装完成后，系统将会重启。但是无法自行重启。
+5、手动启动Win10虚拟机
+virsh start win10
+
+6、配置Win10配置时，建议选择自定义设置。然后，一步一步根据提示配置即可。
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>devops</category>
+        <category>computer</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>ubuntu</tag>
+        <tag>libvirt</tag>
+        <tag>virsh</tag>
+        <tag>windows</tag>
       </tags>
   </entry>
   <entry>
@@ -20472,11 +20739,11 @@ mkdir -p /root/.certs/echo -n | openssl s_client -connect smtp.163.com:465 | sed
 5、测试发送邮件echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com查看邮箱，正常的话应该已经收到邮件了。如果没有收到邮件，可以查看日志进行排查：tail /var/log/maillog
 2.3. macos参考文档：《MacOS配置发送邮件》
 3. mail命令3.1. 命令格式mail [OPTION...] [address...]常用到的选项，一个是s，代表主题；一个是A，代表附件。其他的需要时查看help。
-3.2. 发送普通邮件目标：给邮箱 &#x76;&#x6f;&#x69;&#100;&#107;&#105;&#x6e;&#x67;&#x40;&#x71;&#x71;&#x2e;&#99;&#111;&#109; 发送邮件，主题为“Hello VoidKing”，内容为“Welcome to mail world！”
+3.2. 发送普通邮件目标：给邮箱 &#118;&#x6f;&#x69;&#100;&#x6b;&#x69;&#110;&#x67;&#64;&#113;&#x71;&#46;&#99;&#111;&#109; 发送邮件，主题为“Hello VoidKing”，内容为“Welcome to mail world！”
 echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com
 但是，等待了几分钟，并没有收到邮件，垃圾箱也没有。mail，查看email的发送状态为Undelivered Mail Returned，原来没有投递出去。
 查看邮件系统日志：tail -n 50 /var/spool/mail/test提示host mx3.qq.com[183.57.48.35] said: 550 Mail content denied。看来qq邮箱的垃圾邮件防御机制做的不错，那就换个163邮箱，没想到依然失败。
-换一台服务器？发送给 &#118;&#111;&#105;&#100;&#x6b;&#105;&#110;&#x67;&#x40;&#113;&#113;&#x2e;&#x63;&#x6f;&#109; ，成功！很尴尬。。。就这么着吧
+换一台服务器？发送给 &#118;&#x6f;&#x69;&#100;&#x6b;&#105;&#110;&#103;&#x40;&#x71;&#x71;&#46;&#x63;&#x6f;&#x6d; ，成功！很尴尬。。。就这么着吧
 3.3. 发送高级邮件1、从文本读入内容发送邮件mail -s &#39;Error report&#39; voidking@qq.com &lt; /tmp/log/ganglia/error-20180524.log
 2、发送附件mail -s &#39;Error report&#39; voidking@qq.com -A /tmp/log/ganglia/ganglia-20180524.log &lt; /tmp/log/ganglia/error-20180524.log
 3、指定发件人echo &#39;Welcome to mail world！&#39; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com -aFrom:haojin@qq.com
@@ -21573,7 +21840,7 @@ Alice首先临时生成一个对称密钥R，并用该对称密钥R加密通知�
   <entry>
     <title>Hexo启用HTTPS加密连接</title>
     <url>/dev-hexo-https/</url>
-    <content><![CDATA[1. 前言访问个人网站，偶尔会跳出广告，看来网站被运营商劫持了。为了避免这种情况，郝同学决定对网站进行https加密。早在2015年，美国政府就要求所有联邦政府网站使用https加密连接，这次郝同学也算是赶上了国际潮流的尾巴。
+    <content><![CDATA[1. 前言访问个人网站，偶尔会跳出广告，看来网站被运营商劫持了。为了避免这种情况，郝同学决定对网站进行https加密。早在2015年，美国政府就要求所有联邦政府网站使用https加密连接，这次郝同学追赶一下国际潮流的尾巴。
 HTTPS(SSL/TLS)加密原理，参考文档《浅谈数据加密》。
 
 
@@ -21588,7 +21855,7 @@ HTTPS(SSL/TLS)加密原理，参考文档《浅谈数据加密》。
 解压www.voidking.com.zip，可以得到下列文件：
 www.voidking.com│  www.voidking.com.csr│├─Apache│      1_root_bundle.crt│      2_www.voidking.com.crt│      3_www.voidking.com.key│├─IIS│      keystorePass.txt│      www.voidking.com.pfx│├─Nginx│      1_www.voidking.com_bundle.crt│      2_www.voidking.com.key│└─Tomcat        keystorePass.txt        www.voidking.com.jks
 
-4. 思路4.1. GitLabgithub和coding，都不支持上传ssl证书。但是，gitlab支持啊！最简单的思路就是，把网站迁到gitlab上。
+4. 配置思路4.1. GitLabgithub和coding，都不支持上传ssl证书。但是，gitlab支持啊！最简单的思路就是，把网站迁到gitlab上。
 按照这个思路，参考《利用gitlab pages和hexo搭建一个个人博客》和《零成本打造安全博客的简单办法》。
 1、打开gitlab的项目，Settings，Pages，New Domain，即可进入域名配置页面。
 2、Domain填入www.voidking.com，Certificate (PEM)填入1_www.voidking.com_bundle.crt中的内容，Key (PEM)填入2_www.voidking.com.key中的内容。
@@ -21597,63 +21864,55 @@ www.voidking.com│  www.voidking.com.csr│├─Apache│      1_root_bundle.c
 具体设置步骤参考《让个人域名下GithubPage完美支持https》。
 4.3. Nginx反向代理反向代理是普遍思路，无论我们的真实服务器在github、coding还是gitlab，都可以使用反向代理的方式完成https加密连接。前提是你有一个公网服务器，上面安装了nginx。
 用户访问域名；域名解析到公网IP，访问到nginx；nginx反向代理到coding等真实服务器，通过http方式拿到页面；nginx拿到页面后进行ssl加密，然后返回给用户加密后的页面。
-5. 详细步骤郝同学决定选用最通用的方式，通过nginx反向代理来实现https访问（假设已经申请好了ssl证书）。
-5.1. 修改域名解析原来的域名解析位CNAME记录，指向pages.coding.me，现在修改为A记录，指向公网IP。
-5.2. 上传证书1、服务器上，创建目录sslmkdir /etc/nginx/ssl
-2、使用xftp上传 www.voidking.com/Nginx 文件夹中的 1_www.voidking.com_bundle.crt 和 2_www.voidking.com.key 到ssl目录。
-5.3. 配置Nginx配置nginx，参考《Nginx开启SSL与重定向优化》
-1、coding pages配置不变，依然绑定 www.voidking.com 域名。
-2、/etc/nginx/conf.d中新建配置文件 www.voidking.com.conf ，内容如下：
-server &#123;    listen 80;    server_name www.voidking.com;    charset utf-8;    location / &#123;        proxy_set_header   Host             $host;        proxy_set_header   X-Real-IP        $remote_addr;        proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;        proxy_pass http://voidking.coding.me;    &#125;&#125;server &#123;    # SSL configuration    listen 443 ssl;    server_name www.voidking.com;    charset utf-8;    ssl_certificate /etc/nginx/ssl/1_www.voidking.com_bundle.crt;     ssl_certificate_key  /etc/nginx/ssl/2_www.voidking.com.key;     ssl_session_timeout  5m;      ssl_protocols SSLv3 TLSv1 TLSv1.1 TLSv1.2;    ssl_ciphers  HIGH:!ADH:!EXPORT56:RC4+RSA:+MEDIUM;    location / &#123;        proxy_set_header   Host             $host;        proxy_set_header   X-Real-IP        $remote_addr;        proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;        proxy_pass http://voidking.coding.me;    &#125;&#125;
+4.4. 选择配置方式相对而言，Nginx反向代理是最通用的方式。
+这里我们就选择Nginx反向代理的方式，通过Nginx反向代理coding pages上的博客，来实现https加密。
+5. 详细步骤5.1. 修改域名解析原来的域名解析位CNAME记录，指向 pages.coding.me 。
+现在修改为A记录，指向自己的主机公网IP。
+5.2. 上传证书1、创建证书目录
+mkdir /etc/nginx/ssl
 
-3、重启nginxsystemctl restart nginx
-4、测试访问访问 https://www.voidking.com ，已经可以正常访问网址，只不过有些脚本是通过http方式引用的，会提示不安全，等下我们修改了hexo主题就好了。
-6. 修改Hexo主题1、访问 https://www.voidking.com ，F12，启用调试模式，查看哪些文件是不安全的。
-2、修改hexo主题，把那些不安全的文件全部修改为https引用。
-6.1. jquery1.9.0在hexo/themes/yilia/layout/_partial中找到head.ejs，修改jquery引用地址为：
-&lt;script src=&quot;https://libs.baidu.com/jquery/1.9.0/jquery.js&quot;&gt;&lt;/script&gt;
-
-6.2. Mathjax《Hexo中使用Mathjax的冲突问题》一文中，我们引用mathjax的方式也是http，引用单位是整个主题（所有的页面）。下面我们把引用方式修改为https，引用单位改为单个页面。
-1、把hexo/themes/yilia/layout/_partial中的mathjax.ejs移动到hexo/themes/yilia/layout/_partial/post。
-2、修改mathjax.ejs中的js引用：
-&lt;script type=&quot;text/javascript&quot; src=&quot;https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot;&gt;
-
-3、删除after-footer.ejs中关于mathjax的引用。
-4、修改hexo/themes/yilia/layout/_partial/article.ejs，在最后添加：
-&lt;% if (!index &amp;&amp; post.mathjax)&#123; %&gt;&lt;%- partial(&#x27;post/mathjax&#x27;) %&gt;&lt;% &#125; %&gt;
-
-5、修改markdown文档。使用mathjax的文档，在头部加上：
-mathjax: true
-
-6.3. 畅言在hexo/themes/yilia/layout/_partial/post中找到changyan.ejs，其中的两个js引用，改成https。
-6.4. jiathisjiathis和baidushare都不提供https方式的引用，所以只能将其本地化（下载所有源码并修改源码），或者利用反向代理。实在费劲，郝同学决定换成overtrue同学的share.js。
-原post/share.ejs为：
-&lt;div class=&quot;share&quot;&gt;    &lt;!-- JiaThis Button BEGIN --&gt;    &lt;div class=&quot;jiathis_style&quot;&gt;        &lt;span class=&quot;jiathis_txt&quot;&gt;分享到：&lt;/span&gt;        &lt;a class=&quot;jiathis_button_tsina&quot;&gt;&lt;/a&gt;        &lt;a class=&quot;jiathis_button_cqq&quot;&gt;&lt;/a&gt;        &lt;a class=&quot;jiathis_button_douban&quot;&gt;&lt;/a&gt;        &lt;a class=&quot;jiathis_button_weixin&quot;&gt;&lt;/a&gt;        &lt;a class=&quot;jiathis_button_tumblr&quot;&gt;&lt;/a&gt;        &lt;a href=&quot;http://www.jiathis.com/share&quot; class=&quot;jiathis jiathis_txt jtico jtico_jiathis&quot; target=&quot;_blank&quot;&gt;&lt;/a&gt;    &lt;/div&gt;    &lt;script type=&quot;text/javascript&quot; src=&quot;https://v3.jiathis.com/code/jia.js?uid=1405949716054953&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;    &lt;!-- JiaThis Button END --&gt;&lt;/div&gt;
-
-修改为：
-&lt;div class=&quot;share&quot;&gt;    &lt;div class=&quot;social-share&quot;&gt;&lt;/div&gt;    &lt;!--  css &amp; js --&gt;    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css&quot;&gt;    &lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js&quot;&gt;&lt;/script&gt;&lt;/div&gt;
-
-
-6.5. 源码分享个人yilia地址：https://github.com/voidking/hexo-theme-yilia
-7. 配置Nginx进阶至此，已经可以通过http和https两种方式访问 www.voidking.com 了。既然已经有了https，http不妨重定向到https。
-修改 www.voidking.com.conf 为：
+2、上传证书上传  1_www.voidking.com_bundle.crt 和 2_www.voidking.com.key 到 ssl 目录。
+5.3. 配置Nginx1、coding pages配置不变，依然绑定 www.voidking.com 域名。
+2、/etc/nginx/conf.d 中新建配置文件 www.voidking.com.conf ，内容如下：
 server &#123;    listen 80;    listen 443 ssl;    server_name www.voidking.com;    charset utf-8;    ssl_certificate /etc/nginx/ssl/1_www.voidking.com_bundle.crt;    ssl_certificate_key  /etc/nginx/ssl/2_www.voidking.com.key;    ssl_session_timeout  5m;    ssl_protocols SSLv3 TLSv1 TLSv1.1 TLSv1.2;    ssl_ciphers  HIGH:!ADH:!EXPORT56:RC4+RSA:+MEDIUM;    ssl_prefer_server_ciphers on;    if ($ssl_protocol = &quot;&quot;) &#123;        return 301 https://$host$request_uri;    &#125;    location / &#123;        proxy_set_header   Host             $host;        proxy_set_header   X-Real-IP        $remote_addr;        proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;        proxy_pass http://voidking.coding.me;    &#125;&#125;
 
-SSL的配置不要加 ssl on ，否则启动时会存在一个警告：
+这个配置中，http 自动重定向到 https。
+注意SSL的配置不要加 ssl on ，否则启动时会存在一个警告：
 [warn] 1#1: the &quot;ssl&quot; directive is deprecated, use the &quot;listen ... ssl&quot; directive instead in /etc/nginx/conf.d/www.voidking.com.conf:11
 
-重启nginx，访问 http://www.voidking.com ，会自动跳转到 https://www.voidking.com ，说明配置成功。
-8. 后记这里，我们并没有配置 voidking.com 和 blog.voidking.com ，可以参照上面的步骤进行配置。更加简单的配置方式，是在dnspod上配置显性url，直接跳转到 http://www.voidking.com 。
-本文主要研究Hexo启用https加密连接。其实平时建站的时候，也可以给网站启用https加密连接，原理类似。
+3、重启nginx
+systemctl restart nginx
+
+访问 http://www.voidking.com ，会自动跳转到 https://www.voidking.com ，说明配置成功。
+4、测试访问访问 https://www.voidking.com ，已经可以正常访问网址。
+有些脚本是通过http方式引用的，会提示不安全，需要修改hexo主题。
+6. 修改Hexo主题修改详情参考 voidking/hexo-theme-yilia/commit/a228365
+7. 配置七牛图床反向代理七牛图床，http访问不收费，https收费。收费标准参考文档价格 | CDN
+为了给图床省钱，不妨使用nginx给七牛图床配置一层https代理。
+Nginx添加配置文件 cdn.voidking.com.conf ，内容为：
+server &#123;    listen 80;    listen 443 ssl;    server_name cdn.voidking.com;    charset utf-8;    #ssl配置    ssl_certificate /etc/nginx/ssl/1_cdn.voidking.com_bundle.crt;    ssl_certificate_key  /etc/nginx/ssl/2_cdn.voidking.com.key;    ssl_session_timeout  5m;    ssl_protocols SSLv3 TLSv1 TLSv1.1 TLSv1.2;    ssl_ciphers  HIGH:!ADH:!EXPORT56:RC4+RSA:+MEDIUM;    if ($ssl_protocol = &quot;&quot;) &#123;        return 301 https://$host$request_uri;    &#125;    location / &#123;        proxy_set_header   Host             $host;        proxy_set_header   X-Real-IP        $remote_addr;        proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;        proxy_pass http://qiniu.cdn.voidking.com;    &#125;&#125;
+
+8. 重定向问题排查有一天，通过chrome浏览器访问公网主机IP http://8.136.13.58 ，发现报错 403
+仔细看了下地址栏，原来是 http 自动转到了 https。本地curl验证一下是否是chrome的问题：
+curl http://8.136.13.58curl http://8.136.13.58 -L
+
+由上图可以看出，确实是nginx对请求进行了重定向。
+那么，为什么通过ip访问会进行重定向？在 default.conf 的配置中，没有进行修改，没有配置任何重定向！这样看来，问题只能出在 www.voidking.com.conf 和 cdn.voidking.com.conf 这两个文件。
+删除 www.voidking.com.conf ，重启nginx，问题依然存在。删除 cdn.voidking.com.conf ，重启nginx，问题解决！那么，问题就肯定出在 cdn.voidking.com.conf 这个文件上。从配置上看，没有任何问题，但是为什么会导致IP访问nginx被重定向呢？找了很多资料，没有找到答案。后来灵光一现：cdn.voidking.com.conf 比 default.conf 优先级更高！因为c开头的配置文件要比d开头的配置文件先加载，而 default.conf 并没有特殊的优先级配置。所以，最终结果就是 cdn.voidking.com.conf 才是真正意义上的 default ！
+解决方案：重命名 default.conf 为 0.default.conf 。
+9. 后记这里并没有配置 voidking.com 和 blog.voidking.com ，我们可以参照上面的步骤进行配置。但是，更加简单的配置方式，是在dnspod上配置显性url，直接跳转到 http://www.voidking.com 。
+本文主要研究Hexo启用https加密连接。其实所有Web站点都可以启用https加密连接，原理相同。
 ]]></content>
       <categories>
         <category>engineering</category>
         <category>devops</category>
         <category>hexo</category>
+        <category>troubleshooting</category>
       </categories>
       <tags>
         <tag>hexo</tag>
         <tag>nginx</tag>
+        <tag>问题排查</tag>
         <tag>https</tag>
         <tag>加密</tag>
         <tag>tls</tag>
@@ -23517,7 +23776,7 @@ linux下载好数据集后，把数据集下载到win10中nmt目录中，路径�
 4.2. 训练model在根目录（nmt目录）下运行：
 python -m nmt.nmt --src=vi --tgt=en --vocab_prefix=./tmp/nmt_data/vocab  --train_prefix=./tmp/nmt_data/train --dev_prefix=./tmp/nmt_data/tst2012  --test_prefix=./tmp/nmt_data/tst2013 --out_dir=./tmp/nmt_model --num_train_steps=12000 --steps_per_stats=100 --num_layers=2 --num_units=128 --dropout=0.2 --metrics=bleu
 
-郝同学i5-3337U &#67;&#80;&#x55;&#64;&#x31;&#x2e;&#x38;&#x30;&#71;&#x48;&#122;，8G内存，训练了将近两个小时才训练完成。下文我们要学习使用一下UCloud提供的免费GPU。
+郝同学i5-3337U &#67;&#80;&#85;&#64;&#x31;&#46;&#56;&#x30;&#x47;&#72;&#x7a;，8G内存，训练了将近两个小时才训练完成。下文我们要学习使用一下UCloud提供的免费GPU。
 我们可以使用 Tensorboard 在训练过程中查看模型的总结：
 tensorboard --port 22222 --logdir ./tmp/nmt_model/
 通过以下简单的变化，就能逆向完成英语到越南语的翻译。
@@ -24892,8 +25151,13 @@ curl $&#123;nginx_server&#125;时看到内容，就是index.html文件中的内�
 使用以上配置，访问 www.voidking.com 时，实际上看到的是 192.168.56.101:8080 这个服务返回的内容。
 5.4. 反向代理到upstreamupstream www_voidking_com&#123;    server 192.168.56.101:8080 weight=5;    server 192.168.56.102:8081 weight=2;    server 192.168.56.103:8000;&#125;server &#123;    listen 80;    server_name www.voidking.com;    charset utf-8;    location / &#123;        proxy_set_header   Host             $host;        proxy_set_header   X-Real-IP        $remote_addr;        proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;        proxy_pass http://www_voidking_com;    &#125;&#125;
 使用以上配置，访问 www.voidking.com 时，实际上看到的是upstream里的服务返回的内容。但是问题来了，upstream里有三个服务，到底是哪个服务返回的内容呢？答：不一定，这就要用到传说中的加权轮询算法了。三个服务的权值分别为 5、2、1（默认），从权值来看，最大可能打到第一个服务。有没有想到什么知识点？没错，负载均衡，使用了加权轮询算法的负载均衡。
-5.5. 反向代理到websocket服务http &#123;    map $http_upgrade $connection_upgrade &#123;        default upgrade;        &#x27;&#x27; close;    &#125;    server &#123;        listen 80;        server_name www.voidking.com;        charset utf-8;        location ^~ /ws &#123;            proxy_set_header   Host             $host;            proxy_set_header   X-Real-IP        $remote_addr;            proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;            # websocket support            proxy_http_version 1.1;            proxy_set_header Upgrade $http_upgrade;            proxy_set_header Connection $connection_upgrade;            proxy_pass http://192.168.56.101:8080;        &#125;        location / &#123;            proxy_set_header   Host             $host;            proxy_set_header   X-Real-IP        $remote_addr;            proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;            proxy_pass http://192.168.56.101:8080;        &#125;    &#125;&#125;
+5.5. 反向代理到websocket服务Connection值硬编码：
+http &#123;    server &#123;        listen 80;        server_name www.voidking.com;        charset utf-8;        location ^~ /ws &#123;            proxy_set_header   Host             $host;            proxy_set_header   X-Real-IP        $remote_addr;            proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;            # websocket support            proxy_http_version 1.1;            proxy_set_header Upgrade $http_upgrade;            proxy_set_header Connection &quot;upgrade&quot;;            proxy_pass http://192.168.56.101:8080;        &#125;        location / &#123;            proxy_set_header   Host             $host;            proxy_set_header   X-Real-IP        $remote_addr;            proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;            proxy_pass http://192.168.56.101:8080;        &#125;    &#125;&#125;
+这种写法中，Connection的值直接被硬编码为upgrade。
+动态设置Connection值：
+http &#123;    map $http_upgrade $connection_upgrade &#123;        default upgrade;        &#x27;&#x27; close;    &#125;    server &#123;        listen 80;        server_name www.voidking.com;        charset utf-8;        location ^~ /ws &#123;            proxy_set_header   Host             $host;            proxy_set_header   X-Real-IP        $remote_addr;            proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;            # websocket support            proxy_http_version 1.1;            proxy_set_header Upgrade $http_upgrade;            proxy_set_header Connection $connection_upgrade;            proxy_pass http://192.168.56.101:8080;        &#125;        location / &#123;            proxy_set_header   Host             $host;            proxy_set_header   X-Real-IP        $remote_addr;            proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;            proxy_pass http://192.168.56.101:8080;        &#125;    &#125;&#125;
 
+这种写法中，Connection的值是变量$connection_upgrade。该变量的值是根据请求头中的$http_upgrade来决定的。如果$http_upgrade的值是默认值（即空），那么Connection的值会被设置为close，否则会被设置为upgrade。
 更多内容参考一篇带给你Nginx代理WebSocket方法和NGINX as a WebSocket Proxy
 5.6. 配置域名证书server &#123;    listen 80;    listen 443 ssl;    server_name www.voidking.com;    charset utf-8;    ssl_certificate /etc/nginx/ssl/1_www.voidking.com_bundle.crt;    ssl_certificate_key  /etc/nginx/ssl/2_www.voidking.com.key;    ssl_session_timeout  5m;    ssl_protocols SSLv3 TLSv1 TLSv1.1 TLSv1.2;    ssl_ciphers  HIGH:!ADH:!EXPORT56:RC4+RSA:+MEDIUM;    ssl_prefer_server_ciphers on;    if ($ssl_protocol = &quot;&quot;) &#123;        return 301 https://$host$request_uri;    &#125;    location / &#123;        proxy_set_header   Host             $host;        proxy_set_header   X-Real-IP        $remote_addr;        proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;        root /usr/share/nginx/work/voidking/;        index index.html;    &#125;    error_page 404 /404.html;    location = /404.html &#123;        root /usr/share/nginx/work/voidking/;        index 404.html;    &#125;    location ~ /\.git &#123;        return 404;    &#125;&#125;
 
@@ -28387,13 +28651,65 @@ $L_k$表示（本次移动）蚂蚁k经过的路径和。
       </tags>
   </entry>
   <entry>
+    <title>Docker镜像压缩技术</title>
+    <url>/dev-docker-image-compress/</url>
+    <content><![CDATA[1. 前言Docker是一种开源的应用容器引擎，允许开发人员将应用程序及其依赖打包到一个可移动的镜像中，并在任何Linux设备运行。然而，随着应用程序和依赖项的增加，Docker镜像的大小可能会迅速增长，这可能会影响到应用的部署速度和运行效率。因此，了解如何压缩Docker镜像成为了一个重要的技术需求。本文将学习几种可行的Docker镜像压缩技术。
+具体包括：
+
+多阶段构建(Multi-stage builds)
+优化Dockerfile
+docker-slim
+squash参数
+docker export/import
+
+
+
+2. 多阶段构建(Multi-stage builds)在Docker 17.05版本之后，引入了多阶段构建的功能。多阶段构建可以让你在一个Dockerfile中使用多个FROM语句。每个FROM语句可以看作是新的阶段的开始，另一个阶段可以基于前一个阶段，你只需要最终那个小型且包含所有产物的阶段。例如，在构建一个java应用时，您可能需要maven来构建应用，但最终运行时，您可能只需要一个JRE环境，这就是多阶段构建能够帮助你优化镜像大小的地方。
+3. 优化Dockerfile优化Dockerfile是另一种有效的压缩Docker镜像的策略。像Alpine Linux这样的更小的基础镜像可以显著减小最终镜像的大小。另外，尽量在Dockerfile中合并RUN命令，因为每个RUN命令都会创建一个新的镜像层。在构建过程结束后清理不需要的缓存和文件也是一个好主意。
+4. docker-slim还有一些工具，如docker-slim可以帮助您自动优化和减小Docker镜像。通过分析您的Docker镜像，它能够自动压缩和优化它们，使它们更小和更安全。
+5. squash参数docker build命令的squash选项可以将所有的docker层合并为一个层，从而创建一个更小的镜像。需要注意的是，这个选项需要Docker daemon开启experimental实验特性才可使用。
+6. docker export/importdocker export 和 docker import 是 Docker 提供的两个指令，它们主要被用来备份和恢复一个 Docker 容器。也可以用来进行镜像压缩，因为导出再导入后，相当于删除掉了镜像中的所有叠加层，只保留最后的效果。
+参考文档：
+
+docker 打包的问题请教一下
+
+6.1. Docker Exportdocker export 命令用来将一个正在运行的或者停止的容器导出到一个 tar 文件中。其命令语法如下：
+docker export CONTAINER &gt; somefile.tar
+
+这里 CONTAINER 是需要导出的容器的 ID。export 命令会将容器的文件系统导出成 tar 文件，但需要注意的是，导出操作不会包含容器所使用的历史命令和元数据。也就是说，导出后的容器并不能完全反映原来的容器状态。
+6.2. Docker Importdocker import 命令用来从一个 tar 文件或者一个 URL 中创建一个新的文件系统镜像。其命令语法如下：
+docker import [OPTIONS] file|URL|- [REPOSITORY[:TAG]]
+
+这里 file 或 URL 是需要导入的文件，REPOSITORY[:TAG] 是可选的镜像仓库和标签。比如，我们可以将上面导出的 tar 文件导入成一个新的 Docker 镜像：
+docker import somefile.tar newimagename:tagname
+
+这样我们就从 tar 文件中创建了一个新的 Docker 镜像。注意，docker import 操作是创建镜像，而不是创建容器。这个镜像同样也没有原来容器的运行历史和元数据信息。
+6.3. 镜像压缩实践docker run --name test -d --entrypoint tail harbor.voidking.com/xxx/xxx:v0.1 -f /dev/nulldocker export test &gt; test.tardocker import test.tar harbor.voidking.com/xxx/xxx:v0.1.1
+
+具体能压缩多少，取决于镜像层中误增加和反复修改的内容量。
+7. 后记Docker镜像压缩是一种重要的技术，它可以提高应用的部署速度和运行效率。然而，我们在压缩Docker镜像时，也需要考虑到镜像的可移植性和可维护性。过度的压缩可能会引入复杂性，影响镜像的可读性和可维护性。在实际应用中，我们需要根据具体的需求和条件，选择最合适的压缩策略。
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>docker</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Docker镜像迁移/分享</title>
     <url>/dev-docker-image-migrate/</url>
     <content><![CDATA[1. 问题描述在没有外网的情况下，怎样把 docker image 分享给局域网的其他用户？
-2. 解决办法解决办法有两个，一个是搭建本地镜像仓库，一个是导出导入镜像。
+解决办法有两个：
+
+1）搭建本地镜像仓库
+2）导出导入镜像
 
 
-2.1. 搭建本地镜像仓库搭建本地镜像仓库，把镜像push到本地镜像仓库，其他机器pull即可。
+
+2. 搭建本地镜像仓库搭建本地镜像仓库，把镜像push到本地镜像仓库，其他机器pull即可。
+搭建本地镜像仓库方法参考：《Harbor入门篇》 和 《Docker镜像站的配置和使用》
 假设需求为本机有镜像 busybox:1.25，现在想要把这个镜像分享给其他机器。
 1、有镜像的机器执行：
 docker tag busybox:1.25 harbor.voidking.com/base/busybox:1.25docker login harbor.voidking.comdocker push harbor.voidking.com/base/busybox:1.25
@@ -28401,8 +28717,8 @@ docker tag busybox:1.25 harbor.voidking.com/base/busybox:1.25docker login harbor
 2、其他机器执行：
 docker pull harbor.voidking.com/base/busybox:1.25docker tag harbor.voidking.com/base/busybox:1.25 busybox:1.25
 
-2.2. 导出导入镜像导出导入镜像，主要依赖docker save和docker load命令。
-2.2.1. 单个镜像出导入假设需求为本机有镜像 busybox:1.25，现在想要把这个镜像分享给其他机器。
+3. 导出导入镜像导出导入镜像，主要依赖docker save和docker load命令。
+3.1. 单个镜像出导入假设需求为本机有镜像 busybox:1.25，现在想要把这个镜像分享给其他机器。
 1、有镜像的机器导出镜像  
 docker save -o busybox.tar busybox:1.25
 
@@ -28410,7 +28726,7 @@ docker save -o busybox.tar busybox:1.25
 3、其他机器导入镜像  
 docker load -i busybox.tar
 
-2.2.2. 全部镜像导出导入假设需求为本机有很多个镜像，现在想要把这些镜像全部导出到其他机器。
+3.2. 全部镜像导出导入假设需求为本机有很多个镜像，现在想要把这些镜像全部导出到其他机器。
 1、有镜像的机器导出所有镜像  
 docker save $(docker images | grep -v REPOSITORY | awk &#x27;BEGIN&#123;OFS=&quot;:&quot;;ORS=&quot; &quot;&#125;&#123;print $1,$2&#125;&#x27;) -o all.tar
 
@@ -28418,9 +28734,14 @@ docker save $(docker images | grep -v REPOSITORY | awk &#x27;BEGIN&#123;OFS=&quo
 3、其他机器导入镜像  
 docker load -i all.tar
 
-2.2.3. 存在的问题这种导出导入存在一个问题：导入后的镜像，不会作为base layer。
+3.3. docker save/load存在的问题这种导出导入存在一个问题：导入后的镜像，不会作为base layer。
 已知：A主机上docker save了一个镜像X，拷贝到B主机后，B主机上docker load了镜像X。接着A主机上基于镜像X做了一个镜像Y，上传到harbor。问题：B主机上docker pull拉取harbor中的镜像Y，会全量拉取镜像吗？
 理论上，不会全量拉取镜像，只会增量拉取。但是实测第一次拉取依然会全量拉取Y。神奇的是，如果执行过docker rmi Y，再次拉取Y确实会变成增量拉取。暂时不知道原因，待解。
+参考文档：
+
+How to speed up docker load then docker pull the incremental changes
+Docker pull/push won’t recognize images from docker load.. sometimes?
+
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -31166,7 +31487,7 @@ t0 = time()&lt; 你的 clf.fit() 代码行 &gt;print &#x27;training time:&#x27;,
 代码运行说明文件。纯文本或markdown格式，写明运行你的代码所需要的库，他们的安装方法和运行方法
 预测结果: 纯文本或CSV文件。
 
-对项目要求有疑问请致信 &#115;&#x75;&#x70;&#112;&#x6f;&#x72;&#116;&#64;&#x79;&#111;&#x75;&#x64;&#x61;&#x78;&#117;&#101;&#46;&#x63;&#111;&#x6d;
+对项目要求有疑问请致信 &#115;&#x75;&#x70;&#112;&#x6f;&#114;&#x74;&#x40;&#x79;&#111;&#117;&#x64;&#x61;&#x78;&#117;&#101;&#x2e;&#99;&#111;&#109;
 准备好提交项目后，请点击下一项，在“项目提交”小节中提交。
 ]]></content>
       <categories>
@@ -31207,7 +31528,7 @@ Resume Builder
 项目导师会根据该评估准则（与你制作简历时遵循的清单相符）对你的简历项目进行审核。
 4.1. 提交准备好提交求职信后，你需要：
 1、删除/匿名化你的求职信上的所有个人联系人信息，以防泄漏隐私。2、创建 PDF 格式的简历，这样你的简历在不同操作系统/软件/屏幕中有一致的版面样式。3、点击下方的“提交项目”按钮，并根据说明操作。4、在“告知审核员”中，请包括任何有关你的职业目标（如申请的工作或领域），或任何有意偏离评估准则情况的详细信息。
-注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#x73;&#117;&#112;&#x70;&#111;&#x72;&#x74;&#64;&#121;&#111;&#117;&#x64;&#97;&#x78;&#117;&#101;&#46;&#99;&#x6f;&#109;。
+注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#115;&#117;&#x70;&#x70;&#111;&#x72;&#116;&#x40;&#121;&#x6f;&#117;&#100;&#x61;&#x78;&#117;&#101;&#x2e;&#x63;&#111;&#x6d;。
 5. GitHub个人资料项目你的GitHub个人资料展示你创建的项目，并让他人了解你的工作风格和提交频率。通过展示你对 GitHub 的熟悉程度，其他开发人员和招聘经理能够知道你拥有他们需要能力，你就是他们正在寻找的人。你的代码库应表明你认真对待项目，并且能够编写干净、格式正确的代码。请查看 GitHub 上的这篇出色的博客文章，了解如何用 GitHub 帮助你持续学习，发展职业生涯。
 为何要完成此 GitHub 个人资料项目？GitHub 越来越多地被用作招聘平台以及潜在雇主查看你的作品的方式。它还是与其他开发人员建立联系和展示你的技能的好地方。
 我应该做什么？你应该以招聘人员或用人部门经理的眼光查看你的 GitHub 个人资料，重点关注你的个人资料、项目和代码如何将你描绘成公司的潜在候选人或项目的协作者。
@@ -31236,7 +31557,7 @@ Resume Builder
 8.1. 反馈优达学城项目导师会根据该标准（与你制作领英简介时遵循的清单相符）对你的领英简介项目进行审核。
 8.2. 提交准备好提交领英个人资料后：
 1、若要提交，请点击下方的“提交项目”按钮，并根据说明操作。2、在“告知评审员”中，请包括任何有关你的职业目标（如预期工作领域）的详细信息。
-注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#x73;&#117;&#x70;&#112;&#111;&#x72;&#x74;&#64;&#x79;&#111;&#x75;&#x64;&#x61;&#x78;&#117;&#x65;&#x2e;&#x63;&#111;&#x6d;。
+注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#115;&#117;&#112;&#112;&#x6f;&#114;&#116;&#x40;&#121;&#x6f;&#117;&#100;&#x61;&#x78;&#117;&#101;&#x2e;&#x63;&#x6f;&#x6d;。
 9. 技术面试项目对于此实战项目，你需要回答五个技术面试问题，这些问题涉及的是技术面试课程中讨论的各种主题。你应该用 Python 写出清晰高效的答案，并用文字解释代码的效率和设计理由。我们将安排合格的审核者检查你的答案，并针对任何精彩之处或欠缺的方面做出反馈：你的解决方案是最高效的吗？你很好地解释了你的想法吗？你的代码简洁易懂吗？
 请回答以下问题：
 问题 1: 假设有两个字符串 s 和 t，请判断 t 的变形词是否是 s 的子字符串。例如：如果 s = “udacity”，t = “ad”，则函数返回 True。你的函数定义应该为：“question1(s, t)”，并返回布尔值 True 或 False。 
@@ -31302,7 +31623,7 @@ Dice
 问题 5 - 通过一个情景举例说明正则化对学习好的模型的必要性，以及提供一个正则化没有意义的情景。
 问题 6 -你附近的杂货店想向顾客有针对性地发放对他们来说有用的优惠券。假设你可以访问每位顾客的购买历史和店铺商品目录，你将设计怎样一个系统，来决定发放哪些优惠券？你如何衡量这个系统的性能？
 问题 7 - 选择一个公司，然后描述你想应聘的该公司内的机器学习工程师职位（假设有）。现在，如果你已成功应聘，并从今天开始任职，在你看来，你的职位在下一年会有怎样的发展？你的长期职业目标是什么，这个职位如何帮助你实现长期目标？
-13.3. 提交当你准备提交项目，点击下方“提交项目”，上传一份 PDF 文件。如果有任何与提交项目相关的疑问，或想查看提交状态，请向我们发送电子邮件询问（&#x73;&#117;&#x70;&#x70;&#111;&#114;&#x74;&#64;&#x79;&#x6f;&#117;&#x64;&#97;&#x78;&#x75;&#101;&#46;&#99;&#111;&#109;）。
+13.3. 提交当你准备提交项目，点击下方“提交项目”，上传一份 PDF 文件。如果有任何与提交项目相关的疑问，或想查看提交状态，请向我们发送电子邮件询问（&#115;&#117;&#x70;&#x70;&#111;&#x72;&#116;&#64;&#121;&#x6f;&#x75;&#x64;&#97;&#x78;&#x75;&#101;&#46;&#x63;&#111;&#109;）。
 13.4. 项目资源项目评审标准。优达学城的项目导师会依据此评审标准审阅你的项目。你可以在提交前自行检查自己是否已达到所有标准。职业资源中心。你可以在这里找到更多有关准备面试的资源和贴士。
 13.5. 接下来面试练习并不是只在你求职时才需要做的事情， 在你的整个职业生涯中，你都需要继续提高自己的面试技巧。抓住每一个机会，思考和与人交流你的职业目标。在申请一个职位之前，请思考清楚自己为什么要申请——这将极大地帮助你为面试做好准备。
 14. 书签Interview Guide: Machine Learninghttps://career-resource-center.udacity.com/interview-courses-and-guides/machine-learning
@@ -31756,7 +32077,7 @@ notebook 项目导出的 HTML 文件，命名为 report.html。
 
 注意：所提交文件的文件名名，包括zip压缩包内的文件名，都不能含有中文及任何ASCII之外的字符，否则会造成提交失败。
 如何导出HTML的说明在 notebook 的最下方。 你也许需要先在命令后通过 pip install mistune 命令安装 mistune 。当你准备好所有这些文件，并且依照项目要求核对过之后，就可以在下面的项目提交页面提交你的项目了。
-如果你是第一次在优达学城提交项目，点击提交之后，要等1分钟左右才能打开提交页面。如果长时间打不开，可以刷新。如果依然无法打开项目提交页面，可以联系客服微信或者邮件至 &#x73;&#x75;&#112;&#x70;&#111;&#114;&#116;&#64;&#x79;&#111;&#117;&#100;&#x61;&#x78;&#117;&#x65;&#46;&#99;&#111;&#109;
+如果你是第一次在优达学城提交项目，点击提交之后，要等1分钟左右才能打开提交页面。如果长时间打不开，可以刷新。如果依然无法打开项目提交页面，可以联系客服微信或者邮件至 &#x73;&#117;&#112;&#x70;&#x6f;&#x72;&#x74;&#x40;&#x79;&#x6f;&#117;&#x64;&#97;&#120;&#117;&#101;&#x2e;&#x63;&#111;&#109;
 6. 后记这个项目，是优达学城《机器学习工程师》课程提供的第一个实战项目。摘录了全文，方便查看。郝同学的项目地址：https://github.com/voidking/udaciyty-machine-learning/tree/master/projects/titanic_survival_exploration
 7. 书签机器学习工程师（中/英）https://cn.udacity.com/course/machine-learning-engineer-nanodegree--nd009
 数据科学入门https://cn.udacity.com/course/intro-to-data-science--ud359
@@ -35202,7 +35523,7 @@ https://api.weixin.qq.com/sns/userinfo?access_token=ACCESS_TOKEN&amp;openid=OPEN
 
 
 2. nodebasea node framework designed for myselfversion: v1.0.0url: https://github.com/voidking/nodebase.git  
-3. 作者相关author: haojin(voidking)e-mail: &#x76;&#x6f;&#x69;&#100;&#107;&#105;&#110;&#x67;&#x40;&#x71;&#113;&#46;&#99;&#x6f;&#109;site: http://www.voidking.com   
+3. 作者相关author: haojin(voidking)e-mail: &#x76;&#111;&#105;&#100;&#x6b;&#x69;&#110;&#103;&#64;&#113;&#113;&#46;&#x63;&#x6f;&#109;site: http://www.voidking.com   
 4. 开发环境说明1、安装5.6.0以上Node2、安装mongodb，不要配置密码3、安装sass4、全局安装bower5、全局安装supervisor6、全局安装node-inspector7、全局安装puer8、运行前执行命令
 npm installbower install
 
@@ -40281,7 +40602,7 @@ PRIM（出席和即时信息协议，Presence and Instant Messaging Protocol）�
 
 3.4. 插件许多XMPP服务器支持插件扩展，这些插件通常使用与服务器自身相同的语言编写，并在服务器的进程内运行。他们的作用很大程度上与外部组件重叠，但插件还能够访问内部服务器数据结构并改变核心服务器行为。
 4. XMPP寻址XMPP网络上每个实体都有一个或多个地址（JID，jabber identifier）。JID有多种不同形式，但它们通常看上去就像是电子邮件。
-JID有两种类型，裸JID和完整JID，而裸JID是完整JID去除资源部分后的地址。例如，某个客户端的完整JID是&#118;&#x6f;&#x69;&#x64;&#x6b;&#105;&#x6e;&#103;&#x40;&#118;&#111;&#x69;&#100;&#107;&#105;&#x6e;&#x67;&#46;&#x6c;&#105;&#x74;/library，那么它的裸JID就是&#x76;&#x6f;&#105;&#x64;&#x6b;&#x69;&#x6e;&#103;&#x40;&#x76;&#x6f;&#105;&#x64;&#107;&#x69;&#x6e;&#103;&#46;&#x6c;&#x69;&#x74;。
+JID有两种类型，裸JID和完整JID，而裸JID是完整JID去除资源部分后的地址。例如，某个客户端的完整JID是&#x76;&#x6f;&#x69;&#x64;&#x6b;&#105;&#110;&#103;&#64;&#118;&#111;&#105;&#100;&#107;&#105;&#x6e;&#x67;&#x2e;&#108;&#x69;&#116;/library，那么它的裸JID就是&#118;&#x6f;&#105;&#100;&#x6b;&#x69;&#110;&#103;&#x40;&#118;&#111;&#x69;&#x64;&#x6b;&#105;&#x6e;&#x67;&#x2e;&#x6c;&#x69;&#x74;。
 5. 节在XMPP中，各项工作都是通过在一个XMPP流上发送和接收XMPP节来完成的。核心XMPP工具集由三种基本节组成，这三种节分别为&lt;presence&gt;、&lt;message&gt;、&lt;iq&gt;。
 XMPP流由两份XML文档组成，通信的每个方向均有一份文档。这份文档有一个根元素&lt;stream:stream&gt;，这个根元素的子元素由可路由的节以及与流相关的顶级子元素构成。下面给出一段简短的XMPP会话：
 &lt;stream:stream&gt;	&lt;iq type=&#x27;get&#x27;&gt;		&lt;query xmlns=&#x27;jabber:iq:roster&#x27;/&gt;	&lt;/iq&gt;		&lt;presence/&gt;		&lt;message to=&#x27;voidking@voidking.lit&#x27; from=&#x27;haojin@gmail.com/ballroom&#x27; type=&#x27;chat&#x27;&gt;		&lt;body&gt;I cannot talk of books in a ball-room; my head is always full of something else.&lt;/body&gt;	&lt;/message&gt;		&lt;presence type=&#x27;unavailable&#x27;/&gt;&lt;/stream:stream&gt;
@@ -45932,7 +46253,7 @@ mtools，显示所有支持MSDOS文件系统的命令。
 2.23. mutt
 mutt: mail user agent，文字界面的邮件工具
 
-mutt -s &quot;A test mail&quot; josfeng@gmail.com，将邮件寄给 &#x6a;&#x6f;&#x73;&#x66;&#101;&#110;&#103;&#x40;&#x67;&#109;&#97;&#105;&#x6c;&#x2e;&#x63;&#x6f;&#109;，信件主题为A test mail。
+mutt -s &quot;A test mail&quot; josfeng@gmail.com，将邮件寄给 &#106;&#x6f;&#x73;&#102;&#x65;&#x6e;&#103;&#x40;&#103;&#109;&#97;&#105;&#x6c;&#x2e;&#99;&#111;&#109;，信件主题为A test mail。
 2.24. mv
 mv: move，移动或重命名文件或目录
 
