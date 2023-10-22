@@ -4,9 +4,9 @@
   <url>  
     <loc>https://www.voidking.com/tags/index.html</loc>  
       
-    <lastmod>2023-09-08T02:59:16.777Z</lastmod>  
+    <lastmod>2023-10-22T14:09:02.039Z</lastmod>  
       
-    <date>1694141956777</date>  
+    <date>1697983742039</date>  
     <title>tags | 好好学习的郝</title>  
       
     <desc></desc>  
@@ -15,12 +15,287 @@
   <url>  
     <loc>https://www.voidking.com/categories/index.html</loc>  
       
-    <lastmod>2023-09-08T02:59:16.757Z</lastmod>  
+    <lastmod>2023-10-22T14:09:02.015Z</lastmod>  
       
     <date>1528712001000</date>  
     <title>文章分类 | 好好学习的郝</title>  
       
     <desc></desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-centos-rescue-mode/</loc>  
+      
+    <lastmod>2023-10-14T08:00:00.000Z</lastmod>  
+      
+    <date>1697270400000</date>  
+    <title>CentOS救援模式使用说明 | 好好学习的郝</title>  
+      
+    <desc>前言当CentOS系统崩溃无法正常启动时，往往需要进入救援模式进行恢复。本文中，我们学习一下CentOS救援模式的使用方法。 参考文档： Linux紧急救援模式(Centos7) centos 8 进入紧急救援模式 Basic System Recovery</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-centos-dns-server/</loc>  
+      
+    <lastmod>2023-10-14T08:00:00.000Z</lastmod>  
+      
+    <date>1526401800000</date>  
+    <title>CentOS7安装配置DNS服务 | 好好学习的郝</title>  
+      
+    <desc>前言本文中，我们学习在CentOS7中安装配置DNS服务。DNS服务选择使用BIND，BIND（Berkeley Internet Name Domain）是一种开源的DNS服务器软件，可以安装在CentOS 7上。 参考文档：BIND官网</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-ubuntu-dns-server/</loc>  
+      
+    <lastmod>2023-10-14T08:00:00.000Z</lastmod>  
+      
+    <date>1526401800000</date>  
+    <title>Ubuntu14.04安装配置DNS服务 | 好好学习的郝</title>  
+      
+    <desc>前言《Ubuntu系统批量自动安装》一文中，用到了DNS服务，本文中我们来学习安装配置一下。 配置目标：在Ubuntu14.04上搭建一个DNS服务器，服务器地址为10.0.0.100。使用这个DNS，可以把dns.voidking.com域名解析到10.0.0.100这个地址。 参考文档：BIND官网</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-hexo-https/</loc>  
+      
+    <lastmod>2023-10-14T08:00:00.000Z</lastmod>  
+      
+    <date>1523115000000</date>  
+    <title>Hexo启用HTTPS加密连接 | 好好学习的郝</title>  
+      
+    <desc>前言访问个人网站，偶尔会跳出广告，看来网站被运营商劫持了。为了避免这种情况，郝同学决定对网站进行https加密。早在2015年，美国政府就要求所有联邦政府网站使用https加密连接，这次郝同学追赶一下国际潮流的尾巴。 HTTPS(SSL/TLS)加密原理，参考文档《浅谈数据加密》。</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-qiniu-oss-https-proxy/</loc>  
+      
+    <lastmod>2023-10-14T08:00:00.000Z</lastmod>  
+      
+    <date>1523115000000</date>  
+    <title>七牛对象存储添加HTTPS代理 | 好好学习的郝</title>  
+      
+    <desc>前言七牛对象存储（图床），http访问不收费，https收费。收费标准参考文档价格 | CDN 为了给图床省钱，不妨使用nginx给七牛图床配置一层https代理。</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-nginx-problem/</loc>  
+      
+    <lastmod>2023-10-14T08:00:00.000Z</lastmod>  
+      
+    <date>1504526400000</date>  
+    <title>Nginx问题记录 | 好好学习的郝</title>  
+      
+    <desc>前言本文记录使用Nginx过程中遇到的问题，备忘。 相关文档： 《Nginx入门篇》 《Hexo启用HTTPS加密连接》 《七牛对象存储添加HTTPS代理》</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-shell-system/</loc>  
+      
+    <lastmod>2023-10-14T08:00:00.000Z</lastmod>  
+      
+    <date>1496390400000</date>  
+    <title>shell命令之系统管理 | 好好学习的郝</title>  
+      
+    <desc>查看硬件配置查看服务器型号12dmidecodedmidecode | grep quot;System Informationquot; -A16 查看CPU物理CPU数（physical id）：主板上实际插入的cpu数量，可以数不重复的 physical id 有几个。CPU核心数（cpu cores）：单块CPU上面能处理数据的芯片组的数量，如双核、四核等逻辑CPU数：一般情况下，逻辑</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-dns-start/</loc>  
+      
+    <lastmod>2023-10-14T08:00:00.000Z</lastmod>  
+      
+    <date>1424886439000</date>  
+    <title>DNS入门篇 | 好好学习的郝</title>  
+      
+    <desc>DNS简介 网域名称（英语：Domain Name，简称：Domain），简称域名、网域，是由一串用点分隔的字符组成的互联网上某一台计算机或计算机组的名称，用于在数据传输时标识计算机的电子方位。域名可以说是一个IP地址的代称，目的是为了便于记忆后者。例如，wikipedia.org是一个域名。人们可以直接访问wikipedia.org来代替IP地址，然后域名系统（DNS）就会将它转化成便于机器识别</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-mtr-start/</loc>  
+      
+    <lastmod>2023-10-05T08:00:00.000Z</lastmod>  
+      
+    <date>1696492800000</date>  
+    <title>网络排查工具MTR入门篇 | 好好学习的郝</title>  
+      
+    <desc>MTR简介网络排查工程常常包含了诊断网络中断和稳定性问题。在这些场合下，网络工程师们通常会使用一些有效的网络工具来帮助他们准确地查找问题所在。其中，MTR是一款极其实用的网络诊断工具。 MTR，全名为My Traceroute，是一款网络诊断工具，结合了traceoute和ping两种常见工具的功能。通过源自源主机到目标主机的网络连接的持续跟踪，MTR能提供每个路由节点的响应速度和系统稳定性情况。</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-centos7-kernal-upgrade/</loc>  
+      
+    <lastmod>2023-10-05T08:00:00.000Z</lastmod>  
+      
+    <date>1694246400000</date>  
+    <title>CentOS7内核升级 | 好好学习的郝</title>  
+      
+    <desc>前言本文学习并实践CentOS7内核升级方法，备忘。 参考文档： CentOS-7 升级内核 ELRepo官网</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-docker-openvpn/</loc>  
+      
+    <lastmod>2023-10-05T08:00:00.000Z</lastmod>  
+      
+    <date>1606852800000</date>  
+    <title>使用Docker安装配置OpenVPN | 好好学习的郝</title>  
+      
+    <desc>前言 OpenVPN is a virtual private network (VPN) system that implements techniques to create secure point-to-point or site-to-site connections in routed or bridged configurations and remote access facili</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-certbot-domain-certificate/</loc>  
+      
+    <lastmod>2023-10-05T08:00:00.000Z</lastmod>  
+      
+    <date>1523201400000</date>  
+    <title>使用Certbot申请泛域名证书 | 好好学习的郝</title>  
+      
+    <desc>需求描述《Hexo启用https加密连接》一文中，我们在腾讯云申请了一个三级域名证书，然后给网站配置上了域名证书。 那如果我们有一百个域名，一个个申请域名证书就太麻烦了，这是我们就需要一个泛域名证书。怎么申请泛域名证书呢？方案一：通过阿里云、腾讯云等云平台申请，但是需要付费，便宜的也要年费两千左右。方案二：使用certbot申请泛域名证书，然后配置好自动续期。 因为想要省点钱，所以本文中我们就来研</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/hobby-macos-system-settings/</loc>  
+      
+    <lastmod>2023-09-30T08:00:00.000Z</lastmod>  
+      
+    <date>1586332800000</date>  
+    <title>MacOS系统配置 | 好好学习的郝</title>  
+      
+    <desc>前言本文记录MacOS系统的一些常见配置方法和问题，备忘。 硬件配置： 12345MacBook Pro (13-inch, 2020, Four Thunderbolt 3 ports)处理器 2 GHz 四核Intel Core i5内存 16 GB 3733 MHz LPDDR4X图形卡 Intel Iris Plus Graphics 1536 MB控制器型号名称 Apple T2安全芯片</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-linux-network-proxy/</loc>  
+      
+    <lastmod>2023-09-23T08:00:00.000Z</lastmod>  
+      
+    <date>1663074000000</date>  
+    <title>Linux配置网络代理 | 好好学习的郝</title>  
+      
+    <desc>网络代理《Linux配置SNAT上网》一文中，我们了解到，通过SNAT的方式能够让局域网中所有主机都能访问外网。而网络代理，也能让局域网中所有主机都能访问外网。并且，如果网络代理支持科学上网，那么所有使用这个代理的主机也可以科学上网。 本文我们就来学习一下Linux中常见的网络代理配置方法，参考文档： linux设置代理上网 docker pull 配置代理 已知网络代理的IP和PORT为：192</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-docker-compose/</loc>  
+      
+    <lastmod>2023-09-23T08:00:00.000Z</lastmod>  
+      
+    <date>1572811200000</date>  
+    <title>Docker-Compose入门篇 | 好好学习的郝</title>  
+      
+    <desc>Docker-Compose简介Docker-Compose（简称Compose）是用于定义和运行多容器Docker应用程序的工具。通过Compose，可以使用YAML文件来配置应用程序的服务。然后使用一个命令，就可以从配置中创建并启动所有服务。 本文中，我们来学习一下Compose的基础用法。 参考文档： Overview of Docker Compose Docker 入门教程 docker</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-k8s-problem/</loc>  
+      
+    <lastmod>2023-09-23T08:00:00.000Z</lastmod>  
+      
+    <date>1568563200000</date>  
+    <title>K8S问题记录 | 好好学习的郝</title>  
+      
+    <desc>前言本文记录使用K8S过程中遇到的问题、解决办法和一些原理。问题排查方法参考《kubectl命令——故障排查篇》。</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-iftop/</loc>  
+      
+    <lastmod>2023-09-23T08:00:00.000Z</lastmod>  
+      
+    <date>1496390400000</date>  
+    <title>iftop命令 | 好好学习的郝</title>  
+      
+    <desc>哪个程序占用了带宽？查看一台主机的监控，有时候我们会发现网络带宽被打满了，这时候怎样定位出是哪个程序大量占用了带宽？答：使用网络数据包分析工具。比如iftop，可以监控到进出网卡的带宽用量。 参考文档： How do I find out which process is eating up my bandwidth? iftop: display bandwidth usage on an in</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-linux-ipv6/</loc>  
+      
+    <lastmod>2023-09-23T08:00:00.000Z</lastmod>  
+      
+    <date>1496390400000</date>  
+    <title>Linux启用IPv6 | 好好学习的郝</title>  
+      
+    <desc>IPv6简介 网际协议第6版（英语：Internet Protocol version 6，缩写：IPv6）是网际协议的最新版本，用作互联网的协议。用它来取代IPv4主要是为了解决IPv4地址枯竭问题，同时它也在其他方面对于IPv4有许多改进。 本文中，我们学习Linux系统开启IPv6的方法。 参考文档：维基百科 - IPv6</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-shell-ssh/</loc>  
+      
+    <lastmod>2023-09-23T08:00:00.000Z</lastmod>  
+      
+    <date>1496390400000</date>  
+    <title>shell命令之ssh | 好好学习的郝</title>  
+      
+    <desc>ssh简介 SSH (Secure Shell) 是一个为远程登录会话和其他网络服务提供安全性的协议。通过一个安全通道，用户可以在未加密的网络中为网络服务提供强大的身份验证和安全加密，让用户可以安全地在不安全的网络环境中执行远程命令，并将本地和远程主机之间的数据进行安全传输。</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-shell-sudo/</loc>  
+      
+    <lastmod>2023-09-23T08:00:00.000Z</lastmod>  
+      
+    <date>1496390400000</date>  
+    <title>shell命令之sudo | 好好学习的郝</title>  
+      
+    <desc>sudo简介 在sudo于1980年前后被写出之前，一般用户利用 su 切换用户，管理系统时通常使用此命令切换为超级用户。但是使用su的缺点之一在于必须要先告知目标用户的密码。 sudo使一般用户不需要知道目标用户的密码即可获得权限。首先由超级用户将普通用户的名字、可以执行的特定命令、按照哪种用户或用户组的身份执行等信息，登记在特殊的文件中（通常是/etc/sudoers），即完成对该用户的授权（</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-iptables-port-map/</loc>  
+      
+    <lastmod>2023-09-16T08:50:00.000Z</lastmod>  
+      
+    <date>1525776600000</date>  
+    <title>iptables实现端口映射 | 好好学习的郝</title>  
+      
+    <desc>需求描述主机A和主机B在同一个局域网。主机A eth0的IP为内网IP：192.168.56.101，eth1为公网IP：120.77.36.222。主机B eth0的IP为内网IP：192.168.56.102，80端口开启了Web服务。 通过外网访问到主机A，无法访问到主机B。现在想要访问外网访问主机B的Web服务，怎么办？答：使用端口映射。 参考文档： 《iptables入门篇》 linux</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-docker-command/</loc>  
+      
+    <lastmod>2023-09-16T08:00:00.000Z</lastmod>  
+      
+    <date>1494255600000</date>  
+    <title>Docker常用命令 | 好好学习的郝</title>  
+      
+    <desc>前言本文记录Docker常用命令，备忘。 参考文档： 什么是Docker? docker入门教程 Docker入门实战 中国第一套Docker实战案例视频课程（入门到高级） Docker实战案例源码 Docker实战案例文档</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-postgresql-start/</loc>  
+      
+    <lastmod>2023-09-09T08:00:00.000Z</lastmod>  
+      
+    <date>1585598400000</date>  
+    <title>PostgreSQL入门篇 | 好好学习的郝</title>  
+      
+    <desc>PostgreSQL简介 PostgreSQL is a powerful, open source object-relational database system with over 30 years of active development that has earned it a strong reputation for reliability, feature robustness</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-grafana-prometheus-problem/</loc>  
+      
+    <lastmod>2023-09-09T08:00:00.000Z</lastmod>  
+      
+    <date>1578945600000</date>  
+    <title>Grafana和Prometheus问题记录 | 好好学习的郝</title>  
+      
+    <desc>前言本文记录使用Grafana时遇到的一些问题，备忘。</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-cloudflare-config/</loc>  
+      
+    <lastmod>2023-09-09T08:00:00.000Z</lastmod>  
+      
+    <date>1473512130000</date>  
+    <title>Cloudflare配置概述 | 好好学习的郝</title>  
+      
+    <desc>添加域名 Create a Cloudflare account and add your domain. Choose Plan. Change your nameservers.</desc>  
   </url> 
   
   <url>  
@@ -43,6 +318,17 @@
     <title>Hexo本地搜索加速（七牛版） | 好好学习的郝</title>  
       
     <desc>前言《Hexo本地搜索加速》一文中，给 search.xml 文件配置了 jsdelivr CDN。但是，jsdelivr CDN 目前国内已经无法访问了，只能另外寻找一个替代。 可选的替代包括： statically.io githack.com 配置方法可以参考hexo-theme-next/commit/2ff6c11，但是，这些替代CDN，国内也无法访问。找来找去，最终锁定了七牛，一直用它</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-ubuntu18-static-ip/</loc>  
+      
+    <lastmod>2023-09-02T08:00:00.000Z</lastmod>  
+      
+    <date>1675792800000</date>  
+    <title>Ubuntu18配置静态IP | 好好学习的郝</title>  
+      
+    <desc>前言《VirtualBox下CentOS7和Ubuntu16.04网络配置》一文中，描述了 CentOS7 和 Ubuntu16.04 系统中配置静态IP的方法。但是，Ubuntu18之后的版本，网络配置方法发生了较大的变更，本文学习一下新的配置方法。</desc>  
   </url> 
   
   <url>  
@@ -145,17 +431,6 @@
   </url> 
   
   <url>  
-    <loc>https://www.voidking.com/dev-hexo-https/</loc>  
-      
-    <lastmod>2023-09-02T08:00:00.000Z</lastmod>  
-      
-    <date>1523115000000</date>  
-    <title>Hexo启用HTTPS加密连接 | 好好学习的郝</title>  
-      
-    <desc>前言访问个人网站，偶尔会跳出广告，看来网站被运营商劫持了。为了避免这种情况，郝同学决定对网站进行https加密。早在2015年，美国政府就要求所有联邦政府网站使用https加密连接，这次郝同学追赶一下国际潮流的尾巴。 HTTPS(SSL/TLS)加密原理，参考文档《浅谈数据加密》。</desc>  
-  </url> 
-  
-  <url>  
     <loc>https://www.voidking.com/dev-docker-image-compress/</loc>  
       
     <lastmod>2023-09-02T08:00:00.000Z</lastmod>  
@@ -175,6 +450,17 @@
     <title>Docker镜像迁移/分享 | 好好学习的郝</title>  
       
     <desc>问题描述在没有外网的情况下，怎样把 docker image 分享给局域网的其他用户？ 解决办法有两个： 1）搭建本地镜像仓库 2）导出导入镜像</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-win10-linux-docker/</loc>  
+      
+    <lastmod>2023-09-02T08:00:00.000Z</lastmod>  
+      
+    <date>1494252000000</date>  
+    <title>Win10安装配置Linux和Docker | 好好学习的郝</title>  
+      
+    <desc>Win10安装配置Docker的方法在Win10中安装配置Docker，有四种方法：（1）在Win10上安装Docker Desktop。Docker Desktop 利用了 Windows 10 的 Hyper-V 虚拟化技术，来创建一个轻量级的 Linux 虚拟机（VM），并在其中运行 Docker 引擎和容器。这样，用户就可以在 Windows 上享受到 Linux 上的 Docker 功能</desc>  
   </url> 
   
   <url>  
@@ -244,17 +530,6 @@
   </url> 
   
   <url>  
-    <loc>https://www.voidking.com/dev-grafana-prometheus-problem/</loc>  
-      
-    <lastmod>2023-08-19T08:00:00.000Z</lastmod>  
-      
-    <date>1578945600000</date>  
-    <title>Grafana和Prometheus问题记录 | 好好学习的郝</title>  
-      
-    <desc>前言本文记录使用Grafana时遇到的一些问题，备忘。</desc>  
-  </url> 
-  
-  <url>  
     <loc>https://www.voidking.com/dev-prometheus-labels/</loc>  
       
     <lastmod>2023-08-19T08:00:00.000Z</lastmod>  
@@ -274,17 +549,6 @@
     <title>K8S中的Pod水平自动扩缩 | 好好学习的郝</title>  
       
     <desc>K8S中的Pod水平自动扩缩简介在容器编排和管理技术中，Kubernetes（K8S）已经成为最为流行和广泛使用的平台之一。Kubernetes不仅可以帮助管理容器化应用程序的部署和扩展，还可以通过自动化的方式来实现资源的动态调整，以满足应用程序的需求。其中，Pod水平的自动扩缩是Kubernetes中一个重要且强大的特性，它可以根据配置的规则和指标自动调整Pod的数量，以便在不同的负载情况下保持</desc>  
-  </url> 
-  
-  <url>  
-    <loc>https://www.voidking.com/dev-shell-system/</loc>  
-      
-    <lastmod>2023-08-19T08:00:00.000Z</lastmod>  
-      
-    <date>1496390400000</date>  
-    <title>shell命令之系统管理 | 好好学习的郝</title>  
-      
-    <desc>查看硬件配置查看服务器型号12dmidecodedmidecode | grep quot;System Informationquot; -A16 查看CPU物理CPU数（physical id）：主板上实际插入的cpu数量，可以数不重复的 physical id 有几个。CPU核心数（cpu cores）：单块CPU上面能处理数据的芯片组的数量，如双核、四核等逻辑CPU数：一般情况下，逻辑</desc>  
   </url> 
   
   <url>  
@@ -329,17 +593,6 @@
     <title>资源分享 | 好好学习的郝</title>  
       
     <desc>前言本人不是资源的创造者，只是互联网的搬运工。如有侵权，请联系本人删除。 直接在【好好学习的郝】公众号回复资源的关键词，即可拿到资源链接。比如输入“Linux内核完全剖析”，就可以拿到《Linux内核完全剖析》的下载链接。如果链接失效，请在本文或者公众号留言。</desc>  
-  </url> 
-  
-  <url>  
-    <loc>https://www.voidking.com/hobby-macos-system-settings/</loc>  
-      
-    <lastmod>2023-08-12T08:00:00.000Z</lastmod>  
-      
-    <date>1586332800000</date>  
-    <title>MacOS系统配置 | 好好学习的郝</title>  
-      
-    <desc>用户名配置系统偏好设置，用户与群组，点按锁按钮以进行修改。右键用户，高级选项。修改账户名称为vk，这个名称是shell中显示的用户名。修改全名为voidking，这个名称是mac系统显示的名称。个人目录，修改为 /Users/vk ，这个目录是新的home目录。 修改完成后点击“好”，系统重启，然后整个系统恢复到出厂状态。</desc>  
   </url> 
   
   <url>  
@@ -420,14 +673,14 @@
   </url> 
   
   <url>  
-    <loc>https://www.voidking.com/dev-linux-network-proxy/</loc>  
+    <loc>https://www.voidking.com/dev-wechaty-start/</loc>  
       
     <lastmod>2023-08-05T08:00:00.000Z</lastmod>  
       
-    <date>1663074000000</date>  
-    <title>Linux配置网络代理 | 好好学习的郝</title>  
+    <date>1691222400000</date>  
+    <title>Wechaty入门篇 | 好好学习的郝</title>  
       
-    <desc>网络代理《Linux配置SNAT上网》一文中，我们了解到，通过SNAT的方式能够让局域网中所有主机都能访问外网。而网络代理，也能让局域网中所有主机都能访问外网。并且，如果网络代理支持科学上网，那么所有使用这个代理的主机也可以科学上网。 本文我们就来学习一下Linux中常见的网络代理配置方法，参考文档： linux设置代理上网 docker pull 配置代理 已知网络代理的IP和PORT为：192</desc>  
+    <desc>Wechaty简介 Wechaty 是一个开源聊天机器人框架SDK，具有高度封装、高可用的特性，支持NodeJs, Python, Go 和Java 等多语言版本。在过去的4年中，服务了数万名开发者，收获了 Github 的 1w+ Star。同时配置了完整的 DevOps 体系并持续按照 Apache 的方式管理技术社区。 参考文档： github - wechaty/getting-start</desc>  
   </url> 
   
   <url>  
@@ -486,17 +739,6 @@
   </url> 
   
   <url>  
-    <loc>https://www.voidking.com/dev-cloudflare-config/</loc>  
-      
-    <lastmod>2023-07-29T08:00:00.000Z</lastmod>  
-      
-    <date>1473512130000</date>  
-    <title>Cloudflare配置概述 | 好好学习的郝</title>  
-      
-    <desc>添加域名 Create a Cloudflare account and add your domain. Choose Plan. Change your nameservers.</desc>  
-  </url> 
-  
-  <url>  
     <loc>https://www.voidking.com/hobby-chrome-plugins/</loc>  
       
     <lastmod>2023-07-22T08:00:00.000Z</lastmod>  
@@ -527,39 +769,6 @@
     <title>Ansible入门篇 | 好好学习的郝</title>  
       
     <desc>Ansible简介ansible是一个用于自动化运维的配置管理和应用部署工具。基于Python开发，集合了众多运维工具（puppet、cfengine、chef、func、fabric.SaltStack ）的优点，实现了批量系统配置、批量程序部署、批量运行命令等功能。ansible是基于模块工作的，本身没有批量部署的能力，真正具有批量部署能力的是ansible所运行的模块。 ansible的基本</desc>  
-  </url> 
-  
-  <url>  
-    <loc>https://www.voidking.com/dev-docker-command/</loc>  
-      
-    <lastmod>2023-07-16T08:00:00.000Z</lastmod>  
-      
-    <date>1494255600000</date>  
-    <title>Docker常用命令 | 好好学习的郝</title>  
-      
-    <desc>前言本文记录Docker常用命令，备忘。 参考文档： 什么是Docker? docker入门教程 Docker入门实战 中国第一套Docker实战案例视频课程（入门到高级） Docker实战案例源码 Docker实战案例文档</desc>  
-  </url> 
-  
-  <url>  
-    <loc>https://www.voidking.com/dev-win10-linux-docker/</loc>  
-      
-    <lastmod>2023-07-16T08:00:00.000Z</lastmod>  
-      
-    <date>1494252000000</date>  
-    <title>Win10安装配置Linux和Docker | 好好学习的郝</title>  
-      
-    <desc>Win10安装配置Docker的方法在Win10中安装配置Docker，有四种方法：（1）在Win10上安装Docker Desktop。Docker Desktop 利用了 Windows 10 的 Hyper-V 虚拟化技术，来创建一个轻量级的 Linux 虚拟机（VM），并在其中运行 Docker 引擎和容器。这样，用户就可以在 Windows 上享受到 Linux 上的 Docker 功能</desc>  
-  </url> 
-  
-  <url>  
-    <loc>https://www.voidking.com/dev-postgresql-start/</loc>  
-      
-    <lastmod>2023-07-01T08:00:00.000Z</lastmod>  
-      
-    <date>1585598400000</date>  
-    <title>PostgreSQL入门篇 | 好好学习的郝</title>  
-      
-    <desc>PostgreSQL简介 PostgreSQL is a powerful, open source object-relational database system with over 30 years of active development that has earned it a strong reputation for reliability, feature robustness</desc>  
   </url> 
   
   <url>  
@@ -604,6 +813,17 @@
     <title>Win10安装配置Docker Desktop | 好好学习的郝</title>  
       
     <desc>Docker Desktop简介 Docker Desktop is a one-click-install application for your Mac, Linux, or Windows environment that enables you to build and share containerized applications and microservices. It prov</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-k8s-dashboard/</loc>  
+      
+    <lastmod>2023-06-22T08:00:00.000Z</lastmod>  
+      
+    <date>1686988800000</date>  
+    <title>K8S Dashboard | 好好学习的郝</title>  
+      
+    <desc>K8S Dashboard简介K8S Dashboard 是基于网页的 Kubernetes 用户界面。使用 Dashboard 可以将容器应用部署到 Kubernetes 集群中，也可以对容器应用排错，还能管理集群资源。 可以使用 Dashboard 获取运行在集群中的应用的概览信息，也可以创建或者修改 Kubernetes 资源 （如 Deployment，Job，DaemonSet 等等）。</desc>  
   </url> 
   
   <url>  
@@ -673,17 +893,6 @@
   </url> 
   
   <url>  
-    <loc>https://www.voidking.com/dev-shell-ssh/</loc>  
-      
-    <lastmod>2023-06-22T08:00:00.000Z</lastmod>  
-      
-    <date>1496390400000</date>  
-    <title>shell命令之ssh | 好好学习的郝</title>  
-      
-    <desc>创建用户创建voidking用户，并添加sudo权限： 123useradd -m voidking -s /bin/bashpasswd voidkingadduser voidking sudo</desc>  
-  </url> 
-  
-  <url>  
     <loc>https://www.voidking.com/dev-linux-ftp/</loc>  
       
     <lastmod>2023-06-22T08:00:00.000Z</lastmod>  
@@ -728,6 +937,17 @@
   </url> 
   
   <url>  
+    <loc>https://www.voidking.com/dev-jumpserver-start/</loc>  
+      
+    <lastmod>2023-06-17T08:00:00.000Z</lastmod>  
+      
+    <date>1662040800000</date>  
+    <title>JumpServer入门篇 | 好好学习的郝</title>  
+      
+    <desc>JumpServer简介本文部分内容来自ChatGPT。 JumpServer是一款开源的堡垒机系统，是符合 4A 规范的专业运维安全审计系统，提供了Web页面管理、资产管理、权限管理、会话审计等功能。通过JumpServer，用户可以轻松地实现对多个设备的远程访问和管理，同时还能进行权限控制，从而提高了运维效率和安全性。 主要功能： 资产管理：对各类设备进行统一管理，支持SSH、RDP、VNC等</desc>  
+  </url> 
+  
+  <url>  
     <loc>https://www.voidking.com/dev-k8s-useraccount-serviceaccount/</loc>  
       
     <lastmod>2023-06-17T08:00:00.000Z</lastmod>  
@@ -747,17 +967,6 @@
     <title>Redis入门篇 | 好好学习的郝</title>  
       
     <desc>Redis简介 Redis: The open source, in-memory data store used by millions of developers as a database, cache, streaming engine, and message broker. Redis是被数百万开发人员用作数据库、缓存、流引擎和消息代理的开源内存数据存储。 Redis特点： Redis</desc>  
-  </url> 
-  
-  <url>  
-    <loc>https://www.voidking.com/dev-k8s-problem/</loc>  
-      
-    <lastmod>2023-06-17T08:00:00.000Z</lastmod>  
-      
-    <date>1568563200000</date>  
-    <title>K8S问题记录 | 好好学习的郝</title>  
-      
-    <desc>前言本文记录使用K8S过程中遇到的问题、解决办法和一些原理。问题排查方法参考《kubectl命令——故障排查篇》。</desc>  
   </url> 
   
   <url>  
@@ -904,17 +1113,6 @@
   </url> 
   
   <url>  
-    <loc>https://www.voidking.com/dev-docker-openvpn/</loc>  
-      
-    <lastmod>2023-05-20T08:00:00.000Z</lastmod>  
-      
-    <date>1606852800000</date>  
-    <title>使用Docker安装配置OpenVPN | 好好学习的郝</title>  
-      
-    <desc>前言 OpenVPN is a virtual private network (VPN) system that implements techniques to create secure point-to-point or site-to-site connections in routed or bridged configurations and remote access facili</desc>  
-  </url> 
-  
-  <url>  
     <loc>https://www.voidking.com/dev-jq-command/</loc>  
       
     <lastmod>2023-05-20T08:00:00.000Z</lastmod>  
@@ -948,17 +1146,6 @@
   </url> 
   
   <url>  
-    <loc>https://www.voidking.com/dev-certbot-domain-certificate/</loc>  
-      
-    <lastmod>2023-05-20T08:00:00.000Z</lastmod>  
-      
-    <date>1523201400000</date>  
-    <title>使用Certbot申请泛域名证书 | 好好学习的郝</title>  
-      
-    <desc>需求描述《Hexo启用https加密连接》一文中，我们在腾讯云申请了一个三级域名证书，然后给网站配置上了域名证书。 那如果我们有一百个域名，一个个申请域名证书就太麻烦了，这是我们就需要一个泛域名证书。怎么申请泛域名证书呢？方案一：通过阿里云、腾讯云等云平台申请，但是需要付费，便宜的也要年费两千左右。方案二：使用certbot申请泛域名证书，然后配置好自动续期。 因为想要省点钱，所以本文中我们就来研</desc>  
-  </url> 
-  
-  <url>  
     <loc>https://www.voidking.com/dev-spark-on-yarn/</loc>  
       
     <lastmod>2023-05-14T08:00:00.000Z</lastmod>  
@@ -989,6 +1176,17 @@
     <title>Python获取命令行参数 | 好好学习的郝</title>  
       
     <desc>Python获取命令行参数概述在执行Python脚本时，很多时候需要从命令行获取用户输入的参数。 Pthon获取命令行参数的方式有多种，具体包括： sys.argv getopt argparse click 个人感觉其中最简单的是sys.argv，既简单又优雅的是argparse。本文，我们就来学习一下argparse的使用。 参考文档： Python 命令行参数 Python 命令行参数的3种</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-legado/</loc>  
+      
+    <lastmod>2023-04-15T08:00:00.000Z</lastmod>  
+      
+    <date>1681545600000</date>  
+    <title>安卓阅读神器Legado | 好好学习的郝</title>  
+      
+    <desc>Legado简介 Legado is a free and open source novel reader for Android. Legado是一个免费开源的安卓小说阅读器，APP名称为”阅读”。 参考文档： gedoor/legado Legado - 使用说明 Legado使用小技巧</desc>  
   </url> 
   
   <url>  
@@ -1476,6 +1674,17 @@
   </url> 
   
   <url>  
+    <loc>https://www.voidking.com/dev-docker-dolphinscheduler/</loc>  
+      
+    <lastmod>2023-02-07T15:00:00.000Z</lastmod>  
+      
+    <date>1674036000000</date>  
+    <title>Docker安装配置DolphinScheduler | 好好学习的郝</title>  
+      
+    <desc>DolphinScheduler简介 Apache DolphinScheduler provides a distributed and easy to expand visual workflow task scheduling open-source platform. It is suitable for enterprise-level scenarios. It provides a </desc>  
+  </url> 
+  
+  <url>  
     <loc>https://www.voidking.com/dev-argocd-start/</loc>  
       
     <lastmod>2023-02-06T17:00:00.000Z</lastmod>  
@@ -1487,14 +1696,25 @@
   </url> 
   
   <url>  
-    <loc>https://www.voidking.com/dev-docker-compose/</loc>  
+    <loc>https://www.voidking.com/dev-docker-compose-rolling-update/</loc>  
       
     <lastmod>2023-02-06T14:00:00.000Z</lastmod>  
       
     <date>1572811200000</date>  
-    <title>Docker-Compose入门篇 | 好好学习的郝</title>  
+    <title>Docker Compose实现滚动更新 | 好好学习的郝</title>  
       
-    <desc>Docker-Compose简介Compose是用于定义和运行多容器Docker应用程序的工具。通过Compose，可以使用YAML文件来配置应用程序的服务。然后使用一个命令，就可以从配置中创建并启动所有服务。Compose可在所有环境中工作：生产、模拟、开发、测试以及CI工作流。 使用Compose基本上是三步流程： 使用Dockerfile定义应用程序的环境，以便可以在任何地方复制它。 在do</desc>  
+    <desc>前言本文中，基于Docker Compose实现服务滚动更新。具体来说，webapp想要从v1.0更新到v2.0，更新过程中服务不能中断，如果v2.0有问题那么就停止更新并回退。 参考文档： 《Docker-Compose入门篇》 谁说docker-compose不能水平扩展容器、服务多实例？</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-docker-compose-with-build/</loc>  
+      
+    <lastmod>2023-02-06T14:00:00.000Z</lastmod>  
+      
+    <date>1572811200000</date>  
+    <title>Docker-Compose构建镜像并启动容器 | 好好学习的郝</title>  
+      
+    <desc></desc>  
   </url> 
   
   <url>  
@@ -1597,17 +1817,6 @@
   </url> 
   
   <url>  
-    <loc>https://www.voidking.com/dev-dns-start/</loc>  
-      
-    <lastmod>2023-01-05T11:00:00.000Z</lastmod>  
-      
-    <date>1424886439000</date>  
-    <title>DNS入门篇 | 好好学习的郝</title>  
-      
-    <desc>DNS简介 网域名称（英语：Domain Name，简称：Domain），简称域名、网域，是由一串用点分隔的字符组成的互联网上某一台计算机或计算机组的名称，用于在数据传输时标识计算机的电子方位。域名可以说是一个IP地址的代称，目的是为了便于记忆后者。例如，wikipedia.org是一个域名。人们可以直接访问wikipedia.org来代替IP地址，然后域名系统（DNS）就会将它转化成便于机器识别</desc>  
-  </url> 
-  
-  <url>  
     <loc>https://www.voidking.com/dev-k8s-rbac-auth/</loc>  
       
     <lastmod>2022-12-27T20:00:00.000Z</lastmod>  
@@ -1616,6 +1825,17 @@
     <title>K8S中的RBAC鉴权 | 好好学习的郝</title>  
       
     <desc>RBAC Authorization Role-based access control (RBAC) is a method of regulating access to computer or network resources based on the roles of individual users within your organization. 更多内容，参考Using RBAC</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-ack-gpu-problem/</loc>  
+      
+    <lastmod>2022-12-24T12:00:00.000Z</lastmod>  
+      
+    <date>1671804000000</date>  
+    <title>阿里云ACK使用GPU问题 | 好好学习的郝</title>  
+      
+    <desc>阿里云托管版ACK限制问题问题描述想要使用腾讯云GPUManager调度ACK集群中的GPU资源，但是安装过程需要修改kube-scheduler，该怎么处理？ 问题解答阿里云托管Pro版ACK，因为无法对kube-scheduler配置进行修改，所以无法安装腾讯云的GPUManager，只能安装阿里云的GPUShare。想要完全自主控制K8S集群，最好还是购买专有版ACK。</desc>  
   </url> 
   
   <url>  
@@ -1751,6 +1971,17 @@
   </url> 
   
   <url>  
+    <loc>https://www.voidking.com/dev-ansible-kubeadm/</loc>  
+      
+    <lastmod>2022-12-02T14:00:00.000Z</lastmod>  
+      
+    <date>1664550000000</date>  
+    <title>ansible+kubeadm部署K8S高可用集群 | 好好学习的郝</title>  
+      
+    <desc>需求描述当前有十台主机，主机IP为192.168.56.101-110，用户为voidking，具有sudo权限。现在想要用这十台主机搭建一个K8S集群，版本1.22.15，其中3台作为master，7台作为worker。 参考文档： 利用 kubeadm 创建高可用集群 High Availability Considerations k8s高可用部署：keepalived + haproxy </desc>  
+  </url> 
+  
+  <url>  
     <loc>https://www.voidking.com/dev-ldap-start/</loc>  
       
     <lastmod>2022-11-29T16:00:00.000Z</lastmod>  
@@ -1861,6 +2092,17 @@
   </url> 
   
   <url>  
+    <loc>https://www.voidking.com/dev-kubeadm-rejoin-master-node/</loc>  
+      
+    <lastmod>2022-11-01T10:00:00.000Z</lastmod>  
+      
+    <date>1665331200000</date>  
+    <title>kubeadm重新添加master节点 | 好好学习的郝</title>  
+      
+    <desc>需求描述一些情况下，我们需要先把某个master节点从k8s集群中摘除掉，进行某些操作之后再加入到集群。或者，我们需要先把某个master节点从k8s集群中摘除掉，然后把这个节点加入到另外一个k8s集群。 本文中，我们就来研究一下从k8s集群中摘除一个master节点再重新加入集群的方法。（worker节点太简单，不再单独讨论）</desc>  
+  </url> 
+  
+  <url>  
     <loc>https://www.voidking.com/dev-etcd-data-dir/</loc>  
       
     <lastmod>2022-11-01T10:00:00.000Z</lastmod>  
@@ -1913,6 +2155,17 @@
     <title>代理服务概述 | 好好学习的郝</title>  
       
     <desc>代理服务简介 代理（Proxy）也称网络代理，是一种特殊的网络服务，允许一个终端（一般为客户端）通过这个服务与另一个终端（一般为服务器）进行非直接的连接。 通信双方原本可以直接通信，为什么需要加一层代理？因为代理可以为整个通信带来更多的功能，例如： 拦截：代理可以选择性拦截传输的网络流量，比如一些公司限制员工在上班的时候不能访问某些游戏或者电商网站，再比如把我们和世界隔离开来的 GFW，还有在数据</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-kubeadm-proxy-problem/</loc>  
+      
+    <lastmod>2022-10-21T15:00:00.000Z</lastmod>  
+      
+    <date>1664550000000</date>  
+    <title>kubeadm意外配置代理引发的问题 | 好好学习的郝</title>  
+      
+    <desc>问题描述《ansible+kubeadm部署K8S高可用集群》一文中，我们安装完成了K8S高可用集群。表面看一切正常，跑测试pod也没有问题。 但是在《K8S中安装Milvus》时，就出现了问题。 123456helm install milvus-operator \ -n milvus-operator --create-namespace \ milvus-operator-0.6.5.tg</desc>  
   </url> 
   
   <url>  
@@ -2070,17 +2323,6 @@
   </url> 
   
   <url>  
-    <loc>https://www.voidking.com/dev-iftop/</loc>  
-      
-    <lastmod>2022-09-20T20:00:00.000Z</lastmod>  
-      
-    <date>1496390400000</date>  
-    <title>iftop命令 | 好好学习的郝</title>  
-      
-    <desc>哪个程序占用了带宽？查看一台主机的监控，有时候我们会发现网络带宽被打满了，这时候怎样定位出是哪个程序大量占用了带宽？答：使用网络数据包分析工具。比如iftop，可以监控到进出网卡的带宽用量。 参考文档： How do I find out which process is eating up my bandwidth? iftop: display bandwidth usage on an in</desc>  
-  </url> 
-  
-  <url>  
     <loc>https://www.voidking.com/dev-k8s-spark/</loc>  
       
     <lastmod>2022-09-17T17:00:00.000Z</lastmod>  
@@ -2089,6 +2331,17 @@
     <title>K8S中安装配置Spark | 好好学习的郝</title>  
       
     <desc>spark-on-k8s-operator简介 spark-on-k8s-operator: Kubernetes operator for managing the lifecycle of Apache Spark applications on Kubernetes.The Kubernetes Operator for Apache Spark aims to make specifyin</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-python-log/</loc>  
+      
+    <lastmod>2022-09-16T08:00:00.000Z</lastmod>  
+      
+    <date>1636315200000</date>  
+    <title>Python打印日志 | 好好学习的郝</title>  
+      
+    <desc>输出日志到控制台12345678import sysimport logginglog = logging.getLogger(__name__)log.setLevel(logging.DEBUG)log.addHandler(logging.StreamHandler(sys.stdout)) #默认sys.errorlog.info(#x27;print info level log to</desc>  
   </url> 
   
   <url>  
@@ -2221,17 +2474,6 @@
     <title>软件版本号命名规则 | 好好学习的郝</title>  
       
     <desc>软件版本号有没有什么标准？项目在发行时，肯定需要一个版本号，那么这个版本号应该遵循什么样的标准呢？语义化版本（Semantic Versioning semver）版本号，是一个在开源社区中广泛接受的标准，详情参考Semantic Versioning Specification。</desc>  
-  </url> 
-  
-  <url>  
-    <loc>https://www.voidking.com/dev-python-log/</loc>  
-      
-    <lastmod>2022-03-28T08:00:00.000Z</lastmod>  
-      
-    <date>1636315200000</date>  
-    <title>Python打印日志 | 好好学习的郝</title>  
-      
-    <desc>输出日志到控制台12345678import sysimport logginglog = logging.getLogger(__name__)log.setLevel(logging.DEBUG)log.addHandler(logging.StreamHandler(sys.stdout)) #默认sys.errorlog.info(#x27;print info level log to</desc>  
   </url> 
   
   <url>  
@@ -3632,17 +3874,6 @@
   </url> 
   
   <url>  
-    <loc>https://www.voidking.com/dev-ubuntu-dns-server/</loc>  
-      
-    <lastmod>2018-05-15T16:30:00.000Z</lastmod>  
-      
-    <date>1526401800000</date>  
-    <title>Ubuntu14.04配置DNS Server | 好好学习的郝</title>  
-      
-    <desc>前言《Ubuntu系统批量自动安装》一文中，也许会用到DNS Server，那么就来研究配置一下。 配置目标：在Ubuntu14.04上，搭建一个DNS服务器，服务器地址为10.0.0.100。使用这个DNS，可以把dns.voidking.com域名解析到10.0.0.100这个地址。</desc>  
-  </url> 
-  
-  <url>  
     <loc>https://www.voidking.com/dev-ubuntu-auto-install/</loc>  
       
     <lastmod>2018-05-10T11:00:00.000Z</lastmod>  
@@ -3662,17 +3893,6 @@
     <title>Ubuntu 14.04.5 Server物理机安装 | 好好学习的郝</title>  
       
     <desc>前言机房里有十几台服务器需要安装系统，这里选择Ubuntu 14.04.5 Server版。本文，就图文记录一下Ubuntu 14.04.5 Server (64-bit)的物理机的安装过程。</desc>  
-  </url> 
-  
-  <url>  
-    <loc>https://www.voidking.com/dev-iptables-port-map/</loc>  
-      
-    <lastmod>2018-05-08T10:50:00.000Z</lastmod>  
-      
-    <date>1525776600000</date>  
-    <title>iptables实现端口映射 | 好好学习的郝</title>  
-      
-    <desc>情景模拟有主机A，eth0的IP为内网IP：192.168.56.101，eth1为公网IP：120.77.36.222。有主机B，eth0的IP为内网IP：192.168.56.102。 可以通过外网访问主机A，主机B和主机A在同一个局域网。 想要访问外网访问主机B的Web服务，怎么办？答：使用端口映射。</desc>  
   </url> 
   
   <url>  
@@ -7297,7 +7517,7 @@
 
   <url>
     <loc>https://www.voidking.com/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -7305,1694 +7525,1729 @@
   
   <url>
     <loc>https://www.voidking.com/tags/%E6%9E%B6%E6%9E%84/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/python/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/django/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E5%B9%B3%E5%8F%B0/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/hexo/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/k8s/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/prometheus/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E7%9B%91%E6%8E%A7/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E6%BA%90%E7%A0%81/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/golang/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/nginx/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/macos/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/vscode/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E7%BC%96%E8%BE%91%E5%99%A8/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/docker/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/mysql/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/oracle/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/linux/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/ubuntu/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/apache/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/css/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E5%89%8D%E7%AB%AF/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E7%9F%A5%E8%AF%86%E5%B7%A5%E7%A8%8B/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/aiops/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/node/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E6%94%AF%E4%BB%98%E5%AE%9D/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/rsa/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/alpine/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/busybox/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/conda/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E8%BD%AC%E8%BD%BD/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/android/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/git/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/angularjs/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/openstack/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/ansible/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/ssh/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/sshpass/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/tomcat/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/hbuilder/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/ios/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/argocd/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/cicd/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/devops/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/javascript/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/jquery/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/axure/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E8%89%BE%E4%BD%B3%E7%94%9F%E6%B4%BB/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/shell/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/pxe/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/beego/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/debug/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/java/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/eclipse/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/maven/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E7%BD%91%E7%AB%99/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E5%9F%9F%E5%90%8D/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/freemarker/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/php/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/centos/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/yum%E6%BA%90/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/jira/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/wiki/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/jupyter/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/phpmyadmin/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/supervisor/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/pip/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/elk/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/gitlab/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/https/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E5%8A%A0%E5%AF%86/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/tls/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/ssl/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/chatgpt/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/chrome/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E6%8F%92%E4%BB%B6/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/cka/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/ckad/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/clickhouse/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E7%BD%91%E7%BB%9C/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/cookie/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/localstorage/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/sessionstorage/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/sprite/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/staruml/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/uwsgi/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/pycharm/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/dokcer/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/dns/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/docker-compose/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E5%AD%98%E5%82%A8/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/crontab/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/cloudnative/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/jdk/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/grafana/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/harbor/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/gpu/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/swarm/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/dockerfile/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/zookeeper/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/dubbo/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/tensorflow/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/etcd/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/firewall/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/iptables/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/markdown/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E4%BB%A3%E7%90%86/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/ganglia/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/mathjax/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/gitignore/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E6%B5%8B%E8%AF%95/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/oom/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/helm/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/virtualbox/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/client-go/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/godep/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/govendor/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/idea/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E6%AF%95%E8%AE%BE/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/opencv/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/socketio/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E5%BE%AE%E4%BF%A1/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/hadoop/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/hive/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E9%94%99%E8%AF%AF%E6%8E%92%E6%9F%A5/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/bitnami/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/nvm/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E5%8D%9A%E5%AE%A2/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/travis-ci/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/github-actions/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/gulp/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/hibernate/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/html/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/spring/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/springmvc/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/mybatis/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/ingress/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/spark/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/mongodb/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/nfs/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/ipvs/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/jdbc/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/jpa/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/ajax/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/json/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/jsp/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/servlet/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E8%B0%83%E8%AF%95/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/kubectl/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/kubesphere/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/storageclass/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/pm2/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/wireshark/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/sealos/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/operator/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/debian/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/kolla/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/kubeadm/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/krew/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/ldap/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/libvirt/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/virsh/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/windows/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/ftp/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/pyenv/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/sublime/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/typora/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/wechat-format/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/matlab/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/kaggle/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/exports/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/request/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/nohup/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/screen/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/anaconda/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/wordpress/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/iperf/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/xdebug/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/memcache/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/postgresql/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/promql/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/nginx/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E7%9B%91%E6%8E%A7/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/k8s/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/helm/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E6%BA%90%E7%A0%81/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/golang/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/macos/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/vscode/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E7%BC%96%E8%BE%91%E5%99%A8/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/docker/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/oracle/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/linux/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/ubuntu/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/apache/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/css/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E5%89%8D%E7%AB%AF/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/gpu/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/ack/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E7%9F%A5%E8%AF%86%E5%B7%A5%E7%A8%8B/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/aiops/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/node/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E6%94%AF%E4%BB%98%E5%AE%9D/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/rsa/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/alpine/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/busybox/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/conda/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E8%BD%AC%E8%BD%BD/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/android/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/git/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/angularjs/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/openstack/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/ansible/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/ssh/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/sshpass/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/tomcat/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/hbuilder/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/ios/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/argocd/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/cicd/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/devops/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/javascript/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/jquery/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/axure/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E8%89%BE%E4%BD%B3%E7%94%9F%E6%B4%BB/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/shell/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/pxe/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/hexo/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/beego/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/debug/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/java/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/eclipse/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/maven/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E7%BD%91%E7%AB%99/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E5%9F%9F%E5%90%8D/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/freemarker/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/php/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/centos/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/yum%E6%BA%90/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/jira/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/wiki/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/dns/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E7%BD%91%E7%BB%9C/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/jupyter/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/mysql/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/phpmyadmin/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/supervisor/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/pip/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/elk/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/gitlab/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/https/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E5%8A%A0%E5%AF%86/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/tls/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/ssl/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/chatgpt/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/chrome/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E6%8F%92%E4%BB%B6/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/cka/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/ckad/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/clickhouse/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/cookie/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/localstorage/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/sessionstorage/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/sprite/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/staruml/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/uwsgi/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/pycharm/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/dokcer/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/docker-compose/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/dockerfile/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E5%AD%98%E5%82%A8/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/crontab/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/cloudnative/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/jdk/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/dolphinscheduler/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/spark/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/grafana/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/harbor/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/swarm/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/zookeeper/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/dubbo/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/tensorflow/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/etcd/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/firewall/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/iptables/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/markdown/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E4%BB%A3%E7%90%86/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/ganglia/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/mathjax/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/gitignore/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E6%B5%8B%E8%AF%95/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/oom/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/virtualbox/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/client-go/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/godep/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/govendor/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/idea/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E6%AF%95%E8%AE%BE/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/opencv/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/socketio/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E5%BE%AE%E4%BF%A1/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/hadoop/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/hive/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E9%94%99%E8%AF%AF%E6%8E%92%E6%9F%A5/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/bitnami/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/nvm/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E5%8D%9A%E5%AE%A2/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/travis-ci/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/github-actions/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/gulp/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/hibernate/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/html/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/spring/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/springmvc/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/mybatis/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/ingress/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/mongodb/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/nfs/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/ipvs/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/jdbc/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/jpa/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/ajax/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/json/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/jsp/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/servlet/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/jumpserver/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E8%B0%83%E8%AF%95/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/kubectl/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/kubesphere/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/storageclass/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/pm2/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/wireshark/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/sealos/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/operator/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/debian/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/kolla/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/kubeadm/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/krew/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/ldap/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/libvirt/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/virsh/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/windows/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/ftp/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/pyenv/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/sublime/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/typora/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/wechat-format/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/matlab/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/kaggle/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/exports/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/request/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/nohup/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/screen/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/anaconda/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/wordpress/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/iperf/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/xdebug/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/memcache/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/postgresql/</loc>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/pssh/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E7%88%AC%E8%99%AB/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/pypi/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/redis/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E7%BC%93%E5%AD%98/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/sass/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/seajs/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/vim/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/thinkphp/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/struts2/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/sqlserver/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/tensorboard/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/termux/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/pathinfo/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/session/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E8%B7%A8%E5%9F%9F/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/zabbix/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/devstack/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/xshell/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/xftp/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/js/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E6%A1%86%E6%9E%B6/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/puer/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/composer/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/medoo/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E5%B0%8F%E7%A8%8B%E5%BA%8F/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E5%AE%89%E5%85%A8/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E9%BB%91%E5%AE%A2/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/wsl2/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/gym/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/rflearning/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/tshark/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/tcpdump/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/word/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/xmpp/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/yii/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E9%AA%8C%E8%AF%81%E7%A0%81/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E7%AE%97%E6%B3%95/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E7%AC%94%E8%AE%B0/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E9%9A%8F%E7%AC%94/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E6%80%9D%E8%80%83/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E4%B8%8B%E8%BD%BD/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/ps/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/wifi/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/keepalived/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/haproxy/</loc>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/leetcode/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/numpy/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/pandas/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/matplotlib/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E5%BD%A2%E5%BC%8F%E8%AF%AD%E4%B9%89%E5%AD%A6/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/lisp/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/scheme/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
@@ -9001,203 +9256,210 @@
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/categories/engineering/devops/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/categories/engineering/python/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/categories/engineering/golang/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/categories/engineering/hexo/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/categories/essay/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/k8s/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://www.voidking.com/categories/engineering/database/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <loc>https://www.voidking.com/categories/engineering/python/</loc>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://www.voidking.com/categories/engineering/frontend/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <loc>https://www.voidking.com/categories/engineering/devops/</loc>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://www.voidking.com/categories/engineering/algorithm/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/categories/engineering/machinelearning/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/categories/engineering/network/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/categories/engineering/nodejs/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/categories/engineering/docker/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/categories/engineering/android/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/categories/engineering/uncategories/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/categories/engineering/cloudnative/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/categories/engineering/shell/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/categories/engineering/bigdata/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/categories/engineering/java/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/categories/engineering/php/</loc>
-    <lastmod>2023-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/categories/engineering/troubleshooting/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <loc>https://www.voidking.com/categories/engineering/golang/</loc>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/monitoring/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/categories/essay/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/categories/engineering/database/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/categories/engineering/frontend/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/categories/engineering/docker/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/categories/engineering/algorithm/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/categories/engineering/machinelearning/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/categories/engineering/cloudnative/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/categories/engineering/nodejs/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/categories/engineering/network/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/categories/engineering/android/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/categories/engineering/uncategories/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/categories/engineering/shell/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/categories/engineering/hexo/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/categories/engineering/bigdata/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/categories/engineering/java/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/categories/engineering/php/</loc>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/categories/engineering/troubleshooting/</loc>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/architecture/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/storage/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/categories/engineering/spark/</loc>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/git/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/testing/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/openstack/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/computer/</loc>
-    <lastmod>2023-09-08</lastmod>
+    <lastmod>2023-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
