@@ -4,9 +4,9 @@
   <url>  
     <loc>https://www.voidking.com/tags/index.html</loc>  
       
-    <lastmod>2024-02-29T03:57:59.110Z</lastmod>  
+    <lastmod>2024-03-10T01:24:37.650Z</lastmod>  
       
-    <date>1709179079110</date>  
+    <date>1710033877650</date>  
     <title>tags | 好好学习的郝</title>  
       
     <desc></desc>  
@@ -15,7 +15,7 @@
   <url>  
     <loc>https://www.voidking.com/categories/index.html</loc>  
       
-    <lastmod>2024-02-29T03:57:59.082Z</lastmod>  
+    <lastmod>2024-03-10T01:24:37.630Z</lastmod>  
       
     <date>1528712001000</date>  
     <title>文章分类 | 好好学习的郝</title>  
@@ -24,25 +24,80 @@
   </url> 
   
   <url>  
-    <loc>https://www.voidking.com/dev-docker-adguardhome/</loc>  
+    <loc>https://www.voidking.com/hobby-macos-settings/</loc>  
       
-    <lastmod>2024-02-24T08:00:00.000Z</lastmod>  
+    <lastmod>2024-03-02T08:00:00.000Z</lastmod>  
       
-    <date>1708070400000</date>  
-    <title>使用Docker安装配置AdGuard Home | 好好学习的郝</title>  
+    <date>1586336400000</date>  
+    <title>MacOS上软件配置 | 好好学习的郝</title>  
       
-    <desc>Adguard Home简介 Adguard Home: Free and open source, powerful network-wide ads amp; trackers blocking DNS server. AdGuard Home 是一款免费开源的用于拦截广告和跟踪的DNS服务器，是 AdGuard DNS 的开源版本。 参考文档： AdGuard Home 主页 GitHub</desc>  
+    <desc>MacOS软件推荐 Chrome，浏览器 iterm2，shell终端 tabby，shell终端，支持macos、windows和linux sublime，编辑器 wps，文档表格编辑器 百度云盘，云盘 Skim，pdf阅读器 CHM Viewer Star，chm阅读器 draw.io/diagrams，软件工程绘图软件。小技巧：飞书云文档绘图和本地绘图可以相互复制粘贴。 youtube-d</desc>  
   </url> 
   
   <url>  
     <loc>https://www.voidking.com/dev-kubectl-kustomize/</loc>  
       
-    <lastmod>2024-02-24T08:00:00.000Z</lastmod>  
+    <lastmod>2024-03-02T08:00:00.000Z</lastmod>  
       
     <date>1568552400000</date>  
-    <title>Kustomize工具 | 好好学习的郝</title>  
+    <title>好好学K8S：Kustomize工具 | 好好学习的郝</title>  
       
     <desc>Kustomize简介Kustomize是一个独立的工具，用来通过kustomization文件定制Kubernetes对象。从 1.14 版本开始，kubectl 也开始支持使用 kustomization 文件来管理 Kubernetes 对象。要查看包含 kustomization 文件的目录中的资源，执行下面的命令： 1kubectl kustomize lt;kustomization</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-linux-rsync/</loc>  
+      
+    <lastmod>2024-03-02T08:00:00.000Z</lastmod>  
+      
+    <date>1496415600000</date>  
+    <title>好好学Linux：rsync命令 | 好好学习的郝</title>  
+      
+    <desc>rsync命令简介 rsync is an open source utility that provides fast incremental file transfer. rsync is freely available under the GNU General Public License and is currently being maintained by Wayne Daviso</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-docker-adguardhome/</loc>  
+      
+    <lastmod>2024-02-24T08:00:00.000Z</lastmod>  
+      
+    <date>1708070400000</date>  
+    <title>好好学Docker：使用Docker安装配置AdGuard Home | 好好学习的郝</title>  
+      
+    <desc>Adguard Home简介 Adguard Home: Free and open source, powerful network-wide ads amp; trackers blocking DNS server. AdGuard Home 是一款免费开源的用于拦截广告和跟踪的DNS服务器，是 AdGuard DNS 的开源版本。 参考文档： AdGuard Home 主页 GitHub</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-git-commit-message/</loc>  
+      
+    <lastmod>2024-02-24T08:00:00.000Z</lastmod>  
+      
+    <date>1596139200000</date>  
+    <title>好好学Git：更好的Git提交信息 | 好好学习的郝</title>  
+      
+    <desc>还可以更好使用git很多年，也提交了很多代码，自以为使用习惯良好。因为每次提交代码，我都会在Git提交信息（git commit message）中说明清楚修改的内容。但是，偶然间读到一些关于commit message的文章，才发现还有很多进步的空间。 本文就来学习一下编写更高质量的提交信息，主要参考： Commit message 和 Change log 编写指南 优雅的提交你的 Git C</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-k8s-etcd-backup-restore/</loc>  
+      
+    <lastmod>2024-02-24T08:00:00.000Z</lastmod>  
+      
+    <date>1583704800000</date>  
+    <title>好好学K8S：K8S集群中etcd备份和恢复 | 好好学习的郝</title>  
+      
+    <desc>前言就像备份数据库一样，很多时候，我们也想对k8s资源配置进行备份。 1kubectl get all --all-namespaces -o yaml gt; all-deploy-services.yaml 上面的方法，可以实现对k8s资源配置的备份。但是更好的办法，是对etcd进行备份。本文就学习一下k8s中etcd的备份和恢复方法。</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-docker-mysql/</loc>  
+      
+    <lastmod>2024-02-24T08:00:00.000Z</lastmod>  
+      
+    <date>1577534400000</date>  
+    <title>好好学MySQL：使用Docker安装配置MySQL | 好好学习的郝</title>  
+      
+    <desc>前言本文中，我们学习使用Docker安装配置MySQL的方法。 相关文档： 《Docker入门篇》 《CentOS7设置mysql开机自启动》 《CentOS安装多版本MySQL》 Server System Variables Docker安装最新版MySQL8（mysql-8.0.31）教程 MySQL Product Archives MySQL8.0 清华镜像站</desc>  
   </url> 
   
   <url>  
@@ -51,20 +106,9 @@
     <lastmod>2024-02-24T08:00:00.000Z</lastmod>  
       
     <date>1504610697000</date>  
-    <title>MySQL常用命令 | 好好学习的郝</title>  
+    <title>好好学MySQL：MySQL常用命令 | 好好学习的郝</title>  
       
     <desc>前言mysql是郝同学使用最多的数据库，但是每次要手敲命令，还是得谷歌百度。好记性不如烂笔头，本文对常用mysql命令进行一些整理，方便再次拾起。</desc>  
-  </url> 
-  
-  <url>  
-    <loc>https://www.voidking.com/hobby-macos-settings/</loc>  
-      
-    <lastmod>2024-02-17T08:00:00.000Z</lastmod>  
-      
-    <date>1586336400000</date>  
-    <title>MacOS上软件配置 | 好好学习的郝</title>  
-      
-    <desc>MacOS软件推荐 Chrome，浏览器 iterm2，shell终端 tabby，shell终端，支持macos、windows和linux sublime，编辑器 wps，文档表格编辑器 百度云盘，云盘 Skim，pdf阅读器 CHM Viewer Star，chm阅读器 draw.io/diagrams，软件工程绘图软件。小技巧：飞书云文档绘图和本地绘图可以相互复制粘贴。 youtube-d</desc>  
   </url> 
   
   <url>  
@@ -112,36 +156,14 @@
   </url> 
   
   <url>  
-    <loc>https://www.voidking.com/dev-rsync-command/</loc>  
-      
-    <lastmod>2024-02-16T08:00:00.000Z</lastmod>  
-      
-    <date>1496415600000</date>  
-    <title>rsync命令的安装使用 | 好好学习的郝</title>  
-      
-    <desc>rsync命令简介 rsync is an open source utility that provides fast incremental file transfer. rsync is freely available under the GNU General Public License and is currently being maintained by Wayne Daviso</desc>  
-  </url> 
-  
-  <url>  
-    <loc>https://www.voidking.com/dev-shell-file/</loc>  
+    <loc>https://www.voidking.com/dev-linux-file/</loc>  
       
     <lastmod>2024-02-16T08:00:00.000Z</lastmod>  
       
     <date>1496390400000</date>  
-    <title>shell命令之文件管理 | 好好学习的郝</title>  
+    <title>好好学Linux：文件管理常用命令 | 好好学习的郝</title>  
       
     <desc>前言本文记录Linux中常用的文件管理命令，主要包括： cp：拷贝文件 mv：移动文件 rm：删除文件 tar：解压与压缩文件 zip：解压与压缩文件 unar：解压文件 split：拆分文件</desc>  
-  </url> 
-  
-  <url>  
-    <loc>https://www.voidking.com/dev-docker-mysql/</loc>  
-      
-    <lastmod>2024-02-03T08:00:00.000Z</lastmod>  
-      
-    <date>1577534400000</date>  
-    <title>使用Docker安装配置MySQL | 好好学习的郝</title>  
-      
-    <desc>前言本文中，我们学习使用Docker安装配置MySQL的方法。 相关文档： 《Docker入门篇》 《CentOS7设置mysql开机自启动》 《CentOS安装多版本MySQL》 Server System Variables Docker安装最新版MySQL8（mysql-8.0.31）教程 MySQL Product Archives MySQL8.0 清华镜像站</desc>  
   </url> 
   
   <url>  
@@ -150,7 +172,7 @@
     <lastmod>2024-01-27T08:00:00.000Z</lastmod>  
       
     <date>1706342400000</date>  
-    <title>K8S中的Request和Limit | 好好学习的郝</title>  
+    <title>好好学K8S：K8S中的Request和Limit | 好好学习的郝</title>  
       
     <desc>Pod和容器的资源设置当我们定义 Pod 时，可以选择性地为每个容器设定所需要的资源数量。最常见的可设定资源是 CPU 和内存（RAM）大小；此外还有其他类型的资源。 当我们为 Pod 中的 Container 指定了资源 request（请求） 时， kube-scheduler 就利用该信息决定将 Pod 调度到哪个节点上。当我们为 Container 指定了资源 limit（限制） 时，ku</desc>  
   </url> 
@@ -178,34 +200,23 @@
   </url> 
   
   <url>  
-    <loc>https://www.voidking.com/dev-shell-troubleshooting/</loc>  
+    <loc>https://www.voidking.com/dev-linux-troubleshooting/</loc>  
       
     <lastmod>2024-01-27T08:00:00.000Z</lastmod>  
       
     <date>1496390400000</date>  
-    <title>shell命令之问题排查 | 好好学习的郝</title>  
+    <title>好好学Linux：问题排查常用命令 | 好好学习的郝</title>  
       
     <desc>前言本文记录linux中排查问题时常用的shell命令，备忘。相关文档：《shell命令之系统管理》</desc>  
   </url> 
   
   <url>  
-    <loc>https://www.voidking.com/dev-git-commit-message/</loc>  
-      
-    <lastmod>2024-01-20T08:00:00.000Z</lastmod>  
-      
-    <date>1596139200000</date>  
-    <title>更好的 git commit message | 好好学习的郝</title>  
-      
-    <desc>还可以更好使用git很多年，也提交了很多代码，自以为使用习惯良好。因为每次提交代码，我都会在git commit message中说明清楚修改的内容。但是，偶然间读到一些关于commit message的文章，才发现还有很多进步的空间。 本文就来学习一下编写更高质量的提交信息，主要参考： Commit message 和 Change log 编写指南 优雅的提交你的 Git Commit Mes</desc>  
-  </url> 
-  
-  <url>  
-    <loc>https://www.voidking.com/dev-shell-curl/</loc>  
+    <loc>https://www.voidking.com/dev-linux-curl/</loc>  
       
     <lastmod>2024-01-20T08:00:00.000Z</lastmod>  
       
     <date>1496476800000</date>  
-    <title>shell命令之curl | 好好学习的郝</title>  
+    <title>好好学Linux：curl命令 | 好好学习的郝</title>  
       
     <desc>curl简介curl命令始于1998年，是一个命令行工具和库，用于通过 URL 传输数据。curl几乎支持所有协议类型的数据传输，HTTP、HTTPS、FTP、SFTP、SMB、TELNET等等等等。对于开发者而言，curl最常见的用途是代替浏览器或者postman等接口测试工具，用来请求接口并获取数据。 更多内容参考curl官网。</desc>  
   </url> 
@@ -215,19 +226,30 @@
       
     <lastmod>2024-01-20T08:00:00.000Z</lastmod>  
       
+    <date>1437472800000</date>  
+    <title>好好学Git：Git常用命令 | 好好学习的郝</title>  
+      
+    <desc>前言本文记录一下常用的Git命令，方便以后查阅。 参考文档： Git - Documentation 阮一峰 Git 教程 常用 Git 命令清单 Git远程操作详解</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-git-install-config/</loc>  
+      
+    <lastmod>2024-01-20T08:00:00.000Z</lastmod>  
+      
     <date>1437469200000</date>  
-    <title>Git实用命令 | 好好学习的郝</title>  
+    <title>好好学Git：Git安装与配置 | 好好学习的郝</title>  
       
     <desc>Git简介 Git is a free and open source distributed version control system designed to handle everything from small to very large projects with speed and efficiency. Git是一个免费的开源分布式版本控制系统，旨在快速高效地管理项目的所有文件。</desc>  
   </url> 
   
   <url>  
-    <loc>https://www.voidking.com/dev-shell-restrict/</loc>  
+    <loc>https://www.voidking.com/dev-linux-limit-user-command/</loc>  
       
     <lastmod>2024-01-13T08:00:00.000Z</lastmod>  
       
     <date>1705132800000</date>  
-    <title>shell命令之限制用户命令 | 好好学习的郝</title>  
+    <title>好好学Linux：限制用户命令 | 好好学习的郝</title>  
       
     <desc>前言在Linux系统中，为了增强安全性，避免不适当的使用，有时需要限制特定用户或用户组的命令行访问。 常用的限制方法包括 profile限制、authorized_keys限制、rbash限制，本文我们就来学习一下这些方法。 参考文档： linux 限制用户命令方法 受限的 bash – rbash rbash逃逸大全 ghantoos/lshell 《shell命令之sudo》</desc>  
   </url> 
@@ -282,7 +304,7 @@
     <lastmod>2024-01-06T08:00:00.000Z</lastmod>  
       
     <date>1507649400000</date>  
-    <title>使用Docker安装配置PyPI Server | 好好学习的郝</title>  
+    <title>好好学Python：使用Docker安装配置PyPI Server | 好好学习的郝</title>  
       
     <desc>PyPI Server简介PyPI Server是一个Python包索引（Python Package Index）的服务器实现，可以用来搭建自己的Python包管理中心。这样，我们就可以上传并分发我们自己的Python包，或者为我们的团队、组织内部提供一个单独、私有、远程的Python包服务器。 本文中，我们使用Docker安装配置一个基于 devpi 的PyPI Server。至于Python</desc>  
   </url> 
@@ -293,7 +315,7 @@
     <lastmod>2024-01-06T08:00:00.000Z</lastmod>  
       
     <date>1507649400000</date>  
-    <title>Python软件仓库PyPI | 好好学习的郝</title>  
+    <title>好好学Python：Python软件仓库PyPI | 好好学习的郝</title>  
       
     <desc>PyPI简介 The Python Package Index, abbreviated as PyPI (/ˌpaɪpiˈaɪ/) and also known as the Cheese Shop, is the official third-party software repository for Python. PyPI是Python软件仓库，我们执行pip install时就是从PyP</desc>  
   </url> 
@@ -304,18 +326,18 @@
     <lastmod>2024-01-06T08:00:00.000Z</lastmod>  
       
     <date>1504526400000</date>  
-    <title>Nginx入门篇 | 好好学习的郝</title>  
+    <title>好好学Nginx：Nginx入门篇 | 好好学习的郝</title>  
       
     <desc>Nginx是什么？Nginx (engine x) 是一个高性能的HTTP静态页面服务器，更是一个常用的反向代理服务器，同时还可以作为IMAP/POP3/SMTP代理服务器。 经常使用Nginx服务器，进行一些简单配置，但只是从网上照抄，知其然不知其所以然。本文，我们主要学习一下nginx的目录结构和基础规则，补一补nginx基础。</desc>  
   </url> 
   
   <url>  
-    <loc>https://www.voidking.com/dev-shell-ssh/</loc>  
+    <loc>https://www.voidking.com/dev-linux-ssh/</loc>  
       
     <lastmod>2024-01-06T08:00:00.000Z</lastmod>  
       
     <date>1496390400000</date>  
-    <title>shell命令之ssh | 好好学习的郝</title>  
+    <title>好好学Linux：ssh命令 | 好好学习的郝</title>  
       
     <desc>ssh简介 SSH (Secure Shell) 是一个为远程登录会话和其他网络服务提供安全性的协议。通过一个安全通道，用户可以在未加密的网络中为网络服务提供强大的身份验证和安全加密，让用户可以安全地在不安全的网络环境中执行远程命令，并将本地和远程主机之间的数据进行安全传输。 SSH协议的实现包括服务端和客户端。 SSH 服务端提供远程登录和文件传输等功能，可以被其他用户或系统通过 SSH 协议连</desc>  
   </url> 
@@ -326,7 +348,7 @@
     <lastmod>2024-01-01T08:00:00.000Z</lastmod>  
       
     <date>1636315200000</date>  
-    <title>Python包管理工具pip | 好好学习的郝</title>  
+    <title>好好学Python：Python包管理工具pip | 好好学习的郝</title>  
       
     <desc>pip简介 Pip is a package-management system written in Python and is used to install and manage software packages. The Python Software Foundation recommends using pip for installing Python applications a</desc>  
   </url> 
@@ -348,7 +370,7 @@
     <lastmod>2024-01-01T08:00:00.000Z</lastmod>  
       
     <date>1484254852000</date>  
-    <title>Python模块和模块路径 | 好好学习的郝</title>  
+    <title>好好学Python：Python模块和模块路径 | 好好学习的郝</title>  
       
     <desc>什么是Python模块？Python中，每一个 .py 文件都是一个模块。包含 .py 文件的目录叫做包。 Python 模块(Module)，是一个 Python 文件，以 .py 结尾，包含了 Python 对象定义和Python语句。 模块让我们能够有逻辑地组织我们的 Python 代码段。把相关的代码分配到一个模块里能让我们的代码更好用，更易懂。 模块能定义函数，类和变量，模块里也能包含可</desc>  
   </url> 
@@ -381,7 +403,7 @@
     <lastmod>2023-12-23T08:00:00.000Z</lastmod>  
       
     <date>1703318400000</date>  
-    <title>Python单元测试框架之pytest | 好好学习的郝</title>  
+    <title>好好学Python：Python单元测试框架之pytest | 好好学习的郝</title>  
       
     <desc>pytest简介 The pytest framework makes it easy to write small, readable tests, and can scale to support complex functional testing for applications and libraries. pytest是一种卓越的Python测试框架，它提供了简单、高效的方式来编写可以</desc>  
   </url> 
@@ -392,7 +414,7 @@
     <lastmod>2023-12-23T08:00:00.000Z</lastmod>  
       
     <date>1668528000000</date>  
-    <title>Docker问题记录 | 好好学习的郝</title>  
+    <title>好好学Docker：Docker问题记录 | 好好学习的郝</title>  
       
     <desc>前言本文记录使用Docker过程中遇到的问题和解决办法。</desc>  
   </url> 
@@ -403,7 +425,7 @@
     <lastmod>2023-12-16T08:00:00.000Z</lastmod>  
       
     <date>1702713600000</date>  
-    <title>Git LFS | 好好学习的郝</title>  
+    <title>好好学Git：Git LFS | 好好学习的郝</title>  
       
     <desc>Git LFS 简介 Git LFS: An open source Git extension for versioning large filesGit Large File Storage (LFS) replaces large files such as audio samples, videos, datasets, and graphics with text pointers in</desc>  
   </url> 
@@ -414,7 +436,7 @@
     <lastmod>2023-12-16T08:00:00.000Z</lastmod>  
       
     <date>1702713600000</date>  
-    <title>git pre-commit 代码质量检查 | 好好学习的郝</title>  
+    <title>好好学Git：Git pre-commit 代码质量检查 | 好好学习的郝</title>  
       
     <desc>pre-commit 简介Git 提供了一种称为钩子（hook）的特性，帮助我们在关键时刻自动执行自定义脚本。其中，名为 pre-commit 的钩子会在每次 commit 之前运行，能够作为保障代码质量的工具。</desc>  
   </url> 
@@ -425,7 +447,7 @@
     <lastmod>2023-12-16T08:00:00.000Z</lastmod>  
       
     <date>1702108800000</date>  
-    <title>使用Docker安装配置青龙面板 | 好好学习的郝</title>  
+    <title>好好学Docker：使用Docker安装配置青龙面板 | 好好学习的郝</title>  
       
     <desc>青龙面板简介 青龙面板是一个支持 Python3、JavaScript、Shell、Typescript 的定时任务管理平台 Linux自带的crontab可以配置定时任务，但是并不方便。而使用青龙面板，能够可视化配置定时任务，简单快捷。本文中，我们学习一下青龙面板的安装配置，试一试签到薅羊毛。 参考文档： 《Linux设置定时任务》 github - whyour/qinglong 利用拾光坞开</desc>  
   </url> 
@@ -436,7 +458,7 @@
     <lastmod>2023-12-16T08:00:00.000Z</lastmod>  
       
     <date>1691222400000</date>  
-    <title>Python调用OpenAI API | 好好学习的郝</title>  
+    <title>好好学Python：Python调用OpenAI API | 好好学习的郝</title>  
       
     <desc>前言本文学习使用Python调用OpenAI API的方法，基于openai python库 openai==0.27.8注意：openai python库版本更新很快，本文并不适用更高版本openai python库。 参考文档： OpenAI - Introduction OpenAI - Python library github - openai/openai-python 《使用Dock</desc>  
   </url> 
@@ -447,7 +469,7 @@
     <lastmod>2023-12-16T08:00:00.000Z</lastmod>  
       
     <date>1689494400000</date>  
-    <title>使用Docker安装配置OPANAI API代理 | 好好学习的郝</title>  
+    <title>好好学Docker：使用Docker安装配置OPANAI API代理 | 好好学习的郝</title>  
       
     <desc>前言OPENAI API代理，顾名思义，是一种用于代理OPENAI API的专用代理。目前OPENAI API代理中，做的比较好的是 openai-forward。本文中，我们基于Docker安装配置一下openai-forward。 参考文档： github - KenyonY/openai-forward 《Python调用OpenAI API》</desc>  
   </url> 
@@ -480,7 +502,7 @@
     <lastmod>2023-12-16T08:00:00.000Z</lastmod>  
       
     <date>1568563200000</date>  
-    <title>K8S问题记录 | 好好学习的郝</title>  
+    <title>好好学K8S：K8S问题记录 | 好好学习的郝</title>  
       
     <desc>前言本文记录使用K8S过程中遇到的问题、解决办法和一些原理。问题排查方法参考《kubectl命令——故障排查篇》。</desc>  
   </url> 
@@ -502,7 +524,7 @@
     <lastmod>2023-12-16T08:00:00.000Z</lastmod>  
       
     <date>1437480000000</date>  
-    <title>git branch | 好好学习的郝</title>  
+    <title>好好学Git：Git分支 | 好好学习的郝</title>  
       
     <desc>前言Branches in Git are incredibly lightweight as well. They are simply pointers to a specific commit – nothing more. This is why many Git enthusiasts chant the mantra: branch early, and branch often. B</desc>  
   </url> 
@@ -513,7 +535,7 @@
     <lastmod>2023-12-09T08:00:00.000Z</lastmod>  
       
     <date>1610571600000</date>  
-    <title>Shell和Python互相调用 | 好好学习的郝</title>  
+    <title>好好学Shell：Shell和Python互相调用 | 好好学习的郝</title>  
       
     <desc>前言在linux上，最常用的编程语言是shell，其次是python。而这两种语言，很多时候需要配合使用。本文就研究一下这两种语言互相调用的方法。 参考文档： 《Shell脚本编程》 《Python基础》</desc>  
   </url> 
@@ -535,7 +557,7 @@
     <lastmod>2023-12-09T08:00:00.000Z</lastmod>  
       
     <date>1496318400000</date>  
-    <title>Shell脚本编程——下 | 好好学习的郝</title>  
+    <title>好好学Shell：Shell脚本编程入门篇（下） | 好好学习的郝</title>  
       
     <desc>运算符算术运算符1234567891011121314151617181920212223#!/bin/sha=10b=20echo quot;a=$a, b=$bquot;val=`expr $a + $b`echo quot;a + b : $valquot;val=`expr $a - $b`echo quot;a - b : $valquot;val=`expr $a \* $</desc>  
   </url> 
@@ -557,7 +579,7 @@
     <lastmod>2023-12-02T08:00:00.000Z</lastmod>  
       
     <date>1494252000000</date>  
-    <title>Docker入门篇 | 好好学习的郝</title>  
+    <title>好好学Docker：Docker入门篇 | 好好学习的郝</title>  
       
     <desc>容器简介奔驰车生产好之后，经过集装箱封装，从纽约运送到了上海，开箱后奔驰车可以跑在上海的大街上。软件在环境A开发好之后，经过集装箱封装，从环境A运送到了环境B，开箱后软件可以跑在环境B。这种软件集装箱技术，就是容器技术，英文叫做 Linux Container。 容器技术的主要优点是轻量虚拟化（良好的隔离性、高资源利用率）、快捷和可移植性。 起初，容器技术做的最好的就是Docker，Docker也</desc>  
   </url> 
@@ -579,7 +601,7 @@
     <lastmod>2023-11-25T08:00:00.000Z</lastmod>  
       
     <date>1527066000000</date>  
-    <title>Linux设置定时任务 | 好好学习的郝</title>  
+    <title>好好学Linux：Linux设置定时任务 | 好好学习的郝</title>  
       
     <desc>前言很多时候，我们需要定时执行一些任务，或者需要定时执行一些批量任务。本文我们来学习一下linux设置定时任务的方法。 参考文档： Linux Crontab 定时任务 Linux定时任务Crontab命令详解 Linux 定时任务详解 Linux 定时任务调度(crontab)，太实用了！</desc>  
   </url> 
@@ -601,7 +623,7 @@
     <lastmod>2023-11-18T08:00:00.000Z</lastmod>  
       
     <date>1636315200000</date>  
-    <title>Python小技巧 | 好好学习的郝</title>  
+    <title>好好学Python：Python小技巧 | 好好学习的郝</title>  
       
     <desc>查找文件在指定目录中，根据文件前缀查找文件。 12345678import globdef find_files_by_prefix(prefix, dir_path): file_list = list() file_pattern = os.path.join(dir_path, #x27;#123;#125;*#x27;.format(prefix)) for f in glob.g</desc>  
   </url> 
@@ -645,20 +667,20 @@
     <lastmod>2023-11-11T08:00:00.000Z</lastmod>  
       
     <date>1496390400000</date>  
-    <title>Linux服务配置开机自启动 | 好好学习的郝</title>  
+    <title>好好学Linux：Linux服务配置开机自启动 | 好好学习的郝</title>  
       
     <desc>服务开机自启动概述在Linux系统使用过程中，我们经常会遇到需要设置某些服务或程序在系统启动时自动启动的情况。例如，我们可能希望web服务、数据库服务或者自定义脚本在服务器启动后自动运行。在Linux中，我们可以使用不同的方法来实现这一点。 常见的方法包括： 使用systemd 使用SysVinit 使用supervisor 参考文档： 《shell命令之systemctl》</desc>  
   </url> 
   
   <url>  
-    <loc>https://www.voidking.com/dev-shell-system/</loc>  
+    <loc>https://www.voidking.com/dev-linux-system-management/</loc>  
       
     <lastmod>2023-11-11T08:00:00.000Z</lastmod>  
       
     <date>1496390400000</date>  
-    <title>shell命令之系统管理 | 好好学习的郝</title>  
+    <title>好好学Linux：系统管理常用命令 | 好好学习的郝</title>  
       
-    <desc>前言本文记录linux中系统管理时常用的shell命令，备忘。</desc>  
+    <desc>前言本文记录linux中系统管理时常用的命令，备忘。</desc>  
   </url> 
   
   <url>  
@@ -678,7 +700,7 @@
     <lastmod>2023-11-04T08:00:00.000Z</lastmod>  
       
     <date>1491141600000</date>  
-    <title>MySQL问题记录 | 好好学习的郝</title>  
+    <title>好好学MySQL：MySQL问题记录 | 好好学习的郝</title>  
       
     <desc>前言本文记录使用MySQL过程中遇到的一些问题，备忘。</desc>  
   </url> 
@@ -689,7 +711,7 @@
     <lastmod>2023-10-29T08:00:00.000Z</lastmod>  
       
     <date>1666641600000</date>  
-    <title>kubectl 插件管理器 krew 安装使用说明 | 好好学习的郝</title>  
+    <title>好好学K8S：kubectl 插件管理器 krew 安装使用说明 | 好好学习的郝</title>  
       
     <desc>krew简介 Krew itself is a kubectl plugin that is installed and updated via Krew (yes, Krew self-hosts). Krew 本身是一个 kubectl 的插件，同时也是一个 kubectl 的插件包管理器。Krew 帮助我们发现插件，在我们的机器上安装和管理它们。它类似于 apt、dnf 或 brew 等工具</desc>  
   </url> 
@@ -700,7 +722,7 @@
     <lastmod>2023-10-29T08:00:00.000Z</lastmod>  
       
     <date>1665414000000</date>  
-    <title>K8S中安装配置KubeSphere | 好好学习的郝</title>  
+    <title>好好学K8S：K8S中安装配置KubeSphere | 好好学习的郝</title>  
       
     <desc>KubeSphere简介 KubeSphere 愿景是打造一个以 Kubernetes 为内核的云原生分布式操作系统，它的架构可以非常方便地使第三方应用与云原生生态组件进行即插即用（plug-and-play）的集成，支持云原生应用在多云与多集群的统一分发和运维管理。 简单来说，KubeSphere（下文简称ks）就是一个容器管理平台，可以图形化管理多个K8S集群。 相关链接： KubeSpher</desc>  
   </url> 
@@ -722,7 +744,7 @@
     <lastmod>2023-10-29T08:00:00.000Z</lastmod>  
       
     <date>1568750400000</date>  
-    <title>K8S中安装配置StorageClass | 好好学习的郝</title>  
+    <title>好好学K8S：K8S中安装配置StorageClass | 好好学习的郝</title>  
       
     <desc>StorageClass简介StorageClass 为管理员提供了描述存储 “类” 的方法。 不同的类型可能会映射到不同的服务质量等级或备份策略，或是由集群管理员制定的任意策略。 Kubernetes 本身并不清楚各种类代表的什么。这个类的概念在其他存储系统中有时被称为 “配置文件”。 参考文档： K8S官方文档 - 存储 K8S官方文档 - 存储类 《K8S中的Volume》</desc>  
   </url> 
@@ -733,7 +755,7 @@
     <lastmod>2023-10-21T08:00:00.000Z</lastmod>  
       
     <date>1522173600000</date>  
-    <title>CentOS7中安装配置MySQL | 好好学习的郝</title>  
+    <title>好好学MySQL：CentOS7中安装配置MySQL | 好好学习的郝</title>  
       
     <desc>前言CentOS7中安装MySQL，有yum安装和编译安装两种方式，本文学习一下两种安装方法。 参考文档： CentOS 7.0下使用yum安装MySQL 《CentOS安装多版本MySQL》</desc>  
   </url> 
@@ -755,7 +777,7 @@
     <lastmod>2023-10-21T08:00:00.000Z</lastmod>  
       
     <date>1522144800000</date>  
-    <title>CentOS7中安装配置Nginx | 好好学习的郝</title>  
+    <title>好好学Nginx：CentOS7中安装配置Nginx | 好好学习的郝</title>  
       
     <desc>前言本文学习在CentOS7中安装配置Nginx的方法。 参考文档： 如何在CentOS 7上安装Nginx Centos7安装Nginx实战</desc>  
   </url> 
@@ -772,23 +794,23 @@
   </url> 
   
   <url>  
-    <loc>https://www.voidking.com/dev-shell-sudo/</loc>  
+    <loc>https://www.voidking.com/dev-linux-sudo/</loc>  
       
     <lastmod>2023-10-21T08:00:00.000Z</lastmod>  
       
     <date>1496390400000</date>  
-    <title>shell命令之sudo | 好好学习的郝</title>  
+    <title>好好学Linux：sudo命令 | 好好学习的郝</title>  
       
     <desc>sudo简介 在sudo于1980年前后被写出之前，一般用户利用 su 切换用户，管理系统时通常使用此命令切换为超级用户。但是使用su的缺点之一在于必须要先告知目标用户的密码。 sudo使一般用户不需要知道目标用户的密码即可获得权限。首先由超级用户将普通用户的名字、可以执行的特定命令、按照哪种用户或用户组的身份执行等信息，登记在特殊的文件中（通常是/etc/sudoers），即完成对该用户的授权（</desc>  
   </url> 
   
   <url>  
-    <loc>https://www.voidking.com/dev-shell-systemctl/</loc>  
+    <loc>https://www.voidking.com/dev-linux-systemctl/</loc>  
       
     <lastmod>2023-10-21T08:00:00.000Z</lastmod>  
       
     <date>1496390400000</date>  
-    <title>shell命令之systemctl | 好好学习的郝</title>  
+    <title>好好学Linux：systemctl命令 | 好好学习的郝</title>  
       
     <desc>systemctl命令简介 systemd is a software suite that provides an array of system components for Linux operating systems. Its main aim is to unify service configuration and behavior across Linux distribution</desc>  
   </url> 
@@ -799,7 +821,7 @@
     <lastmod>2023-10-21T08:00:00.000Z</lastmod>  
       
     <date>1491638400000</date>  
-    <title>CentOS安装多版本MySQL | 好好学习的郝</title>  
+    <title>好好学MySQL：CentOS安装多版本MySQL | 好好学习的郝</title>  
       
     <desc>前言卓音工作室的服务器中，已经安装了MySQL5.7。但是，confluence和jira不支持MySQL5.7，为了安装这两款软件，必须安装MySQL5.6或更低的版本。 本文中，我们会在已经具备MySQL5.7的机器上，编译安装MySQL5.6，让这两个版本的MySQL同时存在。 参考文档： MySQL之——Centos中安装多个mysql数据库的配置实例 centos6.5 MySQL多实例</desc>  
   </url> 
@@ -854,7 +876,7 @@
     <lastmod>2023-10-14T08:00:00.000Z</lastmod>  
       
     <date>1504526400000</date>  
-    <title>Nginx问题记录 | 好好学习的郝</title>  
+    <title>好好学Nginx：Nginx问题记录 | 好好学习的郝</title>  
       
     <desc>前言本文记录使用Nginx过程中遇到的问题，备忘。 相关文档： 《Nginx入门篇》 《Hexo启用HTTPS加密连接》 《七牛对象存储添加HTTPS代理》</desc>  
   </url> 
@@ -887,7 +909,7 @@
     <lastmod>2023-10-05T08:00:00.000Z</lastmod>  
       
     <date>1606852800000</date>  
-    <title>使用Docker安装配置OpenVPN | 好好学习的郝</title>  
+    <title>好好学Docker：使用Docker安装配置OpenVPN | 好好学习的郝</title>  
       
     <desc>前言 OpenVPN is a virtual private network (VPN) system that implements techniques to create secure point-to-point or site-to-site connections in routed or bridged configurations and remote access facili</desc>  
   </url> 
@@ -909,9 +931,9 @@
     <lastmod>2023-09-23T08:00:00.000Z</lastmod>  
       
     <date>1663074000000</date>  
-    <title>Linux配置网络代理 | 好好学习的郝</title>  
+    <title>好好学Linux：Linux配置网络代理 | 好好学习的郝</title>  
       
-    <desc>网络代理《Linux配置SNAT上网》一文中，我们了解到，通过SNAT的方式能够让局域网中所有主机都能访问外网。而网络代理，也能让局域网中所有主机都能访问外网。并且，如果网络代理支持科学上网，那么所有使用这个代理的主机也可以科学上网。 本文我们就来学习一下Linux中常见的网络代理配置方法，参考文档： linux设置代理上网 docker pull 配置代理 已知网络代理的IP和PORT为：192</desc>  
+    <desc>网络代理《好好学Linux：Linux配置SNAT上网》一文中，我们了解到，通过SNAT的方式能够让局域网中所有主机都能访问外网。而网络代理，也能让局域网中所有主机都能访问外网。并且，如果网络代理支持科学上网，那么所有使用这个代理的主机也可以科学上网。 本文我们就来学习一下Linux中常见的网络代理配置方法，参考文档： linux设置代理上网 docker pull 配置代理 已知网络代理的IP和</desc>  
   </url> 
   
   <url>  
@@ -920,7 +942,7 @@
     <lastmod>2023-09-23T08:00:00.000Z</lastmod>  
       
     <date>1572811200000</date>  
-    <title>Docker-Compose入门篇 | 好好学习的郝</title>  
+    <title>好好学Docker：Docker-Compose入门篇 | 好好学习的郝</title>  
       
     <desc>Docker-Compose简介Docker-Compose（简称Compose）是用于定义和运行多容器Docker应用程序的工具。通过Compose，可以使用YAML文件来配置应用程序的服务。然后使用一个命令，就可以从配置中创建并启动所有服务。 本文中，我们来学习一下Compose的基础用法。 参考文档： Overview of Docker Compose Docker 入门教程 docker</desc>  
   </url> 
@@ -942,7 +964,7 @@
     <lastmod>2023-09-23T08:00:00.000Z</lastmod>  
       
     <date>1496390400000</date>  
-    <title>Linux启用IPv6 | 好好学习的郝</title>  
+    <title>好好学Linux：Linux启用IPv6 | 好好学习的郝</title>  
       
     <desc>IPv6简介 网际协议第6版（英语：Internet Protocol version 6，缩写：IPv6）是网际协议的最新版本，用作互联网的协议。用它来取代IPv4主要是为了解决IPv4地址枯竭问题，同时它也在其他方面对于IPv4有许多改进。 本文中，我们学习Linux系统开启IPv6的方法。 参考文档：维基百科 - IPv6</desc>  
   </url> 
@@ -964,7 +986,7 @@
     <lastmod>2023-09-16T08:00:00.000Z</lastmod>  
       
     <date>1494255600000</date>  
-    <title>Docker常用命令 | 好好学习的郝</title>  
+    <title>好好学Docker：Docker常用命令 | 好好学习的郝</title>  
       
     <desc>前言本文记录Docker常用命令，备忘。 参考文档： 什么是Docker? docker入门教程 Docker入门实战 中国第一套Docker实战案例视频课程（入门到高级） Docker实战案例源码 Docker实战案例文档</desc>  
   </url> 
@@ -1030,9 +1052,9 @@
     <lastmod>2023-09-02T08:00:00.000Z</lastmod>  
       
     <date>1588669200000</date>  
-    <title>git commit问题详解 | 好好学习的郝</title>  
+    <title>好好学Git：Git提交后变更 | 好好学习的郝</title>  
       
-    <desc>前言本文记录使用 git commit 时遇到的一些问题，备忘。</desc>  
+    <desc>前言执行 git commit 后，我们不能保证这些commit信息是完美的，有时就需要优化变更，比如： 提交的 Git 用户信息配置错误 提交的 message 错误 多次提交的 message 相同 此时就需要用到一些变更 commit 的小技巧了。</desc>  
   </url> 
   
   <url>  
@@ -1041,7 +1063,7 @@
     <lastmod>2023-09-02T08:00:00.000Z</lastmod>  
       
     <date>1582556400000</date>  
-    <title>K8S中的admissionWebhooks | 好好学习的郝</title>  
+    <title>好好学K8S：K8S中的admissionWebhooks | 好好学习的郝</title>  
       
     <desc>什么是admissionWebhooks？admissionWebhooks是Kubernetes的一种高级特性，它允许集群管理员通过Webhook服务来验证和修改提交到Kubernetes API服务器的资源请求。这些资源请求可以包括创建、更新或删除Kubernetes对象，如Pod、Service、Deployment等。 参考文档：</desc>  
   </url> 
@@ -1052,7 +1074,7 @@
     <lastmod>2023-09-02T08:00:00.000Z</lastmod>  
       
     <date>1582556400000</date>  
-    <title>Ingress配置使用宿主机80/443端口 | 好好学习的郝</title>  
+    <title>好好学K8S：Ingress配置使用宿主机80/443端口 | 好好学习的郝</title>  
       
     <desc>前言《K8S中安装使用Ingress》一文中，我们安装配置了Ingress。安装Ingress后，默认的服务端口是NodePort，范围 30000-32767 。因为端口不是80和443，所以我们无法直接把域名解析到节点IP上，上层还需要增加一个LB或者Nginx进行转发。而增加了上层，整个链路就变长了，增加了响应耗时和出现问题的概率。 本文中，我们学习一种Ingress配置方法，能够使Ingr</desc>  
   </url> 
@@ -1063,7 +1085,7 @@
     <lastmod>2023-09-02T08:00:00.000Z</lastmod>  
       
     <date>1582556400000</date>  
-    <title>K8S中安装使用Ingress | 好好学习的郝</title>  
+    <title>好好学K8S：K8S中安装使用Ingress | 好好学习的郝</title>  
       
     <desc>Ingress简介ingress是k8s中的一个七层的负载均衡，可以把流量路由到service。如果没有ingress，我们可以通过外部的nginx、haproxy等也可以实现七层负载均衡，但是配置nginx比较麻烦，因为想要配置nginx的upstream必须先查询service的ip，那如果使用service的name，还要维护一个dns；如果想要换成haproxy，成本也比较高。而有了ing</desc>  
   </url> 
@@ -1074,7 +1096,7 @@
     <lastmod>2023-09-02T08:00:00.000Z</lastmod>  
       
     <date>1577649600000</date>  
-    <title>使用Docker安装配置Nginx | 好好学习的郝</title>  
+    <title>好好学Nginx：使用Docker安装配置Nginx | 好好学习的郝</title>  
       
     <desc>前言《CentOS7设置nginx开机自启动》一文中学习了在CentOS7中安装配置Nginx的方法，本文学习一下使用Docker安装配置Nginx的方法。 前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。</desc>  
   </url> 
@@ -1085,7 +1107,7 @@
     <lastmod>2023-09-02T08:00:00.000Z</lastmod>  
       
     <date>1568552400000</date>  
-    <title>kubectl命令——资源对象增删查改篇 | 好好学习的郝</title>  
+    <title>好好学K8S：kubectl命令——资源对象增删查改篇 | 好好学习的郝</title>  
       
     <desc>K8S资源对象是啥？在 Kubernetes 系统中，Kubernetes 对象 是持久化的实体。 Kubernetes 使用这些实体去表示整个集群的状态，具体包括pod、replicaset、deployment、service、configmap、secret等等。 参考文档： 理解 Kubernetes 对象 Kubernetes 对象管理</desc>  
   </url> 
@@ -1107,7 +1129,7 @@
     <lastmod>2023-09-02T08:00:00.000Z</lastmod>  
       
     <date>1494262800000</date>  
-    <title>Docker镜像压缩技术 | 好好学习的郝</title>  
+    <title>好好学Docker：Docker镜像压缩技术 | 好好学习的郝</title>  
       
     <desc>前言Docker是一种开源的应用容器引擎，允许开发人员将应用程序及其依赖打包到一个可移动的镜像中，并在任何Linux设备运行。然而，随着应用程序和依赖项的增加，Docker镜像的大小可能会迅速增长，这可能会影响到应用的部署速度和运行效率。因此，了解如何压缩Docker镜像成为了一个重要的技术需求。本文将学习几种可行的Docker镜像压缩技术。 具体包括： 多阶段构建(Multi-stage bui</desc>  
   </url> 
@@ -1118,7 +1140,7 @@
     <lastmod>2023-09-02T08:00:00.000Z</lastmod>  
       
     <date>1494262800000</date>  
-    <title>Docker镜像迁移/分享 | 好好学习的郝</title>  
+    <title>好好学Docker：Docker镜像迁移/分享 | 好好学习的郝</title>  
       
     <desc>问题描述在没有外网的情况下，怎样把 docker image 分享给局域网的其他用户？ 解决办法有两个： 1）搭建本地镜像仓库 2）导出导入镜像</desc>  
   </url> 
@@ -1129,7 +1151,7 @@
     <lastmod>2023-09-02T08:00:00.000Z</lastmod>  
       
     <date>1494252000000</date>  
-    <title>Win10安装配置Linux和Docker | 好好学习的郝</title>  
+    <title>好好学Docker：Win10安装配置Linux和Docker | 好好学习的郝</title>  
       
     <desc>Win10安装配置Docker的方法在Win10中安装配置Docker，有四种方法：（1）在Win10上安装Docker Desktop。Docker Desktop 利用了 Windows 10 的 Hyper-V 虚拟化技术，来创建一个轻量级的 Linux 虚拟机（VM），并在其中运行 Docker 引擎和容器。这样，用户就可以在 Windows 上享受到 Linux 上的 Docker 功能</desc>  
   </url> 
@@ -1162,7 +1184,7 @@
     <lastmod>2023-08-26T08:00:00.000Z</lastmod>  
       
     <date>1568563200000</date>  
-    <title>K8S故障排查常用命令 | 好好学习的郝</title>  
+    <title>好好学K8S：K8S故障排查常用命令 | 好好学习的郝</title>  
       
     <desc>前言本文记录K8S故障排查常用命令，备忘。</desc>  
   </url> 
@@ -1173,7 +1195,7 @@
     <lastmod>2023-08-26T08:00:00.000Z</lastmod>  
       
     <date>1568556000000</date>  
-    <title>K8S中的调度 | 好好学习的郝</title>  
+    <title>好好学K8S：K8S中的调度 | 好好学习的郝</title>  
       
     <desc>调度是啥？在 K8S 中，调度 是指将 Pod 放置到合适的节点上，以便对应节点上的 Kubelet 能够运行这些 Pod。调度器通过 K8S 的监测（Watch）机制来发现集群中新创建且尚未被调度到节点上的 Pod，把它调度到一个合适的节点上运行。K8S调度分为两个阶段：过滤和打分。过滤阶段会将所有满足 Pod 调度需求的节点选出来；在打分阶段会为 Pod 从所有可调度节点中选取一个最合适的节点</desc>  
   </url> 
@@ -1195,7 +1217,7 @@
     <lastmod>2023-08-19T08:00:00.000Z</lastmod>  
       
     <date>1568552400000</date>  
-    <title>K8S中的Pod水平自动扩缩 | 好好学习的郝</title>  
+    <title>好好学K8S：K8S中的Pod水平自动扩缩 | 好好学习的郝</title>  
       
     <desc>K8S中的Pod水平自动扩缩简介在容器编排和管理技术中，Kubernetes（K8S）已经成为最为流行和广泛使用的平台之一。Kubernetes不仅可以帮助管理容器化应用程序的部署和扩展，还可以通过自动化的方式来实现资源的动态调整，以满足应用程序的需求。其中，Pod水平的自动扩缩是Kubernetes中一个重要且强大的特性，它可以根据配置的规则和指标自动调整Pod的数量，以便在不同的负载情况下保持</desc>  
   </url> 
@@ -1217,7 +1239,7 @@
     <lastmod>2023-08-12T08:00:00.000Z</lastmod>  
       
     <date>1644760800000</date>  
-    <title>VSCode配置Python Debug | 好好学习的郝</title>  
+    <title>好好学Python：VSCode配置Python Debug | 好好学习的郝</title>  
       
     <desc>前言本文学习在VSCode中配置Python Debug的方法，备忘。</desc>  
   </url> 
@@ -1239,7 +1261,7 @@
     <lastmod>2023-08-12T08:00:00.000Z</lastmod>  
       
     <date>1578945600000</date>  
-    <title>使用Docker安装配置Grafana | 好好学习的郝</title>  
+    <title>好好学Docker：使用Docker安装配置Grafana | 好好学习的郝</title>  
       
     <desc>Grafana简介 Grafana allows you to query, visualize, alert on and understand your metrics no matter where they are stored. 本文中，我们会使用Docker来安装配置grafana（已知主机IP为192.168.56.102），并且显示prometheus中的数据。 参考文档： 《Do</desc>  
   </url> 
@@ -1250,7 +1272,7 @@
     <lastmod>2023-08-12T08:00:00.000Z</lastmod>  
       
     <date>1578945600000</date>  
-    <title>使用Docker安装配置Prometheus | 好好学习的郝</title>  
+    <title>好好学Docker：使用Docker安装配置Prometheus | 好好学习的郝</title>  
       
     <desc>Prometheus简介 Prometheus is an open-source systems monitoring and alerting toolkit originally built at SoundCloud. Since its inception in 2012, many companies and organizations have adopted Prometheus,</desc>  
   </url> 
@@ -1267,14 +1289,14 @@
   </url> 
   
   <url>  
-    <loc>https://www.voidking.com/dev-shell-journalctl/</loc>  
+    <loc>https://www.voidking.com/dev-linux-journalctl/</loc>  
       
     <lastmod>2023-08-12T08:00:00.000Z</lastmod>  
       
     <date>1496390400000</date>  
-    <title>shell命令之journalctl | 好好学习的郝</title>  
+    <title>好好学Linux：journalctl命令 | 好好学习的郝</title>  
       
-    <desc>journalctl命令简介journalctl是systemd套件的一个命令，是一个系统日志管理器，它允许我们在Linux系统上检查和查看系统日志消息。它提供了一种简单而灵活的方式来查看和分析系统日志，包括内核、系统服务和应用程序日志。 参考文档： systemd 《shell命令之systemctl》 Linux系统管理员应该知道的journalctl知识</desc>  
+    <desc>journalctl命令简介journalctl是systemd套件的一个命令，是一个系统日志管理器，它允许我们在Linux系统上检查和查看系统日志消息。它提供了一种简单而灵活的方式来查看和分析系统日志，包括内核、系统服务和应用程序日志。 参考文档： systemd 《好好学Linux：systemctl命令》 Linux系统管理员应该知道的journalctl知识</desc>  
   </url> 
   
   <url>  
@@ -1283,7 +1305,7 @@
     <lastmod>2023-08-05T08:00:00.000Z</lastmod>  
       
     <date>1691222400000</date>  
-    <title>Docker和Makefile结合：简化构建部署流程 | 好好学习的郝</title>  
+    <title>好好学Docker：Docker和Makefile结合简化构建部署流程 | 好好学习的郝</title>  
       
     <desc>前言在现代软件开发中，Docker 已经成为一项极为重要的技术，而 Makefile 则是构建和自动化流程的有力工具。将 Docker 和 Makefile 结合起来，可以显著简化应用程序的构建、测试和部署流程，提高开发效率和可维护性。</desc>  
   </url> 
@@ -1366,12 +1388,12 @@
   </url> 
   
   <url>  
-    <loc>https://www.voidking.com/dev-shell-redirect/</loc>  
+    <loc>https://www.voidking.com/dev-linux-io-redirect/</loc>  
       
     <lastmod>2023-07-01T08:00:00.000Z</lastmod>  
       
     <date>1496390400000</date>  
-    <title>shell命令之重定向 | 好好学习的郝</title>  
+    <title>好好学Linux：输入输出重定向 | 好好学习的郝</title>  
       
     <desc>重定向语法文件描述符 0：标准输入 1：标准输出，默认指向屏幕 2：错误输出，默认指向屏幕 /dev/null： 黑洞 重定向操作符 gt;：将命令的标准输出重定向到指定文件 gt;gt;：将命令的标准输出追加到指定文件的末尾 lt;：将命令的标准输入重定向为指定文件的内容 |：将一个命令的标准输出作为另一个命令的标准输入 amp;gt;：将命令的标准输出和错误输出重定向到指定文件</desc>  
   </url> 
@@ -1382,7 +1404,7 @@
     <lastmod>2023-07-01T08:00:00.000Z</lastmod>  
       
     <date>1494252000000</date>  
-    <title>Win10安装配置Docker Desktop | 好好学习的郝</title>  
+    <title>好好学Docker：Win10安装配置Docker Desktop | 好好学习的郝</title>  
       
     <desc>Docker Desktop简介 Docker Desktop is a one-click-install application for your Mac, Linux, or Windows environment that enables you to build and share containerized applications and microservices. It prov</desc>  
   </url> 
@@ -1393,7 +1415,7 @@
     <lastmod>2023-06-22T08:00:00.000Z</lastmod>  
       
     <date>1686988800000</date>  
-    <title>K8S Dashboard | 好好学习的郝</title>  
+    <title>好好学K8S：K8S Dashboard | 好好学习的郝</title>  
       
     <desc>K8S Dashboard简介K8S Dashboard 是基于网页的 Kubernetes 用户界面。使用 Dashboard 可以将容器应用部署到 Kubernetes 集群中，也可以对容器应用排错，还能管理集群资源。 可以使用 Dashboard 获取运行在集群中的应用的概览信息，也可以创建或者修改 Kubernetes 资源 （如 Deployment，Job，DaemonSet 等等）。</desc>  
   </url> 
@@ -1404,7 +1426,7 @@
     <lastmod>2023-06-22T08:00:00.000Z</lastmod>  
       
     <date>1584392400000</date>  
-    <title>使用kubeadm安装部署K8S集群——CentOS篇 | 好好学习的郝</title>  
+    <title>好好学K8S：使用kubeadm安装部署K8S集群——CentOS篇 | 好好学习的郝</title>  
       
     <desc>kubeadm简介《使用kubeadm升级K8S集群》一文中，了解了k8s集群中常见组件，并且使用kubeadm对k8s集群进行了升级。本文中，会学习使用kubeadm安装部署k8s集群。 Kubeadm is a tool built to provide kubeadm init and kubeadm join as best-practice “fast paths” for creati</desc>  
   </url> 
@@ -1415,7 +1437,7 @@
     <lastmod>2023-06-22T08:00:00.000Z</lastmod>  
       
     <date>1584388800000</date>  
-    <title>使用kubeadm安装部署K8S集群——Ubuntu篇 | 好好学习的郝</title>  
+    <title>好好学K8S：使用kubeadm安装部署K8S集群——Ubuntu篇 | 好好学习的郝</title>  
       
     <desc>前言《使用kubeadm安装部署K8S集群——CentOS篇》一文中，在CentOS系统中部署了K8S集群。本文中，我们学习使用kubeadm在Ubuntu系统中安装部署k8s集群。 参考文档： Overview of kubeadm Installing kubeadm</desc>  
   </url> 
@@ -1426,7 +1448,7 @@
     <lastmod>2023-06-22T08:00:00.000Z</lastmod>  
       
     <date>1582556400000</date>  
-    <title>K8S中的Service详解 | 好好学习的郝</title>  
+    <title>好好学K8S：K8S中的Service详解 | 好好学习的郝</title>  
       
     <desc>K8S中的Service分类K8S中Service的作用是四层负载均衡，把发往Service的流量负载均衡到对应的Pod（endpoints）上。根据暴露服务方式的不同，可以分为四种类型：ClusterIP、NodePort、LoadBalancer和ExternalName。 参考文档： 服务 一文讲透K8s的Service概念</desc>  
   </url> 
@@ -1437,7 +1459,7 @@
     <lastmod>2023-06-22T08:00:00.000Z</lastmod>  
       
     <date>1568664000000</date>  
-    <title>K8S中的Volume | 好好学习的郝</title>  
+    <title>好好学K8S：K8S中的Volume | 好好学习的郝</title>  
       
     <desc>Volume简介Container 中的文件在磁盘上是临时存放的，这会带来两个问题：1）当容器崩溃时文件会丢失；2）同一Pod中运行多个容器并共享文件时，容器重启时状态丢失。Kubernetes 卷（Volume） 这一抽象概念能够解决这两个问题。 Docker卷的本质是目录，存在与一个或多个容器中，由docker挂载到容器，但不属于联合文件系统，因此能够绕过“联合文件系统”提供一些用于持续存储或</desc>  
   </url> 
@@ -1448,7 +1470,7 @@
     <lastmod>2023-06-22T08:00:00.000Z</lastmod>  
       
     <date>1385670122000</date>  
-    <title>Linux中安装配置FTP服务 | 好好学习的郝</title>  
+    <title>好好学Linux：Linux中安装配置FTP服务 | 好好学习的郝</title>  
       
     <desc>前言FTP服务是最常见的服务之一，本文中我们学习在Linux中安装配置FTP服务。 参考文档： File Transfer Protocol CentOS7 安装 vsftpd 服务</desc>  
   </url> 
@@ -1459,18 +1481,18 @@
     <lastmod>2023-06-22T08:00:00.000Z</lastmod>  
       
     <date>1374070224000</date>  
-    <title>Linux目录结构简析 | 好好学习的郝</title>  
+    <title>好好学Linux：Linux目录结构简析 | 好好学习的郝</title>  
       
     <desc>前言Linux继承了unix操作系统结构清晰的特点。在linux下的文件结构非常有条理。但是，上述的优点只有在对linux相当熟悉时，才能体会到。 参考文档：Filesystem Hierarchy Standard</desc>  
   </url> 
   
   <url>  
-    <loc>https://www.voidking.com/dev-shell-route/</loc>  
+    <loc>https://www.voidking.com/dev-linux-route/</loc>  
       
     <lastmod>2023-06-17T08:10:00.000Z</lastmod>  
       
     <date>1473508800000</date>  
-    <title>shell命令之route | 好好学习的郝</title>  
+    <title>好好学Linux：route命令 | 好好学习的郝</title>  
       
     <desc>route命令简介本文内容主要来自ChatGPT。 route命令用于在Linux操作系统中显示和操作IP路由表。路由表是一个存储在操作系统内核中的表格，用于确定数据包应该如何从一个网络接口发送到另一个网络接口。route命令可以帮助我们查看、添加、删除和修改路由表中的条目。这对于网络配置和故障排除非常有用。 参考文档： linux 路由表设置之 route 指令详解 《iptables入门篇》</desc>  
   </url> 
@@ -1492,7 +1514,7 @@
     <lastmod>2023-06-17T08:00:00.000Z</lastmod>  
       
     <date>1583784000000</date>  
-    <title>K8S中创建用户账户和服务账户 | 好好学习的郝</title>  
+    <title>好好学K8S：K8S中创建用户账户和服务账户 | 好好学习的郝</title>  
       
     <desc>K8S中的账户简介k8s中的账户分为useraccount和serviceaccount，主要差异有四点： useraccount是给人使用的，serviceaccount是给pod中进程调用APIServer使用的 useraccount是跨namespace的，serviceaccount是局限在它所在的namespace的 useraccount不能通过k8s api添加，但是能够通过证书签</desc>  
   </url> 
@@ -1514,7 +1536,7 @@
     <lastmod>2023-06-17T08:00:00.000Z</lastmod>  
       
     <date>1494259200000</date>  
-    <title>Docker镜像站的配置和使用 | 好好学习的郝</title>  
+    <title>好好学Docker：Docker镜像站的配置和使用 | 好好学习的郝</title>  
       
     <desc>前言使用 Docker 的时候，经常需要从官方获取镜像，但是有时候拉取镜像的非常慢，体验很差。 解决办法：使用 docker.io 的国内镜像站，加速docker镜像的下载。 本文中，我们就来学习配置使用docker镜像站。 参考文档： 镜像加速器 yeasy/docker_practice 镜像站可用性测试</desc>  
   </url> 
@@ -1525,7 +1547,7 @@
     <lastmod>2023-06-03T08:00:00.000Z</lastmod>  
       
     <date>1666447200000</date>  
-    <title>K8S配置使用imagePullSecrets | 好好学习的郝</title>  
+    <title>好好学K8S：K8S配置使用imagePullSecrets | 好好学习的郝</title>  
       
     <desc>前言《Harbor入门篇》一文中，我们已经安装配置好了Harbor。本文中，我们来学习一下怎样在K8S中配置使用imagePullSecrets，从Harbor或者其他私有镜像仓库拉取镜像。 参考文档： 从私有仓库拉取镜像</desc>  
   </url> 
@@ -1580,7 +1602,7 @@
     <lastmod>2023-05-27T08:00:00.000Z</lastmod>  
       
     <date>1529940600000</date>  
-    <title>Linux下使用VirtualBox | 好好学习的郝</title>  
+    <title>好好学Linux：Linux系统中使用VirtualBox | 好好学习的郝</title>  
       
     <desc>前言在windows图形界面上使用virtualbox很简单，而在没有图形的界面的linux系统上，同样可以使用virtualbox，只不过操作方式变成了命令行。 本文我们学习一下在ubuntu16系统下使用virtualbox的方法。 参考文档： How to Install Oracle VirtualBox 5.2 on Ubuntu 17.10/16.04, Debian 9/8 Virt</desc>  
   </url> 
@@ -1613,7 +1635,7 @@
     <lastmod>2023-05-20T08:00:00.000Z</lastmod>  
       
     <date>1665345600000</date>  
-    <title>K8S集群中变更数据存储路径 | 好好学习的郝</title>  
+    <title>好好学K8S：K8S集群中变更数据存储路径 | 好好学习的郝</title>  
       
     <desc>需求描述docker的默认工作目录是/var/lib/docker，会存放镜像文件、容器日志和写入到容器临时目录的文件等，默认挂载在系统盘。 kubelet的默认工作目录是/var/lib/kubelet，会存放volume文件（包括emptyDir volume)、plugin文件等，也是默认挂载在系统盘。 使用kubeadm安装的etcd，默认数据目录是/var/lib/etcd，也是默认挂载</desc>  
   </url> 
@@ -1635,18 +1657,18 @@
     <lastmod>2023-05-20T08:00:00.000Z</lastmod>  
       
     <date>1665320400000</date>  
-    <title>Docker修改工作目录 | 好好学习的郝</title>  
+    <title>好好学Docker：Docker修改工作目录 | 好好学习的郝</title>  
       
     <desc>需求描述docker的默认工作目录（存储目录）是/var/lib/docker，会存放镜像文件、容器日志和写入到容器临时目录的文件等，默认挂载在系统盘。 而系统盘一般都不会太大，因此最好把docker工作目录更改到数据盘。 本文中，我们会把docker的工作目录从/var/lib/docker改到/data/docker，其中/data目录挂载了数据盘。</desc>  
   </url> 
   
   <url>  
-    <loc>https://www.voidking.com/dev-jq-command/</loc>  
+    <loc>https://www.voidking.com/dev-linux-jq/</loc>  
       
     <lastmod>2023-05-20T08:00:00.000Z</lastmod>  
       
     <date>1595361600000</date>  
-    <title>jq命令的安装使用 | 好好学习的郝</title>  
+    <title>好好学Linux：jq命令 | 好好学习的郝</title>  
       
     <desc>jq命令简介jq 是一款命令行下处理 JSON 数据的工具。其可以接受标准输入，命令管道或者文件中的 JSON 数据，经过一系列的过滤器(filters)和表达式的转后形成我们需要的数据结构并将结果输出到标准输出中。jq 的这种特性使我们可以很容易地在 Shell 脚本中调用它。 参考文档： 命令行 JSON 处理工具 jq 的使用介绍。 jq Manual (development versio</desc>  
   </url> 
@@ -1657,7 +1679,7 @@
     <lastmod>2023-05-20T08:00:00.000Z</lastmod>  
       
     <date>1584392400000</date>  
-    <title>使用kubeadm跨云搭建K8S集群 | 好好学习的郝</title>  
+    <title>好好学K8S：使用kubeadm跨云搭建K8S集群 | 好好学习的郝</title>  
       
     <desc>前言搭建K8S集群时，我们往往使用同一个云厂商的机器，或者自建机房，能够保证宿主机的二层网络是通的。基于这种网络环境搭建K8S集群，简单而稳定。但是某些情况下，我们需要跨云（使用不同云厂商的机器）搭建K8S集群，这时候就需要充分考虑网络问题。本文，我们就来学习一下跨云搭建K8S集群的方法。</desc>  
   </url> 
@@ -1690,7 +1712,7 @@
     <lastmod>2023-05-03T08:00:00.000Z</lastmod>  
       
     <date>1506365100000</date>  
-    <title>Python获取命令行参数 | 好好学习的郝</title>  
+    <title>好好学Python：Python获取命令行参数 | 好好学习的郝</title>  
       
     <desc>Python获取命令行参数概述在执行Python脚本时，很多时候需要从命令行获取用户输入的参数。 Pthon获取命令行参数的方式有多种，具体包括： sys.argv getopt argparse click 个人感觉其中最简单的是sys.argv，既简单又优雅的是argparse。本文，我们就来学习一下argparse的使用。 参考文档： Python 命令行参数 Python 命令行参数的3种</desc>  
   </url> 
@@ -1712,7 +1734,7 @@
     <lastmod>2023-04-08T10:10:00.000Z</lastmod>  
       
     <date>1677784200000</date>  
-    <title>K8S中Pod抓包 | 好好学习的郝</title>  
+    <title>好好学K8S：K8S中Pod抓包 | 好好学习的郝</title>  
       
     <desc>Pod抓包概述排查网络问题的最好方法就是抓包分析，在 Kubernetes 中对 Pod 进行抓包的常见方法包括： 在 Pod 中安装 tcpdump 工具，直接对流量进行抓包，捕获网络流量并输出到文件或终端上。这种方法的优点是灵活性高，可以根据实际情况进行定制和调试，但需要在 Pod 中安装额外的工具，可能会增加 Pod 的大小和复杂度。 使用 kubectl port-forward 命令将 </desc>  
   </url> 
@@ -1756,7 +1778,7 @@
     <lastmod>2023-04-08T08:00:00.000Z</lastmod>  
       
     <date>1568563200000</date>  
-    <title>K8S故障排查手册 | 好好学习的郝</title>  
+    <title>好好学K8S：K8S故障排查手册 | 好好学习的郝</title>  
       
     <desc>故障排查整体思路故障排查三步走：1、分类。故障排查的第一步是分类，缩小问题范围。2、套路。不同问题，有不同的标准排查方法，详情可以参考阿里云ACK - 故障排除。3、发散。百度+谷歌+ChatGPT，搜寻各种可能的解决办法并进行尝试。 本文中，我们主要学习故障排查的套路（标准流程）。 参考文档： 阿里云ACK - 故障排除 阿里云ACK - 节点异常问题排查 腾讯云TKE - 故障处理 腾讯云TK</desc>  
   </url> 
@@ -1789,7 +1811,7 @@
     <lastmod>2023-03-25T08:00:00.000Z</lastmod>  
       
     <date>1493758800000</date>  
-    <title>Linux安装配置Supervisor | 好好学习的郝</title>  
+    <title>好好学Linux：Linux中安装配置Supervisor | 好好学习的郝</title>  
       
     <desc>Supervisor简介 Supervisor is a client/server system that allows its users to monitor and control a number of processes on UNIX-like operating systems. It shares some of the same goals of programs like l</desc>  
   </url> 
@@ -1811,18 +1833,18 @@
     <lastmod>2023-03-18T08:00:00.000Z</lastmod>  
       
     <date>1620374400000</date>  
-    <title>Python代码风格指南 | 好好学习的郝</title>  
+    <title>好好学Python：Python代码风格指南 | 好好学习的郝</title>  
       
     <desc>为什么需要代码风格指南？本文中大部分内容来自ChatGPT。 代码风格指南是一种旨在促进代码可读性、可维护性和可重用性的约定。虽然它们并不强制执行特定的编码标准，但它们建议一些最佳实践和常规约定，以帮助开发者编写更具一致性、可读性和可维护性的代码。 以下是一些代码风格指南的重要原因： 可读性：代码风格指南可以帮助开发者编写更加可读的代码。这有助于降低代码维护成本，因为代码更容易理解和修改。 一致性</desc>  
   </url> 
   
   <url>  
-    <loc>https://www.voidking.com/dev-shell-top/</loc>  
+    <loc>https://www.voidking.com/dev-linux-top/</loc>  
       
     <lastmod>2023-03-18T08:00:00.000Z</lastmod>  
       
     <date>1496390400000</date>  
-    <title>shell命令之top | 好好学习的郝</title>  
+    <title>好好学Linux：top命令 | 好好学习的郝</title>  
       
     <desc>top命令简介top命令是一种常用的 Linux 实时性能监控工具，可以显示系统资源使用情况和进程信息，可以帮助用户了解当前系统的运行状态。 参考文档： 《shell命令之系统管理》 Linux 使用 top 命令查看系统的运行情况</desc>  
   </url> 
@@ -1833,7 +1855,7 @@
     <lastmod>2023-03-18T08:00:00.000Z</lastmod>  
       
     <date>1493672400000</date>  
-    <title>Python版本管理器pyenv | 好好学习的郝</title>  
+    <title>好好学Python：Python版本管理器pyenv | 好好学习的郝</title>  
       
     <desc>pyenv简介pyenv使我们可以轻松地在多个版本的Python之间切换。它用法简单，遵循UNIX的一站式工具传统，可以很好地完成不同Python版本之间的切换。与之类似的，还有conda。 参考文档： github - pyenv Command Reference 《Python包管理工具Conda》 《Python包管理工具pip》</desc>  
   </url> 
@@ -1844,7 +1866,7 @@
     <lastmod>2023-03-18T08:00:00.000Z</lastmod>  
       
     <date>1486198800000</date>  
-    <title>Python包管理工具Conda | 好好学习的郝</title>  
+    <title>好好学Python：Python包管理工具Conda | 好好学习的郝</title>  
       
     <desc>conda简介本文部分内容来自ChatGPT。 conda是一个开源的跨平台包管理器，用于安装并管理不同编程语言的软件包。它最初是为Python编程语言设计的，但现已扩展到其他语言，如R、Ruby和Lua等。 conda的一个主要优势是它可以同时管理多个环境，使得在不同项目之间切换和隔离依赖变得容易。此外，conda还可以解决依赖关系，以确保软件包之间的兼容性。 相关文档： github - co</desc>  
   </url> 
@@ -1866,7 +1888,7 @@
     <lastmod>2023-03-11T08:00:00.000Z</lastmod>  
       
     <date>1636315200000</date>  
-    <title>Python单元测试 | 好好学习的郝</title>  
+    <title>好好学Python：Python单元测试 | 好好学习的郝</title>  
       
     <desc>unittest简介unittest是一个Python单元测试框架。它受到 JUnit 的启发，与其他语言中的主流单元测试框架有着相似的风格。其支持测试自动化，配置共享和关机代码测试。支持将测试样例聚合到测试集中，并将测试与报告框架独立。 主要参考 unittest - 单元测试框架。</desc>  
   </url> 
@@ -1877,7 +1899,7 @@
     <lastmod>2023-03-11T08:00:00.000Z</lastmod>  
       
     <date>1496404800000</date>  
-    <title>Shell脚本之重试 | 好好学习的郝</title>  
+    <title>好好学Shell：失败重试 | 好好学习的郝</title>  
       
     <desc>为什么需要重试？典型场景：程序的实现需要调用第三方的API，但是我们并不能保证第三方API一直好用，也不能保证网络一直畅通，所以在调用第三方API时需要加上错误重试。 通用场景：程序的运行不符合预期，我们知道再次调用大概率可以使之符合预期，这时就需要重试。 本文中，我们学习一下Shell脚本中的失败重试。</desc>  
   </url> 
@@ -1888,9 +1910,9 @@
     <lastmod>2023-03-11T08:00:00.000Z</lastmod>  
       
     <date>1496404800000</date>  
-    <title>Shell脚本之调用子脚本 | 好好学习的郝</title>  
+    <title>好好学Shell：脚本调用子脚本 | 好好学习的郝</title>  
       
-    <desc>前言脚本调用脚本的方法有两种，第一种是bash调用，在子shell里执行子脚本；第二种是引用调用，在当前脚本里执行子脚本。 《Shell脚本之模块化》一文中，我们主要学习了引用调用。本文中，我们来学习一下bash调用。</desc>  
+    <desc>前言Shell脚本调用脚本的方法有两种，第一种是bash调用，在子shell里执行子脚本；第二种是引用调用，在当前脚本里执行子脚本。 《Shell脚本之模块化》一文中，我们主要学习了引用调用。本文中，我们来学习一下bash调用。</desc>  
   </url> 
   
   <url>  
@@ -1899,7 +1921,7 @@
     <lastmod>2023-03-11T08:00:00.000Z</lastmod>  
       
     <date>1494252000000</date>  
-    <title>Win10中的Docker使用USB设备 | 好好学习的郝</title>  
+    <title>好好学Docker：Win10中的Docker使用USB设备 | 好好学习的郝</title>  
       
     <desc>前言《Win10安装配置Docker》一文中，其中方法（4）是在Win10中安装WSL2 Linux系统，然后在Linux系统中安装Docker。 如果想要在Docker中使用Win10宿主机上的USB设备，该怎么做？本文中我们就来学习一下。 参考文档： 连接 USB 设备</desc>  
   </url> 
@@ -1910,7 +1932,7 @@
     <lastmod>2023-03-11T08:00:00.000Z</lastmod>  
       
     <date>1484254852000</date>  
-    <title>Python基础 | 好好学习的郝</title>  
+    <title>好好学Python：Python基础 | 好好学习的郝</title>  
       
     <desc>Python简介 Bruce Eckel: Life is short, you need Python. Python，是 Bruce Eckel 在1989年为了打发无聊的圣诞节而编写的一门编程语言，特点是优雅、明确、简单，现今拥有丰富的标准库和第三方库。 Python适合开发Web网站和各种网络服务，系统工具和脚本，作为“胶水”语言把其他语言开发的模块包装起来使用，科学计算等等。 本文中，我</desc>  
   </url> 
@@ -1932,7 +1954,7 @@
     <lastmod>2023-03-01T15:00:00.000Z</lastmod>  
       
     <date>1636315200000</date>  
-    <title>Python代码质量检查 | 好好学习的郝</title>  
+    <title>好好学Python：Python代码质量检查 | 好好学习的郝</title>  
       
     <desc>Pylint vs Flake8FROM ChatGPT： Pylint和Flake8都是用于Python代码静态分析的工具，它们都可以帮助您发现代码中的潜在问题并提供一些代码质量方面的建议。但是，它们的设计目标和使用方法有所不同。 Pylint是一个非常全面的工具，它会对代码进行更严格的检查，包括PEP 8风格指南和一些语法规则。它还可以检查代码中的错误和漏洞，并提供复杂度和维护性方面的建议。它</desc>  
   </url> 
@@ -2059,12 +2081,12 @@
   </url> 
   
   <url>  
-    <loc>https://www.voidking.com/dev-virsh-command/</loc>  
+    <loc>https://www.voidking.com/dev-linux-virsh/</loc>  
       
     <lastmod>2023-02-07T18:00:00.000Z</lastmod>  
       
     <date>1545391800000</date>  
-    <title>virsh常用命令 | 好好学习的郝</title>  
+    <title>好好学Linux：virsh命令 | 好好学习的郝</title>  
       
     <desc>前言本文中会整理一些工作学习中常用的virsh命令，备忘。 参考文档： libvirt Domain XML format libguestfs virt-builder virsh常用命令篇 KVM 虚拟机 XML 配置文件详解</desc>  
   </url> 
@@ -2086,7 +2108,7 @@
     <lastmod>2023-02-07T15:00:00.000Z</lastmod>  
       
     <date>1674036000000</date>  
-    <title>Docker安装配置DolphinScheduler | 好好学习的郝</title>  
+    <title>好好学Docker：Docker安装配置DolphinScheduler | 好好学习的郝</title>  
       
     <desc>DolphinScheduler简介 Apache DolphinScheduler provides a distributed and easy to expand visual workflow task scheduling open-source platform. It is suitable for enterprise-level scenarios. It provides a </desc>  
   </url> 
@@ -2097,7 +2119,7 @@
     <lastmod>2023-02-06T14:00:00.000Z</lastmod>  
       
     <date>1572811200000</date>  
-    <title>Docker Compose实现滚动更新 | 好好学习的郝</title>  
+    <title>好好学Docker：Docker Compose实现滚动更新 | 好好学习的郝</title>  
       
     <desc>前言本文中，基于Docker Compose实现服务滚动更新。具体来说，webapp想要从v1.0更新到v2.0，更新过程中服务不能中断，如果v2.0有问题那么就停止更新并回退。 参考文档： 《Docker-Compose入门篇》 谁说docker-compose不能水平扩展容器、服务多实例？</desc>  
   </url> 
@@ -2108,7 +2130,7 @@
     <lastmod>2023-02-06T14:00:00.000Z</lastmod>  
       
     <date>1572811200000</date>  
-    <title>Docker-Compose构建镜像并启动容器 | 好好学习的郝</title>  
+    <title>好好学Docker：Docker Compose构建镜像并启动容器 | 好好学习的郝</title>  
       
     <desc></desc>  
   </url> 
@@ -2130,7 +2152,7 @@
     <lastmod>2023-01-28T19:00:00.000Z</lastmod>  
       
     <date>1568563200000</date>  
-    <title>K8S中镜像拉取卡住问题 | 好好学习的郝</title>  
+    <title>好好学K8S：K8S中镜像拉取卡住问题 | 好好学习的郝</title>  
       
     <desc>问题描述节点上已经存在某个镜像了，但是拉取镜像时卡住：Pulling image …</desc>  
   </url> 
@@ -2163,7 +2185,7 @@
     <lastmod>2023-01-17T11:00:00.000Z</lastmod>  
       
     <date>1662494400000</date>  
-    <title>K8S中安装配置ClickHouse | 好好学习的郝</title>  
+    <title>好好学K8S：K8S中安装配置ClickHouse | 好好学习的郝</title>  
       
     <desc>RadonDB ClickHouse简介 [RadonDB ClickHouse](RadonDB ClickHouse) 是基于 ClickHouse 的开源、高可用、云原生集群解决方案。RadonDB ClickHouse Kubernetes 致力于在 Kubernetes 上轻便快速创建 ClickHouse 集群。 参考文档： 什么是 RadonDB ClickHouse</desc>  
   </url> 
@@ -2185,7 +2207,7 @@
     <lastmod>2023-01-06T11:00:00.000Z</lastmod>  
       
     <date>1385130166000</date>  
-    <title>Linux挂载文件系统 | 好好学习的郝</title>  
+    <title>好好学Linux：Linux挂载文件系统 | 好好学习的郝</title>  
       
     <desc>mount/umount简介 mount - mount a filesystemumount - unmount file systemsAll files accessible in a Unix system are arranged in one big tree, the file hierarchy, rooted at /. These files can be spread out</desc>  
   </url> 
@@ -2196,7 +2218,7 @@
     <lastmod>2022-12-27T20:00:00.000Z</lastmod>  
       
     <date>1583870400000</date>  
-    <title>K8S中的RBAC鉴权 | 好好学习的郝</title>  
+    <title>好好学K8S：K8S中的RBAC鉴权 | 好好学习的郝</title>  
       
     <desc>RBAC Authorization Role-based access control (RBAC) is a method of regulating access to computer or network resources based on the roles of individual users within your organization. 更多内容，参考Using RBAC</desc>  
   </url> 
@@ -2218,7 +2240,7 @@
     <lastmod>2022-12-19T13:00:00.000Z</lastmod>  
       
     <date>1574370000000</date>  
-    <title>K8S节点关机后会发生什么？ | 好好学习的郝</title>  
+    <title>好好学K8S：K8S节点关机后会发生什么？ | 好好学习的郝</title>  
       
     <desc>问题描述当一个k8s节点关机后，k8s会对pod做什么操作？答：k8s发现节点不可用之后，过一段时间节点还没有恢复，会在其他节点上拉起挂掉节点上的pod。 这个回答对，但是只对了一半。适用于deployment，并不适用于statefulset。</desc>  
   </url> 
@@ -2229,7 +2251,7 @@
     <lastmod>2022-12-15T16:00:00.000Z</lastmod>  
       
     <date>1496305800000</date>  
-    <title>Shell脚本编程——上 | 好好学习的郝</title>  
+    <title>好好学Shell：Shell脚本编程入门篇（上） | 好好学习的郝</title>  
       
     <desc>Shell简介Shell 是什么？Shell 这个单词的原意是“外壳”，跟 kernel（内核）相对应，比喻内核外面的一层，即用户跟内核交互的对话界面。 具体来说，Shell 这个词有多种含义。 首先，Shell 是一个程序，提供一个与用户对话的环境。这个环境只有一个命令提示符，让用户从键盘输入命令，所以又称为命令行环境（command line interface，简写为 CLI）。Shell </desc>  
   </url> 
@@ -2240,7 +2262,7 @@
     <lastmod>2022-12-14T18:00:00.000Z</lastmod>  
       
     <date>1479641097000</date>  
-    <title>MySQL重置密码 | 好好学习的郝</title>  
+    <title>好好学MySQL：MySQL重置密码 | 好好学习的郝</title>  
       
     <desc>mysql5.6设置密码通过修改表数据设置密码一般mysql的root默认密码为空，如果之前没有设置过root密码，我们可以使用空密码登录后设置密码。 1、启动mysql 1service start mysql 2、进入mysql控制台 1mysql -u root 3、修改密码 123use mysql;update mysql.user set password=password(#x27</desc>  
   </url> 
@@ -2262,7 +2284,7 @@
     <lastmod>2022-12-12T19:00:00.000Z</lastmod>  
       
     <date>1496264400000</date>  
-    <title>Dockerfile使用Supervisor管理Tomcat | 好好学习的郝</title>  
+    <title>好好学Docker：Dockerfile使用Supervisor管理Tomcat | 好好学习的郝</title>  
       
     <desc>问题描述容器中，使用supervisor管理tomcat，supervisor报错。这是因为，使用supervisor监控管理的进程必须以nodaemon启动，而tomcat的startup.sh脚本是daemon方式的。</desc>  
   </url> 
@@ -2273,29 +2295,29 @@
     <lastmod>2022-12-12T19:00:00.000Z</lastmod>  
       
     <date>1496260800000</date>  
-    <title>使用Dockerfile构建Tomcat镜像 | 好好学习的郝</title>  
+    <title>好好学Docker：使用Dockerfile构建Tomcat镜像 | 好好学习的郝</title>  
       
     <desc>前言如果只是想要一个tomcat环境，很简单，直接拉取一个tomcat镜像就可以了。本文中，我们在centos7镜像的基础上，学习使用Dockerfile构建Tomcat镜像。同时会对比手工构建镜像和使用Dockerfile构建镜像的不同，以便更好地理解构建过程。</desc>  
   </url> 
   
   <url>  
-    <loc>https://www.voidking.com/dev-shell-encoding/</loc>  
+    <loc>https://www.voidking.com/dev-linux-encoding/</loc>  
       
     <lastmod>2022-12-12T15:00:00.000Z</lastmod>  
       
     <date>1496390400000</date>  
-    <title>shell命令之编码格式转换 | 好好学习的郝</title>  
+    <title>好好学Linux：编码格式转换 | 好好学习的郝</title>  
       
     <desc>编码格式修改执行sh脚本时报错：/bin/sh^M: bad interpreter: No such file or directory 1、添加执行权限chmod a+x filename 2、然后修改文件格式vi filename 3、利用如下命令查看文件格式 :set ff 或 :set fileformat 可以看到 fileformat=dos 或 fileformat=unix。 4</desc>  
   </url> 
   
   <url>  
-    <loc>https://www.voidking.com/dev-shell-grep-awk-sed/</loc>  
+    <loc>https://www.voidking.com/dev-linux-grep-awk-sed/</loc>  
       
     <lastmod>2022-12-12T15:00:00.000Z</lastmod>  
       
     <date>1496390400000</date>  
-    <title>shell命令之grep/awk/sed | 好好学习的郝</title>  
+    <title>好好学Linux：grep/awk/sed 文本三剑客 | 好好学习的郝</title>  
       
     <desc>awk注意事项awk命令格式：awk [选项参数] #39;script#39; var=value file(s) 这里需要特别注意的是，包裹script的是单引号，单引号，单引号！参考文档Linux awk 命令</desc>  
   </url> 
@@ -2317,7 +2339,7 @@
     <lastmod>2022-12-08T13:00:00.000Z</lastmod>  
       
     <date>1588068000000</date>  
-    <title>Dockerfile中的CMD和ENTRYPOINT | 好好学习的郝</title>  
+    <title>好好学Docker：Dockerfile中的CMD和ENTRYPOINT | 好好学习的郝</title>  
       
     <desc>前言Dockerfile中的CMD和ENTRYPOINT有什么区别？docker run时默认执行什么命令，怎样覆盖默认命令？pod定义中的args和command字段有什么作用？本文，我们来回答一下这些问题。主要参考Docker RUN vs CMD vs ENTRYPOINT和Mumshad Mannambeth的课程。</desc>  
   </url> 
@@ -2383,7 +2405,7 @@
     <lastmod>2022-11-14T19:00:00.000Z</lastmod>  
       
     <date>1568548800000</date>  
-    <title>kubectl命令——配置篇 | 好好学习的郝</title>  
+    <title>好好学K8S：kubectl命令——配置篇 | 好好学习的郝</title>  
       
     <desc>kubectl简介 Kubectl is a command line interface for running commands against Kubernetes clusters. 没错，kubectl是一个命令行工具，用来控制K8S集群。kubectl该怎么读？可以参考HowToPronounce-kubectl，郝同学喜欢读作kubecontrol。 kubectl命令格式为： 1k</desc>  
   </url> 
@@ -2394,7 +2416,7 @@
     <lastmod>2022-11-14T15:00:00.000Z</lastmod>  
       
     <date>1664222400000</date>  
-    <title>kubeadm安装的K8S集群证书过期问题 | 好好学习的郝</title>  
+    <title>好好学K8S：kubeadm安装的K8S集群证书过期问题 | 好好学习的郝</title>  
       
     <desc>问题描述使用kubectl访问k8s集群，报错证书过期：Unable to connect to the server: x509: certificate has expired or is not yet valid: current time 2022-09-26T01:33:25-04:00 is after 2022-09-26T03:45:02Z</desc>  
   </url> 
@@ -2430,17 +2452,6 @@
     <title>KubeSphere登录后报错Session Timeout | 好好学习的郝</title>  
       
     <desc>问题描述大部分用户能够正常登录和使用ks，但是个别用户（voidking01）登录ks后报错。用户登录ks，正常；登录后查看工作台，正常；查看host集群和只包含host集群的企业空间，正常。 但是，选择一个非host集群或者选择一个包含非host集群的企业空间后，页面就会弹出错误提示：Session timeout or this account is logged in elsewhere, </desc>  
-  </url> 
-  
-  <url>  
-    <loc>https://www.voidking.com/dev-k8s-etcd-backup-restore/</loc>  
-      
-    <lastmod>2022-11-02T10:00:00.000Z</lastmod>  
-      
-    <date>1583704800000</date>  
-    <title>K8S集群中etcd备份和恢复 | 好好学习的郝</title>  
-      
-    <desc>前言就像备份数据库一样，很多时候，我们也想对k8s资源配置进行备份。 1kubectl get all --all-namespaces -o yaml gt; all-deploy-services.yaml 上面的方法，可以实现对k8s资源配置的备份。但是更好的办法，是对etcd进行备份。本文就学习一下k8s中etcd的备份和恢复方法。</desc>  
   </url> 
   
   <url>  
@@ -2482,7 +2493,7 @@
     <lastmod>2022-10-31T14:00:00.000Z</lastmod>  
       
     <date>1586980800000</date>  
-    <title>使用curl访问k8s的apiserver | 好好学习的郝</title>  
+    <title>好好学K8S：使用curl访问k8s的apiserver | 好好学习的郝</title>  
       
     <desc>k8s管理工具管理k8s集群，除了kubectl和go-client，其实还可以使用curl命令。本文，我们就学习一下怎样使用curl访问k8s的apiserver，实现k8s集群的管理。主要参考如何使用curl访问k8s的apiserver。 需求：使用curl命令，实现 kubectl get pod 同样的效果。使用curl命令访问k8s集群时，分别使用证书和token两种认证方式。</desc>  
   </url> 
@@ -2548,7 +2559,7 @@
     <lastmod>2022-10-17T14:00:00.000Z</lastmod>  
       
     <date>1524841200000</date>  
-    <title>Linux配置SNAT上网 | 好好学习的郝</title>  
+    <title>好好学Linux：Linux配置SNAT上网 | 好好学习的郝</title>  
       
     <desc>需求描述有主机A，eth0的IP为内网IP：192.168.56.101，eth1为公网IP：120.77.36.222。有主机B，eth0的IP为内网IP：192.168.56.102。主机A可以访问外网，主机B和主机A在同一个局域网。现在我们想让主机B也可以上网，该怎么办？最简单的方法有两个：1）SNAT；2）代理 本文中，我们学习使用配置SNAT的方式，实现局域网中的所有主机可以上网。 参考</desc>  
   </url> 
@@ -2559,7 +2570,7 @@
     <lastmod>2022-10-17T14:00:00.000Z</lastmod>  
       
     <date>1496404800000</date>  
-    <title>Shell脚本之安全删除 | 好好学习的郝</title>  
+    <title>好好学Shell：安全删除 | 好好学习的郝</title>  
       
     <desc>前言很多时候，我们会误删文件，那么一个回收站就很有必要了。看了一些回收站的实现，都比较复杂，干脆自己写一个。 思路：使用mv替换rm，把想要删除的文件暂时移动到回收站。</desc>  
   </url> 
@@ -2581,7 +2592,7 @@
     <lastmod>2022-10-17T14:00:00.000Z</lastmod>  
       
     <date>1385130166000</date>  
-    <title>Linux基础概念 | 好好学习的郝</title>  
+    <title>好好学Linux：Linux基础概念 | 好好学习的郝</title>  
       
     <desc>粘贴位要删除一个文件，你不一定要有这个文件的写权限，但你一定要有这个文件的上级目录的写权限。也就是说，你即使没有一个文件的写权限，但你有这个文件的上级目录的写权限，你也可以把这个文件给删除，而如果没有一个目录的写权限，也就不能在这个目录下创建文件。 如何才能使一个目录既可以让任何用户写入文件，又不让用户删除这个目录下他人的文件，sticky就是能起到这个作用。stciky一般只用在目录上，用在文件</desc>  
   </url> 
@@ -2592,7 +2603,7 @@
     <lastmod>2022-10-17T14:00:00.000Z</lastmod>  
       
     <date>1385130166000</date>  
-    <title>Linux学习资源 | 好好学习的郝</title>  
+    <title>好好学Linux：Linux学习资源 | 好好学习的郝</title>  
       
     <desc>软件推荐linux下的图片处理软件，号称linux下的photoshop：gimp linux下可用的qq：pidgin-lwqq linux下的翻译软件：stardict linux下查看chm文件：chmsee 安装windows软件：wine</desc>  
   </url> 
@@ -2603,7 +2614,7 @@
     <lastmod>2022-10-14T09:00:00.000Z</lastmod>  
       
     <date>1496174400000</date>  
-    <title>Dockerfile入门篇 | 好好学习的郝</title>  
+    <title>好好学Docker：Dockerfile入门篇 | 好好学习的郝</title>  
       
     <desc>什么是Dockerfile？正如《Docker入门篇》一文中所说，容器技术包括容器镜像和容器运行时。其中容器镜像是一个软件集装箱，包含软件运行需要的所有文件。那么，怎样制作一个容器镜像呢？两个方法：第一个方法是修改容器运行时，然后提交修改变成新容器镜像。第二个方法就是使用Dockerfile。 Dockerfile是一个文本文档，其中包含一些指令（类似于shell命令）。Docker可以通过阅读D</desc>  
   </url> 
@@ -2658,7 +2669,7 @@
     <lastmod>2022-09-17T17:00:00.000Z</lastmod>  
       
     <date>1663185600000</date>  
-    <title>K8S中安装配置Spark | 好好学习的郝</title>  
+    <title>好好学K8S：K8S中安装配置Spark | 好好学习的郝</title>  
       
     <desc>spark-on-k8s-operator简介 spark-on-k8s-operator: Kubernetes operator for managing the lifecycle of Apache Spark applications on Kubernetes.The Kubernetes Operator for Apache Spark aims to make specifyin</desc>  
   </url> 
@@ -2669,7 +2680,7 @@
     <lastmod>2022-09-16T08:00:00.000Z</lastmod>  
       
     <date>1636315200000</date>  
-    <title>Python打印日志 | 好好学习的郝</title>  
+    <title>好好学Python：Python打印日志 | 好好学习的郝</title>  
       
     <desc>输出日志到控制台12345678import sysimport logginglog = logging.getLogger(__name__)log.setLevel(logging.DEBUG)log.addHandler(logging.StreamHandler(sys.stdout)) #默认sys.errorlog.info(#x27;print info level log to</desc>  
   </url> 
@@ -2702,7 +2713,7 @@
     <lastmod>2022-06-19T11:00:00.000Z</lastmod>  
       
     <date>1527159600000</date>  
-    <title>Linux设置邮件提醒 | 好好学习的郝</title>  
+    <title>好好学Linux：Linux设置邮件提醒 | 好好学习的郝</title>  
       
     <desc>前言《Linux设置定时任务》一文中，我们学习了使用crontab设置定时任务的方法，并用它来获取ganglia的运行状态。这样还不够，我们想要在ganglia的运行状态出现问题时通知我们，这样，我们就不用每天自己查看日志了。 本文主要参考Ubuntu mail命令发送邮件 和 如何通过Shell脚本实现发送邮件通知功能？。</desc>  
   </url> 
@@ -2757,7 +2768,7 @@
     <lastmod>2022-04-17T08:00:00.000Z</lastmod>  
       
     <date>1636315200000</date>  
-    <title>Python操作MySQL | 好好学习的郝</title>  
+    <title>好好学Python：Python操作MySQL | 好好学习的郝</title>  
       
     <desc>前言python操作mysql数据库进行增删查改，是经常遇到的需求，下面整理一下具体操作方法。 数据库准备1、安装配置好mysql参考《使用Docker安装配置Mysql》 2、创建一个测试用的数据库 12345678910create database vkphp default character set utf8 collate utf8_general_ci;use vkphp;CREAT</desc>  
   </url> 
@@ -2768,7 +2779,7 @@
     <lastmod>2022-04-17T08:00:00.000Z</lastmod>  
       
     <date>1636315200000</date>  
-    <title>Python重试 | 好好学习的郝</title>  
+    <title>好好学Python：Python重试 | 好好学习的郝</title>  
       
     <desc>为什么需要重试？典型场景：程序的实现需要调用第三方的API，但是我们并不能保证第三方API一直好用，也不能保证网络一直畅通，所以在调用第三方API时需要加上错误重试。 通用场景：程序的运行不符合预期，我们知道再次调用大概率可以使之符合预期，这时就需要重试。 而重试逻辑我们可以通过循环多次调用实现，也可以使用封装好的重试模块。本文我们就学习一下Python中比较流行的 retrying 模块，实现一</desc>  
   </url> 
@@ -2779,7 +2790,7 @@
     <lastmod>2022-04-17T08:00:00.000Z</lastmod>  
       
     <date>1636315200000</date>  
-    <title>Python脚本路径 | 好好学习的郝</title>  
+    <title>好好学Python：Python脚本路径 | 好好学习的郝</title>  
       
     <desc>怎样获取一个脚本的路径？怎样获取执行脚本的绝对路径？怎样获取执行脚本的父绝对路径？怎样获取入口脚本的绝对路径？。。。带着这些问题，我们进行一个简单的实验，获知这些问题的答案。</desc>  
   </url> 
@@ -2911,7 +2922,7 @@
     <lastmod>2021-08-08T11:00:00.000Z</lastmod>  
       
     <date>1609704000000</date>  
-    <title>使用Docker安装配置Jupyter | 好好学习的郝</title>  
+    <title>好好学Docker：使用Docker安装配置Jupyter | 好好学习的郝</title>  
       
     <desc>前言《Jupyter notebook》一文中学习了jupyter的使用，本文学习一下怎样使用docker安装jupyter，并且配置访问密码。 前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。已知docker宿主机IP为192.168.56.130。</desc>  
   </url> 
@@ -2933,7 +2944,7 @@
     <lastmod>2021-08-07T08:00:00.000Z</lastmod>  
       
     <date>1628323200000</date>  
-    <title>使用Python操作Excel表格 | 好好学习的郝</title>  
+    <title>好好学Python：使用Python操作Excel表格 | 好好学习的郝</title>  
       
     <desc>前言最近疫情又变得严重，多地都推迟了开学，改为上网课。这样一来，老师们就需要每次上完课后统计学生的出勤情况，包括未上课的同学和上课时间不足40分钟的同学。 为了方便我们家谭老师的统计工作，决定趁周末写一个脚本，把人工统计变成自动统计。</desc>  
   </url> 
@@ -3054,7 +3065,7 @@
     <lastmod>2020-07-29T20:00:00.000Z</lastmod>  
       
     <date>1596052800000</date>  
-    <title>K8S中的网络策略 | 好好学习的郝</title>  
+    <title>好好学K8S：K8S中的网络策略 | 好好学习的郝</title>  
       
     <desc>怎样限制Pod中的网络流量？已知pod名为 webapp ，label为 name=webapp 。现在想要模拟无法访问数据库，限制它的流量，禁止它访问 10.0.0.0/24 网段的所有3306端口，该怎么实现？ 方法一：使用NetworkPolicy限流方法二：开启pod特权模式，在pod内部使用iptables限流方法三：登录pod所在宿主机，在pod所在ns中使用iptables限流</desc>  
   </url> 
@@ -3065,7 +3076,7 @@
     <lastmod>2020-07-10T20:00:00.000Z</lastmod>  
       
     <date>1594411200000</date>  
-    <title>Docker Swarm | 好好学习的郝</title>  
+    <title>好好学Docker：Docker Swarm | 好好学习的郝</title>  
       
     <desc>Docker Swarm简介Docker Swarm是一个Docker集群调度管理工具。相比于Kubernetes，Swarm内置于Docker，更加轻量，更加简单方便；相应的，就没有Kubernetes那么多强大的特性。 本文搭建使用Swarm，主要参考Swarm mode overview 和 docker swarm（一） 入门 – 搭建一个简单的swarm集群。 已有两个安装好Docker</desc>  
   </url> 
@@ -3109,7 +3120,7 @@
     <lastmod>2020-06-27T20:00:00.000Z</lastmod>  
       
     <date>1593288000000</date>  
-    <title>Kubernetes Operator | 好好学习的郝</title>  
+    <title>好好学K8S：Kubernetes Operator | 好好学习的郝</title>  
       
     <desc>Kubernetes Operator是啥？ Operators are software extensions to Kubernetes that make use of custom resources to manage applications and their components. Operators follow Kubernetes principles, notably th</desc>  
   </url> 
@@ -3142,7 +3153,7 @@
     <lastmod>2020-05-19T20:00:00.000Z</lastmod>  
       
     <date>1582488000000</date>  
-    <title>CKA和CKAD备考 | 好好学习的郝</title>  
+    <title>好好学K8S：CKA和CKAD备考 | 好好学习的郝</title>  
       
     <desc>Flag《K8S入门篇》一文中，定下了目标：拿到CKA和CKAD证书。转眼过去了大半年，但是一直没有付诸行动。2020年02月23日立下flag：2020年5月1前考下CKA，2020年6月1日前考下CKAD。</desc>  
   </url> 
@@ -3164,7 +3175,7 @@
     <lastmod>2020-04-01T20:00:00.000Z</lastmod>  
       
     <date>1585771200000</date>  
-    <title>安装部署K8S集群的艰难之路 | 好好学习的郝</title>  
+    <title>好好学K8S：安装部署K8S集群的艰难之路 | 好好学习的郝</title>  
       
     <desc>前言《使用kubeadm安装部署K8S集群》一文中，使用kubeadm安装部署了k8s集群。但是，kubeadm的安装方式太简单了，而cka的要求不止这么简单。因此，我们还需要学习从零开始，一个一个组件安装配置k8s集群的方法，所谓k8s the hard way。 本文的目标是在virtualbox中，搭建一个k8s集群，一个master节点，一个node01节点。 主要参考kelseyhigh</desc>  
   </url> 
@@ -3175,7 +3186,7 @@
     <lastmod>2020-03-31T20:00:00.000Z</lastmod>  
       
     <date>1585684800000</date>  
-    <title>MySQL中的游标 | 好好学习的郝</title>  
+    <title>好好学MySQL：MySQL中的游标 | 好好学习的郝</title>  
       
     <desc>需求已知app表有两个字段：id和name，build_history表有四个字段：id、app_id、image_path和create_time。app构建后会生成镜像，镜像地址存在于build_history表中的image_path字段。 现在想要查找出每个app的最新的五个镜像，该怎样实现？</desc>  
   </url> 
@@ -3208,7 +3219,7 @@
     <lastmod>2020-03-03T20:00:00.000Z</lastmod>  
       
     <date>1583265600000</date>  
-    <title>使用Docker安装配置GateOne | 好好学习的郝</title>  
+    <title>好好学Docker：使用Docker安装配置GateOne | 好好学习的郝</title>  
       
     <desc>GateOne简介 Gate One is a web-based Terminal Emulator and SSH client that brings the power of the command line to the web. It requires no browser plugins and is built on top of a powerful plugin system </desc>  
   </url> 
@@ -3274,7 +3285,7 @@
     <lastmod>2020-01-12T20:00:00.000Z</lastmod>  
       
     <date>1578859200000</date>  
-    <title>Docker中使用定时任务 | 好好学习的郝</title>  
+    <title>好好学Docker：Docker容器中使用定时任务 | 好好学习的郝</title>  
       
     <desc>前言《Linux设置定时任务》一文中学习了crontab的使用方法，但是同样的配置方法，在Docker中是不会生效的。因为Docker中默认只会启动一个进程，crond并不会启动。本文研究一下在Docker中配置定时任务的方法，踩踩坑。</desc>  
   </url> 
@@ -3285,7 +3296,7 @@
     <lastmod>2019-12-31T20:00:00.000Z</lastmod>  
       
     <date>1577822400000</date>  
-    <title>使用Docker安装配置Tomcat | 好好学习的郝</title>  
+    <title>好好学Docker：使用Docker安装配置Tomcat | 好好学习的郝</title>  
       
     <desc>前言《CentOS7设置tomcat开机自启动》一文中，学习了常规的tomcat安装配置方法；《Docker安装tomcat服务》一文中，学习了在Docker容器中安装配置tomcat的方法；《Dockerfile构建Tomcat》一文中，学习了使用Dockerfile安装配置tomcat的方法。本文是对前三种方法的升级，更加简单。不需要自己制作tomcat镜像，而是使用dockerhub提供的t</desc>  
   </url> 
@@ -3307,7 +3318,7 @@
     <lastmod>2019-12-30T20:00:00.000Z</lastmod>  
       
     <date>1577736000000</date>  
-    <title>使用Docker安装配置Apache和PHP环境（微擎环境） | 好好学习的郝</title>  
+    <title>好好学Docker：使用Docker安装配置Apache和PHP环境（微擎环境） | 好好学习的郝</title>  
       
     <desc>前言《在CentOS7上配置PHP运行环境》一文中学习了安装配置LNMP环境，《CentOS安装Apache和PHP环境》一文中学习了安装配置Apache和PHP环境。 本文学习使用Docker安装配置Apache和PHP，与Mysql结合，搭建一个容器化的LAMP环境，部署微擎服务。 前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。已知docker宿主机IP为192.1</desc>  
   </url> 
@@ -3318,7 +3329,7 @@
     <lastmod>2019-12-28T20:00:00.000Z</lastmod>  
       
     <date>1577563200000</date>  
-    <title>使用Docker安装配置Jenkins | 好好学习的郝</title>  
+    <title>好好学Docker：使用Docker安装配置Jenkins | 好好学习的郝</title>  
       
     <desc>前言《CentOS7安装部署Jenkins》一文中学习了Jenkins的安装方法，如果使用Docker来安装Jenkins，同样可以简单很多。 前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。已知docker宿主机IP为192.168.56.130。</desc>  
   </url> 
@@ -3329,7 +3340,7 @@
     <lastmod>2019-12-28T17:00:00.000Z</lastmod>  
       
     <date>1577552400000</date>  
-    <title>使用Docker安装配置GitLab | 好好学习的郝</title>  
+    <title>好好学Docker：使用Docker安装配置GitLab | 好好学习的郝</title>  
       
     <desc>前言《CentOS7安装配置GitLab》一文中学习了GitLab的安装方法，如果使用Docker来安装GitLab，可以简单很多。 前置条件是安装配置好了docker环境，安装方法参考《Docker入门》。已知docker宿主机IP为192.168.56.130。</desc>  
   </url> 
@@ -3351,7 +3362,7 @@
     <lastmod>2019-11-20T21:00:00.000Z</lastmod>  
       
     <date>1574283600000</date>  
-    <title>当K8S遇到PM2 | 好好学习的郝</title>  
+    <title>好好学K8S：当K8S遇到PM2 | 好好学习的郝</title>  
       
     <desc>问题描述某个前端项目使用PM2进行node进程的管理，把该项目打包放到了docker镜像中，使用docker run命令可以正常启动。但是，把docker镜像放入K8S集群后，启动报错，[PM2][ERROR] Process failed to launch spawn E2BIG。</desc>  
   </url> 
@@ -3362,7 +3373,7 @@
     <lastmod>2019-11-18T21:00:00.000Z</lastmod>  
       
     <date>1574110800000</date>  
-    <title>Docker内部使用Supervisor | 好好学习的郝</title>  
+    <title>好好学Docker：Docker容器内部使用Supervisor | 好好学习的郝</title>  
       
     <desc>问题描述使用docker run启动一个beego服务，命令为： 1docker run --name bservice -d -p 8080:8080 voidking/bservice:v1 quot;/bin/bashquot; quot;-cquot; quot;cd /opt/bservice amp;amp; nohup ./bservicequot; 启动后，beeg</desc>  
   </url> 
@@ -3373,7 +3384,7 @@
     <lastmod>2019-11-18T20:00:00.000Z</lastmod>  
       
     <date>1574107200000</date>  
-    <title>CentOS6.8上Python2.6.6升级Python2.7.15 | 好好学习的郝</title>  
+    <title>好好学Python：CentOS6.8上Python2.6.6升级Python2.7.15 | 好好学习的郝</title>  
       
     <desc>前言 Python 2.6 is no longer supported by the Python core team, please upgrade your Python. 虽然Python2.6已经不再维护，但是CentOS6.8系统里默认的Python版本依然是2.6.6。这就很尴尬了，要么凑合用，但是没有pip命令，常规安装pip的方法还会失败。要么进行升级，但是整个过程很麻烦。本文记</desc>  
   </url> 
@@ -3395,7 +3406,7 @@
     <lastmod>2019-09-23T20:00:00.000Z</lastmod>  
       
     <date>1569268800000</date>  
-    <title>使用client-go在K8S集群发布项目 | 好好学习的郝</title>  
+    <title>好好学K8S：使用client-go在K8S集群发布项目 | 好好学习的郝</title>  
       
     <desc>问题简述怎样在K8S集群中发布一个新的项目？怎样判断一个项目是发布成功了还是失败了？怎样访问一个项目？怎样实现灰度发布？怎样实现发布过程中的并发度控制、暂停、继续、取消？怎样实现回滚？ 本文中，会努力寻求这些问题的答案。</desc>  
   </url> 
@@ -3417,7 +3428,7 @@
     <lastmod>2019-09-19T20:00:00.000Z</lastmod>  
       
     <date>1568923200000</date>  
-    <title>使用client-go操作K8S | 好好学习的郝</title>  
+    <title>好好学K8S：使用client-go操作K8S | 好好学习的郝</title>  
       
     <desc>client-go简介直观上看，用户可以使用kubectl、客户端库或者REST请求来访问K8S API。而实际上，无论是kubectl还是客户端库，都是封装了REST请求的工具。client-go作为一个客户端库，能够调用K8S API，实现对K8S集群中资源对象（包括deployment、service、ingress、replicaSet、pod、namespace、node等）的增删改查等</desc>  
   </url> 
@@ -3428,7 +3439,7 @@
     <lastmod>2019-09-12T20:00:00.000Z</lastmod>  
       
     <date>1568318400000</date>  
-    <title>K8S入门篇 | 好好学习的郝</title>  
+    <title>好好学K8S：K8S入门篇 | 好好学习的郝</title>  
       
     <desc>K8S简介Docker最开始是一个管理容器的工具，后来发展成为容器云。容器云以容器为资源分割和调度的基本单位，封装整个软件运行时环境，为开发者和系统管理员提供用于构建、发布和运行分布式应用的平台。当容器云专注于资源共享与隔离、容器编排与部署时，它更接近传统的IaaS；当容器云渗透到应用支撑与运行时环境时，它是一种PaaS。 但是，如果想要将Docker应用于具体的业务实现，是存在困难的——编排、管</desc>  
   </url> 
@@ -4121,7 +4132,7 @@
     <lastmod>2018-06-05T16:30:00.000Z</lastmod>  
       
     <date>1528216200000</date>  
-    <title>使用PSSH批量管理Linux进阶篇 | 好好学习的郝</title>  
+    <title>好好学Linux：使用PSSH批量管理Linux进阶篇 | 好好学习的郝</title>  
       
     <desc>前言《使用PSSH批量管理Linux》一文中，学习了pssh的基本用法，实际上已经涵盖了pssh的大部分内容。 本文主要记录利用pssh和expect脚本来解决一些实际问题，就算是进阶篇了。</desc>  
   </url> 
@@ -4539,7 +4550,7 @@
     <lastmod>2017-09-07T09:30:00.000Z</lastmod>  
       
     <date>1504776600000</date>  
-    <title>Nginx URL大小写转换 | 好好学习的郝</title>  
+    <title>好好学Nginx：Nginx URL大小写转换 | 好好学习的郝</title>  
       
     <desc>url大小写问题将Windows下的项目（如：php）迁移到Linux下，由于Windows操作系统中，文件名是不区分大小写的；而Linux系统是大小写敏感，会导致有些网页出现404情况。那么，怎样Nginx实现url请求不区分大小写呢？运维笔记提供了四种解决方案，郝同学采用安装lua模块的方式。lua-nginx-module来自大牛agentzh的开源项目，在Nginx中嵌入Lua语言，使之可</desc>  
   </url> 
@@ -4561,7 +4572,7 @@
     <lastmod>2017-09-04T09:00:00.000Z</lastmod>  
       
     <date>1504515600000</date>  
-    <title>CentOS下Mysql数据库导出和导入 | 好好学习的郝</title>  
+    <title>好好学MySQL：CentOS下MySQL数据库导出和导入 | 好好学习的郝</title>  
       
     <desc>前言mysql数据库导出和导入，在使用navicat等图形化管理工具的情况下很方便。但是，学校服务器上3306端口禁止远程访问，所以，我们只能采用如下两种方案： 在shell中导出导入 安装phpmyadmin</desc>  
   </url> 
@@ -4638,7 +4649,7 @@
     <lastmod>2017-07-27T10:30:00.000Z</lastmod>  
       
     <date>1501151400000</date>  
-    <title>使用Navicat对比和同步Mysql | 好好学习的郝</title>  
+    <title>好好学MySQL：使用Navicat对比和同步MySQL | 好好学习的郝</title>  
       
     <desc>问题线上一份数据库，测试环境一份数据库。怎样知道两个数据库之间的表结构和数据差异？ 1、表结构对比：对比开发库和正式库之间的表结构，哪个表结构有字段的增加减少，或者字段类型的改变，并生成sql进行结构的同步。 2、数据对比：对比两个数据库中的某个表的数据差异，生成sql脚本进行两个库的同步。</desc>  
   </url> 
@@ -4671,7 +4682,7 @@
     <lastmod>2017-07-15T09:00:00.000Z</lastmod>  
       
     <date>1500109200000</date>  
-    <title>Linux修改命令提示符信息(PS1) | 好好学习的郝</title>  
+    <title>好好学Linux：Linux修改命令提示符信息(PS1) | 好好学习的郝</title>  
       
     <desc>问题如何将 root@izwz94j3dpfuv8pcrn1qitz 修改成 root@voidking-ali？ 解决办法1、查看原PS1，echo $PS1，显示结果为： 1[\u@\h \W]\$ 2、编辑.bashrc，vi ~/.bashrc 3、添加 1export PS1=#x27;[\u@voidking-ali \W]\$#x27; 或者 1export PS1=quot;</desc>  
   </url> 
@@ -4770,7 +4781,7 @@
     <lastmod>2017-06-02T12:00:00.000Z</lastmod>  
       
     <date>1496404800000</date>  
-    <title>Shell脚本之循环读取文本 | 好好学习的郝</title>  
+    <title>好好学Shell：循环读取文本 | 好好学习的郝</title>  
       
     <desc>需求已知mobile.txt为： 12haojin 17625160000voidking 17625160001 需求：根据 mobile.txt 中的内容拼接成SQL，修改不同用户的手机号。例如： 1update user set mobile=quot;17625160000quot; where name=quot;haojinquot;;</desc>  
   </url> 
@@ -4781,9 +4792,9 @@
     <lastmod>2017-06-02T10:00:00.000Z</lastmod>  
       
     <date>1496397600000</date>  
-    <title>Shell脚本之模块化 | 好好学习的郝</title>  
+    <title>好好学Shell：脚本模块化 | 好好学习的郝</title>  
       
-    <desc>脚本模块化脚本调用脚本的方法有两种，第一种是bash调用，在子shell里执行子脚本；第二种是引用调用，在当前脚本里执行子脚本。 脚本的模块化，两种调用方法都能实现，这里推荐第二种方法：引用调用。 引用调用时，父脚本和子脚本里的变量是共用的。</desc>  
+    <desc>脚本模块化Shell脚本调用脚本的方法有两种，第一种是bash调用，在子shell里执行子脚本；第二种是引用调用，在当前脚本里执行子脚本。 脚本的模块化，两种调用方法都能实现，这里推荐第二种方法：引用调用。 引用调用时，父脚本和子脚本里的变量是共用的。</desc>  
   </url> 
   
   <url>  
@@ -4792,9 +4803,9 @@
     <lastmod>2017-06-02T09:00:00.000Z</lastmod>  
       
     <date>1496394000000</date>  
-    <title>Shell脚本之参数提示和校验 | 好好学习的郝</title>  
+    <title>好好学Shell：脚本参数提示和校验 | 好好学习的郝</title>  
       
-    <desc></desc>  
+    <desc>需求描述有一个脚本，需要appname、ip、hostname、domain四个参数，并且都不能为空。</desc>  
   </url> 
   
   <url>  
@@ -4825,7 +4836,7 @@
     <lastmod>2017-05-11T14:00:00.000Z</lastmod>  
       
     <date>1494511200000</date>  
-    <title>Docker部署JavaWeb项目 | 好好学习的郝</title>  
+    <title>好好学Docker：Docker部署JavaWeb项目 | 好好学习的郝</title>  
       
     <desc>部署要求宿主机为CentOS7，上面安装了docker、nginx和mysql。 1、把已经开发好的JavaWeb项目（pandawork-start）部署到docker容器里。2、该JavaWeb项目使用宿主机的mysql。3、容器设置静态ip为192.168.34.10，80端口映射为宿主机28080端口。4、nginx配置可以通过网址pandawork.voidking.com访问该Java</desc>  
   </url> 
@@ -4836,7 +4847,7 @@
     <lastmod>2017-05-11T09:00:00.000Z</lastmod>  
       
     <date>1494493200000</date>  
-    <title>Docker安装tomcat服务 | 好好学习的郝</title>  
+    <title>好好学Docker：Docker安装Tomcat服务 | 好好学习的郝</title>  
       
     <desc>部署要求宿主机为CentOS7，上面安装了docker。 1、docker镜像选择ubuntu，在ubuntu中安装tomcat。2、容器8080端口映射为宿主机18080端口。</desc>  
   </url> 
@@ -4858,7 +4869,7 @@
     <lastmod>2017-05-08T16:00:00.000Z</lastmod>  
       
     <date>1494259200000</date>  
-    <title>Docker静态IP设置 | 好好学习的郝</title>  
+    <title>好好学Docker：Docker容器配置静态IP | 好好学习的郝</title>  
       
     <desc>前言Docker容器运行的时候默认会自动分配一个默认网桥所在网段的IP地址。但很多时候我们可能需要让容器运行在预先指定的静态IP地址上，因为早期的版本不支持静态IP，因此网上大部分方法都是借助pipework等去实现，然而在最新的版本中，Docker已经内嵌支持在启动时指定静态IP了。 Docker守护进程启动以后会创建默认网桥docker0，其IP网段通常为172.17.0.1。在启动Conta</desc>  
   </url> 
@@ -5287,7 +5298,7 @@
     <lastmod>2017-01-22T09:10:00.000Z</lastmod>  
       
     <date>1485076200000</date>  
-    <title>Python抓取百度百科数据 | 好好学习的郝</title>  
+    <title>好好学Python：Python抓取百度百科数据 | 好好学习的郝</title>  
       
     <desc>前言本文整理自慕课网《Python开发简单爬虫》，将会记录爬取百度百科“python”词条相关页面的整个过程。</desc>  
   </url> 
@@ -5298,7 +5309,7 @@
     <lastmod>2017-01-17T11:21:00.000Z</lastmod>  
       
     <date>1484652060000</date>  
-    <title>Python爬虫基础 | 好好学习的郝</title>  
+    <title>好好学Python：Python爬虫基础 | 好好学习的郝</title>  
       
     <desc>前言Python非常适合用来开发网页爬虫，理由如下：1、抓取网页本身的接口相比与其他静态编程语言，如java，c#，c++，python抓取网页文档的接口更简洁；相比其他动态脚本语言，如perl，shell，python的urllib包提供了较为完整的访问网页文档的API。（当然ruby也是很好的选择）此外，抓取网页有时候需要模拟浏览器的行为，很多网站对于生硬的爬虫抓取都是封杀的。这是我们需要模拟</desc>  
   </url> 
@@ -5364,7 +5375,7 @@
     <lastmod>2016-11-27T11:18:15.000Z</lastmod>  
       
     <date>1480245495000</date>  
-    <title>thinkphp部署到nginx服务器 | 好好学习的郝</title>  
+    <title>好好学Nginx：ThinkPHP部署到Nginx服务器 | 好好学习的郝</title>  
       
     <desc>前言nginx默认情况下不支持pathinfo模式，从而不能支持ThinkPHP。能访问的，只有首页，其他函数的路径，都无法访问。</desc>  
   </url> 
@@ -6299,7 +6310,7 @@
     <lastmod>2015-07-21T10:00:00.000Z</lastmod>  
       
     <date>1437472800000</date>  
-    <title>git tag使用说明 | 好好学习的郝</title>  
+    <title>好好学Git：Git打标签 | 好好学习的郝</title>  
       
     <desc>打标签所谓打标签，就是对某一时间点上的版本打上标签。Git使用的标签有两种类型：轻量级的（lightweight）和含附注的（annotated）。轻量级标签就像是个不会变化的分支，实际上它就是个指向特定提交对象的引用。而含附注标签，实际上是存储在仓库中的一个独立对象，它有自身的校验和信息，包含着标签的名字，电子邮件地址和日期，以及标签说明，标签本身也允许使用 GNU Privacy Guard </desc>  
   </url> 
@@ -6376,9 +6387,9 @@
     <lastmod>2015-07-03T10:51:42.000Z</lastmod>  
       
     <date>1435920702000</date>  
-    <title>Linux复习整理 | 好好学习的郝</title>  
+    <title>好好学Linux：Linux复习整理 | 好好学习的郝</title>  
       
-    <desc>题型1、填空（10*1’)2、选择（10*1’）3、简单操作题（写命令）(5*2’)4、简答题（6*5’）5、综合题（2*20’）（程序或者流程图） 考纲命令题定时任务如何设计小明是个网管，老板要求他每天早晨3点起来看看磁盘空间满不满，请问你如何用学过的知识为小明解决这一痛苦的问题。</desc>  
+    <desc>题型1、填空（10*1’)2、选择（10*1’）3、简单操作题（写命令）(5*2’)4、简答题（6*5’）5、综合题（2*20’）（程序或者流程图）</desc>  
   </url> 
   
   <url>  
@@ -6415,12 +6426,12 @@
   </url> 
   
   <url>  
-    <loc>https://www.voidking.com/dev-linux-speech/</loc>  
+    <loc>https://www.voidking.com/dev-linux-file-system-basic/</loc>  
       
     <lastmod>2015-06-02T12:39:22.000Z</lastmod>  
       
     <date>1433248762000</date>  
-    <title>Linux演讲 | 好好学习的郝</title>  
+    <title>好好学Linux：文件系统基础知识 | 好好学习的郝</title>  
       
     <desc>前言教授Linux的丁宋涛老师，安排大家轮流讲课，6月4号就到我了，赶紧备课！我们组要讲的内容有：Linux第9题： 利用dumpe2fs把linux一个ext2(ext3也可)分区的信息dump出来，解释dump出来的信息。 结合课程的知识和ext2的目录结构，解析文件打开的过程。 课本第11章： 进程间通信。 本来想把这两部分内容都做一下，后来发现，内容实在太多，搞不定，还是大家均摊吧！题目我</desc>  
   </url> 
@@ -6662,7 +6673,7 @@
     <lastmod>2015-03-25T21:12:09.000Z</lastmod>  
       
     <date>1427317929000</date>  
-    <title>Linux的12个问题 | 好好学习的郝</title>  
+    <title>好好学Linux：Linux的12个问题 | 好好学习的郝</title>  
       
     <desc>问题11.下载linux2.6.18的内核2.安装阅读内核的软件soure insight3.编译内核4.写总结讲讲下载编译过程的问题和解决方式。 问题2从内核中寻找各种数据结构的应用，每个找一个例子。从内核中寻找同步机制的应用，每个找一个例子。学习dead line调度算法（deadline-iosched.c）中红黑树的应用,重点deadline_add_request从dead line调度</desc>  
   </url> 
@@ -7542,7 +7553,7 @@
     <lastmod>2013-11-18T11:34:50.000Z</lastmod>  
       
     <date>1384774490000</date>  
-    <title>Linux下解压命令大全 | 好好学习的郝</title>  
+    <title>好好学Linux：Linux系统中解压命令大全 | 好好学习的郝</title>  
       
     <desc>.tar解包：tar xvf FileName.tar打包：tar cvf FileName.tar DirName（注：tar是打包，不是压缩！）</desc>  
   </url> 
@@ -7630,7 +7641,7 @@
     <lastmod>2013-08-06T18:42:36.000Z</lastmod>  
       
     <date>1375814556000</date>  
-    <title>Linux各版本比较 | 好好学习的郝</title>  
+    <title>好好学Linux：Linux各版本比较 | 好好学习的郝</title>  
       
     <desc>Linux的核心最早由Linus Benedict Torvalds在1991年开发出来。在这之前，Richard Stallman创建了Free Software Foundation（FSF）组织以及GNU项目，并不断的编写创建GNU程序（此类程序的许可方式均为GPL: General Public License）。在不断的有杰出的程序员和开发者加入到GNU组织中后，便造就了今天我们所看到的</desc>  
   </url> 
@@ -7641,7 +7652,7 @@
     <lastmod>2013-07-16T11:00:00.000Z</lastmod>  
       
     <date>1373972400000</date>  
-    <title>Linux命令大全——RSTUVWXYZ | 好好学习的郝</title>  
+    <title>好好学Linux：Linux命令大全 RSTUVWXYZ | 好好学习的郝</title>  
       
     <desc></desc>  
   </url> 
@@ -7652,7 +7663,7 @@
     <lastmod>2013-07-16T10:00:00.000Z</lastmod>  
       
     <date>1373968800000</date>  
-    <title>Linux命令大全——LMNOPQ | 好好学习的郝</title>  
+    <title>好好学Linux：Linux命令大全 LMNOPQ | 好好学习的郝</title>  
       
     <desc></desc>  
   </url> 
@@ -7663,7 +7674,7 @@
     <lastmod>2013-07-16T09:00:00.000Z</lastmod>  
       
     <date>1373965200000</date>  
-    <title>Linux命令大全——EFGHIJK | 好好学习的郝</title>  
+    <title>好好学Linux：Linux命令大全 EFGHIJK | 好好学习的郝</title>  
       
     <desc></desc>  
   </url> 
@@ -7674,7 +7685,7 @@
     <lastmod>2013-07-16T08:00:00.000Z</lastmod>  
       
     <date>1373961600000</date>  
-    <title>Linux命令大全——ABCD | 好好学习的郝</title>  
+    <title>好好学Linux：Linux命令大全 ABCD | 好好学习的郝</title>  
       
     <desc>本文摘自《Linux/UNIX指令范例速查手册》。 Aadduser adduser: add user，新建系统上的账号 adduser -D，显示新建账号时的默认值。 adduser -m jos，新建名为jos的账号（使用系统默认值）。 adduser位于/usr/sbin/之下，是/usr/sbin/useradd的连接。也就是说，adduser和useradd实际上是同一个命令。</desc>  
   </url> 
@@ -7726,7 +7737,7 @@
 
   <url>
     <loc>https://www.voidking.com/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -7734,1736 +7745,1792 @@
   
   <url>
     <loc>https://www.voidking.com/tags/python/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/chatgpt/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E6%9E%B6%E6%9E%84/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/django/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E5%B9%B3%E5%8F%B0/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/prometheus/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/promql/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/nginx/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E7%9B%91%E6%8E%A7/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/k8s/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/helm/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E6%BA%90%E7%A0%81/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/golang/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/macos/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/vscode/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E7%BC%96%E8%BE%91%E5%99%A8/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/docker/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/oracle/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/linux/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/ubuntu/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/apache/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/css/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E5%89%8D%E7%AB%AF/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/gpu/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/ack/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E7%9F%A5%E8%AF%86%E5%B7%A5%E7%A8%8B/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/aiops/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/node/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E6%94%AF%E4%BB%98%E5%AE%9D/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/rsa/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/alpine/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/busybox/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/conda/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E8%BD%AC%E8%BD%BD/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/android/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/git/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/angularjs/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/openstack/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/ansible/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/ssh/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/sshpass/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/java/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/tomcat/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/hbuilder/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/ios/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/argocd/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/cicd/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/devops/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/javascript/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/jquery/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/axure/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E8%89%BE%E4%BD%B3%E7%94%9F%E6%B4%BB/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/shell/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/pxe/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/hexo/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/beego/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/debug/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/eclipse/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/maven/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E7%BD%91%E7%AB%99/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E5%9F%9F%E5%90%8D/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/freemarker/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/php/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/centos/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/yum%E6%BA%90/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/jira/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/wiki/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/dns/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E7%BD%91%E7%BB%9C/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/jupyter/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/mysql/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E5%A5%BD%E5%A5%BD%E5%AD%A6MySQL/</loc>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/phpmyadmin/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E5%A5%BD%E5%A5%BD%E5%AD%A6Nginx/</loc>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/supervisor/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/pip/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E5%A5%BD%E5%A5%BD%E5%AD%A6Python/</loc>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/elk/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/gitlab/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/https/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E5%8A%A0%E5%AF%86/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/tls/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/ssl/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E5%A5%BD%E5%A5%BD%E5%AD%A6K8S/</loc>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/chrome/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E6%8F%92%E4%BB%B6/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/cka/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/ckad/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/clickhouse/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/cookie/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/localstorage/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/sessionstorage/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/sprite/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/staruml/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/uwsgi/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/pycharm/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/dokcer/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E5%A5%BD%E5%A5%BD%E5%AD%A6Docker/</loc>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/docker-compose/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/dockerfile/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E5%AD%98%E5%82%A8/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/crontab/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/cloudnative/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/jdk/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/dolphinscheduler/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/spark/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/grafana/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/harbor/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/pypi/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/swarm/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/zookeeper/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/dubbo/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/tensorflow/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/etcd/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/firewall/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/iptables/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/markdown/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E4%BB%A3%E7%90%86/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/ganglia/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/mathjax/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E5%A5%BD%E5%A5%BD%E5%AD%A6Git/</loc>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/github/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E6%B5%8B%E8%AF%95/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/gitignore/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/oom/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/virtualbox/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/client-go/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/godep/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/govendor/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/idea/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E6%AF%95%E8%AE%BE/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/opencv/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/socketio/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E5%BE%AE%E4%BF%A1/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/hadoop/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/hive/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E9%94%99%E8%AF%AF%E6%8E%92%E6%9F%A5/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/bitnami/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/nvm/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E5%8D%9A%E5%AE%A2/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/travis-ci/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/github-actions/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/gulp/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/hibernate/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/html/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/spring/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/springmvc/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/mybatis/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/ingress/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/mongodb/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/nfs/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/ipvs/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/jdbc/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/jpa/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/ajax/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/json/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/jsp/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/servlet/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/jumpserver/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E8%B0%83%E8%AF%95/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/kubectl/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/kubesphere/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/storageclass/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/pm2/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/wireshark/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/operator/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/debian/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/kolla/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/kubeadm/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/krew/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/ldap/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/libvirt/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/virsh/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/windows/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/ftp/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/pyenv/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/sublime/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/typora/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/wechat-format/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/matlab/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/kaggle/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/exports/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/request/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/nohup/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/screen/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/anaconda/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/wordpress/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/iperf/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/xdebug/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/memcache/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/postgresql/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/pssh/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E7%88%AC%E8%99%AB/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/redis/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E7%BC%93%E5%AD%98/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/sass/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/seajs/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/vim/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/thinkphp/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/struts2/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/sqlserver/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/tensorboard/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/termux/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/pathinfo/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/session/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E8%B7%A8%E5%9F%9F/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/zabbix/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/devstack/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/xshell/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/xftp/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/js/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E6%A1%86%E6%9E%B6/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/puer/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/composer/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/medoo/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E5%B0%8F%E7%A8%8B%E5%BA%8F/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E5%AE%89%E5%85%A8/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E9%BB%91%E5%AE%A2/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/wsl2/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/gym/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/rflearning/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/tshark/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/tcpdump/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/word/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/xmpp/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/yii/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E9%AA%8C%E8%AF%81%E7%A0%81/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E7%AE%97%E6%B3%95/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E7%AC%94%E8%AE%B0/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E9%9A%8F%E7%AC%94/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E6%80%9D%E8%80%83/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/%E4%B8%8B%E8%BD%BD/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/ps/</loc>
-    <lastmod>2024-02-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.voidking.com/tags/wifi/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/sealos/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/kubesphere/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/storageclass/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/pm2/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/wireshark/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/operator/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/debian/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/kolla/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/kubeadm/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/krew/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/ldap/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/libvirt/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/virsh/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/windows/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E5%A5%BD%E5%A5%BD%E5%AD%A6Linux/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/ftp/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/pyenv/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/iperf/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/sublime/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/typora/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/wechat-format/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/matlab/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/kaggle/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/exports/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/request/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/nohup/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/screen/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/anaconda/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/wordpress/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/xdebug/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/memcache/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/postgresql/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/pssh/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E7%88%AC%E8%99%AB/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/redis/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E7%BC%93%E5%AD%98/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/sass/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/seajs/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E5%A5%BD%E5%A5%BD%E5%AD%A6Shell/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/vim/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/thinkphp/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/struts2/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/sqlserver/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/tensorboard/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/termux/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/pathinfo/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/session/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E8%B7%A8%E5%9F%9F/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/zabbix/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/devstack/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/xshell/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/xftp/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/js/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E6%A1%86%E6%9E%B6/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/puer/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/composer/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/medoo/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E5%B0%8F%E7%A8%8B%E5%BA%8F/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E5%AE%89%E5%85%A8/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E9%BB%91%E5%AE%A2/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/wsl2/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/gym/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/rflearning/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/tshark/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/tcpdump/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/word/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/xmpp/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/yii/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E9%AA%8C%E8%AF%81%E7%A0%81/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E7%AE%97%E6%B3%95/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E7%AC%94%E8%AE%B0/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E9%9A%8F%E7%AC%94/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E6%80%9D%E8%80%83/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/%E4%B8%8B%E8%BD%BD/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/ps/</loc>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/wifi/</loc>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/keepalived/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/haproxy/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/leetcode/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/numpy/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/pandas/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/matplotlib/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/%E5%BD%A2%E5%BC%8F%E8%AF%AD%E4%B9%89%E5%AD%A6/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/lisp/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/tags/scheme/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
@@ -9472,210 +9539,217 @@
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/python/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/monitoring/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/k8s/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/golang/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/essay/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/database/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/devops/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/frontend/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/docker/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/algorithm/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/machinelearning/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/nodejs/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/android/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/cloudnative/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/java/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/shell/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/uncategories/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/hexo/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/bigdata/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/network/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/troubleshooting/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/php/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/architecture/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/spark/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/git/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/storage/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/testing/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/engineering/openstack/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.voidking.com/categories/computer/</loc>
-    <lastmod>2024-02-29</lastmod>
+    <lastmod>2024-03-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/categories/engineering/linux/</loc>
+    <lastmod>2024-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
