@@ -6,7 +6,7 @@
   <link href="https://www.voidking.com/atom.xml" rel="self"/>
   
   <link href="https://www.voidking.com/"/>
-  <updated>2024-02-24T08:00:00.000Z</updated>
+  <updated>2024-03-09T08:00:00.000Z</updated>
   <id>https://www.voidking.com/</id>
   
   <author>
@@ -15,6 +15,44 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>好好学Docker：Docker容器磁盘IO限速</title>
+    <link href="https://www.voidking.com/dev-docker-container-blkio-limit/"/>
+    <id>https://www.voidking.com/dev-docker-container-blkio-limit/</id>
+    <published>2024-03-09T08:00:00.000Z</published>
+    <updated>2024-03-09T08:00:00.000Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="前言"><span class="post-title-index">1. </span><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>为避免Docker容器打满磁盘IO，有时需要对容器进行磁盘IO限速。</p><p>参考文档：</p><ul><li><a href="https://docs.docker.com/reference/cli/docker/container/run/">docker container run</a></li><li><a href="https://docs.docker.com/compose/compose-file/05-services/#blkio_config">Services top-level elements - blkio_config</a></li><li><a href="https://docs.docker.com/compose/compose-file/compose-file-v2/#blkio_config">Compose file version 2 reference - blkio_config</a></li><li><a href="https://blog.csdn.net/qq_34556414/article/details/121564025">容器磁盘限速：我的容器里磁盘读写为什么不稳定?</a></li></ul><span id="more"></span><h1 id="启动容器时限制容器磁盘IO"><span class="post-title-index">2. </span><a href="#启动容器时限制容器磁盘IO" class="headerlink" title="启动容器时限制容器磁盘IO"></a>启动容器时限制容器磁盘IO</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">docker run --name <span class="built_in">test</span> -d \</span><br><span class="line">  --device-read-bps=/dev/sda:40mb \</span><br><span class="line">  --device-write-bps=/dev/sda:20mb \</span><br><span class="line">  --blkio-weight=500 \</span><br><span class="line">  busybox:latest <span class="built_in">tail</span> -f /dev/null</span><br></pre></td></tr></table></figure><p>上面的命令中，限制容器读速度最高40MBps，写速度最高 20MBps，磁盘IO权重500（多个容器竞争IO时的相对权重，取值10到1000）。</p><p>注意：创建容器之后，无法通过 update 修改容器磁盘IO限制。</p><h1 id="Compose限制容器磁盘IO"><span class="post-title-index">3. </span><a href="#Compose限制容器磁盘IO" class="headerlink" title="Compose限制容器磁盘IO"></a>Compose限制容器磁盘IO</h1><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&#x27;3.2&#x27;</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">your-service:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">your-image:latest</span></span><br><span class="line">    <span class="attr">blkio_config:</span></span><br><span class="line">      <span class="attr">weight:</span> <span class="number">500</span></span><br><span class="line">      <span class="attr">device_read_bps:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">path:</span> <span class="string">/dev/sda</span></span><br><span class="line">          <span class="attr">rate:</span> <span class="string">40mb</span></span><br><span class="line">      <span class="attr">device_write_bps:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">path:</span> <span class="string">/dev/sda</span></span><br><span class="line">          <span class="attr">rate:</span> <span class="string">20mb</span></span><br></pre></td></tr></table></figure><p>上面的配置中，限制容器读速度最高40MBps，写速度最高 20MBps，磁盘IO权重500（多个容器竞争IO时的相对权重，取值10到1000）。</p><h1 id="查看容器磁盘IO限制"><span class="post-title-index">4. </span><a href="#查看容器磁盘IO限制" class="headerlink" title="查看容器磁盘IO限制"></a>查看容器磁盘IO限制</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker inspect -f <span class="string">&#x27;&#123;&#123;.HostConfig.BlkioDeviceReadBps&#125;&#125;&#x27;</span> &lt;container <span class="built_in">id</span>&gt;</span><br><span class="line">docker inspect -f <span class="string">&#x27;&#123;&#123;.HostConfig.BlkioDeviceWriteBps&#125;&#125;&#x27;</span> &lt;container <span class="built_in">id</span>&gt;</span><br></pre></td></tr></table></figure>]]></content>
+    
+    
+    <summary type="html">&lt;h1 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h1&gt;&lt;p&gt;为避免Docker容器打满磁盘IO，有时需要对容器进行磁盘IO限速。&lt;/p&gt;
+&lt;p&gt;参考文档：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.docker.com/reference/cli/docker/container/run/&quot;&gt;docker container run&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.docker.com/compose/compose-file/05-services/#blkio_config&quot;&gt;Services top-level elements - blkio_config&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.docker.com/compose/compose-file/compose-file-v2/#blkio_config&quot;&gt;Compose file version 2 reference - blkio_config&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.csdn.net/qq_34556414/article/details/121564025&quot;&gt;容器磁盘限速：我的容器里磁盘读写为什么不稳定?&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</summary>
+    
+    
+    
+    <category term="engineering" scheme="https://www.voidking.com/categories/engineering/"/>
+    
+    <category term="devops" scheme="https://www.voidking.com/categories/engineering/devops/"/>
+    
+    <category term="docker" scheme="https://www.voidking.com/categories/engineering/docker/"/>
+    
+    <category term="network" scheme="https://www.voidking.com/categories/engineering/network/"/>
+    
+    
+    <category term="docker" scheme="https://www.voidking.com/tags/docker/"/>
+    
+    <category term="网络" scheme="https://www.voidking.com/tags/%E7%BD%91%E7%BB%9C/"/>
+    
+    <category term="好好学Docker" scheme="https://www.voidking.com/tags/%E5%A5%BD%E5%A5%BD%E5%AD%A6Docker/"/>
+    
+  </entry>
   
   <entry>
     <title>好好学Docker：使用Docker安装配置AdGuard Home</title>
@@ -688,44 +726,6 @@
     <category term="docker" scheme="https://www.voidking.com/tags/docker/"/>
     
     <category term="微信" scheme="https://www.voidking.com/tags/%E5%BE%AE%E4%BF%A1/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>好好学Docker：使用Docker安装配置OPANAI API代理</title>
-    <link href="https://www.voidking.com/dev-docker-openai-api-proxy/"/>
-    <id>https://www.voidking.com/dev-docker-openai-api-proxy/</id>
-    <published>2023-07-16T08:00:00.000Z</published>
-    <updated>2023-12-16T08:00:00.000Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="前言"><span class="post-title-index">1. </span><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>OPENAI API代理，顾名思义，是一种用于代理OPENAI API的专用代理。<br>目前OPENAI API代理中，做的比较好的是 openai-forward。本文中，我们基于Docker安装配置一下openai-forward。</p><p>参考文档：</p><ul><li><a href="https://github.com/KenyonY/openai-forward">github - KenyonY/openai-forward</a></li><li><a href="https://www.voidking.com/dev-python-openai-api/">《Python调用OpenAI API》</a></li></ul><span id="more"></span><h1 id="使用openai-forward代理"><span class="post-title-index">2. </span><a href="#使用openai-forward代理" class="headerlink" title="使用openai-forward代理"></a>使用openai-forward代理</h1><p><a href="https://github.com/KenyonY/openai-forward">KenyonY/openai-forward</a>项目作者提供了三个公开的代理服务。</p><ul><li>原始 OpenAI 服务地址1：<a href="https://api.openai-forward.com/">https://api.openai-forward.com</a></li><li>原始 OpenAI 服务地址2：<a href="https://render.openai-forward.com/">https://render.openai-forward.com</a></li><li>开启缓存的服务地址（用户请求结果将被保存一段时间）：<a href="https://smart.openai-forward.com/">https://smart.openai-forward.com</a></li></ul><p>命令行使用OPENAI API代理的方法：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openai -b <span class="string">&quot;https://api.openai-forward.com/v1&quot;</span> api chat_completions.create -m gpt-3.5-turbo -g user <span class="string">&quot;Hello world&quot;</span></span><br></pre></td></tr></table></figure><p>Python使用OPEANAI API代理的方法：</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> openai</span><br><span class="line"></span><br><span class="line">openai.api_base = <span class="string">&#x27;https://api.openai-forward.com/v1&#x27;</span></span><br><span class="line">openai.api_key = <span class="string">&#x27;sk-xxx&#x27;</span></span><br><span class="line"></span><br><span class="line">chat_completion = openai.ChatCompletion.create(model=<span class="string">&quot;gpt-3.5-turbo&quot;</span>, messages=[&#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>, <span class="string">&quot;content&quot;</span>: <span class="string">&quot;Hello world&quot;</span>&#125;])</span><br><span class="line"><span class="built_in">print</span>(chat_completion)</span><br></pre></td></tr></table></figure><h1 id="自建openai-forward代理"><span class="post-title-index">3. </span><a href="#自建openai-forward代理" class="headerlink" title="自建openai-forward代理"></a>自建openai-forward代理</h1><h2 id="机器准备"><span class="post-title-index">3.1. </span><a href="#机器准备" class="headerlink" title="机器准备"></a>机器准备</h2><p>如果打算自建 openai-forward 服务，那么首先要准备一台海外的可以访问 OPENAI API 的主机。</p><p>主机测试方法：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl https://api.openai.com/v1</span><br></pre></td></tr></table></figure><p>正常响应：</p><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;error&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;invalid_request_error&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;code&quot;</span><span class="punctuation">:</span> <span class="string">&quot;unknown_url&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;message&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Unknown request URL: GET /v1. Please check the URL for typos, or see the docs at https://platform.openai.com/docs/api-reference/.&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;param&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">null</span></span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure><p>如果有正常响应，那么说明这台主机是满足需求的。</p><h2 id="安装配置openai-forward"><span class="post-title-index">3.2. </span><a href="#安装配置openai-forward" class="headerlink" title="安装配置openai-forward"></a>安装配置openai-forward</h2><p>1、下载openai-forward镜像</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull beidongjiedeguang/openai-forward:latest</span><br></pre></td></tr></table></figure><p>2、启动openai-forward容器</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">docker run --name openai-forward -d \</span><br><span class="line">    --restart=always \</span><br><span class="line">    -p 8000:8000 \</span><br><span class="line">    beidongjiedeguang/openai-forward:latest </span><br></pre></td></tr></table></figure><p>3、检查容器状态</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker ps</span><br><span class="line">docker logs openai-forward</span><br></pre></td></tr></table></figure><h1 id="配置Nginx"><span class="post-title-index">4. </span><a href="#配置Nginx" class="headerlink" title="配置Nginx"></a>配置Nginx</h1><p>http配置：</p><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">    map $http_upgrade $connection_upgrade &#123;</span><br><span class="line">      default upgrade;</span><br><span class="line">      &#x27;&#x27;      close;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>server配置：</p><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name openai-forward.voidking.com;</span><br><span class="line">    rewrite ^(.*) https://openai-forward.voidking.com$1 permanent;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">    listen 443 ssl;</span><br><span class="line">    server_name openai-forward.voidking.com;</span><br><span class="line">    access_log off;</span><br><span class="line">    error_log off;</span><br><span class="line"></span><br><span class="line">    ssl_certificate /etc/nginx/ssl/openai-forward.voidking.com/openai-forward.voidking.com_bundle.crt;</span><br><span class="line">    ssl_certificate_key /etc/nginx/ssl/openai-forward.voidking.com/openai-forward.voidking.com.key;</span><br><span class="line">    location / &#123;</span><br><span class="line">        proxy_pass http://127.0.0.1:8000;</span><br><span class="line">        proxy_redirect off;</span><br><span class="line">        proxy_set_header Host $host;</span><br><span class="line">        proxy_set_header X-Real-IP $remote_addr;</span><br><span class="line">        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">        proxy_set_header Upgrade $http_upgrade;</span><br><span class="line">        proxy_set_header Connection $connection_upgrade;</span><br><span class="line">        proxy_max_temp_file_size 0;</span><br><span class="line">        client_max_body_size 10m;</span><br><span class="line">        client_body_buffer_size 128k;</span><br><span class="line">        proxy_connect_timeout 90;</span><br><span class="line">        proxy_send_timeout 90;</span><br><span class="line">        proxy_read_timeout 90;</span><br><span class="line">        proxy_temp_file_write_size 64k;</span><br><span class="line">        proxy_buffering off;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
-    
-    
-    <summary type="html">&lt;h1 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h1&gt;&lt;p&gt;OPENAI API代理，顾名思义，是一种用于代理OPENAI API的专用代理。&lt;br&gt;目前OPENAI API代理中，做的比较好的是 openai-forward。本文中，我们基于Docker安装配置一下openai-forward。&lt;/p&gt;
-&lt;p&gt;参考文档：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&quot;https://github.com/KenyonY/openai-forward&quot;&gt;github - KenyonY/openai-forward&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://www.voidking.com/dev-python-openai-api/&quot;&gt;《Python调用OpenAI API》&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</summary>
-    
-    
-    
-    <category term="engineering" scheme="https://www.voidking.com/categories/engineering/"/>
-    
-    <category term="python" scheme="https://www.voidking.com/categories/engineering/python/"/>
-    
-    <category term="docker" scheme="https://www.voidking.com/categories/engineering/docker/"/>
-    
-    
-    <category term="python" scheme="https://www.voidking.com/tags/python/"/>
-    
-    <category term="chatgpt" scheme="https://www.voidking.com/tags/chatgpt/"/>
-    
-    <category term="nginx" scheme="https://www.voidking.com/tags/nginx/"/>
-    
-    <category term="docker" scheme="https://www.voidking.com/tags/docker/"/>
-    
-    <category term="好好学Docker" scheme="https://www.voidking.com/tags/%E5%A5%BD%E5%A5%BD%E5%AD%A6Docker/"/>
     
   </entry>
   
