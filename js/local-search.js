@@ -15,7 +15,7 @@ window.addEventListener('DOMContentLoaded', () => {
   let path = CONFIG.root + searchPath;
   // Use jsDelivr CDN to accelerate the speed of loading search.xml
   if ('cdn' in CONFIG.localsearch && CONFIG.localsearch.cdn.enable === true && CONFIG.localsearch.cdn.url !== null){
-    t = '202407270416';
+    t = '202408030449';
     path = CONFIG.localsearch.cdn.url + '?t=' + t;
   }
 
