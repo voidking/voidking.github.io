@@ -26,21 +26,10 @@
   <url>  
     <loc>https://www.voidking.com/tags/index.html</loc>  
       
-    <lastmod>2026-01-20T03:29:37.884Z</lastmod>  
+    <lastmod>2026-01-20T03:42:43.385Z</lastmod>  
       
-    <date>1768879777884</date>  
+    <date>1768880563385</date>  
     <title>tags | 好好学习的郝</title>  
-      
-    <desc></desc>  
-  </url> 
-  
-  <url>  
-    <loc>https://www.voidking.com/categories/index.html</loc>  
-      
-    <lastmod>2026-01-20T03:29:37.857Z</lastmod>  
-      
-    <date>1528712001000</date>  
-    <title>文章分类 | 好好学习的郝</title>  
       
     <desc></desc>  
   </url> 
@@ -48,12 +37,23 @@
   <url>  
     <loc>https://www.voidking.com/hobby-windows-skill/</loc>  
       
-    <lastmod>2026-01-20T03:29:37.856Z</lastmod>  
+    <lastmod>2026-01-20T03:42:43.358Z</lastmod>  
       
     <date>1402154347000</date>  
     <title>Windows的一些技巧 | 好好学习的郝</title>  
       
     <desc>realtek高清晰音频管理器，关闭图标1、开始，运行，输入 msconfig ，启动2、取消勾选 realtek高清晰音频管理器 的开机自启动项，OK3、重启后生效 菜单栏消失1、开始，控制面板，外观和个性化2、文件夹选项，查看，始终显示菜单 删除用户1、开始，控制面板，性能和维护2、管理工具，计算机管理3、本地用户和组，删掉不想要的用户 切换管理员账户1、右击计算机图标，管理2、本地用户和组，</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/categories/index.html</loc>  
+      
+    <lastmod>2026-01-20T03:42:43.358Z</lastmod>  
+      
+    <date>1528712001000</date>  
+    <title>文章分类 | 好好学习的郝</title>  
+      
+    <desc></desc>  
   </url> 
   
   <url>  
@@ -1872,17 +1872,6 @@
   </url> 
   
   <url>  
-    <loc>https://www.voidking.com/dev-ai-agent-based-on-metagpt-6/</loc>  
-      
-    <lastmod>2024-01-13T08:00:00.000Z</lastmod>  
-      
-    <date>1705132800000</date>  
-    <title>基于MetaGPT实现一个订阅智能体：第六章 订阅智能体进阶 | 好好学习的郝</title>  
-      
-    <desc>OSS订阅智能体的思考与优化前面的教程中，沃恩实现了OSS订阅智能体，将Github Trending的信息由智能体总结之后，通过discord或者微信的渠道发送给了我们。 订阅智能体的实现过程，要分别完成SubscriptionRunner运行需要的三个要素：Role、Trigger、Pusher。Trigger是触发器，我们实现了一个定时触发器；Pusher是推送器，我们实现了将消息发送到di</desc>  
-  </url> 
-  
-  <url>  
     <loc>https://www.voidking.com/dev-ai-agent-based-on-metagpt-5/</loc>  
       
     <lastmod>2024-01-13T08:00:00.000Z</lastmod>  
@@ -1891,6 +1880,17 @@
     <title>基于MetaGPT实现一个订阅智能体：第五章 ActionNode | 好好学习的郝</title>  
       
     <desc>为什么要采用ActionNode的数据结构？随着Agent需求的复杂化，SOP也会复杂化。动作的执行不再只是线性，需要支持CoT、ToT、GoT等技术，使用 ActionNode 可以实现统一抽象。 之前的Action，我们是用结构化的prompt形式，用markdown文本输入一个很长的文本信息，然后在action的run方法中解析LLM返回的信息，这种方式的灵活性是比较差的。 而对于LLM的请</desc>  
+  </url> 
+  
+  <url>  
+    <loc>https://www.voidking.com/dev-ai-agent-based-on-metagpt-6/</loc>  
+      
+    <lastmod>2024-01-13T08:00:00.000Z</lastmod>  
+      
+    <date>1705132800000</date>  
+    <title>基于MetaGPT实现一个订阅智能体：第六章 订阅智能体进阶 | 好好学习的郝</title>  
+      
+    <desc>OSS订阅智能体的思考与优化前面的教程中，沃恩实现了OSS订阅智能体，将Github Trending的信息由智能体总结之后，通过discord或者微信的渠道发送给了我们。 订阅智能体的实现过程，要分别完成SubscriptionRunner运行需要的三个要素：Role、Trigger、Pusher。Trigger是触发器，我们实现了一个定时触发器；Pusher是推送器，我们实现了将消息发送到di</desc>  
   </url> 
   
   <url>  
@@ -9049,13 +9049,6 @@
   </url>
   
   <url>
-    <loc>https://www.voidking.com/tags/hexo/</loc>
-    <lastmod>2026-01-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://www.voidking.com/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/</loc>
     <lastmod>2026-01-20</lastmod>
     <changefreq>weekly</changefreq>
@@ -9064,6 +9057,13 @@
   
   <url>
     <loc>https://www.voidking.com/tags/pxe/</loc>
+    <lastmod>2026-01-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.voidking.com/tags/hexo/</loc>
     <lastmod>2026-01-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -10626,14 +10626,14 @@
   </url>
   
   <url>
-    <loc>https://www.voidking.com/categories/engineering/hexo/</loc>
+    <loc>https://www.voidking.com/categories/engineering/uncategories/</loc>
     <lastmod>2026-01-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://www.voidking.com/categories/engineering/uncategories/</loc>
+    <loc>https://www.voidking.com/categories/engineering/hexo/</loc>
     <lastmod>2026-01-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
