@@ -124,8 +124,8 @@ Codex &amp; Codex CLI 国内使用教程，手把手教你如何支付、安装 
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>golang</category>
         <category>python</category>
+        <category>golang</category>
         <category>git</category>
       </categories>
       <tags>
@@ -194,8 +194,8 @@ Claude Code 用法全面拆解！26 项核心功能 + 实战技巧
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>golang</category>
         <category>python</category>
+        <category>golang</category>
         <category>git</category>
       </categories>
       <tags>
@@ -466,8 +466,8 @@ Manual：仅使用用户提供的上下文进行有针对性的编辑
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>golang</category>
         <category>python</category>
+        <category>golang</category>
         <category>git</category>
       </categories>
       <tags>
@@ -1743,8 +1743,8 @@ tc -s qdisc show dev bwpc6db82aef347tc -s qdisc show dev cali47528e10e0c
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>k8s</category>
         <category>network</category>
+        <category>k8s</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -1820,8 +1820,8 @@ docker logs androiddocker exec -it android cat device_status
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
+        <category>docker</category>
         <category>android</category>
       </categories>
       <tags>
@@ -2189,8 +2189,8 @@ docker exec -it code-server cat /root/.config/code-server/config.yaml
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
+        <category>docker</category>
       </categories>
       <tags>
         <tag>docker</tag>
@@ -2229,8 +2229,8 @@ Please note that some functionality, such as audio, uploads, downloads, and micr
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
+        <category>docker</category>
       </categories>
       <tags>
         <tag>docker</tag>
@@ -2488,8 +2488,8 @@ Compose file version 2 reference - blkio_config
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
+        <category>docker</category>
         <category>network</category>
       </categories>
       <tags>
@@ -2585,8 +2585,8 @@ nameserver 192.168.56.101
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
+        <category>docker</category>
         <category>network</category>
       </categories>
       <tags>
@@ -3780,8 +3780,8 @@ ql repo https://github.com/mrabit/aliyundriveDailyCheck.git &quot;autoSignin&quo
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
+        <category>docker</category>
       </categories>
       <tags>
         <tag>docker</tag>
@@ -3997,78 +3997,6 @@ copy source destination: 复制文件 source 到 destination。
       </tags>
   </entry>
   <entry>
-    <title>废弃笔记本电脑复活：第三篇 利用阿里云盘扩展存储</title>
-    <url>/dev-laptop-recycling-03-aliyunpan/</url>
-    <content><![CDATA[1. 前言笔记本电脑的存储容量是有限的，扩展容量最简单的方法是外接硬盘。此外，我们还可以使用网盘来扩展存储。
-本篇中，我们学习使用阿里云盘来扩展笔记本电脑的存储。
-
-
-2. 本地挂载阿里云盘2.1. 安装Docker参考文档：《Docker入门篇》
-2.2. 获取阿里云盘refresh token参考文档dockerhub - messense/aliyundrive-webdav，通过在线工具获取 refresh token。
-以前通过浏览器自行获取refresh token的方法已失效，详情参考 Error: Invalid refresh token value found in –refresh-token argument。
-2.3. 启动阿里云盘webdav容器1、拉取webdav镜像
-docker pull messense/aliyundrive-webdav:2.3.3
-
-2、启动webdav容器（本地文件服务器）
-docker run -d --name=aliyundrive-webdav \  --restart=unless-stopped \  -p 8080:8080 \  -e REFRESH_TOKEN=&#x27;your token&#x27; \  -e WEBDAV_AUTH_USER=admin \  -e WEBDAV_AUTH_PASSWORD=admin\  messense/aliyundrive-webdav:2.3.3
-
-3、查看webdav容器状态
-docker psdocker logs aliyundrive-webdav
-
-2.4. 挂载阿里云盘1、安装webdav驱动
-apt install -y davfs2
-
-2、创建挂载目录
-mkdir -p /data/aliyundrive
-
-3、挂载阿里云盘
-mount -t davfs http://192.168.5.233:8080/ /data/aliyundrive
-
-4、查看挂载
-cd /data/aliyundrivels -l
-
-2.5. 通过samba共享本地目录挂载阿里云盘后，和其他普通目录一样，也可以通过samba共享给其他主机。samba配置如下：
-[aliyundrive]    path = /data/aliyundrive    browseable = yes    read only = yes    valid users = @sambashare @sadmin
-
-2.6. 拷贝阿里云盘中的文件到本地如果担心访问阿里云盘时候的网络不稳定，可以把一部分文件下载到本地磁盘。
-screen rsync -P -azv &#x27;爱情公寓&#x27; /data/samba/video
-
-下载速度很快，家庭千兆宽带大概平均 10MB/s，峰值 30MB/s。
-3. 安装使用阿里云盘客户端2024年，阿里云盘的WebDav成为了一个收费项，并且官方目前还没有推出Linux客户端，所以我们需要找到一个在Linux中使用阿里云盘的替代方案。经过检索，找到了一款开源的阿里云盘命令行客户端tickstep/aliyunpan，本节安装使用它。
-3.1. 安装 aliyunpanwget https://github.com/tickstep/aliyunpan/releases/download/v0.3.4/aliyunpan-v0.3.4-linux-amd64.zipunzip aliyunpan-v0.3.4-linux-amd64.zipcp aliyunpan-v0.3.4-linux-amd64/aliyunpan /usr/local/bin
-
-3.2. 使用 aliyunpan1、查看帮助
-aliyunpan --help
-
-2、设置配置目录和下载目录
-mkdir -p /opt/aliyunpan/&#123;config,downloads&#125;export ALIYUNPAN_CONFIG_DIR=/opt/aliyunpan/configecho &#x27;export ALIYUNPAN_CONFIG_DIR=/opt/aliyunpan/config&#x27; &gt;&gt; ~/.bashrcaliyunpan configaliyunpan config set -savedir=/opt/aliyunpan/downloads # 执行命令后 ALIYUNPAN_CONFIG_DIR 中会生成配置文件 aliyunpan_config.json
-
-默认设置为：
-
-默认配置目录 /usr/local/bin ，也就是 aliyunpan 的父目录
-默认下载目录 $HOME/Downloads 
-
-3、登录需要先登录，已经登录过的可以跳过此步。登录是在浏览器上进行，需要进行两次登录。
-# aliyunpan提示: 方向键上下可切换历史命令.提示: Ctrl + A / E 跳转命令 首 / 尾.提示: 输入 help 获取帮助.aliyunpan &gt; login请在浏览器打开以下链接进行登录，链接有效时间为5分钟。注意：你需要进行一次授权一次扫码的两次登录。https://openapi.alipan.com/oauth/authorize?client_id=cf9f70e8fc61430f8ec5ab5cadf31375&amp;redirect_uri请在浏览器里面完成扫码登录，然后再按Enter键继续...阿里云盘登录成功:  tickstepaliyunpan:/ tickstep(备份盘)$
-
-4、操作文件（查看，下载，上传，同步）
-lsdownload IMG_0106.JPGupload /Users/tickstep/Downloads/apt.zip /tmpsync start -ldir &quot;/tickstep/Documents/设计文档&quot; -pdir &quot;/备份盘/我的文档&quot; -mode &quot;upload&quot; -drive &quot;backup&quot;
-
-注意：因为阿里云盘开始限速了，所以最大下载速度 1.5MBps ，详情参考最近下载速度非常不稳定
-5、切换网盘支持切换备份盘、资源库，默认工作在备份盘下。
-drive
-
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>linux</category>
-      </categories>
-      <tags>
-        <tag>linux</tag>
-        <tag>ubuntu</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>废弃笔记本电脑复活：第四篇 远程控制Ubuntu桌面</title>
     <url>/dev-laptop-recycling-04-ubuntu-desktop-remote-control/</url>
     <content><![CDATA[1. 前言在笔记本电脑作为Ubuntu服务器使用时，大部分时候是不需要使用桌面（图形界面）的。但是，某些软件是必须要图形界面的，比如自带的浏览器，比如办公软件等等。
@@ -4198,6 +4126,78 @@ cat /etc/X11/default-display-managervim /etc/gdm3/custom.conf # 修改 gdm3 配�
 
 参考文档：《Ubuntu22安装使用安卓模拟器Waydroid》
 5.3. 安装配置RustDesk参考文档：《好好学Docker：自建RustDesk Server》
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>废弃笔记本电脑复活：第三篇 利用阿里云盘扩展存储</title>
+    <url>/dev-laptop-recycling-03-aliyunpan/</url>
+    <content><![CDATA[1. 前言笔记本电脑的存储容量是有限的，扩展容量最简单的方法是外接硬盘。此外，我们还可以使用网盘来扩展存储。
+本篇中，我们学习使用阿里云盘来扩展笔记本电脑的存储。
+
+
+2. 本地挂载阿里云盘2.1. 安装Docker参考文档：《Docker入门篇》
+2.2. 获取阿里云盘refresh token参考文档dockerhub - messense/aliyundrive-webdav，通过在线工具获取 refresh token。
+以前通过浏览器自行获取refresh token的方法已失效，详情参考 Error: Invalid refresh token value found in –refresh-token argument。
+2.3. 启动阿里云盘webdav容器1、拉取webdav镜像
+docker pull messense/aliyundrive-webdav:2.3.3
+
+2、启动webdav容器（本地文件服务器）
+docker run -d --name=aliyundrive-webdav \  --restart=unless-stopped \  -p 8080:8080 \  -e REFRESH_TOKEN=&#x27;your token&#x27; \  -e WEBDAV_AUTH_USER=admin \  -e WEBDAV_AUTH_PASSWORD=admin\  messense/aliyundrive-webdav:2.3.3
+
+3、查看webdav容器状态
+docker psdocker logs aliyundrive-webdav
+
+2.4. 挂载阿里云盘1、安装webdav驱动
+apt install -y davfs2
+
+2、创建挂载目录
+mkdir -p /data/aliyundrive
+
+3、挂载阿里云盘
+mount -t davfs http://192.168.5.233:8080/ /data/aliyundrive
+
+4、查看挂载
+cd /data/aliyundrivels -l
+
+2.5. 通过samba共享本地目录挂载阿里云盘后，和其他普通目录一样，也可以通过samba共享给其他主机。samba配置如下：
+[aliyundrive]    path = /data/aliyundrive    browseable = yes    read only = yes    valid users = @sambashare @sadmin
+
+2.6. 拷贝阿里云盘中的文件到本地如果担心访问阿里云盘时候的网络不稳定，可以把一部分文件下载到本地磁盘。
+screen rsync -P -azv &#x27;爱情公寓&#x27; /data/samba/video
+
+下载速度很快，家庭千兆宽带大概平均 10MB/s，峰值 30MB/s。
+3. 安装使用阿里云盘客户端2024年，阿里云盘的WebDav成为了一个收费项，并且官方目前还没有推出Linux客户端，所以我们需要找到一个在Linux中使用阿里云盘的替代方案。经过检索，找到了一款开源的阿里云盘命令行客户端tickstep/aliyunpan，本节安装使用它。
+3.1. 安装 aliyunpanwget https://github.com/tickstep/aliyunpan/releases/download/v0.3.4/aliyunpan-v0.3.4-linux-amd64.zipunzip aliyunpan-v0.3.4-linux-amd64.zipcp aliyunpan-v0.3.4-linux-amd64/aliyunpan /usr/local/bin
+
+3.2. 使用 aliyunpan1、查看帮助
+aliyunpan --help
+
+2、设置配置目录和下载目录
+mkdir -p /opt/aliyunpan/&#123;config,downloads&#125;export ALIYUNPAN_CONFIG_DIR=/opt/aliyunpan/configecho &#x27;export ALIYUNPAN_CONFIG_DIR=/opt/aliyunpan/config&#x27; &gt;&gt; ~/.bashrcaliyunpan configaliyunpan config set -savedir=/opt/aliyunpan/downloads # 执行命令后 ALIYUNPAN_CONFIG_DIR 中会生成配置文件 aliyunpan_config.json
+
+默认设置为：
+
+默认配置目录 /usr/local/bin ，也就是 aliyunpan 的父目录
+默认下载目录 $HOME/Downloads 
+
+3、登录需要先登录，已经登录过的可以跳过此步。登录是在浏览器上进行，需要进行两次登录。
+# aliyunpan提示: 方向键上下可切换历史命令.提示: Ctrl + A / E 跳转命令 首 / 尾.提示: 输入 help 获取帮助.aliyunpan &gt; login请在浏览器打开以下链接进行登录，链接有效时间为5分钟。注意：你需要进行一次授权一次扫码的两次登录。https://openapi.alipan.com/oauth/authorize?client_id=cf9f70e8fc61430f8ec5ab5cadf31375&amp;redirect_uri请在浏览器里面完成扫码登录，然后再按Enter键继续...阿里云盘登录成功:  tickstepaliyunpan:/ tickstep(备份盘)$
+
+4、操作文件（查看，下载，上传，同步）
+lsdownload IMG_0106.JPGupload /Users/tickstep/Downloads/apt.zip /tmpsync start -ldir &quot;/tickstep/Documents/设计文档&quot; -pdir &quot;/备份盘/我的文档&quot; -mode &quot;upload&quot; -drive &quot;backup&quot;
+
+注意：因为阿里云盘开始限速了，所以最大下载速度 1.5MBps ，详情参考最近下载速度非常不稳定
+5、切换网盘支持切换备份盘、资源库，默认工作在备份盘下。
+drive
+
 ]]></content>
       <categories>
         <category>engineering</category>
@@ -5404,6 +5404,89 @@ sealos tag docker.io/voidking/milvus:v2.2.0 harbor.voidking.com/sealos/milvus:v2
       </tags>
   </entry>
   <entry>
+    <title>好好学Sealos：Sealos制作MySQL集群镜像</title>
+    <url>/dev-sealos-mysql/</url>
+    <content><![CDATA[1. 前言本文中，我们会基于sealos制作一个MySQL集群镜像。使用这个集群镜像，我们能够在sealos拉起的K8S集群中，一键部署单节点的MySQL 8.0.29。
+参考文档：
+
+构建一个 Ingress 集群镜像
+《K8S中安装配置MySQL》
+
+
+
+2. 前置条件安装sealos4.2.0，拉起K8S 1.24.8集群（同时安装helm），具体方法参考《sealos入门篇》。
+3. 制作MySQL集群镜像1、添加chart仓库
+helm repo add bitnami https://charts.bitnami.com/bitnami
+
+2、下载chart
+mkdir mysql &amp;&amp; cd mysqlhelm search repo bitnami/mysql -lhelm fetch bitnami/mysql --version 9.2.1
+
+这里下载 chart9.2.1 版本，对应 mysql8.0.29 版本。下载的文件名为：mysql-9.2.1.tgz
+3、修改chart
+tar -xzvf mysql-9.2.1.tgzvim mysql/values.yamltar -czvf mysql-9.2.1-custom.tgz mysqlrm mysql -rf
+修改chart的values.yaml，给一些默认值，然后重新打包chart，后续Dockerfile中的CMD中可以少填一些参数。
+如下修改：
+
+global.storageClass 不变，使用默认的storageclass即可
+architecture 修改为 standalone
+auth.rootPassword 修改为 mysql123
+primary.persistence.size 修改为期望的存储大小 500Gi
+primary.service.type 修改为 NodePort
+
+3、添加镜像列表
+mkdir -p images/shim/vim images/shim/mysql-images.txt
+
+内容为：
+docker.io/bitnami/mysql:8.0.29-debian-11-r9
+
+4、编写Dockerfile
+FROM scratchCOPY ../mysql .CMD [&quot;helm install mysql mysql-9.2.1-custom.tgz \     -n mysql --create-namespace&quot;]
+
+5、构建集群镜像
+sealos build -f Dockerfile -t docker.io/voidking/mysql:v8.0.29 .sealos inspect docker.io/voidking/mysql:v8.0.29
+
+4. 使用mysql集群镜像4.1. 安装mysql运行mysql应用，安装mysql
+sealos run docker.io/voidking/mysql:v8.0.29
+
+报错：
+Error: INSTALLATION FAILED: failed to download &quot;nfs-subdir-external-provisioner-4.0.18-custom.tgz&quot;Error: exit status 1
+
+这是个新的坑：mysql镜像run，居然使用了nfs-provisioner:v4.0.0这个镜像的CMD。待办：提个issue。
+nfs-provisioner:v4.0.0镜像的制作方法，参考文档《sealos制作nfs-provisioner集群镜像》
+4.2. 自定义安装mysqlsealos run docker.io/voidking/mysql:v8.0.29 --cmd=&quot;helm install mysql mysql-9.2.1-custom.tgz \     --namespace mysql --create-namespace \     --set auth.rootPassword=mysql123&quot;kubectl get all -n mysql
+
+4.3. 上传集群镜像上传到公共镜像仓库
+sealos push docker.io/voidking/mysql:v8.0.29sealos tag docker.io/voidking/mysql:v8.0.29 hub.sealos.cn/voidking/mysql:v8.0.29sealos login -k config.yml hub.sealos.cnsealos push hub.sealos.cn/voidking/mysql:v8.0.29
+
+上传到私有镜像仓库
+sealos tag docker.io/voidking/mysql:v8.0.29 harbor.voidking.com/sealos/mysql:v8.0.29sealos login harbor.voidking.comsealos push harbor.voidking.com/sealos/mysql:v8.0.29
+
+4.4. 卸载mysqlhelm list -Ahelm uninstall mysql -n mysqlsealos pssealos rm default-xxxcd /var/lib/sealos/data/default/applications &amp;&amp; rm deafult-xxx -rf
+
+4.5. 删除历史镜像sealos images | grep &#x27;&lt;none&gt;&#x27; | awk &#x27;&#123;print $3&#125;&#x27; | xargs sealos rmi# sealos rmi docker.io/voidking/mysql:v8.0.29
+
+
+
+
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>k8s</category>
+        <category>database</category>
+        <category>cloudnative</category>
+        <category>troubleshooting</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
+        <tag>helm</tag>
+        <tag>mysql</tag>
+        <tag>问题排查</tag>
+        <tag>bitnami</tag>
+        <tag>sealos</tag>
+        <tag>好好学Sealos</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>好好学Sealos：Sealos制作MinIO集群镜像</title>
     <url>/dev-sealos-minio/</url>
     <content><![CDATA[1. 前言本文中，我们会基于sealos制作一个MinIO集群镜像。使用这个集群镜像，我们能够在sealos拉起的K8S集群中，一键部署MinIO 2023.3.24。
@@ -5487,89 +5570,6 @@ sealos tag docker.io/voidking/minio:2023.3.24 harbor.voidking.com/sealos/minio:2
         <tag>sealos</tag>
         <tag>好好学Sealos</tag>
         <tag>minio</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>好好学Sealos：Sealos制作MySQL集群镜像</title>
-    <url>/dev-sealos-mysql/</url>
-    <content><![CDATA[1. 前言本文中，我们会基于sealos制作一个MySQL集群镜像。使用这个集群镜像，我们能够在sealos拉起的K8S集群中，一键部署单节点的MySQL 8.0.29。
-参考文档：
-
-构建一个 Ingress 集群镜像
-《K8S中安装配置MySQL》
-
-
-
-2. 前置条件安装sealos4.2.0，拉起K8S 1.24.8集群（同时安装helm），具体方法参考《sealos入门篇》。
-3. 制作MySQL集群镜像1、添加chart仓库
-helm repo add bitnami https://charts.bitnami.com/bitnami
-
-2、下载chart
-mkdir mysql &amp;&amp; cd mysqlhelm search repo bitnami/mysql -lhelm fetch bitnami/mysql --version 9.2.1
-
-这里下载 chart9.2.1 版本，对应 mysql8.0.29 版本。下载的文件名为：mysql-9.2.1.tgz
-3、修改chart
-tar -xzvf mysql-9.2.1.tgzvim mysql/values.yamltar -czvf mysql-9.2.1-custom.tgz mysqlrm mysql -rf
-修改chart的values.yaml，给一些默认值，然后重新打包chart，后续Dockerfile中的CMD中可以少填一些参数。
-如下修改：
-
-global.storageClass 不变，使用默认的storageclass即可
-architecture 修改为 standalone
-auth.rootPassword 修改为 mysql123
-primary.persistence.size 修改为期望的存储大小 500Gi
-primary.service.type 修改为 NodePort
-
-3、添加镜像列表
-mkdir -p images/shim/vim images/shim/mysql-images.txt
-
-内容为：
-docker.io/bitnami/mysql:8.0.29-debian-11-r9
-
-4、编写Dockerfile
-FROM scratchCOPY ../mysql .CMD [&quot;helm install mysql mysql-9.2.1-custom.tgz \     -n mysql --create-namespace&quot;]
-
-5、构建集群镜像
-sealos build -f Dockerfile -t docker.io/voidking/mysql:v8.0.29 .sealos inspect docker.io/voidking/mysql:v8.0.29
-
-4. 使用mysql集群镜像4.1. 安装mysql运行mysql应用，安装mysql
-sealos run docker.io/voidking/mysql:v8.0.29
-
-报错：
-Error: INSTALLATION FAILED: failed to download &quot;nfs-subdir-external-provisioner-4.0.18-custom.tgz&quot;Error: exit status 1
-
-这是个新的坑：mysql镜像run，居然使用了nfs-provisioner:v4.0.0这个镜像的CMD。待办：提个issue。
-nfs-provisioner:v4.0.0镜像的制作方法，参考文档《sealos制作nfs-provisioner集群镜像》
-4.2. 自定义安装mysqlsealos run docker.io/voidking/mysql:v8.0.29 --cmd=&quot;helm install mysql mysql-9.2.1-custom.tgz \     --namespace mysql --create-namespace \     --set auth.rootPassword=mysql123&quot;kubectl get all -n mysql
-
-4.3. 上传集群镜像上传到公共镜像仓库
-sealos push docker.io/voidking/mysql:v8.0.29sealos tag docker.io/voidking/mysql:v8.0.29 hub.sealos.cn/voidking/mysql:v8.0.29sealos login -k config.yml hub.sealos.cnsealos push hub.sealos.cn/voidking/mysql:v8.0.29
-
-上传到私有镜像仓库
-sealos tag docker.io/voidking/mysql:v8.0.29 harbor.voidking.com/sealos/mysql:v8.0.29sealos login harbor.voidking.comsealos push harbor.voidking.com/sealos/mysql:v8.0.29
-
-4.4. 卸载mysqlhelm list -Ahelm uninstall mysql -n mysqlsealos pssealos rm default-xxxcd /var/lib/sealos/data/default/applications &amp;&amp; rm deafult-xxx -rf
-
-4.5. 删除历史镜像sealos images | grep &#x27;&lt;none&gt;&#x27; | awk &#x27;&#123;print $3&#125;&#x27; | xargs sealos rmi# sealos rmi docker.io/voidking/mysql:v8.0.29
-
-
-
-
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>k8s</category>
-        <category>database</category>
-        <category>cloudnative</category>
-        <category>troubleshooting</category>
-      </categories>
-      <tags>
-        <tag>k8s</tag>
-        <tag>helm</tag>
-        <tag>mysql</tag>
-        <tag>问题排查</tag>
-        <tag>bitnami</tag>
-        <tag>sealos</tag>
-        <tag>好好学Sealos</tag>
       </tags>
   </entry>
   <entry>
@@ -6401,8 +6401,8 @@ kubectl exec -i -t your-pod -- bash -c &quot;apt update &amp;&amp; apt install t
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>k8s</category>
         <category>network</category>
+        <category>k8s</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -6757,51 +6757,6 @@ cd /usr/local/spark/spark-3.3.1-bin-hadoop3-scala2.13/sbin/start-thriftserver.sh
       </tags>
   </entry>
   <entry>
-    <title>好好学Sealos：Sealos Cloud</title>
-    <url>/dev-sealos-cloud/</url>
-    <content><![CDATA[1. Sealos Cloud简介《sealos入门篇》一文中我们提到：sealos最初的目标是把kubernetes安装做进一条命令，而如今，sealos 是以 kubernetes 为内核的云操作系统发行版。
-而 Sealos Cloud ，是环界云运行和维护的 sealos 集群，用来提供对外的公有云服务。 用户可以直接使用 Sealos Cloud ，用户也可以在自己的私有化环境中运行 sealos，即可拥有与 Sealos Cloud 完全一样的能力。
-Sealos Cloud 是一款 ALL IN 云原生的公有云服务，提供我们在公有云常见的服务能力如 AWS 的数据库服务，函数计算服务，对象存储服务等。 与 AWS 这些公有云最大的不同点是技术架构完全采用云原生（狭义上的云原生，围绕 kubernetes 的技术生态所构建）架构实现。
-参考文档：
-
-labring/sealos
-Sealos Cloud 介绍
-
-
-
-2. 注册Sealos Cloud访问sealos cloud，注册一个账号。
-3. 使用Sealos Cloud就像使用本地操作系统一样，通过浏览器使用sealos cloud系统即可。当然，使用起来感觉没有本地流畅，这是正常的，毕竟要通过网络访问。等到5G更加普及，sealos cloud肯定更好用。
-4. 使用sealos registry4.1. sealos registry作用sealos registry的域名为 hub.sealos.cn，使用它可以作为docker hub的替代品，能够加快上传下载速度。
-4.2. 创建组织1、登录sealos cloud
-2、打开Terminal应用
-3、准备组织定义文件 organization.yaml
-apiVersion: imagehub.sealos.io/v1kind: Organizationmetadata:  name: voidkingspec:  name: voidking # same as metadata.name  creator: ns-arr7bbkd # find at sealos cloud page  manager: [ ns-arr7bbkd ] # you can add other user as manager
-
-4、创建组织
-kubectl apply -f organization.yaml
-
-4.3. 获取config.yaml1、登录sealos cloud
-2、点击头像
-3、获取config.yaml点击头像下方的kubeconfig右侧加号，下载kubeconfig.yaml，重命名为config.yaml
-4.4. 上传镜像sealos login -k config.yml hub.sealos.cnsealos tag your-image-id hub.sealos.cn/your-organization-name/your-image-name:tagsealos push hub.sealos.cn/your-organization-name/your-image-name:tag
-
-注意：无论config.yml是否正确，sealos login都会提示success。因此，只有sealos push成功才能证明config.yaml配置正确。
-4.5. 查看镜像访问sealos registry，查看所有镜像，包括我们刚刚上传的镜像。
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>k8s</category>
-        <category>cloudnative</category>
-      </categories>
-      <tags>
-        <tag>k8s</tag>
-        <tag>ipvs</tag>
-        <tag>sealos</tag>
-        <tag>sealer</tag>
-        <tag>好好学Sealos</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>好好学Sealos：Sealos Hub私有容器镜像仓库</title>
     <url>/dev-sealos-hub/</url>
     <content><![CDATA[1. sealos hub简介在使用sealos安装k8s时，会自动安装一个docker registry，它就是sealos hub，用于存储容器镜像。sealos hub在集群中的主机名和端口为sealos.hub:5000，默认用户名admin，密码passw0rd。
@@ -6900,8 +6855,53 @@ status:  mounts:  - env:      registryDomain: sealos.hub      registryPassword: 
         <tag>k8s</tag>
         <tag>问题排查</tag>
         <tag>sealos</tag>
-        <tag>好好学Sealos</tag>
         <tag>htpasswd</tag>
+        <tag>好好学Sealos</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>好好学Sealos：Sealos Cloud</title>
+    <url>/dev-sealos-cloud/</url>
+    <content><![CDATA[1. Sealos Cloud简介《sealos入门篇》一文中我们提到：sealos最初的目标是把kubernetes安装做进一条命令，而如今，sealos 是以 kubernetes 为内核的云操作系统发行版。
+而 Sealos Cloud ，是环界云运行和维护的 sealos 集群，用来提供对外的公有云服务。 用户可以直接使用 Sealos Cloud ，用户也可以在自己的私有化环境中运行 sealos，即可拥有与 Sealos Cloud 完全一样的能力。
+Sealos Cloud 是一款 ALL IN 云原生的公有云服务，提供我们在公有云常见的服务能力如 AWS 的数据库服务，函数计算服务，对象存储服务等。 与 AWS 这些公有云最大的不同点是技术架构完全采用云原生（狭义上的云原生，围绕 kubernetes 的技术生态所构建）架构实现。
+参考文档：
+
+labring/sealos
+Sealos Cloud 介绍
+
+
+
+2. 注册Sealos Cloud访问sealos cloud，注册一个账号。
+3. 使用Sealos Cloud就像使用本地操作系统一样，通过浏览器使用sealos cloud系统即可。当然，使用起来感觉没有本地流畅，这是正常的，毕竟要通过网络访问。等到5G更加普及，sealos cloud肯定更好用。
+4. 使用sealos registry4.1. sealos registry作用sealos registry的域名为 hub.sealos.cn，使用它可以作为docker hub的替代品，能够加快上传下载速度。
+4.2. 创建组织1、登录sealos cloud
+2、打开Terminal应用
+3、准备组织定义文件 organization.yaml
+apiVersion: imagehub.sealos.io/v1kind: Organizationmetadata:  name: voidkingspec:  name: voidking # same as metadata.name  creator: ns-arr7bbkd # find at sealos cloud page  manager: [ ns-arr7bbkd ] # you can add other user as manager
+
+4、创建组织
+kubectl apply -f organization.yaml
+
+4.3. 获取config.yaml1、登录sealos cloud
+2、点击头像
+3、获取config.yaml点击头像下方的kubeconfig右侧加号，下载kubeconfig.yaml，重命名为config.yaml
+4.4. 上传镜像sealos login -k config.yml hub.sealos.cnsealos tag your-image-id hub.sealos.cn/your-organization-name/your-image-name:tagsealos push hub.sealos.cn/your-organization-name/your-image-name:tag
+
+注意：无论config.yml是否正确，sealos login都会提示success。因此，只有sealos push成功才能证明config.yaml配置正确。
+4.5. 查看镜像访问sealos registry，查看所有镜像，包括我们刚刚上传的镜像。
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>k8s</category>
+        <category>cloudnative</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
+        <tag>ipvs</tag>
+        <tag>sealos</tag>
+        <tag>好好学Sealos</tag>
+        <tag>sealer</tag>
       </tags>
   </entry>
   <entry>
@@ -7003,8 +7003,8 @@ route -n
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>k8s</category>
         <category>network</category>
+        <category>k8s</category>
         <category>cloudnative</category>
         <category>troubleshooting</category>
       </categories>
@@ -7014,8 +7014,8 @@ route -n
         <tag>问题排查</tag>
         <tag>ipvs</tag>
         <tag>sealos</tag>
-        <tag>sealer</tag>
         <tag>好好学Sealos</tag>
+        <tag>sealer</tag>
       </tags>
   </entry>
   <entry>
@@ -7869,8 +7869,8 @@ org.label-schema.tc.ceil：容器的带宽或最大速度限制，如果类的�
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
+        <category>docker</category>
         <category>network</category>
       </categories>
       <tags>
@@ -9039,10 +9039,10 @@ kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Doc
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
-        <category>k8s</category>
+        <category>docker</category>
         <category>network</category>
+        <category>k8s</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -9360,10 +9360,10 @@ git config --global --unset http.proxygit config --global --unset https.proxy
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
-        <category>linux</category>
+        <category>docker</category>
         <category>network</category>
+        <category>linux</category>
       </categories>
       <tags>
         <tag>linux</tag>
@@ -10332,8 +10332,8 @@ Command-Line Client
       </categories>
       <tags>
         <tag>chatgpt</tag>
-        <tag>macos</tag>
         <tag>数据库</tag>
+        <tag>macos</tag>
         <tag>clickhouse</tag>
       </tags>
   </entry>
@@ -10510,8 +10510,8 @@ options：可选的对象列表，其中每个对象可能具有 name 属性（�
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>k8s</category>
         <category>network</category>
+        <category>k8s</category>
         <category>cloudnative</category>
         <category>troubleshooting</category>
       </categories>
@@ -10836,6 +10836,48 @@ go install -v github.com/cweill/gotests/gotests@latest go install -v github.com/
       </tags>
   </entry>
   <entry>
+    <title>好好学Python：VSCode配置Python Debug</title>
+    <url>/dev-vscode-python-debug/</url>
+    <content><![CDATA[1. 前言本文学习在VSCode中配置Python Debug的方法，备忘。
+
+
+2. 配置调试2.1. 创建 launch.json1、点击VSCode左侧带虫子的三角形，进入RUN AND DEBUG页面2、点击 create a launch.json file，选择 Python Debugger
+2.2. 打开 launch.json1、点击VSCode左侧带虫子的三角形，进入RUN AND DEBUG页面2、点击齿轮，打开 launch.json 文件
+或者，直接在项目中打开 .vscode/launch.json 文件
+2.3. 配置 launch.json假设程序启动命令为 python startup.py &quot;write a cli snake game&quot;，那么配置如下：
+&#123;    // Use IntelliSense to learn about possible attributes.    // Hover to view descriptions of existing attributes.    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387    &quot;version&quot;: &quot;0.2.0&quot;,    &quot;configurations&quot;: [        &#123;            &quot;name&quot;: &quot;startup debug&quot;,            &quot;type&quot;: &quot;python&quot;,            &quot;request&quot;: &quot;launch&quot;,            &quot;program&quot;: &quot;startup.py&quot;,            &quot;cwd&quot;: &quot;$&#123;workspaceFolder&#125;&quot;,            &quot;args&quot;: [                &quot;write a cli snake game&quot;            ],            &quot;env&quot;: &#123;                &quot;OPENAI_API_KEY&quot;: &quot;sk-xxx&quot;            &#125;,            &quot;console&quot;: &quot;integratedTerminal&quot;,            &quot;justMyCode&quot;: false        &#125;    ]&#125;
+
+假设每个脚本都能直接运行 python xxx.py，那么配置如下：
+&#123;    &quot;version&quot;: &quot;0.2.0&quot;,    &quot;configurations&quot;: [        &#123;            &quot;name&quot;: &quot;python debug&quot;,            &quot;type&quot;: &quot;python&quot;,            &quot;request&quot;: &quot;launch&quot;,            &quot;program&quot;: &quot;$&#123;file&#125;&quot;,            &quot;cwd&quot;: &quot;$&#123;workspaceFolder&#125;&quot;,            &quot;console&quot;: &quot;integratedTerminal&quot;,            &quot;justMyCode&quot;: false        &#125;    ]&#125;
+
+注意：justMyCode 要配置为 false，否则第三方库没法打断点。
+3. 切换Python解释器1、点击 command+shift+P，打开快捷配置。
+2、输入 Python: Select Interpreter，选择当前代码需要的解释器版本。
+注意：如果是使用pyenv安装的python环境，请选择带有版本的路径，例如 ~/.pyenv/versions/3.9.7/bin/python ；不要选择当前在用python的路径 ~/.pyenv/shims/python，否则会找不到pip安装的包。
+4. 启动调试1、在代码中打断点
+2、点击VSCode左侧带虫子的三角形，进入RUN AND DEBUG页面
+3、点击齿轮左边的三角形，即可进入调试
+5. VSCode调试Python原理VSCode的Python调试基于调试适配协议（Debug Adapter Protocol，简称 DAP）。VSCode内置了一个调试适配器（Debug Adapter），这个调试适配器是DAP的实现，用于与应用程序或语言运行时进行交互，从而提供调试的功能。
+以下是VSCode进行Python调试的基本原理：
+1、用户在VSCode中启动Python程序的调试。
+2、VSCode的调试模块启动调试适配器，调试适配器是一个单独的进程，启动时VSCode会向适配器传递一个配置对象，这个配置对象包含了用户在launch.json中定义的配置信息。
+3、调试适配器接收到配置信息后，进行相应的处理，并启动Python解释器，Python解释器开始在调试模式下运行用户的Python程序。在调试模式下，Python解释器会启动一个调试服务器，等待调试适配器的连接。
+4、调试适配器连接到Python解释器启动的调试服务器，之后调试适配器与Python解释器通过socket进行通信，实现对程序的调试控制。
+5、VSCode通过调试适配器来控制Python程序的运行过程，例如设置/清除断点，启动/停止，步入/步出等操作。同时，如果程序运行到了断点，或者有异常抛出，调试适配器会从Python解释器接收到相应的信息，并处理这些信息（例如显示在VSCode的调试控制台），让用户知道程序的运行状态。
+通过这种方式，VSCode实现了对Python程序的调试功能，让用户可以方便地检查和调试代码。
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>python</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>vscode</tag>
+        <tag>编辑器</tag>
+        <tag>好好学Python</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>好好学Python：VSCode调试Python问题记录</title>
     <url>/dev-vscode-python-debug-problem/</url>
     <content><![CDATA[1. 前言本文学习在VSCode中调试Python时遇到的问题，备忘。
@@ -10886,48 +10928,6 @@ launch.json中，也加入 PYTHONPATH 配置：
         <tag>vscode</tag>
         <tag>编辑器</tag>
         <tag>问题排查</tag>
-        <tag>好好学Python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>好好学Python：VSCode配置Python Debug</title>
-    <url>/dev-vscode-python-debug/</url>
-    <content><![CDATA[1. 前言本文学习在VSCode中配置Python Debug的方法，备忘。
-
-
-2. 配置调试2.1. 创建 launch.json1、点击VSCode左侧带虫子的三角形，进入RUN AND DEBUG页面2、点击 create a launch.json file，选择 Python Debugger
-2.2. 打开 launch.json1、点击VSCode左侧带虫子的三角形，进入RUN AND DEBUG页面2、点击齿轮，打开 launch.json 文件
-或者，直接在项目中打开 .vscode/launch.json 文件
-2.3. 配置 launch.json假设程序启动命令为 python startup.py &quot;write a cli snake game&quot;，那么配置如下：
-&#123;    // Use IntelliSense to learn about possible attributes.    // Hover to view descriptions of existing attributes.    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387    &quot;version&quot;: &quot;0.2.0&quot;,    &quot;configurations&quot;: [        &#123;            &quot;name&quot;: &quot;startup debug&quot;,            &quot;type&quot;: &quot;python&quot;,            &quot;request&quot;: &quot;launch&quot;,            &quot;program&quot;: &quot;startup.py&quot;,            &quot;cwd&quot;: &quot;$&#123;workspaceFolder&#125;&quot;,            &quot;args&quot;: [                &quot;write a cli snake game&quot;            ],            &quot;env&quot;: &#123;                &quot;OPENAI_API_KEY&quot;: &quot;sk-xxx&quot;            &#125;,            &quot;console&quot;: &quot;integratedTerminal&quot;,            &quot;justMyCode&quot;: false        &#125;    ]&#125;
-
-假设每个脚本都能直接运行 python xxx.py，那么配置如下：
-&#123;    &quot;version&quot;: &quot;0.2.0&quot;,    &quot;configurations&quot;: [        &#123;            &quot;name&quot;: &quot;python debug&quot;,            &quot;type&quot;: &quot;python&quot;,            &quot;request&quot;: &quot;launch&quot;,            &quot;program&quot;: &quot;$&#123;file&#125;&quot;,            &quot;cwd&quot;: &quot;$&#123;workspaceFolder&#125;&quot;,            &quot;console&quot;: &quot;integratedTerminal&quot;,            &quot;justMyCode&quot;: false        &#125;    ]&#125;
-
-注意：justMyCode 要配置为 false，否则第三方库没法打断点。
-3. 切换Python解释器1、点击 command+shift+P，打开快捷配置。
-2、输入 Python: Select Interpreter，选择当前代码需要的解释器版本。
-注意：如果是使用pyenv安装的python环境，请选择带有版本的路径，例如 ~/.pyenv/versions/3.9.7/bin/python ；不要选择当前在用python的路径 ~/.pyenv/shims/python，否则会找不到pip安装的包。
-4. 启动调试1、在代码中打断点
-2、点击VSCode左侧带虫子的三角形，进入RUN AND DEBUG页面
-3、点击齿轮左边的三角形，即可进入调试
-5. VSCode调试Python原理VSCode的Python调试基于调试适配协议（Debug Adapter Protocol，简称 DAP）。VSCode内置了一个调试适配器（Debug Adapter），这个调试适配器是DAP的实现，用于与应用程序或语言运行时进行交互，从而提供调试的功能。
-以下是VSCode进行Python调试的基本原理：
-1、用户在VSCode中启动Python程序的调试。
-2、VSCode的调试模块启动调试适配器，调试适配器是一个单独的进程，启动时VSCode会向适配器传递一个配置对象，这个配置对象包含了用户在launch.json中定义的配置信息。
-3、调试适配器接收到配置信息后，进行相应的处理，并启动Python解释器，Python解释器开始在调试模式下运行用户的Python程序。在调试模式下，Python解释器会启动一个调试服务器，等待调试适配器的连接。
-4、调试适配器连接到Python解释器启动的调试服务器，之后调试适配器与Python解释器通过socket进行通信，实现对程序的调试控制。
-5、VSCode通过调试适配器来控制Python程序的运行过程，例如设置/清除断点，启动/停止，步入/步出等操作。同时，如果程序运行到了断点，或者有异常抛出，调试适配器会从Python解释器接收到相应的信息，并处理这些信息（例如显示在VSCode的调试控制台），让用户知道程序的运行状态。
-通过这种方式，VSCode实现了对Python程序的调试功能，让用户可以方便地检查和调试代码。
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>python</category>
-      </categories>
-      <tags>
-        <tag>python</tag>
-        <tag>vscode</tag>
-        <tag>编辑器</tag>
         <tag>好好学Python</tag>
       </tags>
   </entry>
@@ -11042,8 +11042,8 @@ vscode降级后，问题解决。
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>golang</category>
         <category>python</category>
+        <category>golang</category>
         <category>java</category>
         <category>git</category>
       </categories>
@@ -11444,6 +11444,43 @@ module和package的对应关系，可以参考《Python基础》
       </tags>
   </entry>
   <entry>
+    <title>好好学Python：Python脚本路径</title>
+    <url>/dev-python-script-path/</url>
+    <content><![CDATA[1. 怎样获取一个脚本的路径？怎样获取执行脚本的绝对路径？怎样获取执行脚本的父绝对路径？怎样获取入口脚本的绝对路径？。。。带着这些问题，我们进行一个简单的实验，获知这些问题的答案。
+
+
+2. 路径实验2.1. 路径设计path└── module_a    ├── getpath.py    └── module_b        └── getpath.py
+
+2.2. 脚本内容getpath.py脚本内容为：
+import osimport sysfrom module_b import getpathdef print_path():    print(f&#x27;os.getcwd() is &#123;os.getcwd()&#125;&#x27;)    print(f&#x27;sys.path[0] is &#123;sys.path[0]&#125;&#x27;)    print(f&#x27;sys.argv[0] is &#123;sys.argv[0]&#125;&#x27;)    print(f&#x27;__file__ is &#123;__file__&#125;&#x27;)    print(f&#x27;os.path.dirname(__file__) is &#123;os.path.dirname(__file__)&#125;&#x27;)    print(f&#x27;os.path.abspath(__file__) is &#123;os.path.abspath(__file__)&#125;&#x27;)    print(f&#x27;os.path.realpath(__file__) is &#123;os.path.realpath(__file__)&#125;&#x27;)    print(f&#x27;os.path.split(os.path.realpath(__file__))[0] is &#123;os.path.split(os.path.realpath(__file__))[0]&#125;&#x27;)print(&#x27;------ module_a/getpath.py ------&#x27;)print_path()print(&#x27;---------------------------------&#x27;)print(&#x27;------ module_a/module_b/getpath.py ------&#x27;)getpath.print_path()print(&#x27;------------------------------------------&#x27;)
+
+2.3. 执行脚本在path目录中执行脚本python module_a/getpath.py ，得到结果为：
+------ module_a/getpath.py ------os.getcwd() is /Users/vk/tmp/pathsys.path[0] is /Users/vk/tmp/path/module_asys.argv[0] is module_a/getpath.py__file__ is module_a/getpath.pyos.path.dirname(__file__) is module_aos.path.abspath(__file__) is /Users/vk/tmp/path/module_a/getpath.pyos.path.realpath(__file__) is /Users/vk/tmp/path/module_a/getpath.pyos.path.split(os.path.realpath(__file__))[0] is /Users/vk/tmp/path/module_a--------------------------------------- module_a/module_b/getpath.py ------os.getcwd() is /Users/vk/tmp/pathsys.path[0] is /Users/vk/tmp/path/module_asys.argv[0] is module_a/getpath.py__file__ is /Users/vk/tmp/path/module_a/module_b/getpath.pyos.path.dirname(__file__) is /Users/vk/tmp/path/module_a/module_bos.path.abspath(__file__) is /Users/vk/tmp/path/module_a/module_b/getpath.pyos.path.realpath(__file__) is /Users/vk/tmp/path/module_a/module_b/getpath.pyos.path.split(os.path.realpath(__file__))[0] is /Users/vk/tmp/path/module_a/module_b------------------------------------------
+
+3. 实验结论由实验结果，可以得出如下结论。
+3.1. 获取执行命令的绝对路径os.getcwd()
+
+3.2. 获取入口脚本的父绝对路径sys.path[0]
+
+3.3. 获取执行脚本的绝对路劲os.path.abspath(__file__)os.path.realpath(__file__)
+
+3.4. 获取执行脚本的父绝对路径os.path.split(os.path.realpath(__file__))[0]
+
+3.5. 获取文件/目录的父路径os.path.dirname(__file__)
+
+
+
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>python</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>好好学Python</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>好好学Python：Python重试</title>
     <url>/dev-python-retry/</url>
     <content><![CDATA[1. 为什么需要重试？典型场景：程序的实现需要调用第三方的API，但是我们并不能保证第三方API一直好用，也不能保证网络一直畅通，所以在调用第三方API时需要加上错误重试。  
@@ -11471,43 +11508,6 @@ wait_random_max：最大重试间隔
 
 当函数run抛出任意异常时，则进行重试。重试指定次数后，程序就异常结束了。这时，如果我们想要容忍异常，让run2可以正常运行，该怎么办呢？很简单，给run函数包裹一个try except即可。
 from retrying import retry@retry(wrap_exception=True,stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=3000)def run():    print(&#x27;run&#x27;)    raise ValueErrordef wrap_run():    try:        run()    except:        passdef run2():    print(&#x27;run2&#x27;)if __name__ == &#x27;__main__&#x27;:    wrap_run()    run2()
-
-
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>python</category>
-      </categories>
-      <tags>
-        <tag>python</tag>
-        <tag>好好学Python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>好好学Python：Python脚本路径</title>
-    <url>/dev-python-script-path/</url>
-    <content><![CDATA[1. 怎样获取一个脚本的路径？怎样获取执行脚本的绝对路径？怎样获取执行脚本的父绝对路径？怎样获取入口脚本的绝对路径？。。。带着这些问题，我们进行一个简单的实验，获知这些问题的答案。
-
-
-2. 路径实验2.1. 路径设计path└── module_a    ├── getpath.py    └── module_b        └── getpath.py
-
-2.2. 脚本内容getpath.py脚本内容为：
-import osimport sysfrom module_b import getpathdef print_path():    print(f&#x27;os.getcwd() is &#123;os.getcwd()&#125;&#x27;)    print(f&#x27;sys.path[0] is &#123;sys.path[0]&#125;&#x27;)    print(f&#x27;sys.argv[0] is &#123;sys.argv[0]&#125;&#x27;)    print(f&#x27;__file__ is &#123;__file__&#125;&#x27;)    print(f&#x27;os.path.dirname(__file__) is &#123;os.path.dirname(__file__)&#125;&#x27;)    print(f&#x27;os.path.abspath(__file__) is &#123;os.path.abspath(__file__)&#125;&#x27;)    print(f&#x27;os.path.realpath(__file__) is &#123;os.path.realpath(__file__)&#125;&#x27;)    print(f&#x27;os.path.split(os.path.realpath(__file__))[0] is &#123;os.path.split(os.path.realpath(__file__))[0]&#125;&#x27;)print(&#x27;------ module_a/getpath.py ------&#x27;)print_path()print(&#x27;---------------------------------&#x27;)print(&#x27;------ module_a/module_b/getpath.py ------&#x27;)getpath.print_path()print(&#x27;------------------------------------------&#x27;)
-
-2.3. 执行脚本在path目录中执行脚本python module_a/getpath.py ，得到结果为：
------- module_a/getpath.py ------os.getcwd() is /Users/vk/tmp/pathsys.path[0] is /Users/vk/tmp/path/module_asys.argv[0] is module_a/getpath.py__file__ is module_a/getpath.pyos.path.dirname(__file__) is module_aos.path.abspath(__file__) is /Users/vk/tmp/path/module_a/getpath.pyos.path.realpath(__file__) is /Users/vk/tmp/path/module_a/getpath.pyos.path.split(os.path.realpath(__file__))[0] is /Users/vk/tmp/path/module_a--------------------------------------- module_a/module_b/getpath.py ------os.getcwd() is /Users/vk/tmp/pathsys.path[0] is /Users/vk/tmp/path/module_asys.argv[0] is module_a/getpath.py__file__ is /Users/vk/tmp/path/module_a/module_b/getpath.pyos.path.dirname(__file__) is /Users/vk/tmp/path/module_a/module_bos.path.abspath(__file__) is /Users/vk/tmp/path/module_a/module_b/getpath.pyos.path.realpath(__file__) is /Users/vk/tmp/path/module_a/module_b/getpath.pyos.path.split(os.path.realpath(__file__))[0] is /Users/vk/tmp/path/module_a/module_b------------------------------------------
-
-3. 实验结论由实验结果，可以得出如下结论。
-3.1. 获取执行命令的绝对路径os.getcwd()
-
-3.2. 获取入口脚本的父绝对路径sys.path[0]
-
-3.3. 获取执行脚本的绝对路劲os.path.abspath(__file__)os.path.realpath(__file__)
-
-3.4. 获取执行脚本的父绝对路径os.path.split(os.path.realpath(__file__))[0]
-
-3.5. 获取文件/目录的父路径os.path.dirname(__file__)
-
 
 
 ]]></content>
@@ -13623,8 +13623,8 @@ Python项目Debug的配置方法，参考《PyCharm调试》。不同的是，�
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>golang</category>
         <category>python</category>
+        <category>golang</category>
         <category>java</category>
       </categories>
       <tags>
@@ -13766,8 +13766,8 @@ nsenter -t &lt;pid&gt; -n iptables -t nat -nL --line-numbernsenter -t 8993 -n ip
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>k8s</category>
         <category>network</category>
+        <category>k8s</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -16312,10 +16312,10 @@ IPsec-VPN入门概述
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
-        <category>k8s</category>
+        <category>docker</category>
         <category>network</category>
+        <category>k8s</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -16476,10 +16476,10 @@ systemctl status firewalldsystemctl stop firewalldsystemctl disable firewalld
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
-        <category>k8s</category>
+        <category>docker</category>
         <category>network</category>
+        <category>k8s</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -16527,8 +16527,8 @@ kubelet --version
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
+        <category>docker</category>
         <category>k8s</category>
         <category>cloudnative</category>
       </categories>
@@ -17197,8 +17197,8 @@ kubectl exec -it ingress-nginx-controller-xxx -- /bin/bashcd /etc/nginxcat nginx
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>k8s</category>
         <category>network</category>
+        <category>k8s</category>
         <category>cloudnative</category>
         <category>shell</category>
       </categories>
@@ -17218,7 +17218,7 @@ kubectl exec -it ingress-nginx-controller-xxx -- /bin/bashcd /etc/nginxcat nginx
     <title>好好学K8S：K8S中的admissionWebhooks</title>
     <url>/dev-k8s-admissionwebhooks/</url>
     <content><![CDATA[1. 什么是admissionWebhooks？admissionWebhooks是Kubernetes的一种高级特性，它允许集群管理员通过Webhook服务来验证和修改提交到Kubernetes API服务器的资源请求。这些资源请求可以包括创建、更新或删除Kubernetes对象，如Pod、Service、Deployment等。
-参考文档：
+参考文档：Kubernetes webhook原理介绍及执行演示
 
 
 2. admissionWebhooks类型admissionWebhooks分为两种主要类型：
@@ -17256,68 +17256,6 @@ Mutating Webhooks：这些Webhooks用于自动修改或补充资源请求。它�
       <tags>
         <tag>k8s</tag>
         <tag>好好学K8S</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>好好学K8S：Ingress配置使用宿主机80/443端口</title>
-    <url>/dev-k8s-ingress-80-443/</url>
-    <content><![CDATA[1. 前言《K8S中安装使用Ingress》一文中，我们安装配置了Ingress。安装Ingress后，默认的服务端口是NodePort，范围 30000-32767 。因为端口不是80和443，所以我们无法直接把域名解析到节点IP上，上层还需要增加一个LB或者Nginx进行转发。而增加了上层，整个链路就变长了，增加了响应耗时和出现问题的概率。
-本文中，我们学习一种Ingress配置方法，能够使Ingress直接使用宿主机的80和443端口。
-
-
-2. 安装配置思路K8S中有一个机制是 hostNetwork，允许Pod使用宿主机网络，也就是说可以直接将Pod的80和443直接绑定到K8S宿主机网络上。基于此，可以使用 DaemonSet+hostNetwork 部署Ingress。
-参考文档：
-
-DNS for Services and Pods
-Kubernetes进阶训练营 ingress-nginx
-适合ingress-nginx接入外部负载均衡的部署
-
-3. 安装配置实践1、添加chart仓库
-helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginxhelm repo updatehelm repo list
-
-2、下载chart（chart4.1.4 对应 app1.2.1）
-helm search repo ingress-nginx/ingress-nginx -lhelm fetch ingress-nginx/ingress-nginx --version 4.1.4tar -xzvf ingress-nginx-4.1.4.tgzvim ingress-nginx/values.yaml
-
-3、修改 values.yaml 配置
-
-controller.image.registry：改为k8s.dockerproxy.com
-controller.image.tag：保持不变v1.2.1
-controller.image.digest：注释掉
-controller.image.digestChroot：注释掉
-controller.admissionWebhooks.enabled：保持 true，避免创建的错误 Ingress 等资源对象影响控制器重新加载
-defaultBackend.enabled：按需修改
-controller.hostNetwork：改为 true
-controller.publishService.enabled：改为 false
-controller.dnsPolicy：改为 ClusterFirstWithHostNet
-controller.kind：改为 DaemonSet
-controller.nodeSeletor：按需修改
-controller.tolerations：按需修改
-controller.service.enabled：改为 false
-
-4、安装ingress nginx controller
-helm install ingress-nginx ingress-nginx -n ingress-nginx --create-namespace --dry-run --debughelm install ingress-nginx ingress-nginx -n ingress-nginx --create-namespace
-
-5、查看安装
-kubectl get all -n ingress-nginxkubectl get ingressclass
-
-
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>architecture</category>
-        <category>k8s</category>
-        <category>network</category>
-        <category>cloudnative</category>
-      </categories>
-      <tags>
-        <tag>架构</tag>
-        <tag>网络</tag>
-        <tag>nginx</tag>
-        <tag>k8s</tag>
-        <tag>helm</tag>
-        <tag>好好学K8S</tag>
-        <tag>ingress</tag>
-        <tag>kubesphere</tag>
       </tags>
   </entry>
   <entry>
@@ -17438,8 +17376,70 @@ kubectl exec -it ingress-nginx-controller-xxx -- /bin/bashcd /etc/nginxcat nginx
       <categories>
         <category>engineering</category>
         <category>architecture</category>
-        <category>k8s</category>
         <category>network</category>
+        <category>k8s</category>
+        <category>cloudnative</category>
+      </categories>
+      <tags>
+        <tag>架构</tag>
+        <tag>网络</tag>
+        <tag>nginx</tag>
+        <tag>k8s</tag>
+        <tag>helm</tag>
+        <tag>好好学K8S</tag>
+        <tag>ingress</tag>
+        <tag>kubesphere</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>好好学K8S：Ingress配置使用宿主机80/443端口</title>
+    <url>/dev-k8s-ingress-80-443/</url>
+    <content><![CDATA[1. 前言《K8S中安装使用Ingress》一文中，我们安装配置了Ingress。安装Ingress后，默认的服务端口是NodePort，范围 30000-32767 。因为端口不是80和443，所以我们无法直接把域名解析到节点IP上，上层还需要增加一个LB或者Nginx进行转发。而增加了上层，整个链路就变长了，增加了响应耗时和出现问题的概率。
+本文中，我们学习一种Ingress配置方法，能够使Ingress直接使用宿主机的80和443端口。
+
+
+2. 安装配置思路K8S中有一个机制是 hostNetwork，允许Pod使用宿主机网络，也就是说可以直接将Pod的80和443直接绑定到K8S宿主机网络上。基于此，可以使用 DaemonSet+hostNetwork 部署Ingress。
+参考文档：
+
+DNS for Services and Pods
+Kubernetes进阶训练营 ingress-nginx
+适合ingress-nginx接入外部负载均衡的部署
+
+3. 安装配置实践1、添加chart仓库
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginxhelm repo updatehelm repo list
+
+2、下载chart（chart4.1.4 对应 app1.2.1）
+helm search repo ingress-nginx/ingress-nginx -lhelm fetch ingress-nginx/ingress-nginx --version 4.1.4tar -xzvf ingress-nginx-4.1.4.tgzvim ingress-nginx/values.yaml
+
+3、修改 values.yaml 配置
+
+controller.image.registry：改为k8s.dockerproxy.com
+controller.image.tag：保持不变v1.2.1
+controller.image.digest：注释掉
+controller.image.digestChroot：注释掉
+controller.admissionWebhooks.enabled：保持 true，避免创建的错误 Ingress 等资源对象影响控制器重新加载
+defaultBackend.enabled：按需修改
+controller.hostNetwork：改为 true
+controller.publishService.enabled：改为 false
+controller.dnsPolicy：改为 ClusterFirstWithHostNet
+controller.kind：改为 DaemonSet
+controller.nodeSeletor：按需修改
+controller.tolerations：按需修改
+controller.service.enabled：改为 false
+
+4、安装ingress nginx controller
+helm install ingress-nginx ingress-nginx -n ingress-nginx --create-namespace --dry-run --debughelm install ingress-nginx ingress-nginx -n ingress-nginx --create-namespace
+
+5、查看安装
+kubectl get all -n ingress-nginxkubectl get ingressclass
+
+
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>architecture</category>
+        <category>network</category>
+        <category>k8s</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -17493,8 +17493,8 @@ K8S容器编排之Headless浅谈
       <categories>
         <category>engineering</category>
         <category>architecture</category>
-        <category>k8s</category>
         <category>network</category>
+        <category>k8s</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -18566,8 +18566,8 @@ docker run --name vkcrond -d -it voidking/crond:v1.0 &quot;/bin/bash&quot; &quot
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
+        <category>docker</category>
       </categories>
       <tags>
         <tag>docker</tag>
@@ -18818,8 +18818,8 @@ docker psdocker logs vk-nginxdocker logs --tail 10 vk-nginx
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
+        <category>docker</category>
         <category>network</category>
         <category>hexo</category>
       </categories>
@@ -18885,8 +18885,8 @@ wget -O default.json http://updates.jenkins-ci.org/update-center.json
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
+        <category>docker</category>
       </categories>
       <tags>
         <tag>docker</tag>
@@ -19594,8 +19594,8 @@ redis-cli --cluster check 192.168.56.103:7002 -a &#x27;xxx&#x27;redis-cli -c -h 
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
+        <category>docker</category>
         <category>database</category>
         <category>cloudnative</category>
         <category>troubleshooting</category>
@@ -19847,8 +19847,8 @@ you are looking at mem_fragmentation_ratio which is not actually fragmentation. 
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
+        <category>docker</category>
         <category>database</category>
         <category>cloudnative</category>
       </categories>
@@ -19966,8 +19966,8 @@ curl http://127.0.0.1:15000
         <category>network</category>
       </categories>
       <tags>
-        <tag>网络</tag>
         <tag>python</tag>
+        <tag>网络</tag>
         <tag>docker</tag>
         <tag>好好学Docker</tag>
         <tag>存储</tag>
@@ -20526,7 +20526,7 @@ go get k8s.io/client-go/12.0/kubernetes
 失败了，返回404，猜测是12.0版本在代理服务器不存在，使用另外一种下载方式。
 go get k8s.io/client-go@kubernetes-1.15.0
 此处下载了两个版本的client-go，我们使用v0.0.0版本。
-4、安装client-go相关依赖client-go默认下载到$GOPATH/pkg/mod/k8s.io目录下，把k8s.io目录移动到$GOPATH/src目录下。然后把&#99;&#x6c;&#105;&#101;&#x6e;&#x74;&#45;&#103;&#111;&#64;&#x76;&#48;&#x2e;&#x30;&#x2e;&#48;重命名为client-go，然后在client-go目录下执行安装依赖的命令：
+4、安装client-go相关依赖client-go默认下载到$GOPATH/pkg/mod/k8s.io目录下，把k8s.io目录移动到$GOPATH/src目录下。然后把&#99;&#108;&#105;&#x65;&#110;&#116;&#45;&#103;&#x6f;&#x40;&#118;&#x30;&#x2e;&#48;&#x2e;&#48;重命名为client-go，然后在client-go目录下执行安装依赖的命令：
 export GOPROXY=https://goproxy.ioexport GO111MODULE=ongo mod vendor
 完成之后，所有的依赖都下载到了client-go/vendor目录下，一个完整的client-go依赖库就准备好了。
 3.2. 依赖库版本管理client-go依赖库准备好了，但是另一个问题来了：假设项目vk-project依赖client-go和库A，client-go依赖库A，两个依赖库A版本不一致，那么vk-project在编译时，会同时依赖两个不同的库A，导致编译出的二进制包有问题。
@@ -21190,8 +21190,8 @@ nslookup www.example.com localhostdig @localhost -p 53 www.example.com
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>k8s</category>
         <category>network</category>
+        <category>k8s</category>
         <category>cloudnative</category>
       </categories>
       <tags>
@@ -30825,14 +30825,14 @@ tail /var/log/maillog
 2.3. macos参考文档：《MacOS配置发送邮件》
 3. mail命令3.1. 命令格式mail [OPTION...] [address...]
 常用到的选项，一个是s，代表主题；一个是A，代表附件。其他的需要时查看help。
-3.2. 发送普通邮件目标：给邮箱 &#118;&#x6f;&#105;&#x64;&#x6b;&#105;&#x6e;&#x67;&#x40;&#113;&#x71;&#46;&#99;&#111;&#x6d; 发送邮件，主题为“Hello VoidKing”，内容为“Welcome to mail world！”
+3.2. 发送普通邮件目标：给邮箱 &#118;&#111;&#105;&#100;&#x6b;&#105;&#x6e;&#x67;&#x40;&#x71;&#113;&#x2e;&#x63;&#x6f;&#109; 发送邮件，主题为“Hello VoidKing”，内容为“Welcome to mail world！”
 echo &#x27;Welcome to mail world！&#x27; | mail -s &quot;Hello VoidKing&quot; voidking@qq.com
 
 但是，等待了几分钟，并没有收到邮件，垃圾箱也没有。mail，查看email的发送状态为Undelivered Mail Returned，原来没有投递出去。
 查看邮件系统日志：
 tail -n 50 /var/spool/mail/test
 提示host mx3.qq.com[183.57.48.35] said: 550 Mail content denied。看来qq邮箱的垃圾邮件防御机制做的不错，那就换个163邮箱，没想到依然失败。
-换一台服务器？发送给 &#x76;&#111;&#105;&#x64;&#x6b;&#105;&#110;&#103;&#x40;&#x71;&#x71;&#46;&#x63;&#x6f;&#109; ，成功！很尴尬。。。就这么着吧
+换一台服务器？发送给 &#x76;&#x6f;&#105;&#100;&#107;&#x69;&#x6e;&#x67;&#64;&#x71;&#113;&#46;&#99;&#111;&#109; ，成功！很尴尬。。。就这么着吧
 3.3. 发送高级邮件1、从文本读入内容发送邮件
 mail -s &#x27;Error report&#x27; voidking@qq.com &lt; /tmp/log/ganglia/error-20180524.log
 
@@ -31175,8 +31175,8 @@ docker run --name test -d \  -v /etc/localtime:/etc/localtime \  python:3.7.10-s
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
+        <category>docker</category>
         <category>troubleshooting</category>
       </categories>
       <tags>
@@ -31421,8 +31421,8 @@ options &#123;  tcp-clients &lt;NUMBER_OF_MAX_CLIENT&gt;;&#125;;
       <categories>
         <category>engineering</category>
         <category>devops</category>
-        <category>linux</category>
         <category>network</category>
+        <category>linux</category>
         <category>troubleshooting</category>
       </categories>
       <tags>
@@ -31960,8 +31960,8 @@ dns-nameserver 180.76.76.76 223.5.5.5
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>linux</category>
         <category>network</category>
+        <category>linux</category>
         <category>shell</category>
       </categories>
       <tags>
@@ -32149,8 +32149,8 @@ Request -&gt; Nginx(certificate)  -&gt; Ingress                               -&
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
+        <category>docker</category>
       </categories>
       <tags>
         <tag>docker</tag>
@@ -32236,8 +32236,8 @@ Alice首先临时生成一个对称密钥R，并用该对称密钥R加密通知�
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>k8s</category>
         <category>network</category>
+        <category>k8s</category>
       </categories>
       <tags>
         <tag>网络</tag>
@@ -34295,7 +34295,7 @@ linux下载好数据集后，把数据集下载到win10中nmt目录中，路径�
 4.2. 训练model在根目录（nmt目录）下运行：
 python -m nmt.nmt --src=vi --tgt=en --vocab_prefix=./tmp/nmt_data/vocab  --train_prefix=./tmp/nmt_data/train --dev_prefix=./tmp/nmt_data/tst2012  --test_prefix=./tmp/nmt_data/tst2013 --out_dir=./tmp/nmt_model --num_train_steps=12000 --steps_per_stats=100 --num_layers=2 --num_units=128 --dropout=0.2 --metrics=bleu
 
-郝同学i5-3337U &#67;&#80;&#85;&#x40;&#49;&#x2e;&#x38;&#x30;&#x47;&#x48;&#x7a;，8G内存，训练了将近两个小时才训练完成。下文我们要学习使用一下UCloud提供的免费GPU。
+郝同学i5-3337U &#67;&#x50;&#x55;&#x40;&#x31;&#x2e;&#x38;&#x30;&#x47;&#72;&#x7a;，8G内存，训练了将近两个小时才训练完成。下文我们要学习使用一下UCloud提供的免费GPU。
 我们可以使用 Tensorboard 在训练过程中查看模型的总结：
 tensorboard --port 22222 --logdir ./tmp/nmt_model/
 通过以下简单的变化，就能逆向完成英语到越南语的翻译。
@@ -38094,8 +38094,8 @@ grep筛选出的日志，包含18:00:00-18:00:59内的日志。sed筛选出的�
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>linux</category>
         <category>network</category>
+        <category>linux</category>
         <category>troubleshooting</category>
         <category>shell</category>
       </categories>
@@ -38199,8 +38199,8 @@ ifconfig
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>linux</category>
         <category>network</category>
+        <category>linux</category>
         <category>shell</category>
       </categories>
       <tags>
@@ -38489,7 +38489,7 @@ ssh-keygen
 执行命令后，一路回车，会生成公钥~/.ssh/id_rsa.pub 和私钥 ~/.ssh/id_rsa 
 指定参数生成密钥对：
 ssh-keygen -C &quot;voidking@qq.com&quot; -f ~/.ssh/voidking_rsa 
-执行命令后，~/.ssh/ 目录下会生成 voidking_rsa 和 voidking_rsa.pub，注释内容为 &#x76;&#x6f;&#x69;&#x64;&#107;&#x69;&#110;&#x67;&#64;&#x71;&#113;&#46;&#x63;&#111;&#109;
+执行命令后，~/.ssh/ 目录下会生成 voidking_rsa 和 voidking_rsa.pub，注释内容为 &#118;&#111;&#105;&#100;&#107;&#105;&#110;&#103;&#x40;&#113;&#113;&#46;&#99;&#x6f;&#109;
 5.2. 添加公钥到远程机器假设远程机器为192.168.56.100。
 添加默认公钥到远程机器：
 ssh-copy-id voidking@192.168.56.100ssh-copy-id voidking@192.168.56.100 -p 2222 # 当远程机器ssh端口为2222时
@@ -38547,8 +38547,8 @@ ssh voidking@192.168.56.100 &quot;test1 test2&quot;ssh voidking@192.168.56.100 t
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>linux</category>
         <category>network</category>
+        <category>linux</category>
         <category>troubleshooting</category>
         <category>shell</category>
       </categories>
@@ -39590,8 +39590,8 @@ tomcat使用supervisor管理
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
+        <category>docker</category>
         <category>troubleshooting</category>
         <category>java</category>
       </categories>
@@ -39679,8 +39679,8 @@ curl localhost:28080
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
+        <category>docker</category>
       </categories>
       <tags>
         <tag>centos</tag>
@@ -40126,8 +40126,8 @@ ifconfig docker0 down
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
+        <category>docker</category>
       </categories>
       <tags>
         <tag>centos</tag>
@@ -40211,8 +40211,8 @@ curl localhost:8080
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>docker</category>
         <category>devops</category>
+        <category>docker</category>
         <category>uncategories</category>
       </categories>
       <tags>
@@ -40256,6 +40256,62 @@ $L_k$表示（本次移动）蚂蚁k经过的路径和。
         <tag>知识工程</tag>
         <tag>mathjax</tag>
         <tag>matlab</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>好好学Docker：Docker镜像迁移/分享</title>
+    <url>/dev-docker-image-migrate/</url>
+    <content><![CDATA[1. 问题描述在没有外网的情况下，怎样把 docker image 分享给局域网的其他用户？
+解决办法有两个：
+
+1）搭建本地镜像仓库
+2）导出导入镜像
+
+
+
+2. 搭建本地镜像仓库搭建本地镜像仓库，把镜像push到本地镜像仓库，其他机器pull即可。
+搭建本地镜像仓库方法参考：《Harbor入门篇》 和 《Docker镜像站的配置和使用》
+假设需求为本机有镜像 busybox:1.25，现在想要把这个镜像分享给其他机器。
+1、有镜像的机器执行：
+docker tag busybox:1.25 harbor.voidking.com/base/busybox:1.25docker login harbor.voidking.comdocker push harbor.voidking.com/base/busybox:1.25
+
+2、其他机器执行：
+docker pull harbor.voidking.com/base/busybox:1.25docker tag harbor.voidking.com/base/busybox:1.25 busybox:1.25
+
+3. 导出导入镜像导出导入镜像，主要依赖docker save和docker load命令。
+3.1. 单个镜像出导入假设需求为本机有镜像 busybox:1.25，现在想要把这个镜像分享给其他机器。
+1、有镜像的机器导出镜像  
+docker save -o busybox.tar busybox:1.25
+
+2、拷贝压缩包到其他机器
+3、其他机器导入镜像  
+docker load -i busybox.tar
+
+3.2. 全部镜像导出导入假设需求为本机有很多个镜像，现在想要把这些镜像全部导出到其他机器。
+1、有镜像的机器导出所有镜像  
+docker save $(docker images | grep -v REPOSITORY | awk &#x27;BEGIN&#123;OFS=&quot;:&quot;;ORS=&quot; &quot;&#125;&#123;print $1,$2&#125;&#x27;) -o all.tar
+
+2、拷贝压缩包到其他机器
+3、其他机器导入镜像  
+docker load -i all.tar
+
+3.3. docker save/load存在的问题这种导出导入存在一个问题：导入后的镜像，不会作为base layer。
+已知：A主机上docker save了一个镜像X，拷贝到B主机后，B主机上docker load了镜像X。接着A主机上基于镜像X做了一个镜像Y，上传到harbor。问题：B主机上docker pull拉取harbor中的镜像Y，会全量拉取镜像吗？
+理论上，不会全量拉取镜像，只会增量拉取。但是实测第一次拉取依然会全量拉取Y。神奇的是，如果执行过docker rmi Y，再次拉取Y确实会变成增量拉取。暂时不知道原因，待解。
+参考文档：
+
+How to speed up docker load then docker pull the incremental changes
+Docker pull/push won’t recognize images from docker load.. sometimes?
+
+]]></content>
+      <categories>
+        <category>engineering</category>
+        <category>docker</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>好好学Docker</tag>
+        <tag>harbor</tag>
       </tags>
   </entry>
   <entry>
@@ -40313,62 +40369,6 @@ docker export $(docker create harbor.voidking.com/xxx/yyy:v0.1) | docker import 
       <tags>
         <tag>docker</tag>
         <tag>好好学Docker</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>好好学Docker：Docker镜像迁移/分享</title>
-    <url>/dev-docker-image-migrate/</url>
-    <content><![CDATA[1. 问题描述在没有外网的情况下，怎样把 docker image 分享给局域网的其他用户？
-解决办法有两个：
-
-1）搭建本地镜像仓库
-2）导出导入镜像
-
-
-
-2. 搭建本地镜像仓库搭建本地镜像仓库，把镜像push到本地镜像仓库，其他机器pull即可。
-搭建本地镜像仓库方法参考：《Harbor入门篇》 和 《Docker镜像站的配置和使用》
-假设需求为本机有镜像 busybox:1.25，现在想要把这个镜像分享给其他机器。
-1、有镜像的机器执行：
-docker tag busybox:1.25 harbor.voidking.com/base/busybox:1.25docker login harbor.voidking.comdocker push harbor.voidking.com/base/busybox:1.25
-
-2、其他机器执行：
-docker pull harbor.voidking.com/base/busybox:1.25docker tag harbor.voidking.com/base/busybox:1.25 busybox:1.25
-
-3. 导出导入镜像导出导入镜像，主要依赖docker save和docker load命令。
-3.1. 单个镜像出导入假设需求为本机有镜像 busybox:1.25，现在想要把这个镜像分享给其他机器。
-1、有镜像的机器导出镜像  
-docker save -o busybox.tar busybox:1.25
-
-2、拷贝压缩包到其他机器
-3、其他机器导入镜像  
-docker load -i busybox.tar
-
-3.2. 全部镜像导出导入假设需求为本机有很多个镜像，现在想要把这些镜像全部导出到其他机器。
-1、有镜像的机器导出所有镜像  
-docker save $(docker images | grep -v REPOSITORY | awk &#x27;BEGIN&#123;OFS=&quot;:&quot;;ORS=&quot; &quot;&#125;&#123;print $1,$2&#125;&#x27;) -o all.tar
-
-2、拷贝压缩包到其他机器
-3、其他机器导入镜像  
-docker load -i all.tar
-
-3.3. docker save/load存在的问题这种导出导入存在一个问题：导入后的镜像，不会作为base layer。
-已知：A主机上docker save了一个镜像X，拷贝到B主机后，B主机上docker load了镜像X。接着A主机上基于镜像X做了一个镜像Y，上传到harbor。问题：B主机上docker pull拉取harbor中的镜像Y，会全量拉取镜像吗？
-理论上，不会全量拉取镜像，只会增量拉取。但是实测第一次拉取依然会全量拉取Y。神奇的是，如果执行过docker rmi Y，再次拉取Y确实会变成增量拉取。暂时不知道原因，待解。
-参考文档：
-
-How to speed up docker load then docker pull the incremental changes
-Docker pull/push won’t recognize images from docker load.. sometimes?
-
-]]></content>
-      <categories>
-        <category>engineering</category>
-        <category>docker</category>
-      </categories>
-      <tags>
-        <tag>docker</tag>
-        <tag>好好学Docker</tag>
-        <tag>harbor</tag>
       </tags>
   </entry>
   <entry>
@@ -43313,7 +43313,7 @@ t0 = time()&lt; 你的 clf.fit() 代码行 &gt;print &#x27;training time:&#x27;,
 代码运行说明文件。纯文本或markdown格式，写明运行你的代码所需要的库，他们的安装方法和运行方法
 预测结果: 纯文本或CSV文件。
 
-对项目要求有疑问请致信 &#115;&#x75;&#x70;&#x70;&#111;&#x72;&#116;&#64;&#121;&#x6f;&#x75;&#100;&#97;&#x78;&#117;&#101;&#46;&#99;&#x6f;&#x6d;
+对项目要求有疑问请致信 &#x73;&#x75;&#112;&#112;&#111;&#x72;&#x74;&#64;&#121;&#111;&#x75;&#x64;&#97;&#x78;&#117;&#x65;&#46;&#99;&#x6f;&#x6d;
 准备好提交项目后，请点击下一项，在“项目提交”小节中提交。
 ]]></content>
       <categories>
@@ -43354,7 +43354,7 @@ Resume Builder
 项目导师会根据该评估准则（与你制作简历时遵循的清单相符）对你的简历项目进行审核。
 4.1. 提交准备好提交求职信后，你需要：
 1、删除/匿名化你的求职信上的所有个人联系人信息，以防泄漏隐私。2、创建 PDF 格式的简历，这样你的简历在不同操作系统/软件/屏幕中有一致的版面样式。3、点击下方的“提交项目”按钮，并根据说明操作。4、在“告知审核员”中，请包括任何有关你的职业目标（如申请的工作或领域），或任何有意偏离评估准则情况的详细信息。
-注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#x73;&#x75;&#x70;&#112;&#111;&#x72;&#116;&#x40;&#121;&#x6f;&#x75;&#100;&#x61;&#x78;&#117;&#x65;&#46;&#99;&#111;&#109;。
+注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#x73;&#117;&#112;&#112;&#111;&#x72;&#x74;&#x40;&#121;&#111;&#117;&#x64;&#x61;&#120;&#117;&#101;&#46;&#99;&#111;&#109;。
 5. GitHub个人资料项目你的GitHub个人资料展示你创建的项目，并让他人了解你的工作风格和提交频率。通过展示你对 GitHub 的熟悉程度，其他开发人员和招聘经理能够知道你拥有他们需要能力，你就是他们正在寻找的人。你的代码库应表明你认真对待项目，并且能够编写干净、格式正确的代码。请查看 GitHub 上的这篇出色的博客文章，了解如何用 GitHub 帮助你持续学习，发展职业生涯。
 为何要完成此 GitHub 个人资料项目？GitHub 越来越多地被用作招聘平台以及潜在雇主查看你的作品的方式。它还是与其他开发人员建立联系和展示你的技能的好地方。
 我应该做什么？你应该以招聘人员或用人部门经理的眼光查看你的 GitHub 个人资料，重点关注你的个人资料、项目和代码如何将你描绘成公司的潜在候选人或项目的协作者。
@@ -43383,7 +43383,7 @@ Resume Builder
 8.1. 反馈优达学城项目导师会根据该标准（与你制作领英简介时遵循的清单相符）对你的领英简介项目进行审核。
 8.2. 提交准备好提交领英个人资料后：
 1、若要提交，请点击下方的“提交项目”按钮，并根据说明操作。2、在“告知评审员”中，请包括任何有关你的职业目标（如预期工作领域）的详细信息。
-注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#115;&#x75;&#x70;&#x70;&#x6f;&#x72;&#116;&#64;&#x79;&#111;&#x75;&#100;&#97;&#120;&#117;&#x65;&#x2e;&#x63;&#111;&#x6d;。
+注意：我们最多需要一周的时间来对项目进行评分，但多数情况下无需一周。项目评审完成后，你会收到电子邮件。如果你在提交项目时遇到问题，或者想查看提交状态，请发送电子邮件至 &#x73;&#x75;&#x70;&#112;&#x6f;&#x72;&#116;&#x40;&#121;&#111;&#117;&#100;&#97;&#x78;&#117;&#x65;&#x2e;&#x63;&#x6f;&#109;。
 9. 技术面试项目对于此实战项目，你需要回答五个技术面试问题，这些问题涉及的是技术面试课程中讨论的各种主题。你应该用 Python 写出清晰高效的答案，并用文字解释代码的效率和设计理由。我们将安排合格的审核者检查你的答案，并针对任何精彩之处或欠缺的方面做出反馈：你的解决方案是最高效的吗？你很好地解释了你的想法吗？你的代码简洁易懂吗？
 请回答以下问题：
 问题 1: 假设有两个字符串 s 和 t，请判断 t 的变形词是否是 s 的子字符串。例如：如果 s = “udacity”，t = “ad”，则函数返回 True。你的函数定义应该为：“question1(s, t)”，并返回布尔值 True 或 False。 
@@ -43449,7 +43449,7 @@ Dice
 问题 5 - 通过一个情景举例说明正则化对学习好的模型的必要性，以及提供一个正则化没有意义的情景。
 问题 6 -你附近的杂货店想向顾客有针对性地发放对他们来说有用的优惠券。假设你可以访问每位顾客的购买历史和店铺商品目录，你将设计怎样一个系统，来决定发放哪些优惠券？你如何衡量这个系统的性能？
 问题 7 - 选择一个公司，然后描述你想应聘的该公司内的机器学习工程师职位（假设有）。现在，如果你已成功应聘，并从今天开始任职，在你看来，你的职位在下一年会有怎样的发展？你的长期职业目标是什么，这个职位如何帮助你实现长期目标？
-13.3. 提交当你准备提交项目，点击下方“提交项目”，上传一份 PDF 文件。如果有任何与提交项目相关的疑问，或想查看提交状态，请向我们发送电子邮件询问（&#x73;&#x75;&#x70;&#x70;&#x6f;&#x72;&#116;&#x40;&#121;&#x6f;&#117;&#x64;&#97;&#120;&#x75;&#x65;&#x2e;&#99;&#111;&#109;）。
+13.3. 提交当你准备提交项目，点击下方“提交项目”，上传一份 PDF 文件。如果有任何与提交项目相关的疑问，或想查看提交状态，请向我们发送电子邮件询问（&#115;&#x75;&#x70;&#112;&#x6f;&#114;&#x74;&#x40;&#121;&#x6f;&#117;&#100;&#x61;&#120;&#117;&#101;&#46;&#x63;&#x6f;&#109;）。
 13.4. 项目资源项目评审标准。优达学城的项目导师会依据此评审标准审阅你的项目。你可以在提交前自行检查自己是否已达到所有标准。职业资源中心。你可以在这里找到更多有关准备面试的资源和贴士。
 13.5. 接下来面试练习并不是只在你求职时才需要做的事情， 在你的整个职业生涯中，你都需要继续提高自己的面试技巧。抓住每一个机会，思考和与人交流你的职业目标。在申请一个职位之前，请思考清楚自己为什么要申请——这将极大地帮助你为面试做好准备。
 14. 书签Interview Guide: Machine Learninghttps://career-resource-center.udacity.com/interview-courses-and-guides/machine-learning
@@ -43943,7 +43943,7 @@ notebook 项目导出的 HTML 文件，命名为 report.html。
 
 注意：所提交文件的文件名名，包括zip压缩包内的文件名，都不能含有中文及任何ASCII之外的字符，否则会造成提交失败。
 如何导出HTML的说明在 notebook 的最下方。 你也许需要先在命令后通过 pip install mistune 命令安装 mistune 。当你准备好所有这些文件，并且依照项目要求核对过之后，就可以在下面的项目提交页面提交你的项目了。
-如果你是第一次在优达学城提交项目，点击提交之后，要等1分钟左右才能打开提交页面。如果长时间打不开，可以刷新。如果依然无法打开项目提交页面，可以联系客服微信或者邮件至 &#115;&#x75;&#112;&#112;&#111;&#x72;&#116;&#64;&#x79;&#111;&#117;&#100;&#x61;&#x78;&#x75;&#101;&#x2e;&#99;&#111;&#109;
+如果你是第一次在优达学城提交项目，点击提交之后，要等1分钟左右才能打开提交页面。如果长时间打不开，可以刷新。如果依然无法打开项目提交页面，可以联系客服微信或者邮件至 &#115;&#x75;&#x70;&#112;&#111;&#x72;&#x74;&#64;&#121;&#x6f;&#x75;&#100;&#97;&#120;&#117;&#x65;&#x2e;&#x63;&#x6f;&#x6d;
 6. 后记这个项目，是优达学城《机器学习工程师》课程提供的第一个实战项目。摘录了全文，方便查看。郝同学的项目地址：https://github.com/voidking/udaciyty-machine-learning/tree/master/projects/titanic_survival_exploration
 7. 书签机器学习工程师（中/英）https://cn.udacity.com/course/machine-learning-engineer-nanodegree--nd009
 数据科学入门https://cn.udacity.com/course/intro-to-data-science--ud359
@@ -46218,8 +46218,8 @@ exit
       <categories>
         <category>engineering</category>
         <category>docker</category>
-        <category>linux</category>
         <category>network</category>
+        <category>linux</category>
       </categories>
       <tags>
         <tag>linux</tag>
@@ -46306,8 +46306,8 @@ VPN 配置：在配置VPN时，route用于设置VPN服务器与客户端之间�
 ]]></content>
       <categories>
         <category>engineering</category>
-        <category>linux</category>
         <category>network</category>
+        <category>linux</category>
         <category>shell</category>
       </categories>
       <tags>
@@ -46838,8 +46838,8 @@ ifdown enp0s3ifup enp0s3
       <categories>
         <category>engineering</category>
         <category>devops</category>
-        <category>linux</category>
         <category>network</category>
+        <category>linux</category>
       </categories>
       <tags>
         <tag>centos</tag>
@@ -46922,8 +46922,8 @@ PS：虚拟机启动后，利用 右ctrl 键来切换宿主机和虚拟机的鼠
       <categories>
         <category>engineering</category>
         <category>devops</category>
-        <category>linux</category>
         <category>network</category>
+        <category>linux</category>
       </categories>
       <tags>
         <tag>好好学Linux</tag>
@@ -47626,7 +47626,7 @@ https://api.weixin.qq.com/sns/userinfo?access_token=ACCESS_TOKEN&amp;openid=OPEN
 
 
 2. nodebasea node framework designed for myselfversion: v1.0.0url: https://github.com/voidking/nodebase.git  
-3. 作者相关author: haojin(voidking)e-mail: &#118;&#111;&#105;&#100;&#107;&#105;&#110;&#x67;&#x40;&#113;&#113;&#46;&#x63;&#x6f;&#109;site: http://www.voidking.com   
+3. 作者相关author: haojin(voidking)e-mail: &#x76;&#111;&#105;&#x64;&#x6b;&#105;&#110;&#103;&#x40;&#113;&#x71;&#46;&#99;&#x6f;&#x6d;site: http://www.voidking.com   
 4. 开发环境说明1、安装5.6.0以上Node2、安装mongodb，不要配置密码3、安装sass4、全局安装bower5、全局安装supervisor6、全局安装node-inspector7、全局安装puer8、运行前执行命令
 npm installbower install
 
@@ -52939,7 +52939,7 @@ PRIM（出席和即时信息协议，Presence and Instant Messaging Protocol）�
 
 3.4. 插件许多XMPP服务器支持插件扩展，这些插件通常使用与服务器自身相同的语言编写，并在服务器的进程内运行。他们的作用很大程度上与外部组件重叠，但插件还能够访问内部服务器数据结构并改变核心服务器行为。
 4. XMPP寻址XMPP网络上每个实体都有一个或多个地址（JID，jabber identifier）。JID有多种不同形式，但它们通常看上去就像是电子邮件。
-JID有两种类型，裸JID和完整JID，而裸JID是完整JID去除资源部分后的地址。例如，某个客户端的完整JID是&#x76;&#x6f;&#105;&#x64;&#107;&#105;&#x6e;&#103;&#x40;&#118;&#x6f;&#105;&#x64;&#x6b;&#105;&#x6e;&#103;&#46;&#x6c;&#x69;&#116;/library，那么它的裸JID就是&#x76;&#x6f;&#105;&#x64;&#x6b;&#x69;&#x6e;&#x67;&#x40;&#x76;&#111;&#x69;&#x64;&#x6b;&#105;&#x6e;&#x67;&#x2e;&#108;&#105;&#116;。
+JID有两种类型，裸JID和完整JID，而裸JID是完整JID去除资源部分后的地址。例如，某个客户端的完整JID是&#x76;&#111;&#x69;&#x64;&#x6b;&#x69;&#x6e;&#103;&#x40;&#x76;&#x6f;&#105;&#x64;&#107;&#x69;&#x6e;&#103;&#46;&#108;&#x69;&#x74;/library，那么它的裸JID就是&#118;&#x6f;&#x69;&#100;&#107;&#x69;&#110;&#103;&#64;&#x76;&#111;&#x69;&#x64;&#107;&#105;&#x6e;&#103;&#46;&#108;&#105;&#116;。
 5. 节在XMPP中，各项工作都是通过在一个XMPP流上发送和接收XMPP节来完成的。核心XMPP工具集由三种基本节组成，这三种节分别为&lt;presence&gt;、&lt;message&gt;、&lt;iq&gt;。
 XMPP流由两份XML文档组成，通信的每个方向均有一份文档。这份文档有一个根元素&lt;stream:stream&gt;，这个根元素的子元素由可路由的节以及与流相关的顶级子元素构成。下面给出一段简短的XMPP会话：
 &lt;stream:stream&gt;	&lt;iq type=&#x27;get&#x27;&gt;		&lt;query xmlns=&#x27;jabber:iq:roster&#x27;/&gt;	&lt;/iq&gt;		&lt;presence/&gt;		&lt;message to=&#x27;voidking@voidking.lit&#x27; from=&#x27;haojin@gmail.com/ballroom&#x27; type=&#x27;chat&#x27;&gt;		&lt;body&gt;I cannot talk of books in a ball-room; my head is always full of something else.&lt;/body&gt;	&lt;/message&gt;		&lt;presence type=&#x27;unavailable&#x27;/&gt;&lt;/stream:stream&gt;
@@ -58800,7 +58800,7 @@ mtools，显示所有支持MSDOS文件系统的命令。
 2.23. mutt
 mutt: mail user agent，文字界面的邮件工具
 
-mutt -s &quot;A test mail&quot; josfeng@gmail.com，将邮件寄给 &#x6a;&#x6f;&#115;&#102;&#x65;&#110;&#103;&#x40;&#103;&#x6d;&#x61;&#105;&#x6c;&#x2e;&#x63;&#x6f;&#109;，信件主题为A test mail。
+mutt -s &quot;A test mail&quot; josfeng@gmail.com，将邮件寄给 &#106;&#111;&#115;&#x66;&#x65;&#110;&#x67;&#64;&#103;&#x6d;&#97;&#105;&#x6c;&#x2e;&#99;&#111;&#109;，信件主题为A test mail。
 2.24. mv
 mv: move，移动或重命名文件或目录
 
